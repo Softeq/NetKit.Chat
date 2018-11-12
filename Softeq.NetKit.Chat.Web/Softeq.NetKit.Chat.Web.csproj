@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+      <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.0" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.3.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
+    <PackageReference Include="Serilog" Version="2.7.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="2.6.0" />
+    <PackageReference Include="Softeq.CloudStorage.Extension" Version="1.0.0" />
+    <PackageReference Include="Softeq.Serilog.Extension" Version="1.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="3.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="3.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="logs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NetKit.Chat-master_\Common\Softeq.NetKit.Chat.Common\Softeq.NetKit.Chat.Common.csproj" />
+    <ProjectReference Include="..\..\NetKit.Chat-master_\Domain\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
+    <ProjectReference Include="..\..\NetKit.Chat-master_\Softeq.NetKit.Chat.Infrastructure.SignalR\Softeq.NetKit.Chat.Infrastructure.SignalR.csproj" />
+  </ItemGroup>
+</Project>
