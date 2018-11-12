@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Linq;
@@ -15,13 +15,6 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 {
     public class MemberServiceTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("2c47a9d9-faf5-4ac2-92a4-d2770afc58e8");
-        private readonly Guid _channelId = new Guid("d279799f-c205-4378-b734-0aef519d19f9");
-
-        private const string SaasUserId = "4d048b6c-37b8-499a-a9e3-d3fe5211d5fc";
-
-        private readonly IMemberService _memberService;
-
         public MemberServiceTests()
         {
             _memberService = LifetimeScope.Resolve<IMemberService>();
@@ -46,6 +39,13 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
 
+        private readonly Guid _memberId = new Guid("2c47a9d9-faf5-4ac2-92a4-d2770afc58e8");
+        private readonly Guid _channelId = new Guid("d279799f-c205-4378-b734-0aef519d19f9");
+
+        private const string SaasUserId = "4d048b6c-37b8-499a-a9e3-d3fe5211d5fc";
+
+        private readonly IMemberService _memberService;
+
         [Fact]
         public async Task GetChannelMembersAsyncTest()
         {
@@ -68,7 +68,8 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         {
             // Act
             var members = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, _channelId));
-            var channel = await _memberService.InviteMemberAsync(new InviteMemberRequest(SaasUserId, _channelId, _memberId));
+            var channel =
+                await _memberService.InviteMemberAsync(new InviteMemberRequest(SaasUserId, _channelId, _memberId));
 
 
             // Assert

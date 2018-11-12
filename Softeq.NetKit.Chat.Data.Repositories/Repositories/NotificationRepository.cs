@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"
                     INSERT INTO Notifications(Id, IsRead, MessageId, ChannelId, MemberId) 
                     VALUES (@Id, @IsRead, @MessageId, @ChannelId, @MemberId);";
-                
+
                 await connection.ExecuteScalarAsync(sqlQuery, notification);
             }
         }
@@ -45,8 +45,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"DELETE FROM Notifications WHERE Id = @notificationId";
-                
-                await connection.ExecuteAsync(sqlQuery, new { notificationId }); 
+
+                await connection.ExecuteAsync(sqlQuery, new {notificationId});
             }
         }
 
@@ -61,7 +61,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Notifications
                     WHERE Id = @notificationId";
 
-                var data = (await connection.QueryAsync<Notification>(sqlQuery, new { notificationId }))
+                var data = (await connection.QueryAsync<Notification>(sqlQuery, new {notificationId}))
                     .FirstOrDefault();
 
                 return data;
@@ -91,7 +91,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             notification.Message.Owner = member;
                             return notification;
                         },
-                        new { memberId }))
+                        new {memberId}))
                     .Distinct()
                     .ToList();
 

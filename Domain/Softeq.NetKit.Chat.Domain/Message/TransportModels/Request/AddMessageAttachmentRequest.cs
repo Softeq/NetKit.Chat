@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.IO;
@@ -9,7 +9,8 @@ namespace Softeq.NetKit.Chat.Domain.Message.TransportModels.Request
 {
     public class AddMessageAttachmentRequest : UserRequest
     {
-        public AddMessageAttachmentRequest(string saasUserId, Guid messageId, Stream content, string extension, string contentType, long size) : base(saasUserId) 
+        public AddMessageAttachmentRequest(string saasUserId, Guid messageId, Stream content, string extension,
+            string contentType, long size) : base(saasUserId)
         {
             MessageId = messageId;
             Content = content;

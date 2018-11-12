@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -42,22 +42,23 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             message.Owner = member;
                             return message;
                         },
-                        new { channelId }))
+                        new {channelId}))
                     .Distinct()
                     .ToList();
 
-                return data;          
+                return data;
             }
         }
 
-        public async Task<List<Message>> GetOlderMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated, int? pageSize)
+        public async Task<List<Message>> GetOlderMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated,
+            int? pageSize)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
-                
-                var sqlQuery = pageSize != null ?
-                    @"
+
+                var sqlQuery = pageSize != null
+                    ? @"
                     SELECT * FROM 
 					(SELECT TOP(@pageSize) m.Id, m.Body, m.ChannelId, m.Created, m.ImageUrl, m.OwnerId, m.Type, m.Updated,
 				    me.Id AS memberId, me.Email, me.IsAfk, me.IsBanned, me.LastActivity, me.LastNudged, me.Name, me.PhotoName, me.Role, me.SaasUserId, me.Status 
@@ -65,8 +66,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     INNER JOIN Members me ON m.OwnerId = me.Id
                     WHERE Created < @LastReadMessageCreated AND ChannelId = @ChannelId
                     ORDER BY Created DESC) AS temp
-					ORDER BY temp.Created" :
-                    @"
+					ORDER BY temp.Created"
+                    : @"
                     SELECT *
                     FROM Messages m
                     INNER JOIN Members me ON m.OwnerId = me.Id
@@ -80,7 +81,10 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             message.Owner = member;
                             return message;
                         },
-                        new { ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, PageSize = pageSize }))
+                        new
+                        {
+                            ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, PageSize = pageSize
+                        }))
                     .Distinct()
                     .OrderBy(x => x.Created)
                     .ToList();
@@ -89,20 +93,21 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task<List<Message>> GetMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated, int? pageSize)
+        public async Task<List<Message>> GetMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated,
+            int? pageSize)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = pageSize != null ?
-                    @"
+                var sqlQuery = pageSize != null
+                    ? @"
 					SELECT TOP (@pageSize) *
                     FROM Messages m
                     INNER JOIN Members me ON m.OwnerId = me.Id
                     WHERE Created >= @LastReadMessageCreated AND ChannelId = @ChannelId
-                    ORDER BY Created" :
-                    @"
+                    ORDER BY Created"
+                    : @"
                     SELECT *
                     FROM Messages m
                     INNER JOIN Members me ON m.OwnerId = me.Id
@@ -116,7 +121,10 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             message.Owner = member;
                             return message;
                         },
-                        new { ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, PageSize = pageSize }))
+                        new
+                        {
+                            ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, PageSize = pageSize
+                        }))
                     .Distinct()
                     .OrderBy(x => x.Created)
                     .ToList();
@@ -125,14 +133,15 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task<List<Message>> GetLastMessagesAsync(Guid channelId, DateTimeOffset? lastReadMessageCreated, int readMessagesCount = 20)
+        public async Task<List<Message>> GetLastMessagesAsync(Guid channelId, DateTimeOffset? lastReadMessageCreated,
+            int readMessagesCount = 20)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = lastReadMessageCreated != null ?
-                    @"
+                var sqlQuery = lastReadMessageCreated != null
+                    ? @"
                     SELECT Id, Body, ChannelId, Created, ImageUrl, OwnerId, Type, Updated,
 							memberId AS Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status 
                     FROM
@@ -150,8 +159,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 							FROM Messages m  
                             INNER JOIN Members me ON m.OwnerId = me.Id
                             WHERE Created > @LastReadMessageCreated AND ChannelId = @ChannelId) AS NewMessages
-                    ORDER BY Created " :
-                    @"
+                    ORDER BY Created "
+                    : @"
                     SELECT *
                     FROM Messages m
                     INNER JOIN Members me ON m.OwnerId = me.Id
@@ -165,7 +174,11 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             message.Owner = member;
                             return message;
                         },
-                        new { ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, ReadMessagesCount = readMessagesCount }))
+                        new
+                        {
+                            ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated,
+                            ReadMessagesCount = readMessagesCount
+                        }))
                     .Distinct()
                     .OrderBy(x => x.Created)
                     .ToList();
@@ -194,7 +207,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             message.Owner = member;
                             return message;
                         },
-                        new { messageId, channelId }))
+                        new {messageId, channelId}))
                     .Distinct()
                     .ToList();
 
@@ -221,9 +234,9 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             message.OwnerId = member.Id;
                             return message;
                         },
-                        new { messageId }))
-                        .FirstOrDefault();
-                
+                        new {messageId}))
+                    .FirstOrDefault();
+
                 return data;
             }
         }
@@ -249,8 +262,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"DELETE FROM Messages WHERE Id = @messageId";
-                
-                await connection.ExecuteAsync(sqlQuery, new { messageId });
+
+                await connection.ExecuteAsync(sqlQuery, new {messageId});
             }
         }
 
@@ -263,7 +276,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"UPDATE Messages 
                                  SET Body = @Body, Updated = @Updated
                                  WHERE Id = @Id";
-                
+
                 await connection.ExecuteAsync(sqlQuery, message);
             }
         }
@@ -278,8 +291,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     SELECT COUNT(*) FROM Messages 
                     Where ChannelId = @channelId";
 
-                var data = (await connection.QueryAsync<int>(sqlQuery, new { channelId })).FirstOrDefault();
-            
+                var data = (await connection.QueryAsync<int>(sqlQuery, new {channelId})).FirstOrDefault();
+
                 return data;
             }
         }
@@ -305,7 +318,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             message.OwnerId = member.Id;
                             return message;
                         },
-                        new { memberId, channelId },
+                        new {memberId, channelId},
                         splitOn: "Id, ChannelId, Id"))
                     .FirstOrDefault();
 

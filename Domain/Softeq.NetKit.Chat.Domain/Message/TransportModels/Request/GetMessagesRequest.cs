@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
@@ -8,7 +8,8 @@ namespace Softeq.NetKit.Chat.Domain.Message.TransportModels.Request
 {
     public class GetMessagesRequest : UserRequest
     {
-        public GetMessagesRequest(string userId, Guid channelId, Guid messageId, DateTimeOffset messageCreatedDate, int? pageSize) : base(userId)
+        public GetMessagesRequest(string userId, Guid channelId, Guid messageId, DateTimeOffset messageCreatedDate,
+            int? pageSize) : base(userId)
         {
             ChannelId = channelId;
             MessageId = messageId;

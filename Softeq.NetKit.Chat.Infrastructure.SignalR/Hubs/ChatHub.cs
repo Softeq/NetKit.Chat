@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -26,19 +26,19 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 {
     public class ChatHub : Hub, IChannelNotificationHub, IMessageNotificationHub
     {
-        private readonly IMemberService _memberService;
-        private readonly IChannelService _channelService;
         private readonly IChannelMemberService _channelMemberService;
-        private readonly ILogger _logger;
+        private readonly IChannelService _channelService;
 
         private readonly ChannelSocketService _channelSocketService;
+        private readonly ILogger _logger;
+        private readonly IMemberService _memberService;
         private readonly MessageSocketService _messageSocketService;
 
         public ChatHub(
             IChannelService channelService,
             IMemberService memberService,
             ILogger logger,
-            IMessageService messageService, 
+            IMessageService messageService,
             IChannelMemberService channelMemberService)
         {
             _channelService = channelService;
@@ -46,20 +46,25 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             _channelMemberService = channelMemberService;
             _logger = logger;
             _channelSocketService = new ChannelSocketService(_channelService, _logger, _memberService, this);
-            _messageSocketService = new MessageSocketService(_channelService, _logger, _memberService, messageService, this);
+            _messageSocketService =
+                new MessageSocketService(_channelService, _logger, _memberService, messageService, this);
         }
 
         #region Override
 
         public override Task OnConnectedAsync()
         {
-            _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnConnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
+            _logger.Event(PropertyNames.EventId).With
+                .Message($"SignalR Client OnConnectedAsync({Context.ConnectionId})", Context.ConnectionId)
+                .AsInformation();
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
-            _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
+            _logger.Event(PropertyNames.EventId).With
+                .Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId)
+                .AsInformation();
             return base.OnDisconnectedAsync(exception);
         }
 
@@ -99,61 +104,61 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest request)
         {
             return await CheckAccessTokenAndExecute(new TaskReference<MessageResponse>(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                request.ClientConnectionId = Context.ConnectionId;
-                var message = await _messageSocketService.AddMessageAsync(request);
-                var user = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
-                await _memberService.UpdateActivityAsync(new AddClientRequest()
                 {
-                    SaasUserId = user.SaasUserId,
-                    UserName = user.UserName,
-                    ConnectionId = Context.ConnectionId,
-                    UserAgent = null,
-                });
-                return message;
-            }),
-            request.RequestId);
+                    request.SaasUserId = Context.GetSaasUserId();
+                    request.ClientConnectionId = Context.ConnectionId;
+                    var message = await _messageSocketService.AddMessageAsync(request);
+                    var user = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                    await _memberService.UpdateActivityAsync(new AddClientRequest
+                    {
+                        SaasUserId = user.SaasUserId,
+                        UserName = user.UserName,
+                        ConnectionId = Context.ConnectionId,
+                        UserAgent = null
+                    });
+                    return message;
+                }),
+                request.RequestId);
         }
 
         public async Task DeleteMessageAsync(DeleteMessageRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.DeleteMessageAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _messageSocketService.DeleteMessageAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task UpdateMessageAsync(UpdateMessageRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.UpdateMessageAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _messageSocketService.UpdateMessageAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.AddMessageAttachmentAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _messageSocketService.AddMessageAttachmentAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.DeleteMessageAttachmentAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _messageSocketService.DeleteMessageAttachmentAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task MarkAsReadMessageAsync(AddLastReadMessageRequest request)
@@ -172,89 +177,90 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         public async Task JoinToChannelAsync(JoinToChannelRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.JoinToChannelAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.JoinToChannelAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task InviteMemberAsync(InviteMemberRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.InviteMemberAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.InviteMemberAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task InviteMembersAsync(InviteMembersRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.InviteMembersAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.InviteMembersAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
         {
             return await CheckAccessTokenAndExecute(new TaskReference<ChannelSummaryResponse>(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                request.ClientConnectionId = Context.ConnectionId;
-                return await _channelSocketService.CreateChannelAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    request.ClientConnectionId = Context.ConnectionId;
+                    return await _channelSocketService.CreateChannelAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request)
         {
             return await CheckAccessTokenAndExecute(new TaskReference<ChannelSummaryResponse>(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                return await _channelSocketService.UpdateChannelAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    return await _channelSocketService.UpdateChannelAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task CloseChannelAsync(ChannelRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.CloseChannelAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.CloseChannelAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task LeaveChannelAsync(ChannelRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.LeaveChannelAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.LeaveChannelAsync(request);
+                }),
+                request.RequestId);
         }
 
         public async Task MuteChannelAsync(ChannelRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
-            {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.MuteChannelAsync(request);
-            }),
-            request.RequestId);
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.MuteChannelAsync(request);
+                }),
+                request.RequestId);
         }
 
         #endregion
 
         #region HubEvents
 
-        async Task IChannelNotificationHub.OnAddChannel(MemberSummary member, ChannelSummaryResponse channel, string clientConnectionId)
+        async Task IChannelNotificationHub.OnAddChannel(MemberSummary member, ChannelSummaryResponse channel,
+            string clientConnectionId)
         {
             var getClientsExceptCallerRequest = new ChannelRequest(member.SaasUserId, channel.Id)
             {
@@ -285,7 +291,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         async Task IChannelNotificationHub.OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel)
         {
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
-            
+
             // Tell the people in this room that you've joined
             await Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
         }
@@ -300,19 +306,22 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             await Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channel?.Id);
         }
 
-        async Task IMessageNotificationHub.OnAddMessage(MemberSummary member, MessageResponse message, string clientConnectionId)
+        async Task IMessageNotificationHub.OnAddMessage(MemberSummary member, MessageResponse message,
+            string clientConnectionId)
         {
             var getChannelClientsExceptCallerRequest = new ChannelRequest(member.SaasUserId, message.ChannelId);
 
-            var clientIds = await GetChannelClientsExceptCallerAsync(getChannelClientsExceptCallerRequest, clientConnectionId);
-            
+            var clientIds =
+                await GetChannelClientsExceptCallerAsync(getChannelClientsExceptCallerRequest, clientConnectionId);
+
             // Notify all clients for the uploaded message
             await Clients.Clients(clientIds).SendAsync(HubEvents.MessageAdded, message);
         }
 
         async Task IMessageNotificationHub.OnDeleteMessage(MemberSummary member, MessageResponse message)
         {
-            var channelSummary = await _channelService.GetChannelSummaryAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
+            var channelSummary =
+                await _channelService.GetChannelSummaryAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
 
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channelSummary.Id));
 
@@ -322,7 +331,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         async Task IMessageNotificationHub.OnUpdateMessage(MemberSummary member, MessageResponse message)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
+            var channel =
+                await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
 
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
 
@@ -332,7 +342,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         async Task IMessageNotificationHub.OnAddMessageAttachment(MemberSummary member, MessageResponse message)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
+            var channel =
+                await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
 
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
 
@@ -342,7 +353,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         async Task IMessageNotificationHub.OnDeleteMessageAttachment(MemberSummary member, MessageResponse message)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
+            var channel =
+                await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
 
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
 
@@ -356,7 +368,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
             var channel = await _channelService.GetChannelByIdAsync(channelRequest);
 
-            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelRequest, members.Select(x=>x.Id));
+            var connectionIds =
+                await GetNotMutedChannelMembersConnectionsAsync(channelRequest, members.Select(x => x.Id));
 
             // Notify owner about read message
             await Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Name);
@@ -370,7 +383,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             return await FilterClients(members, request.ClientConnectionId);
         }
 
-        private async Task<List<string>> GetChannelClientsExceptCallerAsync(ChannelRequest request, string callerConnectionId)
+        private async Task<List<string>> GetChannelClientsExceptCallerAsync(ChannelRequest request,
+            string callerConnectionId)
         {
             // TODO: Change this code. Recommended to use Clients.Group()
             var members = await _channelMemberService.GetChannelMembersAsync(request);
@@ -399,7 +413,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             return clients;
         }
 
-        private async Task<List<string>> FilterClients(IEnumerable<ChannelMemberResponse> members, string clientConnectionId)
+        private async Task<List<string>> FilterClients(IEnumerable<ChannelMemberResponse> members,
+            string clientConnectionId)
         {
             var mutedMemberIds = members.Where(x => x.IsMuted)
                 .Select(x => x.MemberId)
@@ -408,7 +423,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             var mutedConnectionClientIds = (await _memberService.GetClientsByMemberIds(mutedMemberIds))
                 .Select(x => x.ConnectionClientId)
                 .ToList();
-            
+
             var clients = new List<string>();
             foreach (var item in members)
             {
@@ -424,9 +439,12 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             return clients;
         }
 
-        private async Task<List<string>> GetNotMutedChannelMembersConnectionsAsync(ChannelRequest request, IEnumerable<Guid> notifyMemberIds)
+        private async Task<List<string>> GetNotMutedChannelMembersConnectionsAsync(ChannelRequest request,
+            IEnumerable<Guid> notifyMemberIds)
         {
-            var channelMembers = await _channelMemberService.GetChannelMembersAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            var channelMembers =
+                await _channelMemberService.GetChannelMembersAsync(new ChannelRequest(request.SaasUserId,
+                    request.ChannelId));
 
             var notMutedMemberIds = channelMembers.Where(x => !x.IsMuted && notifyMemberIds.Contains(x.MemberId))
                 .Select(x => x.MemberId)
@@ -443,7 +461,6 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         {
             var saasUserId = Context.GetSaasUserId();
             if (saasUserId != null)
-            {
                 try
                 {
                     await funcRequest.RunAsync();
@@ -451,24 +468,17 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
                 }
                 catch (Exception ex)
                 {
-                    if (requestId == null)
-                    {
-                        throw;
-                    }
+                    if (requestId == null) throw;
                     await Clients.Caller.SendAsync(HubEvents.ExceptionOccurred, ex, requestId);
                 }
-            }
             else
-            {
                 await Clients.Caller.SendAsync(HubEvents.AccessTokenExpired, requestId);
-            }
         }
 
         private async Task<T> CheckAccessTokenAndExecute<T>(TaskReference<T> funcRequest, string requestId = null)
         {
             var saasUserId = Context.GetSaasUserId();
             if (saasUserId != null)
-            {
                 try
                 {
                     await Clients.Caller.SendAsync(HubEvents.RequestSuccess, requestId);
@@ -476,14 +486,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
                 }
                 catch (Exception ex)
                 {
-                    if (requestId == null)
-                    {
-                        throw;
-                    }
+                    if (requestId == null) throw;
                     await Clients.Caller.SendAsync(HubEvents.ExceptionOccurred, ex, requestId);
                     return default(T);
                 }
-            }
 
             await Clients.Caller.SendAsync(HubEvents.AccessTokenExpired, requestId);
             return default(T);

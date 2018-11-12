@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Linq;
@@ -17,14 +17,6 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 {
     public class MessageServiceTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("8890278e-bad0-4394-a519-70585293de84");
-        private readonly Guid _channelId = new Guid("7f4528a4-24d2-4f44-ac64-18fd56c19674");
-
-        private const string SaasUserId = "f54cab3d-4fe0-4c25-9df1-019ec58ab564";
-
-        private readonly IMessageService _messageService;
-        private readonly IChannelService _channelService;
-
         public MessageServiceTests()
         {
             _channelService = LifetimeScope.Resolve<IChannelService>();
@@ -50,6 +42,14 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
 
+        private readonly Guid _memberId = new Guid("8890278e-bad0-4394-a519-70585293de84");
+        private readonly Guid _channelId = new Guid("7f4528a4-24d2-4f44-ac64-18fd56c19674");
+
+        private const string SaasUserId = "f54cab3d-4fe0-4c25-9df1-019ec58ab564";
+
+        private readonly IMessageService _messageService;
+        private readonly IChannelService _channelService;
+
         [Fact]
         public async Task CreateMessageAsyncTest()
         {
@@ -64,11 +64,13 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             // Act
             var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, _channelId));
-            var oldChannelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var oldChannelMessagesCount =
+                await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
             var message = await _messageService.CreateMessageAsync(request);
             var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, _channelId));
-            var newChannelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, newChannel.Id));
-            
+            var newChannelMessagesCount =
+                await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, newChannel.Id));
+
             // Assert
             Assert.NotNull(message);
             Assert.Equal(request.Body, message.Body);
@@ -77,57 +79,6 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             Assert.Equal(request.ImageUrl, message.ImageUrl);
             Assert.Equal(_channelId, message.ChannelId);
             Assert.True(newChannelMessagesCount > oldChannelMessagesCount);
-        }
-
-        [Fact]
-        public async Task UpdateMessageAsync()
-        {
-            // Arrange
-            var request = new CreateMessageRequest(SaasUserId)
-            {
-                Body = "test",
-                ChannelId = _channelId,
-                Type = MessageType.Default,
-                ImageUrl = "test"
-            };
-            
-            var message = await _messageService.CreateMessageAsync(request);
-
-            var updatedRequest = new UpdateMessageRequest(SaasUserId, message.Id, "test2");
-
-            // Act
-            var updatedMessage = await _messageService.UpdateMessageAsync(updatedRequest);
-
-            // Assert
-            Assert.NotNull(updatedMessage);
-            Assert.NotNull(updatedMessage.Updated);
-            Assert.Equal(updatedRequest.Body, updatedMessage.Body);
-        }
-
-        [Fact]
-        public async Task GetChannelMessagesAsyncTest()
-        {
-            // Arrange
-            var request = new CreateMessageRequest(SaasUserId)
-            {
-                Body = "test",
-                ChannelId = _channelId,
-                Type = MessageType.Default,
-                ImageUrl = "test"
-            };
-
-            // Act
-            var messages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
-            var message = await _messageService.CreateMessageAsync(request);
-            var newMessages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
-
-            // Assert
-            Assert.NotNull(newMessages);
-            Assert.NotEmpty(newMessages.Results);
-            Assert.Equal(request.Body, newMessages.Results.First().Body);
-            Assert.Equal(request.Type, newMessages.Results.First().Type);
-            Assert.Equal(request.ImageUrl, newMessages.Results.First().ImageUrl);
-            Assert.True(newMessages.Results.Count() > messages.Results.Count());
         }
 
         [Fact]
@@ -145,14 +96,69 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var message = await _messageService.CreateMessageAsync(request);
 
             // Act
-            var messages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
+            var messages =
+                await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
             await _messageService.DeleteMessageAsync(new DeleteMessageRequest(SaasUserId, message.Id));
-            var newMessages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
+            var newMessages =
+                await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
 
             // Assert
             Assert.NotNull(newMessages);
             Assert.Empty(newMessages.Results);
             Assert.True(messages.Results.Count() > newMessages.Results.Count());
+        }
+
+        [Fact]
+        public async Task GetChannelMessagesAsyncTest()
+        {
+            // Arrange
+            var request = new CreateMessageRequest(SaasUserId)
+            {
+                Body = "test",
+                ChannelId = _channelId,
+                Type = MessageType.Default,
+                ImageUrl = "test"
+            };
+
+            // Act
+            var messages =
+                await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
+            var message = await _messageService.CreateMessageAsync(request);
+            var newMessages =
+                await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
+
+            // Assert
+            Assert.NotNull(newMessages);
+            Assert.NotEmpty(newMessages.Results);
+            Assert.Equal(request.Body, newMessages.Results.First().Body);
+            Assert.Equal(request.Type, newMessages.Results.First().Type);
+            Assert.Equal(request.ImageUrl, newMessages.Results.First().ImageUrl);
+            Assert.True(newMessages.Results.Count() > messages.Results.Count());
+        }
+
+        [Fact]
+        public async Task UpdateMessageAsync()
+        {
+            // Arrange
+            var request = new CreateMessageRequest(SaasUserId)
+            {
+                Body = "test",
+                ChannelId = _channelId,
+                Type = MessageType.Default,
+                ImageUrl = "test"
+            };
+
+            var message = await _messageService.CreateMessageAsync(request);
+
+            var updatedRequest = new UpdateMessageRequest(SaasUserId, message.Id, "test2");
+
+            // Act
+            var updatedMessage = await _messageService.UpdateMessageAsync(updatedRequest);
+
+            // Assert
+            Assert.NotNull(updatedMessage);
+            Assert.NotNull(updatedMessage.Updated);
+            Assert.Equal(updatedRequest.Body, updatedMessage.Body);
         }
     }
 }

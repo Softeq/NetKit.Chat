@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -11,16 +11,14 @@ namespace Softeq.NetKit.Chat.Domain.Member
 {
     public class Member : IBaseEntity<Guid>
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public DateTimeOffset LastActivity { get; set; }
         public DateTimeOffset? LastNudged { get; set; }
         public UserStatus Status { get; set; }
 
         public bool IsAfk { get; set; }
-        [StringLength(255)]
 
-        public string SaasUserId { get; set; }
+        [StringLength(255)] public string SaasUserId { get; set; }
 
         public string Email { get; set; }
 
@@ -37,5 +35,6 @@ namespace Softeq.NetKit.Chat.Domain.Member
         public List<ChannelMembers> Channels { get; set; }
 
         public List<Notification.Notification> Notifications { get; set; }
+        public Guid Id { get; set; }
     }
 }

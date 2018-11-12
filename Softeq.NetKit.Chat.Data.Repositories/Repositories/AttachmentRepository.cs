@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     INSERT INTO Attachments(Id, ContentType, Created, FileName, MessageId, Size) 
                     VALUES (@Id, @ContentType, @Created, @FileName, @MessageId, @Size);";
 
-                await connection.ExecuteScalarAsync(sqlQuery, attachment);      
+                await connection.ExecuteScalarAsync(sqlQuery, attachment);
             }
         }
 
@@ -42,8 +42,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"DELETE FROM Attachments WHERE Id = @attachmentId";
-                
-                await connection.ExecuteScalarAsync<Attachment>(sqlQuery, new { attachmentId });
+
+                await connection.ExecuteScalarAsync<Attachment>(sqlQuery, new {attachmentId});
             }
         }
 
@@ -58,7 +58,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Attachments
                     WHERE Id = @attachmentId";
 
-                var data = (await connection.QueryAsync<Attachment>(sqlQuery, new { attachmentId }))
+                var data = (await connection.QueryAsync<Attachment>(sqlQuery, new {attachmentId}))
                     .FirstOrDefault();
 
                 return data;
@@ -76,7 +76,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Attachments
                     WHERE MessageId = @messageId";
 
-                var data = (await connection.QueryAsync<Attachment>(sqlQuery, new { messageId })).ToList();
+                var data = (await connection.QueryAsync<Attachment>(sqlQuery, new {messageId})).ToList();
 
                 return data;
             }
@@ -90,7 +90,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"DELETE FROM Attachments WHERE MessageId = @messageId";
 
-                await connection.ExecuteScalarAsync<Attachment>(sqlQuery, new { messageId });
+                await connection.ExecuteScalarAsync<Attachment>(sqlQuery, new {messageId});
             }
         }
     }

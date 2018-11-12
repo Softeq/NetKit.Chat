@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -44,7 +44,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"
                 DELETE FROM ChannelMembers WHERE ChannelId = @channelId AND MemberId = @memberId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
+                await connection.ExecuteAsync(sqlQuery, new {channelId, memberId});
             }
         }
 
@@ -60,7 +60,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                      LastReadMessageId = @LastReadMessageId, 
                                      IsMuted = @IsMuted
                                  WHERE ChannelId = @ChannelId AND MemberId = @MemberId";
-                
+
                 await connection.ExecuteAsync(sqlQuery, channelMember);
             }
         }
@@ -76,7 +76,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM ChannelMembers
                     WHERE ChannelId = @channelId";
 
-                var data = (await connection.QueryAsync<ChannelMembers>(sqlQuery, new { channelId })).ToList();
+                var data = (await connection.QueryAsync<ChannelMembers>(sqlQuery, new {channelId})).ToList();
 
                 return data;
             }
@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                 SET IsMuted = 1
                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
+                await connection.ExecuteAsync(sqlQuery, new {channelId, memberId});
             }
         }
 
@@ -106,7 +106,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                 SET LastReadMessageId = @messageId
                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId, messageId });
+                await connection.ExecuteAsync(sqlQuery, new {channelId, memberId, messageId});
             }
         }
 
@@ -120,7 +120,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                 SET LastReadMessageId = NULL
                                 WHERE LastReadMessageId = @messageId";
 
-                await connection.ExecuteAsync(sqlQuery, new { messageId });
+                await connection.ExecuteAsync(sqlQuery, new {messageId});
             }
         }
 
@@ -135,7 +135,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM ChannelMembers
                     WHERE ChannelId = @channelId AND MemberId = @memberId";
 
-                var data = (await connection.QueryAsync<ChannelMembers>(sqlQuery, new { memberId, channelId }))
+                var data = (await connection.QueryAsync<ChannelMembers>(sqlQuery, new {memberId, channelId}))
                     .FirstOrDefault();
 
                 return data;

@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using Softeq.NetKit.Chat.Domain.Base;
@@ -8,7 +8,6 @@ namespace Softeq.NetKit.Chat.Domain.Notification
 {
     public class Notification : IBaseEntity<Guid>
     {
-        public Guid Id { get; set; }
         public Guid MemberId { get; set; }
         public Guid MessageId { get; set; }
         public Guid ChannelId { get; set; }
@@ -16,5 +15,6 @@ namespace Softeq.NetKit.Chat.Domain.Notification
         public Message.Message Message { get; set; }
         public Channel.Channel Channel { get; set; }
         public bool IsRead { get; set; }
+        public Guid Id { get; set; }
     }
 }

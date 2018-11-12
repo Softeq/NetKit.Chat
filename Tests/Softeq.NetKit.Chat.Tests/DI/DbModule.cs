@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System.Data.SqlClient;
 using Autofac;
@@ -26,7 +26,9 @@ namespace Softeq.NetKit.Chat.Tests.DI
                 .AsSelf()
                 .SingleInstance();
 
-            builder.Register(x => new SqlConnectionFactory(new SqlConnectionStringBuilder(configurationRoot["ConnectionStrings:DefaultConnection"])))
+            builder.Register(x =>
+                    new SqlConnectionFactory(
+                        new SqlConnectionStringBuilder(configurationRoot["ConnectionStrings:DefaultConnection"])))
                 .AsImplementedInterfaces();
 
             builder.RegisterType<DatabaseManager>()

@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Linq;
@@ -15,10 +15,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class MemberRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("1a0781d2-f3d8-418a-810c-33e78b457678");
-        private readonly Guid _memberId2 = new Guid("1e5f11cf-58b4-4b6a-b85f-de6188cf623f");
-        private readonly Guid _channelId = new Guid("0af706fa-d820-4cde-9ccd-c189ed2561da");
-
         public MemberRepositoryTests()
         {
             var member = new Member
@@ -46,6 +42,10 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
+
+        private readonly Guid _memberId = new Guid("1a0781d2-f3d8-418a-810c-33e78b457678");
+        private readonly Guid _memberId2 = new Guid("1e5f11cf-58b4-4b6a-b85f-de6188cf623f");
+        private readonly Guid _channelId = new Guid("0af706fa-d820-4cde-9ccd-c189ed2561da");
 
         [Fact]
         public async Task AddMemberAsyncTest()
@@ -105,40 +105,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             // Assert
             Assert.Null(newMember);
-        }
-
-        [Fact]
-        public async Task GetMemberByIdAsyncTest()
-        {
-            // Arrange
-            var member = new Member
-            {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
-                IsAfk = true,
-                IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
-                LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
-            };
-
-            // Act
-            await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var newMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
-
-            // Assert
-            Assert.NotNull(newMember);
-            Assert.Equal(member.Id, newMember.Id);
-            Assert.Equal(member.Email, newMember.Email);
-            Assert.Equal(member.Role, newMember.Role);
-            Assert.Equal(member.IsAfk, newMember.IsAfk);
-            Assert.Equal(member.IsBanned, newMember.IsBanned);
-            Assert.Equal(member.Name, newMember.Name);
-            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
-            Assert.Equal(member.Status, newMember.Status);
         }
 
         [Fact]
@@ -240,28 +206,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task GetMemberByNameAsyncTest()
-        {
-            // Arrange
-            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(_memberId);
-
-            // Act
-            var newMember = await UnitOfWork.MemberRepository.GetMemberByNameAsync(member.Name);
-
-            // Assert
-            Assert.NotNull(newMember);
-            Assert.Equal(member.Id, newMember.Id);
-            Assert.Equal(member.Email, newMember.Email);
-            Assert.Equal(member.Role, newMember.Role);
-            Assert.Equal(member.IsAfk, newMember.IsAfk);
-            Assert.Equal(member.IsBanned, newMember.IsBanned);
-            Assert.Equal(member.Name, newMember.Name);
-            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
-            Assert.Equal(member.Status, newMember.Status);
-        }
-
-        [Fact]
-        public async Task SearchMembersByNameAsyncTest()
+        public async Task GetMemberByIdAsyncTest()
         {
             // Arrange
             var member = new Member
@@ -280,12 +225,39 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             // Act
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var members = await UnitOfWork.MemberRepository.SearchMembersByNameAsync("test");
+            var newMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
 
             // Assert
-            Assert.NotNull(members);
-            Assert.NotEmpty(members);
-            Assert.True(members.Count == 1);
+            Assert.NotNull(newMember);
+            Assert.Equal(member.Id, newMember.Id);
+            Assert.Equal(member.Email, newMember.Email);
+            Assert.Equal(member.Role, newMember.Role);
+            Assert.Equal(member.IsAfk, newMember.IsAfk);
+            Assert.Equal(member.IsBanned, newMember.IsBanned);
+            Assert.Equal(member.Name, newMember.Name);
+            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
+            Assert.Equal(member.Status, newMember.Status);
+        }
+
+        [Fact]
+        public async Task GetMemberByNameAsyncTest()
+        {
+            // Arrange
+            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(_memberId);
+
+            // Act
+            var newMember = await UnitOfWork.MemberRepository.GetMemberByNameAsync(member.Name);
+
+            // Assert
+            Assert.NotNull(newMember);
+            Assert.Equal(member.Id, newMember.Id);
+            Assert.Equal(member.Email, newMember.Email);
+            Assert.Equal(member.Role, newMember.Role);
+            Assert.Equal(member.IsAfk, newMember.IsAfk);
+            Assert.Equal(member.IsBanned, newMember.IsBanned);
+            Assert.Equal(member.Name, newMember.Name);
+            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
+            Assert.Equal(member.Status, newMember.Status);
         }
 
         [Fact]
@@ -330,6 +302,34 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.Equal(member.Name, members.First().Name);
             Assert.Equal(member.SaasUserId, members.First().SaasUserId);
             Assert.Equal(member.Status, members.First().Status);
+        }
+
+        [Fact]
+        public async Task SearchMembersByNameAsyncTest()
+        {
+            // Arrange
+            var member = new Member
+            {
+                Id = _memberId2,
+                Email = "test",
+                Role = UserRole.Admin,
+                IsAfk = true,
+                IsBanned = true,
+                LastNudged = DateTimeOffset.UtcNow,
+                LastActivity = DateTimeOffset.UtcNow,
+                Name = "test2",
+                SaasUserId = "test",
+                Status = UserStatus.Active
+            };
+
+            // Act
+            await UnitOfWork.MemberRepository.AddMemberAsync(member);
+            var members = await UnitOfWork.MemberRepository.SearchMembersByNameAsync("test");
+
+            // Assert
+            Assert.NotNull(members);
+            Assert.NotEmpty(members);
+            Assert.True(members.Count == 1);
         }
     }
 }

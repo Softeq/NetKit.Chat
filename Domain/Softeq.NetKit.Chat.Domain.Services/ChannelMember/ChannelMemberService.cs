@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.ChannelMember
         public ChannelMemberService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
-        
+
         public async Task<IEnumerable<ChannelMemberResponse>> GetChannelMembersAsync(ChannelRequest request)
         {
             var channelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(request.ChannelId);
@@ -28,8 +28,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.ChannelMember
 
         public async Task<ChannelMemberResponse> GetChannelMemberAsync(GetChannelMemberRequest request)
         {
-            var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(request.MemberId, request.ChannelId);
-            Ensure.That(channelMember).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Channel member does not exist."))).IsNotNull();
+            var channelMember =
+                await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(request.MemberId, request.ChannelId);
+            Ensure.That(channelMember).WithException(x =>
+                new ServiceException(new ErrorDto(ErrorCode.NotFound, "Channel member does not exist."))).IsNotNull();
             return channelMember.ToChannelMemberResponse();
         }
     }

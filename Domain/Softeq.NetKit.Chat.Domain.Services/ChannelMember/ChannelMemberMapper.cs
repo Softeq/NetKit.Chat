@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Domain.ChannelMember;
 using Softeq.NetKit.Chat.Domain.ChannelMember.TransportModels;
@@ -18,6 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.ChannelMember
                 channelMemberResponse.IsMuted = channelMember.IsMuted;
                 channelMemberResponse.LastReadMessageId = channelMember.LastReadMessageId;
             }
+
             return channelMemberResponse;
         }
     }

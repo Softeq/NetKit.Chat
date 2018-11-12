@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -28,39 +28,49 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
     {
         private readonly CloudStorageConfiguration _configuration;
 
-        public MemberService(IUnitOfWork unitOfWork, 
+        public MemberService(IUnitOfWork unitOfWork,
             CloudStorageConfiguration configuration) : base(unitOfWork)
         {
             _configuration = configuration;
         }
-        
+
         public async Task<ParticipantResponse> SurelyGetMemberBySaasUserIdAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
             return member.ToParticipantResponse();
         }
+
         //TODO: Add Unit Tests
         public async Task<MemberSummary> GetMemberSummaryBySaasUserIdAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
             return member.ToMemberSummary(_configuration);
         }
 
         public async Task<MemberSummary> GetMemberByIdAsync(Guid memberId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
-            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
             return member.ToMemberSummary(_configuration);
         }
 
         public async Task<ParticipantResponse> GetMemberAsync(UserRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
             return member.ToParticipantResponse();
         }
+
         public async Task<IEnumerable<MemberSummary>> GetChannelMembersAsync(ChannelRequest request)
         {
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(request.ChannelId);
@@ -70,16 +80,18 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
         {
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
-            Ensure.That(channel).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist."))).IsNotNull();
+            Ensure.That(channel)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
+                .IsNotNull();
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.MemberId);
-            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
 
             var channelMembers = await GetChannelMembersAsync(new ChannelRequest(member.SaasUserId, channel.Id));
 
             if (channelMembers.Any(x => x.Id == request.MemberId))
-            {
                 throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "User already exists in channel."));
-            }
 
             var channelMember = new ChannelMembers
             {
@@ -107,10 +119,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             foreach (var invitedSaasUserId in request.InvitedMembers)
             {
                 var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(invitedSaasUserId);
-                Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+                Ensure.That(member).WithException(x =>
+                    new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
                 var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id);
                 channel = await InviteMemberAsync(inviteMemberRequest);
             }
+
             return channel;
         }
 
@@ -143,10 +157,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
-            if (client != null)
-            {
-                return client.ToClientResponse(member.SaasUserId);
-            }
+            if (client != null) return client.ToClientResponse(member.SaasUserId);
 
             client = new Domain.Client.Client
             {
@@ -166,7 +177,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         public async Task DeleteClientAsync(DeleteClientRequest request)
         {
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
-            Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
+            Ensure.That(client).WithException(x =>
+                new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
         }
 
@@ -180,10 +192,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            if (member != null)
-            {
-                return member.ToMemberSummary(_configuration);
-            }
+            if (member != null) return member.ToMemberSummary(_configuration);
 
             var newMember = new Domain.Member.Member
             {
@@ -195,7 +204,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 SaasUserId = saasUserId,
                 Email = email,
                 LastActivity = DateTimeOffset.UtcNow,
-                Name = email,
+                Name = email
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(newMember);
 
@@ -233,10 +242,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             client.LastClientActivity = DateTimeOffset.UtcNow;
 
             // Remove any Afk notes.
-            if (member.IsAfk)
-            {
-                member.IsAfk = false;
-            }
+            if (member.IsAfk) member.IsAfk = false;
 
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
             await UnitOfWork.ClientRepository.UpdateClientAsync(client);

@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
 
@@ -19,6 +19,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Attachment
                 attachmentResponse.MessageId = attachment.MessageId;
                 attachmentResponse.Size = attachment.Size;
             }
+
             return attachmentResponse;
         }
     }

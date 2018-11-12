@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System.Data.SqlClient;
 using Autofac;
@@ -19,7 +19,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories
                 return new SqlConnectionFactory(
                     new SqlConnectionStringBuilder(config["ConnectionStrings:DefaultConnection"]));
             }).As<ISqlConnectionFactory>();
-                
+
 
             builder.RegisterType<DatabaseManager>()
                 .As<IDatabaseManager>();
@@ -30,6 +30,6 @@ namespace Softeq.NetKit.Chat.Data.Repositories
             builder.RegisterType<DatabaseConfig>()
                 .AsSelf()
                 .SingleInstance();
-        }    
+        }
     }
 }

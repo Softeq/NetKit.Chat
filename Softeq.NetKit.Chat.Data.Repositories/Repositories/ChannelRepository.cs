@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -34,7 +34,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Channels";
 
                 var data = (await connection.QueryAsync<Channel>(sqlQuery)).ToList();
-                
+
                 return data;
             }
         }
@@ -72,15 +72,13 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                             if (message != null)
                             {
-                                if (member != null)
-                                {
-                                    message.Owner = member;
-                                }
+                                if (member != null) message.Owner = member;
                                 channelEntry.Messages.Add(message);
                             }
+
                             return channelEntry;
                         },
-                        new { memberId }))
+                        new {memberId}))
                     .Distinct()
                     .ToList();
 
@@ -108,7 +106,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             channel.CreatorId = member.Id;
                             return channel;
                         },
-                        new { channelName }))
+                        new {channelName}))
                     .FirstOrDefault();
 
                 return data;
@@ -135,7 +133,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             channel.CreatorId = member.Id;
                             return channel;
                         },
-                        new { channelId }))
+                        new {channelId}))
                     .FirstOrDefault();
 
                 return data;
@@ -158,7 +156,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     THEN CAST(1 AS BIT)
                     ELSE CAST(0 AS BIT) END";
 
-                var data = (await connection.QueryAsync<bool>(sqlQuery, new { memberId, channelId }))
+                var data = (await connection.QueryAsync<bool>(sqlQuery, new {memberId, channelId}))
                     .FirstOrDefault();
 
                 return data;
@@ -187,7 +185,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"DELETE FROM Channels WHERE Id = @channelId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId });
+                await connection.ExecuteAsync(sqlQuery, new {channelId});
             }
         }
 
@@ -208,7 +206,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                      PhotoUrl = @PhotoUrl
                                  WHERE Id = @Id";
 
-                
+
                 await connection.ExecuteAsync(sqlQuery, channel);
             }
         }
@@ -223,7 +221,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     SELECT * FROM Channels c
                     WHERE c.CreatorId = @memberId AND c.IsClosed != 1";
 
-                var data = (await connection.QueryAsync<Channel>(sqlQuery, new { memberId })).ToList();
+                var data = (await connection.QueryAsync<Channel>(sqlQuery, new {memberId})).ToList();
 
                 return data;
             }
@@ -239,7 +237,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                 SET MembersCount = MembersCount + 1
                                 WHERE Id = @channelId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId });
+                await connection.ExecuteAsync(sqlQuery, new {channelId});
             }
         }
 
@@ -252,8 +250,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"UPDATE Channels
                                 SET MembersCount = MembersCount - 1
                                 WHERE Id = @channelId";
-                
-                await connection.ExecuteAsync(sqlQuery, new { channelId });
+
+                await connection.ExecuteAsync(sqlQuery, new {channelId});
             }
         }
     }

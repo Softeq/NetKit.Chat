@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Linq;
@@ -17,15 +17,6 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 {
     public class ChannelServiceTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("86f06c6c-39fd-414a-a9d5-b408c20734f7");
-        private readonly Guid _memberId2 = new Guid("3e73bbaf-ab69-4d5d-bb8d-f5224f31473f");
-
-        private const string SaasUserId = "2ae3a155-10b1-4c69-8573-d4527aba8860";
-        private const string SaasUserId2 = "2dc14035-83e1-4d7b-9eec-0345474714d0";
-
-        private readonly IChannelService _channelService;
-        private readonly IMemberService _memberService;
-
         public ChannelServiceTests()
         {
             _channelService = LifetimeScope.Resolve<IChannelService>();
@@ -41,124 +32,14 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
         }
 
-        [Fact]
-        public async Task CreateChannelAsyncTest()
-        {
-            // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
-            { 
-                Name = "test",
-                Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
-            };
+        private readonly Guid _memberId = new Guid("86f06c6c-39fd-414a-a9d5-b408c20734f7");
+        private readonly Guid _memberId2 = new Guid("3e73bbaf-ab69-4d5d-bb8d-f5224f31473f");
 
-            // Act
-            var channel = await _channelService.CreateChannelAsync(request);
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
-            // Assert
-            Assert.NotNull(channel);
-            Assert.Equal(request.Name, channel.Name);
-            Assert.Equal(request.Description, channel.Description);
-            Assert.Equal(request.WelcomeMessage, channel.WelcomeMessage);
-            Assert.Equal(request.Type, channel.Type);
-            Assert.True(channelMessagesCount == 0);
-        }
+        private const string SaasUserId = "2ae3a155-10b1-4c69-8573-d4527aba8860";
+        private const string SaasUserId2 = "2dc14035-83e1-4d7b-9eec-0345474714d0";
 
-        [Fact]
-        public async Task GetMyChannelsAsyncTest()
-        {
-            // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
-            {
-                Name = "test",
-                Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
-            };
-
-            var channel = await _channelService.CreateChannelAsync(request);
-
-            // Act
-            var channels = await _channelService.GetMyChannelsAsync(new UserRequest(SaasUserId));
-
-            // Assert
-            Assert.NotNull(channels);
-            Assert.NotEmpty(channels);
-            Assert.Equal(request.Name, channels.First().Name);
-            Assert.Equal(request.Description, channels.First().Description);
-            Assert.Equal(request.WelcomeMessage, channels.First().WelcomeMessage);
-            Assert.Equal(request.Type, channels.First().Type);
-            Assert.Equal(_memberId, channels.First().CreatorId);
-        }
-
-        [Fact]
-        public async Task UpdateChannelAsync()
-        {
-            // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
-            {
-                Name = "test",
-                Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
-            };
-
-            var channel = await _channelService.CreateChannelAsync(request);
-
-            var updatedRequest = new UpdateChannelRequest(SaasUserId)
-            {
-                Name = "test2",
-                Topic = "test2",
-                WelcomeMessage = "test2",
-                ChannelId = channel.Id,
-            };
-
-            // Act
-            var updatedChannel = await _channelService.UpdateChannelAsync(updatedRequest);
-
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
-
-            // Assert
-            Assert.NotNull(updatedChannel);
-            Assert.NotNull(updatedChannel.Updated);
-            Assert.Equal(updatedRequest.Name, updatedChannel.Name);
-            Assert.Equal(updatedRequest.Topic, updatedChannel.Description);
-            Assert.Equal(updatedRequest.WelcomeMessage, updatedChannel.WelcomeMessage);
-            Assert.Equal(_memberId, updatedChannel.CreatorId);
-            Assert.True(channelMessagesCount == 0);
-            Assert.True(updatedChannel.MembersCount == 1);
-        }
-
-        [Fact]
-        public async Task GetChannelByIdAsyncTest()
-        {
-            // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
-            {
-                Name = "test",
-                Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
-            };
-
-            var channel = await _channelService.CreateChannelAsync(request);
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
-
-            // Act
-            var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
-            var channelMembers = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
-
-            // Assert
-            Assert.NotNull(channelMembers);
-            Assert.NotEmpty(channelMembers);
-            Assert.NotNull(newChannel);
-            Assert.Equal(request.Name, newChannel.Name);
-            Assert.Equal(request.Description, newChannel.Description);
-            Assert.Equal(request.WelcomeMessage, newChannel.WelcomeMessage);
-            Assert.Equal(request.Type, newChannel.Type);
-            Assert.True(channelMessagesCount == 0);
-        }
+        private readonly IChannelService _channelService;
+        private readonly IMemberService _memberService;
 
         [Fact]
         public async Task CloseChannelAsyncTest()
@@ -184,6 +65,31 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         }
 
         [Fact]
+        public async Task CreateChannelAsyncTest()
+        {
+            // Arrange
+            var request = new CreateChannelRequest(SaasUserId)
+            {
+                Name = "test",
+                Description = "test",
+                WelcomeMessage = "test",
+                Type = ChannelType.Public
+            };
+
+            // Act
+            var channel = await _channelService.CreateChannelAsync(request);
+            var channelMessagesCount =
+                await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+            // Assert
+            Assert.NotNull(channel);
+            Assert.Equal(request.Name, channel.Name);
+            Assert.Equal(request.Description, channel.Description);
+            Assert.Equal(request.WelcomeMessage, channel.WelcomeMessage);
+            Assert.Equal(request.Type, channel.Type);
+            Assert.True(channelMessagesCount == 0);
+        }
+
+        [Fact]
         public async Task GetAllChannelsAsyncTest()
         {
             // Arrange
@@ -199,7 +105,8 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             // Act
             var channels = await _channelService.GetAllChannelsAsync();
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channels.First().Id));
+            var channelMessagesCount =
+                await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channels.First().Id));
 
             // Assert
             Assert.NotNull(channels);
@@ -211,6 +118,38 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             Assert.Equal(_memberId, channels.First().CreatorId);
             Assert.True(channelMessagesCount == 0);
             Assert.True(channels.First().MembersCount == 1);
+        }
+
+        [Fact]
+        public async Task GetChannelByIdAsyncTest()
+        {
+            // Arrange
+            var request = new CreateChannelRequest(SaasUserId)
+            {
+                Name = "test",
+                Description = "test",
+                WelcomeMessage = "test",
+                Type = ChannelType.Public
+            };
+
+            var channel = await _channelService.CreateChannelAsync(request);
+            var channelMessagesCount =
+                await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+
+            // Act
+            var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var channelMembers =
+                await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
+
+            // Assert
+            Assert.NotNull(channelMembers);
+            Assert.NotEmpty(channelMembers);
+            Assert.NotNull(newChannel);
+            Assert.Equal(request.Name, newChannel.Name);
+            Assert.Equal(request.Description, newChannel.Description);
+            Assert.Equal(request.WelcomeMessage, newChannel.WelcomeMessage);
+            Assert.Equal(request.Type, newChannel.Type);
+            Assert.True(channelMessagesCount == 0);
         }
 
         [Fact]
@@ -247,6 +186,33 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         }
 
         [Fact]
+        public async Task GetMyChannelsAsyncTest()
+        {
+            // Arrange
+            var request = new CreateChannelRequest(SaasUserId)
+            {
+                Name = "test",
+                Description = "test",
+                WelcomeMessage = "test",
+                Type = ChannelType.Public
+            };
+
+            var channel = await _channelService.CreateChannelAsync(request);
+
+            // Act
+            var channels = await _channelService.GetMyChannelsAsync(new UserRequest(SaasUserId));
+
+            // Assert
+            Assert.NotNull(channels);
+            Assert.NotEmpty(channels);
+            Assert.Equal(request.Name, channels.First().Name);
+            Assert.Equal(request.Description, channels.First().Description);
+            Assert.Equal(request.WelcomeMessage, channels.First().WelcomeMessage);
+            Assert.Equal(request.Type, channels.First().Type);
+            Assert.Equal(_memberId, channels.First().CreatorId);
+        }
+
+        [Fact]
         public async Task JoinToChannelAsyncTest()
         {
             // Arrange
@@ -268,11 +234,12 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
             var channel = await _channelService.CreateChannelAsync(request);
-            
+
             // Act
             await _channelService.JoinToChannelAsync(new JoinToChannelRequest(SaasUserId2, channel.Id));
             var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
-            var channelMembers = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var channelMembers =
+                await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
 
             // Assert
             Assert.NotNull(newChannel);
@@ -307,16 +274,57 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
             var channel = await _channelService.CreateChannelAsync(request);
             await _channelService.JoinToChannelAsync(new JoinToChannelRequest(SaasUserId2, channel.Id));
-            var previousMembersCount = (await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId2, channel.Id))).Count();
-            
+            var previousMembersCount =
+                (await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId2, channel.Id))).Count();
+
             // Act
             await _channelService.LeaveChannelAsync(new ChannelRequest(SaasUserId2, channel.Id));
             var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
-            var channelMembers = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var channelMembers =
+                await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
 
             // Assert
             Assert.NotNull(newChannel);
             Assert.NotNull(channelMembers);
+        }
+
+        [Fact]
+        public async Task UpdateChannelAsync()
+        {
+            // Arrange
+            var request = new CreateChannelRequest(SaasUserId)
+            {
+                Name = "test",
+                Description = "test",
+                WelcomeMessage = "test",
+                Type = ChannelType.Public
+            };
+
+            var channel = await _channelService.CreateChannelAsync(request);
+
+            var updatedRequest = new UpdateChannelRequest(SaasUserId)
+            {
+                Name = "test2",
+                Topic = "test2",
+                WelcomeMessage = "test2",
+                ChannelId = channel.Id
+            };
+
+            // Act
+            var updatedChannel = await _channelService.UpdateChannelAsync(updatedRequest);
+
+            var channelMessagesCount =
+                await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+
+            // Assert
+            Assert.NotNull(updatedChannel);
+            Assert.NotNull(updatedChannel.Updated);
+            Assert.Equal(updatedRequest.Name, updatedChannel.Name);
+            Assert.Equal(updatedRequest.Topic, updatedChannel.Description);
+            Assert.Equal(updatedRequest.WelcomeMessage, updatedChannel.WelcomeMessage);
+            Assert.Equal(_memberId, updatedChannel.CreatorId);
+            Assert.True(channelMessagesCount == 0);
+            Assert.True(updatedChannel.MembersCount == 1);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -28,13 +28,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
     internal class ChannelService : BaseService, IChannelService
     {
         private readonly IChannelMemberService _channelMemberService;
-        private readonly IMemberService _memberService;
         private readonly CloudStorageConfiguration _configuration;
         private readonly IContentStorage _contentStorage;
+        private readonly IMemberService _memberService;
 
-        public ChannelService(IUnitOfWork unitOfWork, 
-            IChannelMemberService channelMemberService, 
-            IMemberService memberService, 
+        public ChannelService(IUnitOfWork unitOfWork,
+            IChannelMemberService channelMemberService,
+            IMemberService memberService,
             CloudStorageConfiguration configuration,
             IContentStorage contentStorage) : base(unitOfWork)
         {
@@ -51,7 +51,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
                 .IsNotNull();
 
-            string permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
+            var permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
 
             var newChannel = new Domain.Channel.Channel
             {
@@ -77,13 +77,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             };
 
             newChannel.Members.Add(creator);
-            
+
             if (request.Type == ChannelType.Private && request.AllowedMembers.Any())
-            {
                 foreach (var saasUserId in request.AllowedMembers)
                 {
                     var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-                    Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+                    Ensure.That(member).WithException(x =>
+                        new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
                     var model = new ChannelMembers
                     {
                         ChannelId = newChannel.Id,
@@ -93,7 +93,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
 
                     newChannel.Members.Add(model);
                 }
-            }
 
             var channelMembers = newChannel.Members.DistinctBy(x => x.MemberId);
 
@@ -121,7 +120,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
                 .IsNotNull();
             var channels = await UnitOfWork.ChannelRepository.GetChannelsByMemberId(member.Id);
-        
+
             return channels.Select(x => x.ToChannelResponse(_configuration));
         }
 
@@ -134,9 +133,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
 
             var profile = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (channel.CreatorId != profile.Id)
-            {
                 throw new AccessForbiddenException(new ErrorDto(ErrorCode.ForbiddenError, "Access forbidden."));
-            }
 
             var permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
 
@@ -150,20 +147,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             return channel.ToChannelResponse(_configuration);
         }
 
-        private async Task<string> CopyImageToDestinationContainerAsync(string photoUrl)
-        {
-            string permanentChannelImageUrl = null;
-
-            if (!string.IsNullOrEmpty(photoUrl))
-            {
-                var fileName = photoUrl.Substring(photoUrl.LastIndexOf("/", StringComparison.Ordinal) + 1);
-
-                permanentChannelImageUrl = await _contentStorage.CopyBlobAsync(fileName, _configuration.TempContainerName, _configuration.ChannelImagesContainer);
-            }
-
-            return permanentChannelImageUrl;
-        }
-
         public async Task<ChannelSummaryResponse> GetChannelSummaryAsync(ChannelRequest request)
         {
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
@@ -173,9 +156,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
 
             var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
 
-            var channelMember = await _channelMemberService.GetChannelMemberAsync(new GetChannelMemberRequest(member.Id, request.ChannelId));
+            var channelMember =
+                await _channelMemberService.GetChannelMemberAsync(
+                    new GetChannelMemberRequest(member.Id, request.ChannelId));
 
-            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
+            var lastReadMessage =
+                await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
 
             return channel.ToChannelSummaryResponse(channelMember.IsMuted, lastReadMessage, member, _configuration);
         }
@@ -201,9 +187,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
                 .IsNotNull();
             if (channel.CreatorId != member.Id)
-            {
                 throw new AccessForbiddenException(new ErrorDto(ErrorCode.ForbiddenError, "Access forbidden."));
-            }
             channel.IsClosed = true;
             await UnitOfWork.ChannelRepository.UpdateChannelAsync(channel);
 
@@ -218,31 +202,35 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .IsNotNull();
 
             var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(member.Id);
-            
+
             var channelsResponse = new List<ChannelSummaryResponse>();
             foreach (var channel in channels)
             {
-                var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channel.Id);
+                var channelMember =
+                    await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channel.Id);
                 var channelCreator = await _memberService.GetMemberByIdAsync(channel.CreatorId.Value);
                 if (channelMember.LastReadMessageId != null)
                 {
-                    var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync((Guid) channelMember.LastReadMessageId);
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember.IsMuted, lastReadMessage, channelCreator, _configuration));
+                    var lastReadMessage =
+                        await UnitOfWork.MessageRepository.GetMessageByIdAsync((Guid) channelMember.LastReadMessageId);
+                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember.IsMuted, lastReadMessage,
+                        channelCreator, _configuration));
                 }
                 else
                 {
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember.IsMuted, null, channelCreator, _configuration));
+                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember.IsMuted, null, channelCreator,
+                        _configuration));
                 }
             }
 
             // TODO: Improve performance
             var sortedChannels = channelsResponse.Select(x => new
-            {
-                Channel = x,
-                SortedDate = x.LastMessage?.Created ?? x.Created
-            })
-            .OrderByDescending(x => x.SortedDate)
-            .Select(x => x.Channel);
+                {
+                    Channel = x,
+                    SortedDate = x.LastMessage?.Created ?? x.Created
+                })
+                .OrderByDescending(x => x.SortedDate)
+                .Select(x => x.Channel);
 
             return sortedChannels;
         }
@@ -270,16 +258,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
                 .IsNotNull();
 
-            var members = await _channelMemberService.GetChannelMembersAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            var members =
+                await _channelMemberService.GetChannelMembersAsync(new ChannelRequest(request.SaasUserId,
+                    request.ChannelId));
             if (members.Any(x => x.MemberId == member.Id))
-            {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You have been already joined to the channel."));
-            }
+                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError,
+                    "You have been already joined to the channel."));
             // Throw if the channel is private but the user isn't allowed
             if (channel.Type == ChannelType.Private && channel.CreatorId != member.Id)
-            {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "This channel is not available for you."));
-            }
+                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError,
+                    "This channel is not available for you."));
 
             var channelMember = new ChannelMembers
             {
@@ -307,11 +295,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             Ensure.That(member)
                 .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
                 .IsNotNull();
-            var ifMemberExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channel.Id);
+            var ifMemberExist =
+                await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channel.Id);
             if (!ifMemberExist)
-            {
                 throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
-            }
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -324,7 +311,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
 
         public async Task<bool> CheckIfMemberExistInChannelAsync(InviteMemberRequest request)
         {
-            return await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(request.MemberId, request.ChannelId);
+            return await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(request.MemberId,
+                request.ChannelId);
         }
 
         public async Task MuteChannelAsync(ChannelRequest request)
@@ -337,11 +325,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             Ensure.That(member)
                 .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
                 .IsNotNull();
-            var ifMemberExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channel.Id);
+            var ifMemberExist =
+                await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channel.Id);
             if (!ifMemberExist)
-            {
                 throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
-            }
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -355,6 +342,21 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
         {
             var messagesCount = await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(request.ChannelId);
             return messagesCount;
+        }
+
+        private async Task<string> CopyImageToDestinationContainerAsync(string photoUrl)
+        {
+            string permanentChannelImageUrl = null;
+
+            if (!string.IsNullOrEmpty(photoUrl))
+            {
+                var fileName = photoUrl.Substring(photoUrl.LastIndexOf("/", StringComparison.Ordinal) + 1);
+
+                permanentChannelImageUrl = await _contentStorage.CopyBlobAsync(fileName,
+                    _configuration.TempContainerName, _configuration.ChannelImagesContainer);
+            }
+
+            return permanentChannelImageUrl;
         }
     }
 }

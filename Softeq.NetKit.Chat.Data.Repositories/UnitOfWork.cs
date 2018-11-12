@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Data.Interfaces.Repository;
 using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
@@ -12,33 +12,48 @@ namespace Softeq.NetKit.Chat.Data.Repositories
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
+        private IAttachmentRepository _attachmentRepository;
+
+        private IChannelMemberRepository _channelMemberRepository;
+
+        private IChannelRepository _channelRepository;
+        private IClientRepository _clientRepository;
+
+        private IMemberRepository _memberRepository;
+
+        private IMessageRepository _messageRepository;
+
+        private INotificationRepository _notificationRepository;
+
+        private ISettingRepository _settingRepository;
+
         public UnitOfWork(ISqlConnectionFactory sqlConnectionFactory)
         {
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        private IAttachmentRepository _attachmentRepository;
-        public IAttachmentRepository AttachmentRepository => _attachmentRepository ?? (_attachmentRepository =  new AttachmentRepository(_sqlConnectionFactory));
-        private IClientRepository _clientRepository;
-        public IClientRepository ClientRepository => _clientRepository ?? (_clientRepository = new ClientRepository(_sqlConnectionFactory));
+        public IAttachmentRepository AttachmentRepository =>
+            _attachmentRepository ?? (_attachmentRepository = new AttachmentRepository(_sqlConnectionFactory));
 
-        private IMessageRepository _messageRepository;
-        public IMessageRepository MessageRepository => _messageRepository ?? (_messageRepository = new MessageRepository(_sqlConnectionFactory));
+        public IClientRepository ClientRepository =>
+            _clientRepository ?? (_clientRepository = new ClientRepository(_sqlConnectionFactory));
 
-        private INotificationRepository _notificationRepository;
-        public INotificationRepository NotificationRepository => _notificationRepository ?? (_notificationRepository = new NotificationRepository(_sqlConnectionFactory));
+        public IMessageRepository MessageRepository =>
+            _messageRepository ?? (_messageRepository = new MessageRepository(_sqlConnectionFactory));
 
-        private IChannelMemberRepository _channelMemberRepository;
-        public IChannelMemberRepository ChannelMemberRepository => _channelMemberRepository ?? (_channelMemberRepository = new ChannelMemberRepository(_sqlConnectionFactory));
+        public INotificationRepository NotificationRepository =>
+            _notificationRepository ?? (_notificationRepository = new NotificationRepository(_sqlConnectionFactory));
 
-        private IChannelRepository _channelRepository;
-        public IChannelRepository ChannelRepository => _channelRepository ?? (_channelRepository = new ChannelRepository(_sqlConnectionFactory));
+        public IChannelMemberRepository ChannelMemberRepository =>
+            _channelMemberRepository ?? (_channelMemberRepository = new ChannelMemberRepository(_sqlConnectionFactory));
 
-        private ISettingRepository _settingRepository;
-        public ISettingRepository SettingRepository => _settingRepository ?? (_settingRepository = new SettingRepository(_sqlConnectionFactory));
+        public IChannelRepository ChannelRepository =>
+            _channelRepository ?? (_channelRepository = new ChannelRepository(_sqlConnectionFactory));
 
-        private IMemberRepository _memberRepository;
-        public IMemberRepository MemberRepository => _memberRepository ?? (_memberRepository = new MemberRepository(_sqlConnectionFactory));
+        public ISettingRepository SettingRepository =>
+            _settingRepository ?? (_settingRepository = new SettingRepository(_sqlConnectionFactory));
 
+        public IMemberRepository MemberRepository =>
+            _memberRepository ?? (_memberRepository = new MemberRepository(_sqlConnectionFactory));
     }
 }

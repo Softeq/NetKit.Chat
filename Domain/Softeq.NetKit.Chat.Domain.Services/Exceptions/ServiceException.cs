@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -11,8 +11,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
     [Serializable]
     public class ServiceException : Exception, IServiceException
     {
-        public List<ErrorDto> Errors { get; set; } = new List<ErrorDto>();
-
         public ServiceException(string message) : base(message)
         {
             InitializeErorrs(message);
@@ -28,12 +26,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
             InitializeErorrs(errors);
         }
 
-        public ServiceException(Exception innerException, params ErrorDto[] errors) : base("See inner exception.", innerException)
+        public ServiceException(Exception innerException, params ErrorDto[] errors) : base("See inner exception.",
+            innerException)
         {
             InitializeErorrs(errors);
         }
 
-        protected ServiceException(string message, Exception innerException, params ErrorDto[] errors) : base(message, innerException)
+        protected ServiceException(string message, Exception innerException, params ErrorDto[] errors) : base(message,
+            innerException)
         {
             InitializeErorrs(errors);
         }
@@ -42,10 +42,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
         {
         }
 
+        public List<ErrorDto> Errors { get; set; } = new List<ErrorDto>();
+
         protected void InitializeErorrs(IEnumerable<ErrorDto> errors)
         {
             Errors.AddRange(errors);
         }
+
         protected void InitializeErorrs(string message)
         {
             Errors.Add(new ErrorDto(ErrorCode.UnknownError, message));

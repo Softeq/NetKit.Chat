@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
@@ -9,7 +9,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
 {
     internal static class MessageMapper
     {
-        public static MessageResponse ToMessageResponse(this Domain.Message.Message message, Domain.Message.Message lastReadMessage, CloudStorageConfiguration configuration)
+        public static MessageResponse ToMessageResponse(this Domain.Message.Message message,
+            Domain.Message.Message lastReadMessage, CloudStorageConfiguration configuration)
         {
             var messageResponse = new MessageResponse();
             if (message != null)
@@ -24,8 +25,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
                 messageResponse.Sender = message.Owner.ToMemberSummary(configuration);
                 messageResponse.IsRead = lastReadMessage != null && message.Created <= lastReadMessage.Created;
             }
-            return messageResponse;
 
+            return messageResponse;
         }
     }
 }

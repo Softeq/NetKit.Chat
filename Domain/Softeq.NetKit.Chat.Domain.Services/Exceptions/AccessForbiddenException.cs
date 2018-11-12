@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Runtime.Serialization;
@@ -19,11 +19,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
         {
         }
 
-        public AccessForbiddenException(Exception innerException) : base("See inner exception.", innerException, new ErrorDto(ErrorCode.NotFound, innerException.Message))
+        public AccessForbiddenException(Exception innerException) : base("See inner exception.", innerException,
+            new ErrorDto(ErrorCode.NotFound, innerException.Message))
         {
         }
 
-        public AccessForbiddenException(string message, Exception innerException) : base(message, innerException, new ErrorDto(ErrorCode.NotFound, message))
+        public AccessForbiddenException(string message, Exception innerException) : base(message, innerException,
+            new ErrorDto(ErrorCode.NotFound, message))
         {
         }
 

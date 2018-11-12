@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using CorrelationId;
 using Serilog.Core;
@@ -16,10 +16,12 @@ namespace Softeq.NetKit.Chat.Common.Log
         {
             _correlationContextAccessor = correlationContextAccessor;
         }
+
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
             var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId;
-            var correlationIdProperty = new LogEventProperty(PropertyNames.CorrelationId, new ScalarValue(correlationId ?? "unknown"));
+            var correlationIdProperty =
+                new LogEventProperty(PropertyNames.CorrelationId, new ScalarValue(correlationId ?? "unknown"));
 
             logEvent.AddPropertyIfAbsent(correlationIdProperty);
         }

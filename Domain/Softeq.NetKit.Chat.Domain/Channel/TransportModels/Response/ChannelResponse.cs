@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using Newtonsoft.Json;
@@ -16,8 +16,9 @@ namespace Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response
         public string Description { get; set; }
         public string WelcomeMessage { get; set; }
         public ChannelType Type { get; set; }
-        [JsonIgnore]
-        public Guid? CreatorId { get; set; }
+
+        [JsonIgnore] public Guid? CreatorId { get; set; }
+
         public int MembersCount { get; set; }
     }
 }

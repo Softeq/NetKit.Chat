@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 namespace Softeq.NetKit.Chat.Domain.Client.TransportModels.Request
 {
@@ -9,6 +9,7 @@ namespace Softeq.NetKit.Chat.Domain.Client.TransportModels.Request
         {
             ClientConnectionId = clientConnectionId;
         }
+
         public string ClientConnectionId { get; set; }
     }
 }

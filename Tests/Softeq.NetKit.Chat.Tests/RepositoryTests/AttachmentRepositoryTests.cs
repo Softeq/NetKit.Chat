@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Threading.Tasks;
@@ -14,10 +14,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class AttachmentRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BB9B-55C3862262AA");
-        private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BB9B-11C3862262EE");
-        private readonly Guid _messageId = new Guid("67303234-4653-48fb-8ba6-8719d6770811");
-
         public AttachmentRepositoryTests()
         {
             var member = new Member
@@ -47,6 +43,10 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             UnitOfWork.MessageRepository.AddMessageAsync(message).GetAwaiter().GetResult();
         }
 
+        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BB9B-55C3862262AA");
+        private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BB9B-11C3862262EE");
+        private readonly Guid _messageId = new Guid("67303234-4653-48fb-8ba6-8719d6770811");
+
         [Fact]
         public async Task AddAttachmentAsyncTest()
         {
@@ -60,7 +60,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MessageId = _messageId,
                 Size = 100
             };
-            
+
             // Act
             await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
             var newAttachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(attachment.Id);
@@ -87,7 +87,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MessageId = _messageId,
                 Size = 100
             };
-            
+
             // Act
             await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
             await UnitOfWork.AttachmentRepository.DeleteAttachmentAsync(attachment.Id);

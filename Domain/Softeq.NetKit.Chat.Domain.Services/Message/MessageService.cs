@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Linq;
@@ -22,13 +22,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
 {
     internal class MessageService : BaseService, IMessageService
     {
-        private readonly IContentStorage _contentStorage;
-        private readonly CloudStorageConfiguration _cloudStorageConfiguration;
         private readonly AttachmentConfiguration _attachmentConfiguration;
+        private readonly CloudStorageConfiguration _cloudStorageConfiguration;
+        private readonly IContentStorage _contentStorage;
+
         public MessageService(
-            IUnitOfWork unitOfWork, 
-            IContentStorage contentStorage, 
-            CloudStorageConfiguration cloudStorageConfiguration, 
+            IUnitOfWork unitOfWork,
+            IContentStorage contentStorage,
+            CloudStorageConfiguration cloudStorageConfiguration,
             AttachmentConfiguration attachmentConfiguration) : base(unitOfWork)
         {
             _contentStorage = contentStorage;
@@ -39,9 +40,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
         {
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
-            Ensure.That(channel).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist."))).IsNotNull();
+            Ensure.That(channel)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
+                .IsNotNull();
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
             var message = new Domain.Message.Message
             {
                 Id = Guid.NewGuid(),
@@ -58,7 +63,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
             {
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
-                await AddLastReadMessageAsync(new AddLastReadMessageRequest(request.ChannelId, message.Id, request.SaasUserId));
+                await AddLastReadMessageAsync(new AddLastReadMessageRequest(request.ChannelId, message.Id,
+                    request.SaasUserId));
 
                 transactionScope.Complete();
             }
@@ -69,13 +75,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task DeleteMessageAsync(DeleteMessageRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist."))).IsNotNull();
+            Ensure.That(message)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist.")))
+                .IsNotNull();
 
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (message.OwnerId != owner.Id)
-            {
                 throw new AccessForbiddenException(new ErrorDto(ErrorCode.ForbiddenError, "Access forbidden."));
-            }
             var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -85,9 +91,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
 
                 // Delete message attachments from blob storage
                 foreach (var attachment in messageAttachments)
-                {
-                    await _contentStorage.DeleteContentAsync(attachment.FileName, _cloudStorageConfiguration.MessageAttachmentsContainer);
-                }
+                    await _contentStorage.DeleteContentAsync(attachment.FileName,
+                        _cloudStorageConfiguration.MessageAttachmentsContainer);
 
                 //TODO calculate previous message
                 await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id);
@@ -102,13 +107,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist."))).IsNotNull();
+            Ensure.That(message)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist.")))
+                .IsNotNull();
 
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (message.OwnerId != owner.Id)
-            {
                 throw new AccessForbiddenException(new ErrorDto(ErrorCode.ForbiddenError, "Access forbidden."));
-            }
 
             message.Body = request.Body;
             message.Updated = DateTimeOffset.UtcNow;
@@ -120,19 +125,22 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task<MessageResponse> GetMessageByIdAsync(Guid messageId)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(messageId);
-            Ensure.That(message).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist."))).IsNotNull();
+            Ensure.That(message)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist.")))
+                .IsNotNull();
             return message.ToMessageResponse(null, _cloudStorageConfiguration);
         }
 
         public async Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist."))).IsNotNull();
+            Ensure.That(message)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist.")))
+                .IsNotNull();
             var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
             if (messageAttachments.Count == _attachmentConfiguration.Limit)
-            {
-                throw new LimitedAttachmentsException(new ErrorDto(ErrorCode.LimmitedAttachmentsError, "Attachments count is limited."));
-            }
+                throw new LimitedAttachmentsException(new ErrorDto(ErrorCode.LimmitedAttachmentsError,
+                    "Attachments count is limited."));
 
             var attachment = new Domain.Attachment.Attachment
             {
@@ -148,7 +156,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
             await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
 
             // Save attachment in blob storage
-            await _contentStorage.SaveContentAsync(attachment.FileName, request.Content, _cloudStorageConfiguration.MessageAttachmentsContainer);
+            await _contentStorage.SaveContentAsync(attachment.FileName, request.Content,
+                _cloudStorageConfiguration.MessageAttachmentsContainer);
 
             return attachment.ToAttachmentResponse();
         }
@@ -156,28 +165,35 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist."))).IsNotNull();
+            Ensure.That(message)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist.")))
+                .IsNotNull();
             var attachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(request.AttachmentId);
-            Ensure.That(attachment).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Attachment does not exist."))).IsNotNull();
+            Ensure.That(attachment).WithException(x =>
+                new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Attachment does not exist."))).IsNotNull();
             if (attachment.MessageId != message.Id)
-            {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "Message does not contain this attachment."));
-            }
+                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError,
+                    "Message does not contain this attachment."));
 
             // Delete message attachment from database
             await UnitOfWork.AttachmentRepository.DeleteAttachmentAsync(attachment.Id);
 
             // Delete attachment from blob storage
-            await _contentStorage.DeleteContentAsync(attachment.FileName, _cloudStorageConfiguration.MessageAttachmentsContainer);
+            await _contentStorage.DeleteContentAsync(attachment.FileName,
+                _cloudStorageConfiguration.MessageAttachmentsContainer);
         }
 
         public async Task<PagedResults<MessageResponse>> GetChannelMessagesAsync(MessageRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
+            Ensure.That(member)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
+            var lastReadMessage =
+                await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesAsync(request.ChannelId);
-            return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration));
+            return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize,
+                x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration));
         }
 
         public async Task<int> GetMessageAttachmentsCount(Guid messageId)
@@ -189,22 +205,31 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task AddLastReadMessageAsync(AddLastReadMessageRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            await UnitOfWork.ChannelMemberRepository.AddLastReadMessageAsync(member.Id, request.ChannelId, request.MessageId);
+            Ensure.That(member)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
+            await UnitOfWork.ChannelMemberRepository.AddLastReadMessageAsync(member.Id, request.ChannelId,
+                request.MessageId);
         }
 
         public async Task<MessagesResult> GetOlderMessagesAsync(GetMessagesRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
 
             var lastMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
             var lastMessageCreatedDate = lastMessage?.Created ?? request.MessageCreatedDate;
-            
-            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
-            var messages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
-            
+
+            var lastReadMessage =
+                await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
+            var messages =
+                await UnitOfWork.MessageRepository.GetOlderMessagesAsync(request.ChannelId, lastMessageCreatedDate,
+                    request.PageSize);
+            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration))
+                .ToList();
+
             var result = new MessagesResult
             {
                 PageSize = request.PageSize,
@@ -217,15 +242,21 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            Ensure.That(member)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
 
             var lastMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
             var lastMessageCreatedDate = lastMessage?.Created ?? request.MessageCreatedDate;
 
-            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
-            var messages = await UnitOfWork.MessageRepository.GetMessagesAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
-       
+            var lastReadMessage =
+                await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
+            var messages =
+                await UnitOfWork.MessageRepository.GetMessagesAsync(request.ChannelId, lastMessageCreatedDate,
+                    request.PageSize);
+            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration))
+                .ToList();
+
             var result = new MessagesResult
             {
                 PageSize = request.PageSize,
@@ -238,11 +269,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         public async Task<MessagesResult> GetLastMessagesAsync(GetLastMessagesRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            
-            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
-            var messages = await UnitOfWork.MessageRepository.GetLastMessagesAsync(request.ChannelId, lastReadMessage?.Created);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
+            Ensure.That(member)
+                .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
+
+            var lastReadMessage =
+                await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
+            var messages =
+                await UnitOfWork.MessageRepository.GetLastMessagesAsync(request.ChannelId, lastReadMessage?.Created);
+            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration))
+                .ToList();
 
             var result = new MessagesResult
             {

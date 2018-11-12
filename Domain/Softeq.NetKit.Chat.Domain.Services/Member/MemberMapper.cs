@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
@@ -24,6 +24,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 participant.UserName = member.Name;
                 participant.Status = member.Status;
             }
+
             return participant;
         }
 
@@ -43,10 +44,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 member.Name = response.UserName;
                 member.Status = response.Status;
             }
+
             return member;
         }
 
-        public static MemberSummary ToMemberSummary(this Domain.Member.Member member, CloudStorageConfiguration configuration)
+        public static MemberSummary ToMemberSummary(this Domain.Member.Member member,
+            CloudStorageConfiguration configuration)
         {
             var summary = new MemberSummary();
             if (member != null)
@@ -59,8 +62,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 summary.IsAfk = member.IsAfk;
                 summary.Email = member.Email;
                 summary.LastActivity = member.LastActivity;
-                summary.AvatarUrl = member.PhotoName != null ? $"{configuration.ContentStorageHost}/{configuration.MemberAvatarsContainer}/{member.PhotoName}" : null;
+                summary.AvatarUrl = member.PhotoName != null
+                    ? $"{configuration.ContentStorageHost}/{configuration.MemberAvatarsContainer}/{member.PhotoName}"
+                    : null;
             }
+
             return summary;
         }
     }

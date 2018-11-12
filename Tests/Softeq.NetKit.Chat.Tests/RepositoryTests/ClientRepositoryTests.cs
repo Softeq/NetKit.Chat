@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Threading.Tasks;
@@ -12,8 +12,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class ClientRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BC9B-55C3862262AA");
-
         public ClientRepositoryTests()
         {
             var member = new Member
@@ -24,6 +22,8 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
         }
+
+        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BC9B-55C3862262AA");
 
         [Fact]
         public async Task AddClientAsyncTest()

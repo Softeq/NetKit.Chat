@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using Autofac;
@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Domain.Services
 
             builder.RegisterType<ChannelMemberService>()
                 .As<IChannelMemberService>();
-            
+
             builder.Register(x =>
             {
                 var context = x.Resolve<IComponentContext>();

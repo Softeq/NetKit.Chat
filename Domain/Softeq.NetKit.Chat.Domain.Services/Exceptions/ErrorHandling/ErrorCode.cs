@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 namespace Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling
 {
@@ -12,6 +12,5 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling
         public static string DuplicateError { get; set; } = "duplicate_error";
         public static string ConflictError { get; set; } = "conflict_error";
         public static string LimmitedAttachmentsError { get; set; } = "limited_attachments_error";
-
     }
 }

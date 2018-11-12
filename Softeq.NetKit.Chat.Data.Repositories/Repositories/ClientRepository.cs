@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"
                     SELECT Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId 
                     FROM Clients";
-                
+
                 var data = (await connection.QueryAsync<Client>(sqlQuery)).ToList();
 
                 return data;
@@ -51,10 +51,10 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     WHERE MemberId = @memberId";
 
                 var data = (await connection.QueryAsync<Client>(
-                    sqlQuery,
-                    new { memberId }))
+                        sqlQuery,
+                        new {memberId}))
                     .ToList();
-                
+
                 return data;
             }
         }
@@ -78,7 +78,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             client.Member = member;
                             return client;
                         },
-                        new { clientId }))
+                        new {clientId}))
                     .Distinct()
                     .FirstOrDefault();
 
@@ -105,7 +105,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             client.Member = member;
                             return client;
                         },
-                        new { clientConnectionId }))
+                        new {clientConnectionId}))
                     .Distinct()
                     .FirstOrDefault();
 
@@ -122,7 +122,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"
                     INSERT INTO Clients(Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId) 
                     VALUES (@Id, @ClientConnectionId, @LastActivity, @LastClientActivity, @Name, @UserAgent, @MemberId);";
-                
+
                 await connection.ExecuteScalarAsync(sqlQuery, client);
             }
         }
@@ -143,7 +143,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                      UserAgent = @UserAgent, 
                                      MemberId = @MemberId 
                                  WHERE Id = @Id";
-                
+
                 await connection.ExecuteAsync(sqlQuery, client);
             }
         }
@@ -156,7 +156,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"DELETE FROM Clients WHERE Id = @clientId";
 
-                await connection.ExecuteAsync(sqlQuery, new { clientId });
+                await connection.ExecuteAsync(sqlQuery, new {clientId});
             }
         }
 
@@ -179,7 +179,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             client.Member = member;
                             return client;
                         },
-                        new { memberIds }))
+                        new {memberIds}))
                     .Distinct()
                     .ToList();
 

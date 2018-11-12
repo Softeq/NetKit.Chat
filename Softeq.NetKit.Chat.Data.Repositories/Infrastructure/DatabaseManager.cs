@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -14,8 +14,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Infrastructure
         private static readonly string MasterCatalog = "master";
 
         private readonly string _databaseName;
-        private readonly string _sqlConnectionString;
         private readonly string _masterSqlConnectionString;
+        private readonly string _sqlConnectionString;
 
         public DatabaseManager(DatabaseConfig connectionSettings)
         {
@@ -32,10 +32,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Infrastructure
             {
                 connection.Open();
                 var isDatabaseExists = await IsDatabaseExistsAsync(connection);
-                if (!isDatabaseExists)
-                {
-                    await CreateDatabaseAsync(connection);
-                }
+                if (!isDatabaseExists) await CreateDatabaseAsync(connection);
             }
         }
 
@@ -57,7 +54,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Infrastructure
         {
             var databaseId = await connection.ExecuteScalarAsync(@"SELECT database_id 
                                                                    FROM master.sys.databases 
-                                                                   WHERE name = @dbName", new { dbName = _databaseName });
+                                                                   WHERE name = @dbName",
+                new {dbName = _databaseName});
             return databaseId != null;
         }
 

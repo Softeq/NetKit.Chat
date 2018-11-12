@@ -1,17 +1,10 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 namespace Softeq.NetKit.Chat.Domain.Services.App.Configuration
 {
     public class CloudStorageConfiguration
     {
-        public string ContentStorageHost { get; set; }
-        public string MessageAttachmentsContainer { get; set; }
-        public string MemberAvatarsContainer { get; set; }
-        public string ChannelImagesContainer { get; set; }
-        public string TempContainerName { get; set; }
-        public int MessagePhotoSize { get; set; }
-        
         public CloudStorageConfiguration(
             string contentStorageHost,
             string messageAttachmentsContainer,
@@ -27,6 +20,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.App.Configuration
             TempContainerName = tempContainerName;
             ChannelImagesContainer = channelImagesContainer;
         }
+
+        public string ContentStorageHost { get; set; }
+        public string MessageAttachmentsContainer { get; set; }
+        public string MemberAvatarsContainer { get; set; }
+        public string ChannelImagesContainer { get; set; }
+        public string TempContainerName { get; set; }
+        public int MessagePhotoSize { get; set; }
 
         public string GetUrl(string fileName, string container)
         {

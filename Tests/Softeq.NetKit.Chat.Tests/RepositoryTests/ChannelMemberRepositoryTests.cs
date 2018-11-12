@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Threading.Tasks;
@@ -13,9 +13,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class ChannelMemberRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("549cf269-53b5-46a5-b9f0-4138d45ccec0");
-        private readonly Guid _channelId = new Guid("9a5be1d6-4b75-4190-9678-cc59f493252e");
-
         public ChannelMemberRepositoryTests()
         {
             var member = new Member
@@ -38,6 +35,9 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
 
+        private readonly Guid _memberId = new Guid("549cf269-53b5-46a5-b9f0-4138d45ccec0");
+        private readonly Guid _channelId = new Guid("9a5be1d6-4b75-4190-9678-cc59f493252e");
+
         [Fact]
         public async Task AddChannelMemberAsyncTest()
         {
@@ -51,7 +51,9 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             // Act
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-            var newChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(channelMember.MemberId, channelMember.ChannelId);
+            var newChannelMember =
+                await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(channelMember.MemberId,
+                    channelMember.ChannelId);
 
             // Assert
             Assert.NotNull(newChannelMember);
@@ -75,8 +77,10 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             // Act
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-            await UnitOfWork.ChannelMemberRepository.DeleteChannelMemberAsync(channelMember.MemberId, channelMember.ChannelId);
-            var newChannelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(channelMember.ChannelId);
+            await UnitOfWork.ChannelMemberRepository.DeleteChannelMemberAsync(channelMember.MemberId,
+                channelMember.ChannelId);
+            var newChannelMembers =
+                await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(channelMember.ChannelId);
 
             // Assert
             Assert.Empty(newChannelMembers);
@@ -95,7 +99,9 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             // Act
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-            var newChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(channelMember.MemberId, channelMember.ChannelId);
+            var newChannelMember =
+                await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(channelMember.MemberId,
+                    channelMember.ChannelId);
 
             // Assert
             Assert.NotNull(newChannelMember);

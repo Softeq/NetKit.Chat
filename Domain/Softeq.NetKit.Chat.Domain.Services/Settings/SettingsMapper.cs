@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Domain.Settings.TransportModels.Response;
 
@@ -16,6 +16,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Settings
                 settingsResponse.RawSettings = settings.RawSettings;
                 settingsResponse.ChannelId = settings.ChannelId;
             }
+
             return settingsResponse;
         }
     }

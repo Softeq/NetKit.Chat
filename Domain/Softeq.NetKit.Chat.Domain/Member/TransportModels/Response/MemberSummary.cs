@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using Newtonsoft.Json;
@@ -8,8 +8,8 @@ namespace Softeq.NetKit.Chat.Domain.Member.TransportModels.Response
 {
     public class MemberSummary
     {
-        [JsonIgnore]
-        public Guid Id { get; set; }
+        [JsonIgnore] public Guid Id { get; set; }
+
         public string SaasUserId { get; set; }
         public string UserName { get; set; }
         public UserRole Role { get; set; }

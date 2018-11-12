@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -48,8 +48,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Members m
                     INNER JOIN ChannelMembers c ON m.Id = c.MemberId
                     WHERE m.Status != 2 AND c.ChannelId = @channelId";
-                
-                var data = (await connection.QueryAsync<Member>(sqlQuery, new { channelId })).ToList();
+
+                var data = (await connection.QueryAsync<Member>(sqlQuery, new {channelId})).ToList();
 
                 return data;
             }
@@ -82,9 +82,9 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     SELECT Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status 
                     FROM Members
                     WHERE Name LIKE @name";
-                
-                var data = (await connection.QueryAsync<Member>(sqlQuery, new { name })).ToList();
-                
+
+                var data = (await connection.QueryAsync<Member>(sqlQuery, new {name})).ToList();
+
                 return data;
             }
         }
@@ -100,9 +100,9 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Members
                     WHERE Id = @memberId";
 
-                var data = (await connection.QueryAsync<Member>(sqlQuery, new { memberId }))
+                var data = (await connection.QueryAsync<Member>(sqlQuery, new {memberId}))
                     .FirstOrDefault();
-                
+
                 return data;
             }
         }
@@ -117,10 +117,10 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     SELECT Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status  
                     FROM Members
                     WHERE Name = @userName";
-                
-                var data = (await connection.QueryAsync<Member>(sqlQuery, new { userName }))
+
+                var data = (await connection.QueryAsync<Member>(sqlQuery, new {userName}))
                     .FirstOrDefault();
-                
+
                 return data;
             }
         }
@@ -136,8 +136,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Members m
                     INNER JOIN Clients c ON m.Id = c.MemberId
                     WHERE c.Id = @clientId";
-                
-                var data = (await connection.QueryAsync<Member>(sqlQuery, new { clientId }))
+
+                var data = (await connection.QueryAsync<Member>(sqlQuery, new {clientId}))
                     .FirstOrDefault();
 
                 return data;
@@ -153,7 +153,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"
                     INSERT INTO Members(Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, Role, SaasUserId, Status) 
                     VALUES (@Id, @Email, @IsAfk, @IsBanned, @LastActivity, @LastNudged, @Name, @Role, @SaasUserId, @Status);";
-                
+
                 await connection.ExecuteScalarAsync(sqlQuery, member);
             }
         }
@@ -177,7 +177,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                      SaasUserId = @SaasUserId, 
                                      Status = @Status
                                  WHERE Id = @Id";
-                
+
                 await connection.ExecuteScalarAsync(sqlQuery, member);
             }
         }
@@ -189,8 +189,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"DELETE FROM Members WHERE Id = @memberId";
-                
-                await connection.ExecuteAsync(sqlQuery, new { memberId });
+
+                await connection.ExecuteAsync(sqlQuery, new {memberId});
             }
         }
 
@@ -205,7 +205,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Members
                     WHERE SaasUserId = @saasUserId";
 
-                var data = (await connection.QueryAsync<Member>(sqlQuery, new { saasUserId }))
+                var data = (await connection.QueryAsync<Member>(sqlQuery, new {saasUserId}))
                     .FirstOrDefault();
 
                 return data;
@@ -223,11 +223,11 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Members m
                     INNER JOIN ChannelMembers c ON m.Id = c.MemberId
                     WHERE c.ChannelId = @channelId";
-                
-                var data = (await connection.QueryAsync<Member>(sqlQuery, new { channelId }))
+
+                var data = (await connection.QueryAsync<Member>(sqlQuery, new {channelId}))
                     .Distinct()
                     .ToList();
-                
+
                 return data;
             }
         }

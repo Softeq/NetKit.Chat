@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Threading.Tasks;
@@ -13,9 +13,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class ChannelRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("c4d7e362-d49c-4b19-95e9-70cb169467bd");
-        private readonly Guid _memberId2 = new Guid("e173bacf-e17f-46fb-9a83-012c95776eb9");
-        
         public ChannelRepositoryTests()
         {
             var member = new Member
@@ -33,6 +30,20 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 Status = UserStatus.Active
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member2).GetAwaiter().GetResult();
+        }
+
+        private readonly Guid _memberId = new Guid("c4d7e362-d49c-4b19-95e9-70cb169467bd");
+        private readonly Guid _memberId2 = new Guid("e173bacf-e17f-46fb-9a83-012c95776eb9");
+
+        private void AssertChannelEqualforAddChanelAsyncTest(Channel expectedChannel, Channel actualChannel)
+        {
+            Assert.Equal(expectedChannel.Id, actualChannel.Id);
+            Assert.Equal(expectedChannel.IsClosed, actualChannel.IsClosed);
+            Assert.Equal(expectedChannel.CreatorId, actualChannel.CreatorId);
+            Assert.Equal(expectedChannel.Name, actualChannel.Name);
+            Assert.Equal(expectedChannel.Type, actualChannel.Type);
+            Assert.Equal(expectedChannel.Description, actualChannel.Description);
+            Assert.Equal(expectedChannel.WelcomeMessage, actualChannel.WelcomeMessage);
         }
 
         [Fact]
@@ -63,6 +74,59 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
+        public async Task CheckIfUserExistInChannelAsyncTest()
+        {
+            // Arrange
+            var channel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Name = "test",
+                Type = ChannelType.Public,
+                Description = "test",
+                WelcomeMessage = "test",
+                MembersCount = 10
+            };
+
+            var channel2 = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId2,
+                Created = DateTimeOffset.UtcNow,
+                Name = "test2",
+                Type = ChannelType.Public,
+                Description = "test",
+                WelcomeMessage = "test",
+                MembersCount = 10
+            };
+
+            var channelMember = new ChannelMembers
+            {
+                ChannelId = channel.Id,
+                MemberId = _memberId,
+                LastReadMessageId = null
+            };
+
+
+            // Act           
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel2);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
+
+            var ensureExist =
+                await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(_memberId, channel.Id);
+            var ensureNonExist =
+                await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(_memberId, channel2.Id);
+
+            // Assert
+            Assert.True(ensureExist);
+            Assert.False(ensureNonExist);
+        }
+
+        [Fact]
         public async Task DeleteChannelAsyncTest()
         {
             // Arrange
@@ -86,38 +150,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             // Assert
             Assert.Null(newChannel);
-        }
-
-        [Fact]
-        public async Task GetChannelByNameAsyncTest()
-        {
-            // Arrange
-            var channel = new Channel
-            {
-                Id = Guid.NewGuid(),
-                IsClosed = true,
-                CreatorId = _memberId,
-                Created = DateTimeOffset.UtcNow,
-                Name = "test",
-                Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
-            };
-
-            // Act
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-            var newChannel = await UnitOfWork.ChannelRepository.GetChannelByNameAsync(channel.Name);
-
-            // Assert
-            Assert.NotNull(newChannel);
-            Assert.Equal(channel.Id, newChannel.Id);
-            Assert.Equal(channel.IsClosed, newChannel.IsClosed);
-            Assert.Equal(channel.CreatorId, newChannel.CreatorId);
-            Assert.Equal(channel.Name, newChannel.Name);
-            Assert.Equal(channel.Type, newChannel.Type);
-            Assert.Equal(channel.Description, newChannel.Description);
-            Assert.Equal(channel.WelcomeMessage, newChannel.WelcomeMessage);
         }
 
         [Fact]
@@ -179,7 +211,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 WelcomeMessage = "test",
                 MembersCount = 10
             };
-            
+
             var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(_memberId2);
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMembers
@@ -187,7 +219,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel2);
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMembers
-                { MemberId = _memberId2, ChannelId = channel2.Id });
+                {MemberId = _memberId2, ChannelId = channel2.Id});
 
             // Act
             var newAllowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(_memberId2);
@@ -202,7 +234,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task CheckIfUserExistInChannelAsyncTest()
+        public async Task GetChannelByNameAsyncTest()
         {
             // Arrange
             var channel = new Channel
@@ -218,53 +250,19 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MembersCount = 10
             };
 
-            var channel2 = new Channel
-            {
-                Id = Guid.NewGuid(),
-                IsClosed = true,
-                CreatorId = _memberId2,
-                Created = DateTimeOffset.UtcNow,
-                Name = "test2",
-                Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
-            };
-
-            var channelMember = new ChannelMembers
-            {
-                ChannelId = channel.Id,
-                MemberId = _memberId,
-                LastReadMessageId = null
-            };
-
-
-            // Act           
+            // Act
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel2);
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-
-            var ensureExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(_memberId, channel.Id);
-            var ensureNonExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(_memberId, channel2.Id);
+            var newChannel = await UnitOfWork.ChannelRepository.GetChannelByNameAsync(channel.Name);
 
             // Assert
-            Assert.True(ensureExist);
-            Assert.False(ensureNonExist);
+            Assert.NotNull(newChannel);
+            Assert.Equal(channel.Id, newChannel.Id);
+            Assert.Equal(channel.IsClosed, newChannel.IsClosed);
+            Assert.Equal(channel.CreatorId, newChannel.CreatorId);
+            Assert.Equal(channel.Name, newChannel.Name);
+            Assert.Equal(channel.Type, newChannel.Type);
+            Assert.Equal(channel.Description, newChannel.Description);
+            Assert.Equal(channel.WelcomeMessage, newChannel.WelcomeMessage);
         }
-
-        #region Private methods
-        
-        private void AssertChannelEqualforAddChanelAsyncTest(Channel expectedChannel, Channel actualChannel)
-        {
-            Assert.Equal(expectedChannel.Id, actualChannel.Id);
-            Assert.Equal(expectedChannel.IsClosed, actualChannel.IsClosed);
-            Assert.Equal(expectedChannel.CreatorId, actualChannel.CreatorId);
-            Assert.Equal(expectedChannel.Name, actualChannel.Name);
-            Assert.Equal(expectedChannel.Type, actualChannel.Type);
-            Assert.Equal(expectedChannel.Description, actualChannel.Description);
-            Assert.Equal(expectedChannel.WelcomeMessage, actualChannel.WelcomeMessage);
-        }
-
-        #endregion
     }
 }

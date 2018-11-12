@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Domain.Client.TransportModels.Response;
 
@@ -17,6 +17,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
                 clientResponse.SaasUserId = saasUserId;
                 clientResponse.UserName = client.Name;
             }
+
             return clientResponse;
         }
     }

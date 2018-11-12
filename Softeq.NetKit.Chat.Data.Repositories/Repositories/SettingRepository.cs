@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"
                     INSERT INTO Settings(Id, RawSettings, ChannelId) 
                     VALUES (@Id, @RawSettings, @ChannelId);";
-                
+
                 await connection.ExecuteScalarAsync(sqlQuery, settings);
             }
         }
@@ -59,7 +59,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"DELETE FROM Settings WHERE Id = @settingsId";
 
-                await connection.ExecuteAsync(sqlQuery, new { settingsId });
+                await connection.ExecuteAsync(sqlQuery, new {settingsId});
             }
         }
 
@@ -73,10 +73,10 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     SELECT Id, RawSettings, ChannelId
                     FROM Settings
                     WHERE Id = @settingsId";
-                
-                var data = (await connection.QueryAsync<Settings>(sqlQuery, new { settingsId }))
+
+                var data = (await connection.QueryAsync<Settings>(sqlQuery, new {settingsId}))
                     .FirstOrDefault();
-                
+
                 return data;
             }
         }
@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                     FROM Settings
                     WHERE ChannelId = @channelId";
 
-                var data = (await connection.QueryAsync<Settings>(sqlQuery, new { channelId }))
+                var data = (await connection.QueryAsync<Settings>(sqlQuery, new {channelId}))
                     .FirstOrDefault();
 
                 return data;

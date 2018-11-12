@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Linq;
@@ -15,10 +15,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class MessageRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BD9B-55C3862262AA");
-        private const string _memberName = "testMember";
-        private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BD9B-11C3862262EE");
-
         public MessageRepositoryTests()
         {
             var member = new Member
@@ -41,6 +37,68 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
 
+        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BD9B-55C3862262AA");
+        private const string _memberName = "testMember";
+        private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BD9B-11C3862262EE");
+
+        private async Task<Message> GenerateAndAddMessage(DateTimeOffset? customCreated = null)
+        {
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "test",
+                Created = customCreated ?? DateTimeOffset.UtcNow.AddMinutes(-10),
+                ImageUrl = "test",
+                Type = 0,
+                ChannelId = _channelId,
+                OwnerId = _memberId
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+            return message;
+        }
+
+        private void AssertMessagesEqual(Message expectedMessage, Message actualMessage)
+        {
+            Assert.Equal(expectedMessage.Id, actualMessage.Id);
+            Assert.Equal(expectedMessage.Body, actualMessage.Body);
+            Assert.Equal(expectedMessage.Created, actualMessage.Created);
+            Assert.Equal(expectedMessage.ImageUrl, actualMessage.ImageUrl);
+            Assert.Equal(expectedMessage.Type, actualMessage.Type);
+            Assert.Equal(expectedMessage.ChannelId, actualMessage.ChannelId);
+            Assert.Equal(expectedMessage.OwnerId, actualMessage.OwnerId);
+            if (expectedMessage.OwnerId == _memberId) Assert.Equal(_memberName, actualMessage.Owner.Name);
+        }
+
+        [Fact]
+        public async Task AddMessageAsyncTest()
+        {
+            // Arrange
+            var expectedMessage = await GenerateAndAddMessage();
+
+            // Act
+            var newMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
+
+            // Assert
+            Assert.NotNull(newMessage);
+            AssertMessagesEqual(expectedMessage, newMessage);
+        }
+
+        [Fact]
+        public async Task DeleteMessageAsyncTest()
+        {
+            // Arrange
+            var expectedMessage = await GenerateAndAddMessage();
+
+            // Act
+            await UnitOfWork.MessageRepository.DeleteMessageAsync(expectedMessage.Id);
+            var newMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
+
+            // Assert
+            Assert.Null(newMessage);
+        }
+
         [Fact]
         public async Task GetAllChannelMessagesAsyncTest()
         {
@@ -58,60 +116,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.NotEmpty(messagesAfterAddingNew);
             Assert.Single(messagesAfterAddingNew);
             AssertMessagesEqual(expectedMessage, messagesAfterAddingNew.First());
-        }
-        
-        [Fact]
-        public async Task GetOlderMessagesAsyncTest()
-        {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
-
-            var createdDate = expectedMessage.Created;
-
-            // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(
-                _channelId, createdDate.Add(-TimeSpan.FromSeconds(1)), null);
-            
-            // Assert 1
-            Assert.NotNull(actualMessages);
-            Assert.Empty(actualMessages);
-
-            // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(
-                _channelId, createdDate.Add(TimeSpan.FromSeconds(1)), null);
-
-            // Assert 2
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(expectedMessage, actualMessages.First());
-        }
-
-        [Fact]
-        public async Task GetMessagesAsyncTest()
-        {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
-
-            var createdDate = expectedMessage.Created;
-
-            // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetMessagesAsync(
-                _channelId, createdDate.Add(TimeSpan.FromSeconds(1)), null);
-
-            // Assert 1
-            Assert.NotNull(actualMessages);
-            Assert.Empty(actualMessages);
-
-            // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetMessagesAsync(
-                _channelId, createdDate.Add(-TimeSpan.FromSeconds(1)), null);
-
-            // Assert 2
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(expectedMessage, actualMessages.First());
         }
 
         [Fact]
@@ -162,46 +166,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task GetPreviousMessagesAsyncTest()
-        {
-            // Arrange
-            var firstMessage = await GenerateAndAddMessage();
-            var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(1));
-            
-            // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
-                _channelId, firstMessage.Id);
-
-            // Assert 1
-            Assert.NotNull(actualMessages);
-            Assert.Empty(actualMessages);
-
-            // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
-                _channelId, secondMessage.Id);
-
-            // Assert 2
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(firstMessage, actualMessages.First());
-        }
-
-        [Fact]
-        public async Task GetMessageByIdAsyncTest()
-        {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
-
-            // Act
-            var actualMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
-
-            // Assert
-            Assert.NotNull(actualMessage);
-            AssertMessagesEqual(expectedMessage, actualMessage);
-        }
-
-        [Fact]
         public async Task GetLastReadMessageAsyncTest()
         {
             // Arrange
@@ -221,7 +185,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MemberId = _memberId,
                 LastReadMessageId = expectedMessage.Id
             });
-            
+
             // Act 2
             actualMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(_memberId, _channelId);
 
@@ -231,68 +195,97 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task AddMessageAsyncTest()
+        public async Task GetMessageByIdAsyncTest()
         {
             // Arrange
             var expectedMessage = await GenerateAndAddMessage();
 
             // Act
-            var newMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
+            var actualMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
 
             // Assert
-            Assert.NotNull(newMessage);
-            AssertMessagesEqual(expectedMessage, newMessage);
+            Assert.NotNull(actualMessage);
+            AssertMessagesEqual(expectedMessage, actualMessage);
         }
 
         [Fact]
-        public async Task DeleteMessageAsyncTest()
+        public async Task GetMessagesAsyncTest()
         {
             // Arrange
             var expectedMessage = await GenerateAndAddMessage();
 
-            // Act
-            await UnitOfWork.MessageRepository.DeleteMessageAsync(expectedMessage.Id);
-            var newMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
+            var createdDate = expectedMessage.Created;
 
-            // Assert
-            Assert.Null(newMessage);
+            // Act 1
+            var actualMessages = await UnitOfWork.MessageRepository.GetMessagesAsync(
+                _channelId, createdDate.Add(TimeSpan.FromSeconds(1)), null);
+
+            // Assert 1
+            Assert.NotNull(actualMessages);
+            Assert.Empty(actualMessages);
+
+            // Act 2
+            actualMessages = await UnitOfWork.MessageRepository.GetMessagesAsync(
+                _channelId, createdDate.Add(-TimeSpan.FromSeconds(1)), null);
+
+            // Assert 2
+            Assert.NotNull(actualMessages);
+            Assert.NotEmpty(actualMessages);
+            Assert.Single(actualMessages);
+            AssertMessagesEqual(expectedMessage, actualMessages.First());
         }
 
-        #region Private methods
-
-        private async Task<Message> GenerateAndAddMessage(DateTimeOffset? customCreated = null)
+        [Fact]
+        public async Task GetOlderMessagesAsyncTest()
         {
-            var message = new Message
-            {
-                Id = Guid.NewGuid(),
-                Body = "test",
-                Created = customCreated ?? DateTimeOffset.UtcNow.AddMinutes(-10),
-                ImageUrl = "test",
-                Type = 0,
-                ChannelId = _channelId,
-                OwnerId = _memberId,
-            };
+            // Arrange
+            var expectedMessage = await GenerateAndAddMessage();
 
-            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+            var createdDate = expectedMessage.Created;
 
-            return message;
+            // Act 1
+            var actualMessages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(
+                _channelId, createdDate.Add(-TimeSpan.FromSeconds(1)), null);
+
+            // Assert 1
+            Assert.NotNull(actualMessages);
+            Assert.Empty(actualMessages);
+
+            // Act 2
+            actualMessages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(
+                _channelId, createdDate.Add(TimeSpan.FromSeconds(1)), null);
+
+            // Assert 2
+            Assert.NotNull(actualMessages);
+            Assert.NotEmpty(actualMessages);
+            Assert.Single(actualMessages);
+            AssertMessagesEqual(expectedMessage, actualMessages.First());
         }
 
-        private void AssertMessagesEqual(Message expectedMessage, Message actualMessage)
+        [Fact]
+        public async Task GetPreviousMessagesAsyncTest()
         {
-            Assert.Equal(expectedMessage.Id, actualMessage.Id);
-            Assert.Equal(expectedMessage.Body, actualMessage.Body);
-            Assert.Equal(expectedMessage.Created, actualMessage.Created);
-            Assert.Equal(expectedMessage.ImageUrl, actualMessage.ImageUrl);
-            Assert.Equal(expectedMessage.Type, actualMessage.Type);
-            Assert.Equal(expectedMessage.ChannelId, actualMessage.ChannelId);
-            Assert.Equal(expectedMessage.OwnerId, actualMessage.OwnerId);
-            if (expectedMessage.OwnerId == _memberId)
-            {
-                Assert.Equal(_memberName, actualMessage.Owner.Name);
-            }
-        }
+            // Arrange
+            var firstMessage = await GenerateAndAddMessage();
+            var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(1));
 
-        #endregion
+            // Act 1
+            var actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
+                _channelId, firstMessage.Id);
+
+            // Assert 1
+            Assert.NotNull(actualMessages);
+            Assert.Empty(actualMessages);
+
+            // Act 2
+            actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
+                _channelId, secondMessage.Id);
+
+            // Assert 2
+            Assert.NotNull(actualMessages);
+            Assert.NotEmpty(actualMessages);
+            Assert.Single(actualMessages);
+            AssertMessagesEqual(firstMessage, actualMessages.First());
+        }
     }
 }

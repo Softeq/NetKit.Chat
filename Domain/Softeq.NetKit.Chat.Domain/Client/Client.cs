@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using Softeq.NetKit.Chat.Domain.Base;
@@ -8,8 +8,6 @@ namespace Softeq.NetKit.Chat.Domain.Client
 {
     public class Client : IBaseEntity<Guid>
     {
-        public Guid Id { get; set; }
-
         public string ClientConnectionId { get; set; }
 
         public Guid MemberId { get; set; }
@@ -20,5 +18,6 @@ namespace Softeq.NetKit.Chat.Domain.Client
 
         public DateTimeOffset LastActivity { get; set; }
         public DateTimeOffset LastClientActivity { get; set; }
+        public Guid Id { get; set; }
     }
 }

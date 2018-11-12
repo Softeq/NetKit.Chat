@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -18,8 +18,9 @@ namespace Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response
         public string Name { get; set; }
         public bool IsClosed { get; set; }
         public bool IsMuted { get; set; }
-        [JsonIgnore]
-        public Guid? CreatorId { get; set; }
+
+        [JsonIgnore] public Guid? CreatorId { get; set; }
+
         public MemberSummary Creator { get; set; }
         public string CreatorSaasUserId { get; set; }
         public string Description { get; set; }
@@ -32,7 +33,7 @@ namespace Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response
         {
             get
             {
-                var avatarUrls = new List<string>()
+                var avatarUrls = new List<string>
                 {
                     "https://f4.bcbits.com/img/0008335057_10.jpg",
                     "https://cdn.pixabay.com/photo/2015/10/23/17/03/eye-1003315_960_720.jpg",

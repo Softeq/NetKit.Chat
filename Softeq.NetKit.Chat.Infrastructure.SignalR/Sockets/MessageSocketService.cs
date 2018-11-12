@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Collections.Generic;
@@ -23,10 +23,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
     internal class MessageSocketService : IMessageSocketService
     {
         private readonly IChannelService _channelService;
-        private readonly IMemberService _memberService;
-        private readonly IMessageService _messageService;
         private readonly ILogger _logger;
+        private readonly IMemberService _memberService;
         private readonly IMessageNotificationHub _messageNotificationHub;
+        private readonly IMessageService _messageService;
 
         public MessageSocketService(
             IChannelService channelService,
@@ -44,13 +44,12 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
         public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest createMessageRequest)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(createMessageRequest.SaasUserId, createMessageRequest.ChannelId));
+            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(createMessageRequest.SaasUserId,
+                createMessageRequest.ChannelId));
             var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(createMessageRequest.SaasUserId);
 
-            if (String.IsNullOrEmpty(createMessageRequest.Body))
-            {
-                throw new Exception(String.Format(LanguageResources.Msg_MessageRequired, channel.Name));
-            }
+            if (string.IsNullOrEmpty(createMessageRequest.Body))
+                throw new Exception(string.Format(LanguageResources.Msg_MessageRequired, channel.Name));
 
             var message = await _messageService.CreateMessageAsync(createMessageRequest);
 
@@ -66,9 +65,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                 var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
                 var message = await _messageService.GetMessageByIdAsync(request.MessageId);
                 if (message.Sender.Id != member.Id)
-                {
-                    throw new Exception(String.Format(LanguageResources.Msg_AccessPermission, message.Id));
-                }
+                    throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
                 await _messageService.DeleteMessageAsync(request);
 
                 await _messageNotificationHub.OnDeleteMessage(member, message);
@@ -77,8 +74,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             {
                 if (ex.Errors.Any(x => x.Description == "Message does not exist."))
                 {
-                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId).Exception(ex).AsError();
-                    throw new Exception(String.Format(LanguageResources.Msg_NotFound, request.MessageId));
+                    _logger.Event(PropertyNames.EventId).With
+                        .Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId)
+                        .Exception(ex).AsError();
+                    throw new Exception(string.Format(LanguageResources.Msg_NotFound, request.MessageId));
                 }
             }
         }
@@ -88,13 +87,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
             if (message.Sender.Id != member.Id)
-            {
-                throw new Exception(String.Format(LanguageResources.Msg_AccessPermission, message.Id));
-            }
-            if (String.IsNullOrEmpty(request.Body))
-            {
-                throw new Exception(LanguageResources.Msg_MessageRequired);
-            }
+                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
+            if (string.IsNullOrEmpty(request.Body)) throw new Exception(LanguageResources.Msg_MessageRequired);
 
             var updatedMessage = await _messageService.UpdateMessageAsync(request);
 
@@ -108,15 +102,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                 var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
                 var message = await _messageService.GetMessageByIdAsync(request.MessageId);
                 if (message.Sender.Id != member.Id)
-                {
-                    throw new Exception(String.Format(LanguageResources.Msg_AccessPermission, message.Id));
-                }
+                    throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
 
                 var attachmentsCount = await _messageService.GetMessageAttachmentsCount(message.Id);
-                if (attachmentsCount == 10)
-                {
-                    throw new Exception(LanguageResources.Msg_LimitedAttachments);
-                }
+                if (attachmentsCount == 10) throw new Exception(LanguageResources.Msg_LimitedAttachments);
 
                 await _messageService.AddMessageAttachmentAsync(request);
 
@@ -126,8 +115,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             {
                 if (ex.Errors.Any(x => x.Description == "Message does not exist."))
                 {
-                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId).Exception(ex).AsError();
-                    throw new Exception(String.Format(LanguageResources.Msg_NotFound, request.MessageId));
+                    _logger.Event(PropertyNames.EventId).With
+                        .Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId)
+                        .Exception(ex).AsError();
+                    throw new Exception(string.Format(LanguageResources.Msg_NotFound, request.MessageId));
                 }
             }
         }
@@ -139,9 +130,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                 var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
                 var message = await _messageService.GetMessageByIdAsync(request.MessageId);
                 if (message.Sender.Id != member.Id)
-                {
-                    throw new Exception(String.Format(LanguageResources.Msg_AccessPermission, message.Id));
-                }
+                    throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
 
                 await _messageService.DeleteMessageAttachmentAsync(request);
 
@@ -151,13 +140,18 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             {
                 if (ex.Errors.Any(x => x.Description == "Message does not exist."))
                 {
-                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId).Exception(ex).AsError();
-                    throw new Exception(String.Format(LanguageResources.Msg_NotFound, request.MessageId));
+                    _logger.Event(PropertyNames.EventId).With
+                        .Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId)
+                        .Exception(ex).AsError();
+                    throw new Exception(string.Format(LanguageResources.Msg_NotFound, request.MessageId));
                 }
+
                 if (ex.Errors.Any(x => x.Description == "Attachment does not exist."))
                 {
-                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Attachemnt does not exist. AttachmentId: {attachmentId}", request.AttachmentId).Exception(ex).AsError();
-                    throw new Exception(String.Format(LanguageResources.Msg_AttachmentNotFound, request.AttachmentId));
+                    _logger.Event(PropertyNames.EventId).With
+                        .Message("Exception: Attachemnt does not exist. AttachmentId: {attachmentId}",
+                            request.AttachmentId).Exception(ex).AsError();
+                    throw new Exception(string.Format(LanguageResources.Msg_AttachmentNotFound, request.AttachmentId));
                 }
             }
         }
@@ -183,8 +177,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             }
             catch (NotFoundException ex)
             {
-                _logger.Event(PropertyNames.EventId).With.Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId).Exception(ex).AsError();
-                throw new Exception(String.Format(LanguageResources.RoomMemberButNotExists, request.SaasUserId));
+                _logger.Event(PropertyNames.EventId).With
+                    .Message("Exception: Message does not exist. MessageId: {messageId}", request.MessageId)
+                    .Exception(ex).AsError();
+                throw new Exception(string.Format(LanguageResources.RoomMemberButNotExists, request.SaasUserId));
             }
         }
     }

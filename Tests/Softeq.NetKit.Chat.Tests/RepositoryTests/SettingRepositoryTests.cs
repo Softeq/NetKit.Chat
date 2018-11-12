@@ -1,5 +1,5 @@
-﻿// Developed by Softeq Development Corporation
-// http://www.softeq.com
+﻿// // Developed by Softeq Development Corporation
+// // http://www.softeq.com
 
 using System;
 using System.Threading.Tasks;
@@ -13,9 +13,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class SettingRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("FE711AF3-DDE7-4B11-BB9B-55C3862262AA");
-        private readonly Guid _channelId = new Guid("FE711AF3-DDE7-4B11-BB9B-11C3862262EE");
-
         public SettingRepositoryTests()
         {
             var member = new Member
@@ -36,6 +33,9 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
+
+        private readonly Guid _memberId = new Guid("FE711AF3-DDE7-4B11-BB9B-55C3862262AA");
+        private readonly Guid _channelId = new Guid("FE711AF3-DDE7-4B11-BB9B-11C3862262EE");
 
         [Fact]
         public async Task AddSettingsAsyncTest()
@@ -78,27 +78,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task GetSettingsByIdAsyncTest()
-        {
-            // Arrange
-            var settings = new Settings
-            {
-                Id = Guid.NewGuid(),
-                RawSettings = "test",
-                ChannelId = _channelId
-            };
-
-            // Act
-            await UnitOfWork.SettingRepository.AddSettingsAsync(settings);
-            var newSettings = await UnitOfWork.SettingRepository.GetSettingsByIdAsync(settings.Id);
-
-            // Assert
-            Assert.NotNull(newSettings);
-            Assert.Equal(settings.Id, newSettings.Id);
-            Assert.Equal(settings.RawSettings, newSettings.RawSettings);
-        }
-
-        [Fact]
         public async Task GetAllSettingsAsyncTest()
         {
             // Arrange
@@ -120,6 +99,27 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.NotNull(newSettings);
             Assert.NotEmpty(newSettings);
             Assert.True(newSettings.Count > settings.Count);
+        }
+
+        [Fact]
+        public async Task GetSettingsByIdAsyncTest()
+        {
+            // Arrange
+            var settings = new Settings
+            {
+                Id = Guid.NewGuid(),
+                RawSettings = "test",
+                ChannelId = _channelId
+            };
+
+            // Act
+            await UnitOfWork.SettingRepository.AddSettingsAsync(settings);
+            var newSettings = await UnitOfWork.SettingRepository.GetSettingsByIdAsync(settings.Id);
+
+            // Assert
+            Assert.NotNull(newSettings);
+            Assert.Equal(settings.Id, newSettings.Id);
+            Assert.Equal(settings.RawSettings, newSettings.RawSettings);
         }
     }
 }
