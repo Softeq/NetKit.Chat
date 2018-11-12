@@ -26,8 +26,8 @@
     <Folder Include="logs\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\NetKit.Chat-master_\Common\Softeq.NetKit.Chat.Common\Softeq.NetKit.Chat.Common.csproj" />
-    <ProjectReference Include="..\..\NetKit.Chat-master_\Domain\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
-    <ProjectReference Include="..\..\NetKit.Chat-master_\Softeq.NetKit.Chat.Infrastructure.SignalR\Softeq.NetKit.Chat.Infrastructure.SignalR.csproj" />
+    <ProjectReference Include="..\Common\Softeq.NetKit.Chat.Common\Softeq.NetKit.Chat.Common.csproj" />
+    <ProjectReference Include="..\Domain\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Infrastructure.SignalR\Softeq.NetKit.Chat.Infrastructure.SignalR.csproj" />
   </ItemGroup>
 </Project>

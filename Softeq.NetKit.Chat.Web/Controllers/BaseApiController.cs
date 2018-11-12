@@ -31,7 +31,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             return this.User.FindFirstValue(JwtClaimTypes.Name);
         }
 
-
         #endregion
     }
 }
