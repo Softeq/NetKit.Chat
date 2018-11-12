@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
@@ -89,8 +90,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
                     await _contentStorage.DeleteContentAsync(attachment.FileName, _cloudStorageConfiguration.MessageAttachmentsContainer);
                 }
 
-                //TODO calculate previous message
-                await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id);
+                //TODO calculate previous message+
+                var prevMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(message);
+                await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(prevMessage.Id);
 
                 // Delete message from database
                 await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);

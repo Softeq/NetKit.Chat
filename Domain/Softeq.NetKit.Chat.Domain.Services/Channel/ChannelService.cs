@@ -218,7 +218,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .IsNotNull();
 
             var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(member.Id);
-            
+
             var channelsResponse = new List<ChannelSummaryResponse>();
             foreach (var channel in channels)
             {
