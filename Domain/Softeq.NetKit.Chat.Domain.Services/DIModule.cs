@@ -4,6 +4,8 @@
 using System;
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Softeq.NetKit.Chat.Common.Cache;
+using Softeq.NetKit.Chat.Data.Interfaces.SocketConnection;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.ChannelMember;
 using Softeq.NetKit.Chat.Domain.Member;
@@ -11,6 +13,7 @@ using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Channel;
 using Softeq.NetKit.Chat.Domain.Services.ChannelMember;
+using Softeq.NetKit.Chat.Domain.Services.Client;
 using Softeq.NetKit.Chat.Domain.Services.Member;
 using Softeq.NetKit.Chat.Domain.Services.Message;
 
@@ -20,6 +23,7 @@ namespace Softeq.NetKit.Chat.Domain.Services
     {
         protected override void Load(ContainerBuilder builder)
         {
+
             builder.RegisterType<ChannelService>()
                 .As<IChannelService>();
 
@@ -31,6 +35,21 @@ namespace Softeq.NetKit.Chat.Domain.Services
 
             builder.RegisterType<ChannelMemberService>()
                 .As<IChannelMemberService>();
+
+            builder.Register(x =>
+            {
+                var context = x.Resolve<IComponentContext>();
+                var configurationRoot = context.Resolve<IConfiguration>();
+                var cfg = new RedisCacheConfiguration();
+
+                builder.RegisterType<RedisCacheClient>()
+                    .As<IDistributedCacheClient>()
+                    .WithParameter("connectionString", configurationRoot["RedisCache:ConnectionString"]);
+                return cfg;
+            });
+
+            builder.RegisterType<CacheConnectionService>()
+                .As<IClientService>();
             
             builder.Register(x =>
             {

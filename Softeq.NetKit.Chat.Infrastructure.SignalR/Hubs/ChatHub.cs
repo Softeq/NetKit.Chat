@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
+using Softeq.NetKit.Chat.Common.Cache;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
@@ -69,6 +70,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         public async Task<ClientResponse> AddClientAsync()
         {
+
             return await CheckAccessTokenAndExecute(new TaskReference<ClientResponse>(async () =>
             {
                 var addClientRequest = new AddClientRequest
