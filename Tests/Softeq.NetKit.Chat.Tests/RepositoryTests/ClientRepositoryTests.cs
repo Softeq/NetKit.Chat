@@ -132,5 +132,60 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.NotEmpty(newClients);
             Assert.True(newClients.Count > clients.Count);
         }
+
+        [Fact]
+        public async Task GetMemberClientsAsync()
+        {
+            // Arrange
+            var client = new Client
+            {
+                Id = Guid.NewGuid(),
+                ClientConnectionId = Guid.NewGuid().ToString(),
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                Name = "test 1",
+                MemberId = _memberId,
+                UserAgent = "test"
+            };
+            // Act
+            await UnitOfWork.ClientRepository.AddClientAsync(client);
+            client.Name = "test 2";
+            client.LastActivity = DateTimeOffset.UtcNow;
+            client.Id = Guid.NewGuid();
+            await UnitOfWork.ClientRepository.AddClientAsync(client);
+            var newClients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(_memberId);
+            // Assert
+            Assert.NotNull(newClients);
+            Assert.NotEmpty(newClients);
+            Assert.Equal(newClients.Count, 2);
+        }
+        [Fact]
+        public async Task UpdateClientAsyncTest()
+        {
+            // Arrange
+            var client = new Client
+            {
+                Id = Guid.NewGuid(),
+                ClientConnectionId = Guid.NewGuid().ToString(),
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                Name = "test",
+                MemberId = _memberId,
+                UserAgent = "test"
+            };
+            // Act
+            await UnitOfWork.ClientRepository.AddClientAsync(client);
+            client.Name = "updated_name";
+            client.UserAgent = "updated_agent";
+            await UnitOfWork.ClientRepository.UpdateClientAsync(client);
+            var updatedClient = await UnitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
+            // Assert
+            Assert.NotNull(updatedClient);
+            Assert.Equal(client.Id, updatedClient.Id);
+            Assert.Equal(client.ClientConnectionId, updatedClient.ClientConnectionId);
+            Assert.Equal(client.Name, updatedClient.Name);
+            Assert.Equal(client.MemberId, updatedClient.MemberId);
+            Assert.Equal(client.UserAgent, updatedClient.UserAgent);
+        }
     }
 }
