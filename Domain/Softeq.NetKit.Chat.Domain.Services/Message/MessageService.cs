@@ -90,7 +90,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
                 }
 
                 //TODO calculate previous message
-                await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id);
+                var previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(message);
+                await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(previuosMessage.Id);
 
                 // Delete message from database
                 await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);

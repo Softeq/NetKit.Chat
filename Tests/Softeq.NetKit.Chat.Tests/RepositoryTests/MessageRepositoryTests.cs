@@ -162,6 +162,25 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
+        public async Task GetPreviuosMessageAsyncTest()
+        {
+
+            // Arrange
+            var firstMessage = await GenerateAndAddMessage();
+            var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(-11));
+            // Act 1
+            var previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(
+                secondMessage);
+            // Assert 1
+            Assert.NotNull(previuosMessage);
+            // Act 2
+            previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(
+                firstMessage);
+            // Assert 2
+            Assert.Null(previuosMessage);
+        }
+
+        [Fact]
         public async Task GetPreviousMessagesAsyncTest()
         {
             // Arrange
