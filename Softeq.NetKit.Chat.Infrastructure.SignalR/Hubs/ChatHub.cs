@@ -59,6 +59,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
+
+            var deleteRequest = new DeleteClientRequest(Context.ConnectionId);
+            _memberService.DeleteClientAsync(deleteRequest);
+
             _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
             return base.OnDisconnectedAsync(exception);
         }
