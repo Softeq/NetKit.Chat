@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Softeq.NetKit.Chat.Common.Cache
 {
@@ -15,8 +16,9 @@ namespace Softeq.NetKit.Chat.Common.Cache
 
         private static Lazy<IConnectionMultiplexer> _connection;
 
-        public RedisCacheClient(string connectionString)
+        public RedisCacheClient(IConfiguration configuration)
         {
+            string connectionString = configuration["RedisCache:connectionString"];
             Ensure.That(connectionString, new ArgumentNullException().ToString())
                             .IsNotNullOrWhiteSpace();
 
@@ -64,8 +66,7 @@ namespace Softeq.NetKit.Chat.Common.Cache
                            .IsNotNull();
 
             var serializedValue = JsonConvert.SerializeObject(value);
-
-            // todo: https://jira.softeq.com/browse/EMRA-957
+           
             await CacheDb.HashSetAsync(key, field, serializedValue);
         }
 

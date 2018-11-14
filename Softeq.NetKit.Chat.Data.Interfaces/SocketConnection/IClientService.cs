@@ -12,5 +12,6 @@ namespace Softeq.NetKit.Chat.Data.Interfaces.SocketConnection
     {
         Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request);
         Task DeleteClientAsync(DeleteClientRequest request);
+        Task UpdateActivityAsync(AddClientRequest request);
     }
 }

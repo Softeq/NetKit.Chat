@@ -10,5 +10,6 @@ namespace Softeq.NetKit.Chat.Domain.Client.TransportModels.Request
             ClientConnectionId = clientConnectionId;
         }
         public string ClientConnectionId { get; set; }
+        public string SaasUserId { get; set; }
     }
 }

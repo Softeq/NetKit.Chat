@@ -153,8 +153,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 Id = Guid.NewGuid(),
                 MemberId = member.Id,
                 ClientConnectionId = request.ConnectionId,
-                LastActivity = member.LastActivity,
-                LastClientActivity = DateTimeOffset.UtcNow,
                 Name = request.UserName,
                 UserAgent = request.UserAgent
             };
@@ -226,12 +224,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             member.Status = UserStatus.Active;
             member.LastActivity = DateTimeOffset.UtcNow;
-
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
-            client.UserAgent = request.UserAgent;
-            client.LastActivity = member.LastActivity;
-            client.LastClientActivity = DateTimeOffset.UtcNow;
-
             // Remove any Afk notes.
             if (member.IsAfk)
             {
@@ -239,7 +231,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             }
 
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
-            await UnitOfWork.ClientRepository.UpdateClientAsync(client);
         }
     }
 }

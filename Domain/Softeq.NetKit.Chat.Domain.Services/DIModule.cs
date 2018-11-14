@@ -42,13 +42,14 @@ namespace Softeq.NetKit.Chat.Domain.Services
                 var configurationRoot = context.Resolve<IConfiguration>();
                 var cfg = new RedisCacheConfiguration();
 
-                builder.RegisterType<RedisCacheClient>()
-                    .As<IDistributedCacheClient>()
-                    .WithParameter("connectionString", configurationRoot["RedisCache:ConnectionString"]);
+                
                 return cfg;
             });
 
-            builder.RegisterType<CacheConnectionService>()
+            builder.RegisterType<DbSocketClientService>()
+                .As<IDistributedCacheClient>();
+
+            builder.RegisterType<DbSocketClientService>()
                 .As<IClientService>();
             
             builder.Register(x =>

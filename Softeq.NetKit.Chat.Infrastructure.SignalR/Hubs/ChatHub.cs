@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
 using Softeq.NetKit.Chat.Common.Cache;
+using Softeq.NetKit.Chat.Data.Interfaces.SocketConnection;
+using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
+using Softeq.NetKit.Chat.Data.Repositories;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.ChannelMember;
 using Softeq.NetKit.Chat.Domain.ChannelMember.TransportModels;
+using Softeq.NetKit.Chat.Domain.Client;
 using Softeq.NetKit.Chat.Domain.Client.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Client.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Member;
@@ -22,6 +26,8 @@ using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
 using Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets;
 using Softeq.Serilog.Extension;
+using Softeq.NetKit.Chat.Domain.Services.Client;
+
 
 namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 {
@@ -30,6 +36,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         private readonly IMemberService _memberService;
         private readonly IChannelService _channelService;
         private readonly IChannelMemberService _channelMemberService;
+        private IClientService _clientService;
         private readonly ILogger _logger;
 
         private readonly ChannelSocketService _channelSocketService;
@@ -38,14 +45,19 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         public ChatHub(
             IChannelService channelService,
             IMemberService memberService,
+            IClientService clientService,
+            IDistributedCacheClient redisClient,
             ILogger logger,
             IMessageService messageService, 
+            IUnitOfWork unitOfWork,
             IChannelMemberService channelMemberService)
         {
             _channelService = channelService;
             _memberService = memberService;
             _channelMemberService = channelMemberService;
+            _clientService = clientService;
             _logger = logger;
+           
             _channelSocketService = new ChannelSocketService(_channelService, _logger, _memberService, this);
             _messageSocketService = new MessageSocketService(_channelService, _logger, _memberService, messageService, this);
         }
@@ -70,7 +82,6 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         public async Task<ClientResponse> AddClientAsync()
         {
-
             return await CheckAccessTokenAndExecute(new TaskReference<ClientResponse>(async () =>
             {
                 var addClientRequest = new AddClientRequest
@@ -81,7 +92,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
                     SaasUserId = Context.GetSaasUserId()
                 };
 
-                return await _memberService.GetOrAddClientAsync(addClientRequest);
+                return await _clientService.GetOrAddClientAsync(addClientRequest);
             }));
         }
 
@@ -90,7 +101,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
             {
                 var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
-                await _memberService.DeleteClientAsync(deleteClientRequest);
+                deleteClientRequest.SaasUserId = Context.GetSaasUserId();
+                await _clientService.DeleteClientAsync(deleteClientRequest);
             }));
         }
 
@@ -106,13 +118,17 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
                 request.ClientConnectionId = Context.ConnectionId;
                 var message = await _messageSocketService.AddMessageAsync(request);
                 var user = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
-                await _memberService.UpdateActivityAsync(new AddClientRequest()
+                var addClientRequest = new AddClientRequest()
                 {
                     SaasUserId = user.SaasUserId,
                     UserName = user.UserName,
                     ConnectionId = Context.ConnectionId,
                     UserAgent = null,
-                });
+                };
+
+                await _memberService.UpdateActivityAsync(addClientRequest);
+                await _clientService.UpdateActivityAsync(addClientRequest);
+
                 return message;
             }),
             request.RequestId);

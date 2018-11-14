@@ -14,7 +14,7 @@ using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Client
 {
-    internal class CacheConnectionService : IClientService
+    public class CacheConnectionService : IClientService
     {
         private readonly IDistributedCacheClient _distributedCacheClient;
         private readonly IUnitOfWork _unitOfWork;
@@ -26,9 +26,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
 
         public async Task DeleteClientAsync(DeleteClientRequest request)
         {
-            //TODO replace parameter with request.SaasUserId
-            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.ClientConnectionId);
-            var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), String.Empty);
+            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ClientConnectionId);
 
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             await _unitOfWork.ClientRepository.DeleteClientAsync(client.Id);
@@ -54,7 +53,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
             }
 
             member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), String.Empty);
+            var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ConnectionId);
           
             if (client != null)
             {
@@ -66,15 +65,23 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
                 Id = Guid.NewGuid(),
                 MemberId = member.Id,
                 ClientConnectionId = request.ConnectionId,
-                LastActivity = member.LastActivity,
-                LastClientActivity = DateTimeOffset.UtcNow,
                 Name = request.UserName,
                 UserAgent = request.UserAgent
             };
 
-            await _distributedCacheClient.HashSetAsync(client.MemberId.ToString(), String.Empty, client);
+            await _distributedCacheClient.HashSetAsync<Domain.Client.Client>(client.MemberId.ToString(), request.ConnectionId, client);
 
             return client.ToClientResponse(member.SaasUserId);
+        }
+
+        public async Task UpdateActivityAsync(AddClientRequest request)
+        {
+            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+
+            var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ConnectionId);
+            client.UserAgent = request.UserAgent;
+
+            await _distributedCacheClient.HashSetAsync<Domain.Client.Client>(client.MemberId.ToString(), request.ConnectionId, client);
         }
     }
 }
