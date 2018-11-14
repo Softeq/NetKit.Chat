@@ -17,20 +17,21 @@ using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs;
 using Softeq.NetKit.Chat.Web.App;
 using Softeq.NetKit.Chat.Web.App.DI;
 using Softeq.NetKit.Chat.Web.ExceptionHandling;
+using Softeq.Serilog.Extension;
 using Swashbuckle.AspNetCore.Swagger;
+using ILogger = Serilog.ILogger;
 
 namespace Softeq.NetKit.Chat.Web
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+        private IContainer _applicationContainer;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
-
-        public IContainer ApplicationContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -44,7 +45,7 @@ namespace Softeq.NetKit.Chat.Web
                 .AddJsonFormatters();
 
             var authenticationsConfiguration = new AuthenticationsConfiguration();
-            Configuration.GetSection("Authentications").Bind(authenticationsConfiguration);
+            _configuration.GetSection("Authentications").Bind(authenticationsConfiguration);
 
             services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
@@ -70,25 +71,49 @@ namespace Softeq.NetKit.Chat.Web
                 c.SwaggerDoc("v1", new Info { Title = "API doc", Version = "v1" });
             });
 
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.Populate(services);
-            DIModulesManager.RegisterModules(containerBuilder);
-
-            ApplicationContainer = containerBuilder.Build();
-
-            return new AutofacServiceProvider(ApplicationContainer);
+            var builder = new ContainerBuilder();
+            builder.RegisterSolutionModules();
+            builder.Populate(services);
+            _applicationContainer = builder.Build();
+            return new AutofacServiceProvider(_applicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IDatabaseManager databaseManager, IApplicationLifetime applicationLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IDatabaseManager databaseManager, IApplicationLifetime applicationLifetime, ILogger logger)
         {
             applicationLifetime.ApplicationStopping.Register(OnShutdown, app);
 
-            if (env.IsDevelopment() || env.IsStaging() || env.IsEnvironment("Debug"))
+            //To dispose of resources that have been resolved in the application container
+            //http://autofaccn.readthedocs.io/en/latest/integration/aspnetcore.html#quick-start-without-configurecontainer
+            applicationLifetime.ApplicationStopped.Register(() => _applicationContainer.Dispose());
+
+            try
+            {
+                if (!env.IsStaging() && !env.IsProduction())
+                {
+                    databaseManager.CreateEmptyDatabaseIfNotExistsAsync().GetAwaiter().GetResult();
+                }
+                databaseManager.MigrateToLatestVersion();
+            }
+            catch (Exception ex)
+            {
+                logger.Event("UnableToSetupDatabase").With.Message("Unable to seed database.").Exception(ex).AsFatal();
+                throw;
+            }
+
+            if (!env.IsStaging() && !env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
                 app.UseDatabaseErrorPage();
+
+                // Enable middleware to serve generated Swagger as a JSON endpoint.
+                app.UseSwagger();
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+                });
             }
 
             app.UseCors(x => x.AllowAnyOrigin()
@@ -104,28 +129,12 @@ namespace Softeq.NetKit.Chat.Web
 
             app.UseAuthentication();
 
-            #region Swagger
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint($"/swagger/v1/swagger.json", "My API");
-            });
-
-            #endregion
-
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
             });
 
             app.UseMvc();
-
-            databaseManager.CreateEmptyDatabaseIfNotExistsAsync();
-            databaseManager.MigrateToLatestVersion();
         }
 
         private void OnShutdown(object builder)
