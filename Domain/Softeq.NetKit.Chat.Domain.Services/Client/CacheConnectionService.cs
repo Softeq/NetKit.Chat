@@ -86,5 +86,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
         {
             await _distributedCacheClient.HashSetAsync<List<Domain.Client.Connection>>(userClients.SaasUserId, userClients.SaasUserId, userClients.Clients);
         }
+
+        public async Task UpdateActivityAsync(AddClientRequest request)
+        {
+            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+
+            var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ConnectionId);
+            client.UserAgent = request.UserAgent;
+
+            await _distributedCacheClient.HashSetAsync<Domain.Client.Client>(client.MemberId.ToString(), request.ConnectionId, client);
+        }
     }
 }
