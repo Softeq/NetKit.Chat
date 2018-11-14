@@ -45,10 +45,11 @@ Product's dependencies are installed as NuGet-packages.
 ## About
 
 This project is maintained by [Softeq Development Corp.](https://www.softeq.com/)
-[Facebook](https://web.facebook.com/Softeq.by/)
-[Instagram](https://www.instagram.com/softeq/)
-[Twitter](https://twitter.com/Softeq)
-[Vk](https://vk.com/club21079655)
+
+ - [Facebook](https://web.facebook.com/Softeq.by/)
+ - [Instagram](https://www.instagram.com/softeq/)
+ - [Twitter](https://twitter.com/Softeq)
+ - [Vk](https://vk.com/club21079655)
 
 ## Additional documentation
 [WebSockets documetation](ChatHub.md )
