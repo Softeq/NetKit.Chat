@@ -89,12 +89,32 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
 
         public async Task UpdateActivityAsync(AddClientRequest request)
         {
-            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+            var userCache = await GetUserConnectionCache(request.SaasUserId, request.ConnectionId);
 
-            var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ConnectionId);
+            var client = userCache.Clients.FirstOrDefault(i => i.ClientConnectionId == request.ConnectionId);
+            Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             client.UserAgent = request.UserAgent;
 
-            await _distributedCacheClient.HashSetAsync<Domain.Client.Client>(client.MemberId.ToString(), request.ConnectionId, client);
+            await SaveUserConnectionCache(userCache, request.ConnectionId);
+        }
+
+        private async Task<UserConnectionCache> GetUserConnectionCache(string saasUserId, String connectionId)
+        {
+            var userConnectionCache = await _distributedCacheClient.HashGetAsync<UserConnectionCache>(saasUserId, connectionId);
+            if (userConnectionCache==null)
+            {
+                userConnectionCache = new UserConnectionCache()
+                {
+                    SaasUserId = saasUserId,
+                    Clients = new List<Domain.Client.Client>()
+                };
+            }
+            return userConnectionCache;
+        }
+
+        private async Task SaveUserConnectionCache(UserConnectionCache userClients, String connectionId)
+        {
+            await _distributedCacheClient.HashSetAsync<List<Domain.Client.Client>>(userClients.SaasUserId, connectionId, userClients.Clients);
         }
     }
 }
