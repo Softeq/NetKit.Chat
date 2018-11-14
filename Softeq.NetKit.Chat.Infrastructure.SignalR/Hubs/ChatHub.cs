@@ -51,10 +51,10 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         #region Override
 
-        public override async Task OnConnectedAsync()
+        public override Task OnConnectedAsync()
         {
             _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnConnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
-            await base.OnConnectedAsync();
+            return base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
