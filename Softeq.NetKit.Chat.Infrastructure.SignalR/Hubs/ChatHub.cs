@@ -38,7 +38,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             IChannelService channelService,
             IMemberService memberService,
             ILogger logger,
-            IMessageService messageService, 
+            IMessageService messageService,
             IChannelMemberService channelMemberService)
         {
             _channelService = channelService;
@@ -57,14 +57,13 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             return base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
-
             var deleteRequest = new DeleteClientRequest(Context.ConnectionId);
-            _memberService.DeleteClientAsync(deleteRequest);
+            await _memberService.DeleteClientAsync(deleteRequest);
 
             _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
-            return base.OnDisconnectedAsync(exception);
+            await base.OnDisconnectedAsync(exception);
         }
 
         #endregion
@@ -289,7 +288,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         async Task IChannelNotificationHub.OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel)
         {
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
-            
+
             // Tell the people in this room that you've joined
             await Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
         }
@@ -309,7 +308,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             var getChannelClientsExceptCallerRequest = new ChannelRequest(member.SaasUserId, message.ChannelId);
 
             var clientIds = await GetChannelClientsExceptCallerAsync(getChannelClientsExceptCallerRequest, clientConnectionId);
-            
+
             // Notify all clients for the uploaded message
             await Clients.Clients(clientIds).SendAsync(HubEvents.MessageAdded, message);
         }
@@ -360,7 +359,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
             var channel = await _channelService.GetChannelByIdAsync(channelRequest);
 
-            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelRequest, members.Select(x=>x.Id));
+            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelRequest, members.Select(x => x.Id));
 
             // Notify owner about read message
             await Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Name);
@@ -412,7 +411,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             var mutedConnectionClientIds = (await _memberService.GetClientsByMemberIds(mutedMemberIds))
                 .Select(x => x.ConnectionClientId)
                 .ToList();
-            
+
             var clients = new List<string>();
             foreach (var item in members)
             {
