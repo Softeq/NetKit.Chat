@@ -17,42 +17,25 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
     public class CacheConnectionService : IClientService
     {
         private readonly IDistributedCacheClient _distributedCacheClient;
-        private readonly IUnitOfWork _unitOfWork;
-        public CacheConnectionService(IDistributedCacheClient distributedCacheClient, IUnitOfWork unitOfWork)
+        private readonly IMemberService _memberService;
+        public CacheConnectionService(IDistributedCacheClient distributedCacheClient, IMemberService memberService)
         {
             _distributedCacheClient = distributedCacheClient;
-            _unitOfWork = unitOfWork;
+            _memberService = memberService;
         }
 
         public async Task DeleteClientAsync(DeleteClientRequest request)
         {
-            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
             var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ClientConnectionId);
 
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
-            await _unitOfWork.ClientRepository.DeleteClientAsync(client.Id);
+            await _distributedCacheClient.HashDeleteAsync(member.Id.ToString(),request.ClientConnectionId);
         }
 
         public async Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request)
         {
-            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            if (member == null)
-            {
-                var newMember = new Domain.Member.Member
-                {
-                    Id = Guid.NewGuid(),
-                    Role = UserRole.User,
-                    IsAfk = false,
-                    IsBanned = false,
-                    Status = UserStatus.Active,
-                    Name = request.UserName,
-                    LastActivity = DateTimeOffset.UtcNow,
-                    SaasUserId = request.SaasUserId
-                };
-                await _unitOfWork.MemberRepository.AddMemberAsync(newMember);
-            }
-
-            member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
             var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ConnectionId);
           
             if (client != null)
@@ -76,7 +59,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
 
         public async Task UpdateActivityAsync(AddClientRequest request)
         {
-            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
 
             var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ConnectionId);
             client.UserAgent = request.UserAgent;

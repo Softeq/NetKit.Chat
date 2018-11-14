@@ -24,6 +24,7 @@ namespace Softeq.NetKit.Chat.Domain.Member
         Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request);
         Task<IEnumerable<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request);
 
+
         Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request);
         Task DeleteClientAsync(DeleteClientRequest request);
         Task UpdateActivityAsync(AddClientRequest request);

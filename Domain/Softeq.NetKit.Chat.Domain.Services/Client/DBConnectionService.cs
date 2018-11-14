@@ -18,6 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
     internal class DbSocketClientService : IClientService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMemberService _memberService;
         public DbSocketClientService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -25,7 +26,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
 
         public async Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request)
         {
-
            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
