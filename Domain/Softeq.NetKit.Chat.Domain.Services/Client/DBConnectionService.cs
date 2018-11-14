@@ -18,6 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
     internal class DbSocketClientService : IClientService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMemberService _memberService;
         public DbSocketClientService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;

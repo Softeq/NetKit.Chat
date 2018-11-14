@@ -89,7 +89,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
 
         public async Task UpdateActivityAsync(AddClientRequest request)
         {
-            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
 
             var client = await _distributedCacheClient.HashGetAsync<Domain.Client.Client>(member.Id.ToString(), request.ConnectionId);
             client.UserAgent = request.UserAgent;
