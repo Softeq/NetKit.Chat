@@ -10,13 +10,13 @@ namespace Softeq.NetKit.Chat.Data.Interfaces.Repository
 {
     public interface IClientRepository
     {
-        Task<List<Client>> GetAllClientsAsync();
-        Task<Client> GetClientByIdAsync(Guid clientId);
-        Task<Client> GetClientByConnectionIdAsync(string clientConnectionId);
-        Task AddClientAsync(Client client);
-        Task UpdateClientAsync(Client client);
+        Task<List<Connection>> GetAllClientsAsync();
+        Task<Connection> GetClientByIdAsync(Guid clientId);
+        Task<Connection> GetClientByConnectionIdAsync(string clientConnectionId);
+        Task AddClientAsync(Connection client);
+        Task UpdateClientAsync(Connection client);
         Task DeleteClientAsync(Guid clientId);
-        Task<List<Client>> GetMemberClientsAsync(Guid memberId);
-        Task<List<Client>> GetClientsByMemberIdsAsync(List<Guid> memberIds);
+        Task<List<Connection>> GetMemberClientsAsync(Guid memberId);
+        Task<List<Connection>> GetClientsByMemberIdsAsync(List<Guid> memberIds);
     }
 }

@@ -15,6 +15,7 @@ namespace Softeq.NetKit.Chat.Common.Cache
         private static IDatabase CacheDb => Connection.GetDatabase();
 
         private static Lazy<IConnectionMultiplexer> _connection;
+        private string _fieldName;
 
         public RedisCacheClient(IConfiguration configuration)
         {
@@ -23,6 +24,7 @@ namespace Softeq.NetKit.Chat.Common.Cache
                             .IsNotNullOrWhiteSpace();
 
             _connection = new Lazy<IConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(connectionString));
+            _fieldName = nameof(RedisCacheClient);
         }
 
         public async Task<T> HashGetAsync<T>(string key, string field, Task<T> getValueFallbackTask = null) where T : class, new()
@@ -34,11 +36,11 @@ namespace Softeq.NetKit.Chat.Common.Cache
 
             T result = null;
 
-            var cacheValue = await CacheDb.HashGetAsync(key, field);
+            var cacheValue = await CacheDb.HashGetAsync(_fieldName, key);
             if (!cacheValue.HasValue && getValueFallbackTask != null)
             {
                 result = await getValueFallbackTask;
-                await HashSetAsync(key, field, result);
+                await HashSetAsync(key, _fieldName, result);
             }
             else if (cacheValue.HasValue)
             {
@@ -67,7 +69,7 @@ namespace Softeq.NetKit.Chat.Common.Cache
 
             var serializedValue = JsonConvert.SerializeObject(value);
            
-            await CacheDb.HashSetAsync(key, field, serializedValue);
+            await CacheDb.HashSetAsync(_fieldName, key, serializedValue);
         }
 
         public async Task HashDeleteAsync(string key, string field)
@@ -77,7 +79,7 @@ namespace Softeq.NetKit.Chat.Common.Cache
             Ensure.That(key, new ArgumentNullException().ToString())
                            .IsNotNullOrWhiteSpace();
 
-            await CacheDb.HashDeleteAsync(key, field);
+            await CacheDb.HashDeleteAsync(key, _fieldName);
         }
 
         public async Task RemoveKeyAsync(string key)

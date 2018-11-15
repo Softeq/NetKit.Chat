@@ -46,10 +46,10 @@ namespace Softeq.NetKit.Chat.Domain.Services
                 return cfg;
             });
 
-            builder.RegisterType<DbSocketClientService>()
+            builder.RegisterType<RedisCacheClient>()
                 .As<IDistributedCacheClient>();
 
-            builder.RegisterType<DbSocketClientService>()
+            builder.RegisterType<CacheConnectionService>()
                 .As<IClientService>();
             
             builder.Register(x =>

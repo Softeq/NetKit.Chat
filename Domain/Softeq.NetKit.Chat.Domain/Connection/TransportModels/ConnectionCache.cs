@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Softeq.NetKit.Chat.Domain.Client.TransportModels
 {
-    public class UserConnectionCache
+    public class ConnectionCache
     {
         public String SaasUserId { get; set; }
-        public List<Client> Clients { get; set; }
+        public List<Connection> Clients { get; set; }
     }
 }

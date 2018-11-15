@@ -6,7 +6,7 @@ using Softeq.NetKit.Chat.Domain.Base;
 
 namespace Softeq.NetKit.Chat.Domain.Client
 {
-    public class Client : IBaseEntity<Guid>
+    public class Connection : IBaseEntity<Guid>
     {
         public Guid Id { get; set; }
 

@@ -72,6 +72,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         public override Task OnDisconnectedAsync(Exception exception)
         {
+            var deleteRequest = new DeleteConnectionRequest(Context.ConnectionId);
+            _clientService.DeleteClientAsync(deleteRequest);
             _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
             return base.OnDisconnectedAsync(exception);
         }
@@ -80,11 +82,11 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         #region Client Hub Commands
 
-        public async Task<ClientResponse> AddClientAsync()
+        public async Task<ConnectionResponse> AddClientAsync()
         {
-            return await CheckAccessTokenAndExecute(new TaskReference<ClientResponse>(async () =>
+            return await CheckAccessTokenAndExecute(new TaskReference<ConnectionResponse>(async () =>
             {
-                var addClientRequest = new AddClientRequest
+                var addClientRequest = new AddConnectionRequest
                 {
                     ConnectionId = Context.ConnectionId,
                     UserAgent = null,
@@ -100,7 +102,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
             {
-                var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
+                var deleteClientRequest = new DeleteConnectionRequest(Context.ConnectionId);
                 deleteClientRequest.SaasUserId = Context.GetSaasUserId();
                 await _clientService.DeleteClientAsync(deleteClientRequest);
             }));
@@ -118,7 +120,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
                 request.ClientConnectionId = Context.ConnectionId;
                 var message = await _messageSocketService.AddMessageAsync(request);
                 var user = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
-                var addClientRequest = new AddClientRequest()
+                var addClientRequest = new AddConnectionRequest()
                 {
                     SaasUserId = user.SaasUserId,
                     UserName = user.UserName,

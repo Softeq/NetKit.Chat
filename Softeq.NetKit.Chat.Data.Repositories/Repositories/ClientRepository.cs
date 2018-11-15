@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task<List<Client>> GetAllClientsAsync()
+        public async Task<List<Connection>> GetAllClientsAsync()
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -30,16 +30,16 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"
                     SELECT Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId 
-                    FROM Clients";
+                    FROM Connections";
                 
-                var data = (await connection.QueryAsync<Client>(sqlQuery)).ToList();
+                var data = (await connection.QueryAsync<Connection>(sqlQuery)).ToList();
 
                 return data;
             }
         }
 
         //TODO: Add Unit test
-        public async Task<List<Client>> GetMemberClientsAsync(Guid memberId)
+        public async Task<List<Connection>> GetMemberClientsAsync(Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -47,10 +47,10 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"
                     SELECT Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId 
-                    FROM Clients
+                    FROM Connections
                     WHERE MemberId = @memberId";
 
-                var data = (await connection.QueryAsync<Client>(
+                var data = (await connection.QueryAsync<Connection>(
                     sqlQuery,
                     new { memberId }))
                     .ToList();
@@ -59,7 +59,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task<Client> GetClientByIdAsync(Guid clientId)
+        public async Task<Connection> GetClientByIdAsync(Guid clientId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -67,11 +67,11 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"
                     SELECT *
-                    FROM Clients c 
+                    FROM Connections c 
                     INNER JOIN Members m ON c.MemberId = m.Id
                     WHERE c.Id = @clientId";
 
-                var data = (await connection.QueryAsync<Client, Member, Client>(
+                var data = (await connection.QueryAsync<Connection, Member, Connection>(
                         sqlQuery,
                         (client, member) =>
                         {
@@ -86,7 +86,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task<Client> GetClientByConnectionIdAsync(string clientConnectionId)
+        public async Task<Connection> GetClientByConnectionIdAsync(string clientConnectionId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -94,11 +94,11 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"
                     SELECT *
-                    FROM Clients c 
+                    FROM Connections c 
                     INNER JOIN Members m ON c.MemberId = m.Id
                     WHERE c.ClientConnectionId = @clientConnectionId";
 
-                var data = (await connection.QueryAsync<Client, Member, Client>(
+                var data = (await connection.QueryAsync<Connection, Member, Connection>(
                         sqlQuery,
                         (client, member) =>
                         {
@@ -113,14 +113,14 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task AddClientAsync(Client client)
+        public async Task AddClientAsync(Connection client)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    INSERT INTO Clients(Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId) 
+                    INSERT INTO Connections(Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId) 
                     VALUES (@Id, @ClientConnectionId, @LastActivity, @LastClientActivity, @Name, @UserAgent, @MemberId);";
                 
                 await connection.ExecuteScalarAsync(sqlQuery, client);
@@ -128,13 +128,13 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
         }
 
         //TODO: Add Unit Test
-        public async Task UpdateClientAsync(Client client)
+        public async Task UpdateClientAsync(Connection client)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = @"UPDATE Clients 
+                var sqlQuery = @"UPDATE Connections 
                                  SET Id = @Id, 
                                      ClientConnectionId = @ClientConnectionId, 
                                      LastActivity = @LastActivity, 
@@ -154,13 +154,13 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = @"DELETE FROM Clients WHERE Id = @clientId";
+                var sqlQuery = @"DELETE FROM Connections WHERE Id = @clientId";
 
                 await connection.ExecuteAsync(sqlQuery, new { clientId });
             }
         }
 
-        public async Task<List<Client>> GetClientsByMemberIdsAsync(List<Guid> memberIds)
+        public async Task<List<Connection>> GetClientsByMemberIdsAsync(List<Guid> memberIds)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -168,11 +168,11 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 
                 var sqlQuery = @"
                     SELECT *
-                    FROM Clients c 
+                    FROM Connections c 
                     INNER JOIN Members m ON c.MemberId = m.Id
                     WHERE c.MemberId IN @memberIds";
 
-                var data = (await connection.QueryAsync<Client, Member, Client>(
+                var data = (await connection.QueryAsync<Connection, Member, Connection>(
                         sqlQuery,
                         (client, member) =>
                         {

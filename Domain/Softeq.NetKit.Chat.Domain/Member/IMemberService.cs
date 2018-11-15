@@ -25,13 +25,13 @@ namespace Softeq.NetKit.Chat.Domain.Member
         Task<IEnumerable<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request);
 
 
-        Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request);
-        Task DeleteClientAsync(DeleteClientRequest request);
-        Task UpdateActivityAsync(AddClientRequest request);
-        Task<IEnumerable<Client.Client>> GetMemberClientsAsync(Guid memberId);
+        Task<ConnectionResponse> GetOrAddClientAsync(AddConnectionRequest request);
+        Task DeleteClientAsync(DeleteConnectionRequest request);
+        Task UpdateActivityAsync(AddConnectionRequest request);
+        Task<IEnumerable<Client.Connection>> GetMemberClientsAsync(Guid memberId);
         Task<MemberSummary> AddMemberAsync(string saasUserId, string email);
         Task UpdateMemberStatusAsync(UpdateMemberStatusRequest request);
-        Task<IEnumerable<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds);
+        Task<IEnumerable<ConnectionResponse>> GetClientsByMemberIds(List<Guid> memberIds);
         Task<IEnumerable<MemberSummary>> GetAllMembersAsync();
     }
 }

@@ -10,8 +10,8 @@ namespace Softeq.NetKit.Chat.Data.Interfaces.SocketConnection
 {
     public interface IClientService
     {
-        Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request);
-        Task DeleteClientAsync(DeleteClientRequest request);
-        Task UpdateActivityAsync(AddClientRequest request);
+        Task<ConnectionResponse> GetOrAddClientAsync(AddConnectionRequest request);
+        Task DeleteClientAsync(DeleteConnectionRequest request);
+        Task UpdateActivityAsync(AddConnectionRequest request);
     }
 }

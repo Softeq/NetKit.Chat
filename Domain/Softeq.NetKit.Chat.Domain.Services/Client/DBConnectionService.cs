@@ -23,7 +23,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request)
+        public async Task<ConnectionResponse> GetOrAddClientAsync(AddConnectionRequest request)
         {
            var member = await _unitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
@@ -50,7 +50,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
                 return client.ToClientResponse(member.SaasUserId);
             }
 
-            client = new Domain.Client.Client
+            client = new Domain.Client.Connection
             {
                 Id = Guid.NewGuid(),
                 MemberId = member.Id,
@@ -63,14 +63,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
             return client.ToClientResponse(member.SaasUserId);
         }
 
-        public async Task DeleteClientAsync(DeleteClientRequest request)
+        public async Task DeleteClientAsync(DeleteConnectionRequest request)
         {
             var client = await _unitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             await _unitOfWork.ClientRepository.DeleteClientAsync(client.Id);
         }
 
-        public async Task UpdateActivityAsync(AddClientRequest request)
+        public async Task UpdateActivityAsync(AddConnectionRequest request)
         {
             var client = await _unitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
             client.UserAgent = request.UserAgent;
