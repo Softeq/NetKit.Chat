@@ -4,6 +4,7 @@
 using Autofac;
 using CorrelationId;
 using Serilog;
+using Softeq.NetKit.Chat.Common.Cache;
 using Softeq.NetKit.Chat.Common.Log;
 using SerilogLog = Serilog.Log;
 

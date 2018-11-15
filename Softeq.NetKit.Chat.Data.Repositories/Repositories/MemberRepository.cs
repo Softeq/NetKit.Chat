@@ -134,7 +134,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 var sqlQuery = @"
                     SELECT m.Id, m.Email, m.IsAfk, m.IsBanned, m.LastActivity, m.LastNudged, m.Name, m.PhotoName, m.Role, m.SaasUserId, m.Status 
                     FROM Members m
-                    INNER JOIN Clients c ON m.Id = c.MemberId
+                    INNER JOIN Connections c ON m.Id = c.MemberId
                     WHERE c.Id = @clientId";
                 
                 var data = (await connection.QueryAsync<Member>(sqlQuery, new { clientId }))

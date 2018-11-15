@@ -214,7 +214,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         public async Task GetMemberByClientIdAsyncTest()
         {
             // Arrange
-            var client = new Client
+            var client = new Connection
             {
                 Id = Guid.NewGuid(),
                 MemberId = _memberId,

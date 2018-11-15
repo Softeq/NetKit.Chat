@@ -33,7 +33,7 @@ namespace Softeq.NetKit.Chat.Domain.Member
         public List<Message.Message> Messages { get; set; }
 
         // List of clients that are currently connected for this user
-        public List<Client.Client> ConnectedClients { get; set; }
+        public List<Client.Connection> ConnectedClients { get; set; }
         public List<ChannelMembers> Channels { get; set; }
 
         public List<Notification.Notification> Notifications { get; set; }

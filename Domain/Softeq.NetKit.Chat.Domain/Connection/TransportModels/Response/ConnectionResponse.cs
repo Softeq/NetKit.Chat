@@ -5,7 +5,7 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.Client.TransportModels.Response
 {
-    public class ClientResponse
+    public class ConnectionResponse
     {
         public Guid Id { get; set; }
         public string ConnectionClientId { get; set; }

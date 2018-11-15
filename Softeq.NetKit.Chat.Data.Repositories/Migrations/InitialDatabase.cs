@@ -32,8 +32,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Migrations
                 CREATE UNIQUE NONCLUSTERED INDEX [IX_Id] ON [dbo].[Members] ([Id] ASC)
                 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
                 
-                -- Create Clients table
-                CREATE TABLE [dbo].[Clients](
+                -- Create Connections table
+                CREATE TABLE [dbo].[Connections](
                 	[Id] [uniqueidentifier] NOT NULL PRIMARY KEY,
                 	[ClientConnectionId] [nvarchar](max) NULL,
                 	[LastActivity] [datetimeoffset](7) NOT NULL,
@@ -42,10 +42,10 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Migrations
                 	[UserAgent] [nvarchar](max) NULL,
                 	[MemberId] [uniqueidentifier] NOT NULL)
 
-                ALTER TABLE [dbo].[Clients]  WITH CHECK ADD CONSTRAINT [FK_Clients_Members_MemberId] FOREIGN KEY([MemberId])
+                ALTER TABLE [dbo].[Connections]  WITH CHECK ADD CONSTRAINT [FK_Connections_Members_MemberId] FOREIGN KEY([MemberId])
                 REFERENCES [dbo].[Members] ([Id])
                 
-                ALTER TABLE [dbo].[Clients] CHECK CONSTRAINT [FK_Clients_Members_MemberId]
+                ALTER TABLE [dbo].[Connections] CHECK CONSTRAINT [FK_Connections_Members_MemberId]
                 
                 -- Create Channels table
                 CREATE TABLE [dbo].[Channels](
@@ -173,7 +173,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Migrations
             Execute(@"
                 DROP TABLE [dbo].[Settings]
                 DROP TABLE [dbo].[ChannelMembers]
-                DROP TABLE [dbo].[Clients]
+                DROP TABLE [dbo].[Connections]
                 DROP TABLE [dbo].[Notifications]
                 DROP TABLE [dbo].[Messages]
                 DROP TABLE[dbo].[Attachments]
