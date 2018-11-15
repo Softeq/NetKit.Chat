@@ -87,34 +87,35 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
             await _distributedCacheClient.HashSetAsync<List<Domain.Client.Connection>>(userClients.SaasUserId, userClients.SaasUserId, userClients.Clients);
         }
 
-        public async Task UpdateActivityAsync(AddClientRequest request)
+        public async Task UpdateActivityAsync(AddConnectionRequest request)
         {
             var userCache = await GetUserConnectionCache(request.SaasUserId, request.ConnectionId);
 
             var client = userCache.Clients.FirstOrDefault(i => i.ClientConnectionId == request.ConnectionId);
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             client.UserAgent = request.UserAgent;
+            client.LastClientActivity = DateTimeOffset.Now;
 
             await SaveUserConnectionCache(userCache, request.ConnectionId);
         }
 
-        private async Task<UserConnectionCache> GetUserConnectionCache(string saasUserId, String connectionId)
+        private async Task<ConnectionCache> GetUserConnectionCache(string saasUserId, String connectionId)
         {
-            var userConnectionCache = await _distributedCacheClient.HashGetAsync<UserConnectionCache>(saasUserId, connectionId);
-            if (userConnectionCache==null)
+            var cache = new ConnectionCache();
+            var userConnections = await _distributedCacheClient.HashGetAsync<List<Domain.Client.Connection>>(saasUserId, connectionId);
+            if (userConnections == null)
             {
-                userConnectionCache = new UserConnectionCache()
-                {
-                    SaasUserId = saasUserId,
-                    Clients = new List<Domain.Client.Client>()
-                };
+                userConnections = new List<Domain.Client.Connection>();
             }
-            return userConnectionCache;
+
+            cache.SaasUserId = saasUserId;
+            cache.Clients = userConnections;
+            return cache;
         }
 
-        private async Task SaveUserConnectionCache(UserConnectionCache userClients, String connectionId)
+        private async Task SaveUserConnectionCache(ConnectionCache userClients, String connectionId)
         {
-            await _distributedCacheClient.HashSetAsync<List<Domain.Client.Client>>(userClients.SaasUserId, connectionId, userClients.Clients);
+            await _distributedCacheClient.HashSetAsync<List<Domain.Client.Connection>>(userClients.SaasUserId, userClients.SaasUserId, userClients.Clients);
         }
     }
 }
