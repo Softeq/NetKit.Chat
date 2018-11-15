@@ -121,7 +121,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         }
 
         // TODO:Add unit test
-        public async Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request)
+        public async Task<ConnectionResponse> GetOrAddClientAsync(AddConnectionRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
@@ -148,13 +148,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 return client.ToClientResponse(member.SaasUserId);
             }
 
-            client = new Domain.Client.Client
+            client = new Domain.Client.Connection
             {
                 Id = Guid.NewGuid(),
                 MemberId = member.Id,
                 ClientConnectionId = request.ConnectionId,
-                LastActivity = member.LastActivity,
-                LastClientActivity = DateTimeOffset.UtcNow,
                 Name = request.UserName,
                 UserAgent = request.UserAgent
             };
@@ -163,7 +161,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             return client.ToClientResponse(member.SaasUserId);
         }
 
-        public async Task DeleteClientAsync(DeleteClientRequest request)
+        public async Task DeleteClientAsync(DeleteConnectionRequest request)
         {
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
@@ -171,7 +169,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         }
 
         // TODO:Add unit test
-        public async Task<IEnumerable<Domain.Client.Client>> GetMemberClientsAsync(Guid memberId)
+        public async Task<IEnumerable<Domain.Client.Connection>> GetMemberClientsAsync(Guid memberId)
         {
             var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);
             return clients;
@@ -209,7 +207,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member.ToMember());
         }
 
-        public async Task<IEnumerable<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds)
+        public async Task<IEnumerable<ConnectionResponse>> GetClientsByMemberIds(List<Guid> memberIds)
         {
             var clients = await UnitOfWork.ClientRepository.GetClientsByMemberIdsAsync(memberIds);
             return clients.Select(x => x.ToClientResponse(x.Member.SaasUserId));
@@ -221,17 +219,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             return members.Select(x => x.ToMemberSummary(_configuration));
         }
 
-        public async Task UpdateActivityAsync(AddClientRequest request)
+        public async Task UpdateActivityAsync(AddConnectionRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             member.Status = UserStatus.Active;
             member.LastActivity = DateTimeOffset.UtcNow;
-
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
-            client.UserAgent = request.UserAgent;
-            client.LastActivity = member.LastActivity;
-            client.LastClientActivity = DateTimeOffset.UtcNow;
-
             // Remove any Afk notes.
             if (member.IsAfk)
             {
@@ -239,7 +231,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             }
 
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
-            await UnitOfWork.ClientRepository.UpdateClientAsync(client);
         }
     }
 }

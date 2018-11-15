@@ -3,12 +3,13 @@
 
 namespace Softeq.NetKit.Chat.Domain.Client.TransportModels.Request
 {
-    public class DeleteClientRequest
+    public class DeleteConnectionRequest
     {
-        public DeleteClientRequest(string clientConnectionId)
+        public DeleteConnectionRequest(string clientConnectionId)
         {
             ClientConnectionId = clientConnectionId;
         }
         public string ClientConnectionId { get; set; }
+        public string SaasUserId { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         public async Task AddClientAsyncTest()
         {
             // Arrange
-            var client = new Client
+            var client = new Connection
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),
@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         public async Task DeleteClientAsyncTest()
         {
             // Arrange
-            var client = new Client
+            var client = new Connection
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),
@@ -81,7 +81,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         public async Task GetClientByIdAsyncTest()
         {
             // Arrange
-            var client = new Client
+            var client = new Connection
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),
@@ -109,7 +109,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         public async Task GetClientsAsyncTest()
         {
             // Arrange
-            var client = new Client
+            var client = new Connection
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),

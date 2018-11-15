@@ -7,9 +7,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Client
 {
     internal static class ClientMapper
     {
-        public static ClientResponse ToClientResponse(this Domain.Client.Client client, string saasUserId)
+        public static ConnectionResponse ToClientResponse(this Domain.Client.Connection client, string saasUserId)
         {
-            var clientResponse = new ClientResponse();
+            var clientResponse = new ConnectionResponse();
             if (client != null)
             {
                 clientResponse.Id = client.Id;

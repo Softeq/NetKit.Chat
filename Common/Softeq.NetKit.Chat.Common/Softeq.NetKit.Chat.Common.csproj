@@ -7,12 +7,15 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="CorrelationId" Version="2.1.0" />
+    <PackageReference Include="Ensure.That" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Serilog" Version="2.7.1" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="2.6.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Softeq.Serilog.Extension" Version="1.0.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.513" />
   </ItemGroup>
 
 </Project>
