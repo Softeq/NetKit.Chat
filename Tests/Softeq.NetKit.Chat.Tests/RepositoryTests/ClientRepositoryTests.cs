@@ -134,12 +134,12 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task GetMemberClientsAsync()
+        public async Task GetMemberClientsAsync_ShouldReturnAllMemberClients()
         {
             // Arrange
             var client = new Client
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.Parse("1"),
                 ClientConnectionId = Guid.NewGuid().ToString(),
                 LastActivity = DateTimeOffset.UtcNow,
                 LastClientActivity = DateTimeOffset.UtcNow,
@@ -147,20 +147,28 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MemberId = _memberId,
                 UserAgent = "test"
             };
+            var client2 = new Client
+            {
+                Id = Guid.Parse("2"),
+                ClientConnectionId = Guid.NewGuid().ToString(),
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                Name = "test 2",
+                MemberId = _memberId,
+                UserAgent = "test"
+            };
+
             // Act
             await UnitOfWork.ClientRepository.AddClientAsync(client);
-            client.Name = "test 2";
-            client.LastActivity = DateTimeOffset.UtcNow;
-            client.Id = Guid.NewGuid();
-            await UnitOfWork.ClientRepository.AddClientAsync(client);
+            await UnitOfWork.ClientRepository.AddClientAsync(client2);
             var newClients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(_memberId);
+
             // Assert
-            Assert.NotNull(newClients);
-            Assert.NotEmpty(newClients);
             Assert.Equal(newClients.Count, 2);
         }
+
         [Fact]
-        public async Task UpdateClientAsyncTest()
+        public async Task UpdateClientAsync_ShouldUpdateClient()
         {
             // Arrange
             var client = new Client
@@ -173,12 +181,14 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MemberId = _memberId,
                 UserAgent = "test"
             };
+
             // Act
             await UnitOfWork.ClientRepository.AddClientAsync(client);
             client.Name = "updated_name";
             client.UserAgent = "updated_agent";
             await UnitOfWork.ClientRepository.UpdateClientAsync(client);
             var updatedClient = await UnitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
+
             // Assert
             Assert.NotNull(updatedClient);
             Assert.Equal(client.Id, updatedClient.Id);

@@ -228,33 +228,29 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task<Message> GetPreviuosMessageAsync(Message currentMessage)
+        public async Task<Message> GetPreviousMessageAsync(Message message)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
                 var sqlQuery = @"
-		      SELECT TOP(1) *
-		      FROM Messages m    
-		      LEFT JOIN Members mem ON mem.Id = m.OwnerId   
-		      WHERE m.ChannelId = @channelId AND OwnerId = @ownerId AND m.Created > @createdDate
-		      ORDER BY Created ASC";
-                     SELECT top(1) *
-                    FROM Messages m    
-                    left join Members mem on mem.Id=m.OwnerId   
-                    WHERE m.ChannelId = @channelId AND OwnerId=@ownerId AND m.Created > @createdDate
-					order by Created asc";
-                var data = (await connection.QueryAsync<Message, Member, Message>(
+		            SELECT TOP(1) *
+		            FROM Messages m    
+		            LEFT JOIN Members mem ON mem.Id = m.OwnerId   
+		            WHERE m.ChannelId = @channelId AND OwnerId = @ownerId AND m.Created < @createdDate
+		            ORDER BY Created ASC";
+
+                var previousMessage = (await connection.QueryAsync<Message, Member, Message>(
                         sqlQuery,
-                        (message, member) =>
+                        (msg, member) =>
                         {
-                            message.Owner = member;
-                            message.OwnerId = member.Id;
-                            return message;
+                            msg.Owner = member;
+                            msg.OwnerId = member.Id;
+                            return msg;
                         },
-                        new { messageId = currentMessage.Id, channelId = currentMessage.ChannelId, ownerId = currentMessage.OwnerId, createdDate = currentMessage.Created }))
+                        new { Id = message.Id, channelId = message.ChannelId, ownerId = message.OwnerId, createdDate = message.Created }))
                     .FirstOrDefault();
-                return data;
+                return previousMessage;
             }
         }
 

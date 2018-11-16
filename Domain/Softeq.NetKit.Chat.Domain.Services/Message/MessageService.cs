@@ -26,9 +26,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         private readonly CloudStorageConfiguration _cloudStorageConfiguration;
         private readonly AttachmentConfiguration _attachmentConfiguration;
         public MessageService(
-            IUnitOfWork unitOfWork, 
-            IContentStorage contentStorage, 
-            CloudStorageConfiguration cloudStorageConfiguration, 
+            IUnitOfWork unitOfWork,
+            IContentStorage contentStorage,
+            CloudStorageConfiguration cloudStorageConfiguration,
             AttachmentConfiguration attachmentConfiguration) : base(unitOfWork)
         {
             _contentStorage = contentStorage;
@@ -88,13 +88,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
                 {
                     await _contentStorage.DeleteContentAsync(attachment.FileName, _cloudStorageConfiguration.MessageAttachmentsContainer);
                 }
-
-                //TODO calculate previous message
+                
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message);
-if (previousMessage != null)
-{
-    await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(previousMessage.Id);
-}
+                if (previousMessage != null)
+                {
+                    await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(previousMessage.Id);
+                }
 
                 // Delete message from database
                 await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);
@@ -204,11 +203,11 @@ if (previousMessage != null)
 
             var lastMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
             var lastMessageCreatedDate = lastMessage?.Created ?? request.MessageCreatedDate;
-            
+
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
             var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
-            
+
             var result = new MessagesResult
             {
                 PageSize = request.PageSize,
@@ -229,7 +228,7 @@ if (previousMessage != null)
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetMessagesAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
             var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
-       
+
             var result = new MessagesResult
             {
                 PageSize = request.PageSize,
@@ -243,7 +242,7 @@ if (previousMessage != null)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            
+
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetLastMessagesAsync(request.ChannelId, lastReadMessage?.Created);
             var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();

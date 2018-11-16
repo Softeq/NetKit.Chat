@@ -162,22 +162,22 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task GetPreviuosMessageAsyncTest()
+        public async Task GetPreviousMessageAsync_ShouldReturnPreviousMessageIfExists()
         {
-
             // Arrange
             var firstMessage = await GenerateAndAddMessage();
-            var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(-11));
+
+            var secondMessage = await GenerateAndAddMessage(DateTimeOffset.UtcNow.AddHours(1));
+
             // Act 1
-            var previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(
-                var previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(secondMessage);
+            var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage);
+                
             // Assert 1
-            Assert.NotNull(previuosMessage);
+            Assert.NotNull(previousMessage);
             // Act 2
-            previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(
-                firstMessage);
+            previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage);
             // Assert 2
-            Assert.Null(previuosMessage);
+            Assert.Null(previousMessage);
         }
 
         [Fact]
@@ -188,16 +188,14 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(1));
             
             // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
-                _channelId, firstMessage.Id);
+            var actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(_channelId, firstMessage.Id);
 
             // Assert 1
             Assert.NotNull(actualMessages);
             Assert.Empty(actualMessages);
 
             // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
-                _channelId, secondMessage.Id);
+            actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(_channelId, secondMessage.Id);
 
             // Assert 2
             Assert.NotNull(actualMessages);
