@@ -41,8 +41,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = @"
-                DELETE FROM ChannelMembers WHERE ChannelId = @channelId AND MemberId = @memberId";
+                var sqlQuery = @"DELETE FROM ChannelMembers 
+                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
                 await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
             }

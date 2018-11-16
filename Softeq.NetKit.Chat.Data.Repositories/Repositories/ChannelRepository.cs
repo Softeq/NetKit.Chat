@@ -250,8 +250,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"UPDATE Channels
-                                SET MembersCount = MembersCount - 1
-                                WHERE Id = @channelId";
+                                 SET MembersCount = MembersCount - 1
+                                 WHERE Id = @channelId";
                 
                 await connection.ExecuteAsync(sqlQuery, new { channelId });
             }

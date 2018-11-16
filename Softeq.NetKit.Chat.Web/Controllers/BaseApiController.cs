@@ -23,12 +23,12 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         protected string GetCurrentUserId()
         {
-            return this.User.FindFirstValue(JwtClaimTypes.Subject);
+            return User.FindFirstValue(JwtClaimTypes.Subject);
         }
 
         protected string GetCurrentUserEmail()
         {
-            return this.User.FindFirstValue(JwtClaimTypes.Name);
+            return User.FindFirstValue(JwtClaimTypes.Name);
         }
 
         #endregion

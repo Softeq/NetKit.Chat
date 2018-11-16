@@ -356,5 +356,32 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             var messagesCount = await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(request.ChannelId);
             return messagesCount;
         }
+
+        public async Task DeleteMemberFromChannelAsync(DeleteMemberFromChannelRequest request)
+        {
+            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
+            Ensure.That(channel)
+                  .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
+                  .IsNotNull();
+
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            Ensure.That(member)
+                  .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                  .IsNotNull();
+
+            var isMemberExists = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channel.Id);
+            if (!isMemberExists)
+            {
+                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "Member did not join to this channel."));
+            }
+
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await UnitOfWork.ChannelMemberRepository.DeleteChannelMemberAsync(member.Id, channel.Id);
+                await UnitOfWork.ChannelRepository.DecrementChannelMembersCount(channel.Id);
+
+                transactionScope.Complete();
+            }
+        }
     }
 }

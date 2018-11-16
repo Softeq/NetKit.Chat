@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Softeq.NetKit.Chat.Domain.Channel;
@@ -188,6 +189,22 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             var userId = GetCurrentUserId();
             var messagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(userId, channelId));
             return Ok(messagesCount);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("{channelId:guid}/delete/{saasUserId}")]
+        public async Task<IActionResult> DeleteMemberFromChannelAsync(Guid channelId, string saasUserId)
+        {
+            if (string.IsNullOrWhiteSpace(saasUserId))
+            {
+                return BadRequest($"'{nameof(saasUserId)}' is required. It cannot be null or empty.");
+            }
+            
+            await _channelService.DeleteMemberFromChannelAsync(new DeleteMemberFromChannelRequest(saasUserId, channelId));
+            return Ok();
         }
     }
 }

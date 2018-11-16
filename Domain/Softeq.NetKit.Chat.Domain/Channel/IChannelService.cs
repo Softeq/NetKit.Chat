@@ -27,5 +27,6 @@ namespace Softeq.NetKit.Chat.Domain.Channel
         Task<bool> CheckIfMemberExistInChannelAsync(InviteMemberRequest request);
         Task MuteChannelAsync(ChannelRequest request);
         Task<int> GetChannelMessageCountAsync(ChannelRequest request);
+        Task DeleteMemberFromChannelAsync(DeleteMemberFromChannelRequest request);
     }
 }
