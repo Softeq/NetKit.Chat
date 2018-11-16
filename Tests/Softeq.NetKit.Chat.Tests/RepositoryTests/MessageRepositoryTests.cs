@@ -170,7 +170,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(-11));
             // Act 1
             var previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(
-                secondMessage);
+                var previuosMessage = await UnitOfWork.MessageRepository.GetPreviuosMessageAsync(secondMessage);
             // Assert 1
             Assert.NotNull(previuosMessage);
             // Act 2
