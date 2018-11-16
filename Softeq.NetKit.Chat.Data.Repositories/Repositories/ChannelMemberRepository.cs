@@ -60,7 +60,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                      LastReadMessageId = @LastReadMessageId, 
                                      IsMuted = @IsMuted
                                  WHERE ChannelId = @ChannelId AND MemberId = @MemberId";
-                
+
                 await connection.ExecuteAsync(sqlQuery, channelMember);
             }
         }
@@ -72,8 +72,9 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    SELECT MemberId, ChannelId, LastReadMessageId, IsMuted
-                    FROM ChannelMembers
+                    SELECT MemberId, ChannelId, LastReadMessageId, IsMuted, SaasUserId
+                    FROM ChannelMembers c
+                    LEFT JOIN Members m on c.MemberId=m.Id
                     WHERE ChannelId = @channelId";
 
                 var data = (await connection.QueryAsync<ChannelMembers>(sqlQuery, new { channelId })).ToList();

@@ -16,7 +16,7 @@ namespace Softeq.NetKit.Chat.Data.Interfaces.Repository
         Task AddClientAsync(Client client);
         Task UpdateClientAsync(Client client);
         Task DeleteClientAsync(Guid clientId);
-        Task<List<Client>> GetMemberClientsAsync(Guid memberId);
+        Task<List<Client>> GetMemberClientsAsync(String saasUserId);
         Task<List<Client>> GetClientsByMemberIdsAsync(List<Guid> memberIds);
     }
 }

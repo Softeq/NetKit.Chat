@@ -8,6 +8,7 @@ namespace Softeq.NetKit.Chat.Domain.ChannelMember.TransportModels
     public class ChannelMemberResponse
     {
         public Guid MemberId { get; set; }
+        public String SaasUserId { get; set; }
         public Guid ChannelId { get; set; }
         public bool IsMuted { get; set; }
         public Guid? LastReadMessageId { get; set; }

@@ -17,6 +17,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.ChannelMember
                 channelMemberResponse.ChannelId = channelMember.ChannelId;
                 channelMemberResponse.IsMuted = channelMember.IsMuted;
                 channelMemberResponse.LastReadMessageId = channelMember.LastReadMessageId;
+                channelMemberResponse.SaasUserId = channelMember.SaasUserId;
+
             }
             return channelMemberResponse;
         }

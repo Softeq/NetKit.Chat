@@ -8,6 +8,7 @@ namespace Softeq.NetKit.Chat.Domain.ChannelMember
     public class ChannelMembers
     {
         public Guid MemberId { get; set; }
+        public String SaasUserId { get; set; }
         public Member.Member Member { get; set; }
 
         // Channel info

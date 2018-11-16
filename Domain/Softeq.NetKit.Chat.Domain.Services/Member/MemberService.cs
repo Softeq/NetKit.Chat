@@ -170,13 +170,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
         }
 
-        // TODO:Add unit test
-        public async Task<IEnumerable<Domain.Client.Client>> GetMemberClientsAsync(Guid memberId)
-        {
-            var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);
-            return clients;
-        }
-
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
@@ -227,11 +220,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             member.Status = UserStatus.Active;
             member.LastActivity = DateTimeOffset.UtcNow;
 
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
-            client.UserAgent = request.UserAgent;
-            client.LastActivity = member.LastActivity;
-            client.LastClientActivity = DateTimeOffset.UtcNow;
-
             // Remove any Afk notes.
             if (member.IsAfk)
             {
@@ -239,7 +227,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             }
 
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
-            await UnitOfWork.ClientRepository.UpdateClientAsync(client);
         }
     }
 }

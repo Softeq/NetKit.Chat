@@ -39,20 +39,21 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
         }
 
         //TODO: Add Unit test
-        public async Task<List<Client>> GetMemberClientsAsync(Guid memberId)
+        public async Task<List<Client>> GetMemberClientsAsync(String saasUserId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    SELECT Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId 
-                    FROM Clients
-                    WHERE MemberId = @memberId";
+                    SELECT c.Id, c.ClientConnectionId, c.LastActivity, c.LastClientActivity, c.Name, c.UserAgent, c.MemberId 
+                    FROM Clients c
+                    LEFT join Members m on c.MemberId=m.Id
+                    WHERE SaasUserId = @saasUserId";
 
                 var data = (await connection.QueryAsync<Client>(
                     sqlQuery,
-                    new { memberId }))
+                    new { saasUserId }))
                     .ToList();
                 
                 return data;
