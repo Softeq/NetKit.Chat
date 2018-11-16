@@ -64,7 +64,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         public async Task<IEnumerable<MemberSummary>> GetChannelMembersAsync(ChannelRequest request)
         {
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(request.ChannelId);
-            return members.Where(m=>m.SaasUserId!=request.SaasUserId).Select(x => x.ToMemberSummary(_configuration));
+            return members.Where(m => m.SaasUserId!=request.SaasUserId).Select(x => x.ToMemberSummary(_configuration));
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
@@ -117,7 +117,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         public async Task<IEnumerable<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request)
         {
             var members = await UnitOfWork.MemberRepository.GetOnlineMembersInChannelAsync(request.ChannelId);
-            return members.Where(m=>m.SaasUserId!=request.SaasUserId).Select(x => x.ToParticipantResponse());
+            return members.Where(m => m.SaasUserId!=request.SaasUserId).Select(x => x.ToParticipantResponse());
         }
 
         // TODO:Add unit test
