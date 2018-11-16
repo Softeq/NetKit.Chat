@@ -234,6 +234,11 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             {
                 await connection.OpenAsync();
                 var sqlQuery = @"
+		      SELECT TOP(1) *
+		      FROM Messages m    
+		      LEFT JOIN Members mem ON mem.Id = m.OwnerId   
+		      WHERE m.ChannelId = @channelId AND OwnerId = @ownerId AND m.Created > @createdDate
+		      ORDER BY Created ASC";
                      SELECT top(1) *
                     FROM Messages m    
                     left join Members mem on mem.Id=m.OwnerId   
