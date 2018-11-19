@@ -1,10 +1,9 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Data.Interfaces.Repository;
-using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
 using Softeq.NetKit.Chat.Data.Repositories.Infrastructure;
 using Softeq.NetKit.Chat.Data.Repositories.Repositories;
+using IAttachmentRepository = Softeq.NetKit.Chat.Data.Repositories.Repositories.IAttachmentRepository;
 
 namespace Softeq.NetKit.Chat.Data.Repositories
 {
@@ -19,6 +18,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories
 
         private IAttachmentRepository _attachmentRepository;
         public IAttachmentRepository AttachmentRepository => _attachmentRepository ?? (_attachmentRepository =  new AttachmentRepository(_sqlConnectionFactory));
+
         private IClientRepository _clientRepository;
         public IClientRepository ClientRepository => _clientRepository ?? (_clientRepository = new ClientRepository(_sqlConnectionFactory));
 
@@ -39,6 +39,5 @@ namespace Softeq.NetKit.Chat.Data.Repositories
 
         private IMemberRepository _memberRepository;
         public IMemberRepository MemberRepository => _memberRepository ?? (_memberRepository = new MemberRepository(_sqlConnectionFactory));
-
     }
 }

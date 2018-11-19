@@ -1,9 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Data.Interfaces.Repository.Common;
-
-namespace Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork
+namespace Softeq.NetKit.Chat.Data.Repositories
 {
     public interface IUnitOfWork : IRepositoryFactory
     {

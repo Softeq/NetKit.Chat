@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Softeq.NetKit.Chat.Data.Interfaces.Repository;
 using Softeq.NetKit.Chat.Data.Repositories.Infrastructure;
 using Softeq.NetKit.Chat.Domain.Settings;
 

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.Client;
 
-namespace Softeq.NetKit.Chat.Data.Interfaces.Repository
+namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
 {
     public interface IClientRepository
     {

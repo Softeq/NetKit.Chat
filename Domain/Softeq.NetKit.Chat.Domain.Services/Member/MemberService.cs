@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
-using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
+using Softeq.NetKit.Chat.Data.Repositories;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.ChannelMember;
@@ -28,8 +28,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
     {
         private readonly CloudStorageConfiguration _configuration;
 
-        public MemberService(IUnitOfWork unitOfWork, 
-            CloudStorageConfiguration configuration) : base(unitOfWork)
+        public MemberService(IUnitOfWork unitOfWork, CloudStorageConfiguration configuration) : base(unitOfWork)
         {
             _configuration = configuration;
         }

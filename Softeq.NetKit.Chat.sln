@@ -3,27 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{23AD2C9A-F9EC-496F-ACD7-5014846E812E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Interfaces", "Softeq.NetKit.Chat.Data.Interfaces\Softeq.NetKit.Chat.Data.Interfaces.csproj", "{6D424552-CE60-49EB-90A3-DEE96C3B9EDA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{7CEE85EB-6377-4FA9-8B83-3C595FF82956}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Tests", "Tests\Softeq.NetKit.Chat.Tests\Softeq.NetKit.Chat.Tests.csproj", "{81EC9156-0BF3-4F32-90AB-424BA2C58BFC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Domain.Services", "Domain\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj", "{A46096DB-1298-4085-8556-4F7E9DD0AB4A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Repositories", "Softeq.NetKit.Chat.Data.Repositories\Softeq.NetKit.Chat.Data.Repositories.csproj", "{72ABFC0D-E302-44A4-9118-7A8468276D91}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Infrastructure.SignalR", "Softeq.NetKit.Chat.Infrastructure.SignalR\Softeq.NetKit.Chat.Infrastructure.SignalR.csproj", "{006920D5-96E2-4900-BE64-A783F2C863A4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Web", "Softeq.NetKit.Chat.Web\Softeq.NetKit.Chat.Web.csproj", "{A8ABD055-ACDC-4533-822C-8662A58B2333}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{91F7E510-5ABB-46BA-A9FF-D9EA5DA3EBD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Domain", "Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj", "{F384D557-EE76-42C5-8DBA-990C74920E6D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{9584A0A3-ADB2-4911-9777-D8325AEFF149}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.NetKit.Chat.Domain", "Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj", "{F384D557-EE76-42C5-8DBA-990C74920E6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.NetKit.Chat.Data.Repositories", "Softeq.NetKit.Chat.Data.Repositories\Softeq.NetKit.Chat.Data.Repositories.csproj", "{6AC107C1-5743-4AAD-834F-7F76FAFA8417}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6D424552-CE60-49EB-90A3-DEE96C3B9EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D424552-CE60-49EB-90A3-DEE96C3B9EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D424552-CE60-49EB-90A3-DEE96C3B9EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D424552-CE60-49EB-90A3-DEE96C3B9EDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{81EC9156-0BF3-4F32-90AB-424BA2C58BFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{81EC9156-0BF3-4F32-90AB-424BA2C58BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81EC9156-0BF3-4F32-90AB-424BA2C58BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,10 +29,6 @@ Global
 		{A46096DB-1298-4085-8556-4F7E9DD0AB4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A46096DB-1298-4085-8556-4F7E9DD0AB4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A46096DB-1298-4085-8556-4F7E9DD0AB4A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{72ABFC0D-E302-44A4-9118-7A8468276D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{72ABFC0D-E302-44A4-9118-7A8468276D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{72ABFC0D-E302-44A4-9118-7A8468276D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{72ABFC0D-E302-44A4-9118-7A8468276D91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{006920D5-96E2-4900-BE64-A783F2C863A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{006920D5-96E2-4900-BE64-A783F2C863A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{006920D5-96E2-4900-BE64-A783F2C863A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,17 +41,13 @@ Global
 		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{6D424552-CE60-49EB-90A3-DEE96C3B9EDA} = {9584A0A3-ADB2-4911-9777-D8325AEFF149}
-		{81EC9156-0BF3-4F32-90AB-424BA2C58BFC} = {23AD2C9A-F9EC-496F-ACD7-5014846E812E}
-		{A46096DB-1298-4085-8556-4F7E9DD0AB4A} = {7CEE85EB-6377-4FA9-8B83-3C595FF82956}
-		{72ABFC0D-E302-44A4-9118-7A8468276D91} = {9584A0A3-ADB2-4911-9777-D8325AEFF149}
-		{006920D5-96E2-4900-BE64-A783F2C863A4} = {91F7E510-5ABB-46BA-A9FF-D9EA5DA3EBD4}
-		{F384D557-EE76-42C5-8DBA-990C74920E6D} = {7CEE85EB-6377-4FA9-8B83-3C595FF82956}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7ECDD6F-6F42-4C9D-B11E-CD136511A56E}

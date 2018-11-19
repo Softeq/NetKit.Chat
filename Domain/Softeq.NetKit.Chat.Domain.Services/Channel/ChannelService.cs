@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
+using Softeq.NetKit.Chat.Data.Repositories;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
@@ -32,7 +32,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
         private readonly CloudStorageConfiguration _configuration;
         private readonly IContentStorage _contentStorage;
 
-        public ChannelService(IUnitOfWork unitOfWork, 
+        public ChannelService(
+            IUnitOfWork unitOfWork, 
             IChannelMemberService channelMemberService, 
             IMemberService memberService, 
             CloudStorageConfiguration configuration,

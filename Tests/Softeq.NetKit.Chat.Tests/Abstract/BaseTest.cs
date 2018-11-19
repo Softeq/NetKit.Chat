@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using Dapper;
-using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
+using Softeq.NetKit.Chat.Data.Repositories;
 using Softeq.NetKit.Chat.Data.Repositories.Infrastructure;
 using Softeq.NetKit.Chat.Domain.Base;
 

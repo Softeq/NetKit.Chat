@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
+using Softeq.NetKit.Chat.Data.Repositories;
 using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
