@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="ServiceStack.OrmLite" Version="5.4.0" />
     <PackageReference Include="ServiceStack.OrmLite.Sqlite.Core" Version="5.4.0" />
-    <PackageReference Include="Softeq.QueryUtils" Version="1.0.0" />
+    <PackageReference Include="Softeq.QueryUtils" Version="1.0.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">

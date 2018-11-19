@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Interfaces\Softeq.NetKit.Chat.Data.Interfaces.csproj" />
   </ItemGroup>
 
