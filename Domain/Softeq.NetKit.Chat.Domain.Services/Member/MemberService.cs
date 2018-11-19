@@ -139,16 +139,17 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 };
                 await UnitOfWork.MemberRepository.AddMemberAsync(newMember);
             }
-
-            member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-            var updateMemberStatusRequest = new UpdateMemberStatusRequest(UserStatus.Offline)
+            else
             {
-                UserStatus = UserStatus.Offline,
-                SaasUserId = member.SaasUserId
-            };
-            UpdateMemberStatusAsync(updateMemberStatusRequest);
+                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest()
+                {
+                    UserStatus = UserStatus.Active,
+                    SaasUserId = member.SaasUserId
+                });
+            }
 
+            member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);         
+           
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
             if (client != null)
             {
@@ -176,15 +177,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
 
-            var clients = await this.GetMemberClientsAsync(client.MemberId);
-            if (clients.Count()==0)
+            var clients = await GetMemberClientsAsync(client.MemberId);
+            if (!clients.Any())
             {
-                var updateMemberStatusRequest = new UpdateMemberStatusRequest(UserStatus.Offline)
+                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest()
                 {
                     UserStatus = UserStatus.Offline,
                     SaasUserId = client.Member.SaasUserId
-                };
-                UpdateMemberStatusAsync(updateMemberStatusRequest);
+                });
             }
         }
 
