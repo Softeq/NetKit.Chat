@@ -110,17 +110,17 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task UpdateLastReadMessageAsync(Guid messageId)
+        public async Task UpdateLastReadMessageAsync(Guid oldMessageId, Guid previousMessageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
                 var sqlQuery = @"UPDATE ChannelMembers
-                                SET LastReadMessageId = NULL
-                                WHERE LastReadMessageId = @messageId";
+                                SET LastReadMessageId = @previousMessageId
+                                WHERE LastReadMessageId = @oldMessageId";
 
-                await connection.ExecuteAsync(sqlQuery, new { messageId });
+                await connection.ExecuteAsync(sqlQuery, new { oldMessageId, previousMessageId });
             }
         }
 
