@@ -83,7 +83,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task GetOrAddClientAsync_ShouldCreateAndReturnNewClient()
         {
-            AddClientRequest addClientRequest = new AddClientRequest()
+            var addClientRequest = new AddClientRequest()
             {
                 ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
                 SaasUserId = "4A356C96-40C3-410C-B8C3-16EE02205491",
@@ -103,7 +103,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task GetOrAddClientAsync_ShouldNotCreateClientWithNullParameter()
         {
-            AddClientRequest addClientRequestWithNullSaasUserId = new AddClientRequest()
+            var addClientRequestWithNullSaasUserId = new AddClientRequest()
             {
                 ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
                 SaasUserId = null,
@@ -117,24 +117,22 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task UpdateMemberStatusAsync_ShouldUpdateMemberStatus()
         {
-            AddClientRequest addClientrequest = new AddClientRequest()
+            var addClientRequest = new AddClientRequest()
             {
                 ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
                 SaasUserId = "8c7dd32c-2677-4ed7-821b-d349ac56e90c",
                 UserAgent = "user agent1",
                 UserName = "user@test.test"
             };
-            var addedClient = await _memberService.GetOrAddClientAsync(addClientrequest);
+            var addedClient = await _memberService.GetOrAddClientAsync(addClientRequest);
             var createdMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
-            UpdateMemberStatusRequest updateStatusToActiveRequest = new UpdateMemberStatusRequest(createdMember.SaasUserId, UserStatus.Active);
-            UpdateMemberStatusRequest updateStatusToOfflineRequest = new UpdateMemberStatusRequest(createdMember.SaasUserId, UserStatus.Offline);
 
-            await _memberService.UpdateMemberStatusAsync(updateStatusToActiveRequest);
+            await _memberService.UpdateMemberStatusAsync(new UpdateMemberStatusRequest(createdMember.SaasUserId, UserStatus.Active));
             var changedMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
 
             Assert.Equal(UserStatus.Active, changedMember.Status);
 
-            await _memberService.UpdateMemberStatusAsync(updateStatusToOfflineRequest);
+            await _memberService.UpdateMemberStatusAsync(new UpdateMemberStatusRequest(createdMember.SaasUserId, UserStatus.Offline));
             var offlineMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
 
             Assert.Equal(UserStatus.Offline, offlineMember.Status);
@@ -143,26 +141,27 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task UpdateMemberStatusAsync_ShouldSetMemberStatusOfflineIfNoClients()
         {
-            AddClientRequest addClientrequest = new AddClientRequest()
+            var addClientRequest = new AddClientRequest()
             {
                 ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
                 SaasUserId = "8c7dd32c-2677-4ed7-821b-d349ac56e90c",
                 UserAgent = "user agent1",
                 UserName = "user@test.test"
             };
-            var addedClient = await _memberService.GetOrAddClientAsync(addClientrequest);
+            var addedClient = await _memberService.GetOrAddClientAsync(addClientRequest);
             var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
 
             Assert.Equal(UserStatus.Active, member.Status);
 
             var clients = await _memberService.GetMemberClientsAsync(member.Id);
-            foreach (var c in clients)
-            {
-                DeleteClientRequest deleteRequest = new DeleteClientRequest(c.ClientConnectionId);
-                await _memberService.DeleteClientAsync(deleteRequest);
-            };
-            var offlineMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
 
+            clients.Each(async client => 
+                await _memberService.DeleteClientAsync(new DeleteClientRequest(client.ClientConnectionId, member.SaasUserId)));
+
+            var emptyClients = await _memberService.GetMemberClientsAsync(member.Id);
+            Assert.Empty(emptyClients);
+
+            var offlineMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
             Assert.Equal(UserStatus.Offline, offlineMember.Status);
         }
     }
