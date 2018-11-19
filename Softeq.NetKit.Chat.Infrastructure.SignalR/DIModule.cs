@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using Autofac;
+using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications;
 using Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets;
 
 namespace Softeq.NetKit.Chat.Infrastructure.SignalR
@@ -15,6 +16,12 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR
 
             builder.RegisterType<MessageSocketService>()
                 .As<IMessageSocketService>();
+
+            builder.RegisterType<ChannelNotificationService>()
+                .As<IChannelNotificationService>();
+
+            builder.RegisterType<MessageNotificationService>()
+                .As<IMessageNotificationService>();
         }
     }
 }

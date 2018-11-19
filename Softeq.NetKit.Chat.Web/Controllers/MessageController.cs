@@ -38,7 +38,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         public async Task<IActionResult> CreateMessageAsync(Guid channelId, [FromBody] CreateMessageRequest request)
         {
             request.ChannelId = channelId;
-            request.SaasUserId = GetCurrentUserId();
+            request.SaasUserId = GetCurrentSaasUserId();
             var message = await _messageService.CreateMessageAsync(request);
             return Ok(message);
         }
@@ -48,7 +48,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}")]
         public async Task<IActionResult> DeleteMessageAsync(Guid channelId, Guid messageId)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             await _messageService.DeleteMessageAsync(new DeleteMessageRequest(userId, messageId));
             return Ok();
         }
@@ -58,7 +58,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}")]
         public async Task<IActionResult> UpdateMessageAsync(Guid messageId, [FromBody] UpdateMessageRequest request)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             var message = await _messageService.UpdateMessageAsync(
                 new UpdateMessageRequest(userId, messageId, request.Body));
             return Ok(message);
@@ -69,7 +69,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}/attachment")]
         public async Task<IActionResult> AddMessageAttachmentAsync(Guid messageId, IFormCollection model)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             if (model?.Files == null)
             {
                 return BadRequest(new ErrorDto(ErrorCode.NotFound, "There is not photo"));
@@ -99,7 +99,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}/attachment/{attachmentId:guid}")]
         public async Task<IActionResult> DeleteMessageAttachmentAsync(Guid messageId, Guid attachmentId)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             await _messageService.DeleteMessageAttachmentAsync(new DeleteMessageAttachmentRequest(userId, messageId, attachmentId));
             return Ok();
         }
@@ -109,7 +109,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}/mark-as-read")]
         public async Task<IActionResult> AddLastReadMessageAsync(Guid messageId, Guid channelId)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             await _messageService.AddLastReadMessageAsync(new AddLastReadMessageRequest(channelId, messageId, userId));
             return Ok();
         }
@@ -119,7 +119,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("old")]
         public async Task<IActionResult> GetReadMessagesAsync(Guid channelId, [FromQuery] Guid messageId, [FromQuery] DateTimeOffset messageCreated,  [FromQuery] int? pageSize)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             var messages = await _messageService.GetOlderMessagesAsync(new GetMessagesRequest(userId, channelId, messageId, messageCreated, pageSize));
             return Ok(messages);
         }
@@ -128,7 +128,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(MessagesResult), 200)]
         public async Task<IActionResult> GetMessagesAsync(Guid channelId, [FromQuery] Guid messageId, [FromQuery] DateTimeOffset messageCreated, [FromQuery] int? pageSize)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             var messages = await _messageService.GetMessagesAsync(new GetMessagesRequest(userId, channelId, messageId, messageCreated, pageSize));
             return Ok(messages);
         }
@@ -138,7 +138,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("last")]
         public async Task<IActionResult> GetLastMessagesAsync(Guid channelId)
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             var messages = await _messageService.GetLastMessagesAsync(new GetLastMessagesRequest(userId, channelId));
             return Ok(messages);
         }

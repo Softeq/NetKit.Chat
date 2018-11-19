@@ -8,7 +8,8 @@ namespace Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request
 {
     public class ChannelRequest : UserRequest
     {
-        public ChannelRequest(string saasUserId, Guid channelId) : base(saasUserId)
+        public ChannelRequest(string saasUserId, Guid channelId) 
+            : base(saasUserId)
         {
             ChannelId = channelId;
         }

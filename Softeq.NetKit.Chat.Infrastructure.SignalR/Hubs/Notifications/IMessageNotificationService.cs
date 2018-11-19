@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
 
-namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
+namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
 {
-    public interface IMessageNotificationHub
+    public interface IMessageNotificationService
     {
         Task OnAddMessage(MemberSummary member, MessageResponse message, string clientConnectionId);
         Task OnDeleteMessage(MemberSummary member, MessageResponse message);

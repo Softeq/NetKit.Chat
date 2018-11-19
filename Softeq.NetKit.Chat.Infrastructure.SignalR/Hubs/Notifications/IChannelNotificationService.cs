@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 
-namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
+namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
 {
-    public interface IChannelNotificationHub
+    public interface IChannelNotificationService
     {
         Task OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel);
         Task OnLeaveChannel(MemberSummary member, ChannelSummaryResponse channel);

@@ -21,14 +21,14 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         #region helpers
 
-        protected string GetCurrentUserId()
+        protected string GetCurrentSaasUserId()
         {
-            return this.User.FindFirstValue(JwtClaimTypes.Subject);
+            return User.FindFirstValue(JwtClaimTypes.Subject);
         }
 
         protected string GetCurrentUserEmail()
         {
-            return this.User.FindFirstValue(JwtClaimTypes.Name);
+            return User.FindFirstValue(JwtClaimTypes.Name);
         }
 
         #endregion

@@ -35,7 +35,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(MemberSummary), 200)]
         public async Task<IActionResult> GetMemberAsync()
         {
-            var saasUserId = GetCurrentUserId();
+            var saasUserId = GetCurrentSaasUserId();
             var result = await _memberService.GetMemberSummaryBySaasUserIdAsync(saasUserId);
             return Ok(result);
         }
@@ -52,7 +52,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(MemberSummary), 200)]
         public async Task<IActionResult> AddMemberAsync()
         {
-            var userId = GetCurrentUserId();
+            var userId = GetCurrentSaasUserId();
             var email = GetCurrentUserEmail();
             var member = await _memberService.AddMemberAsync(userId, email);
             return Ok(member);

@@ -10,7 +10,7 @@ using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
-using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs;
+using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications;
 using Softeq.NetKit.Chat.Infrastructure.SignalR.Resources;
 using Softeq.Serilog.Extension;
 
@@ -20,16 +20,16 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
     {
         private readonly IChannelService _channelService;
         private readonly IMemberService _memberService;
-        private readonly IChannelNotificationHub _channelNotificationHub;
+        private readonly IChannelNotificationService _channelNotificationService;
         private readonly ILogger _logger;
 
         public ChannelSocketService(
             IChannelService channelService,
             ILogger logger,
             IMemberService memberService,
-            IChannelNotificationHub channelNotificationHub)
+            IChannelNotificationService channelNotificationService)
         {
-            _channelNotificationHub = channelNotificationHub;
+            _channelNotificationService = channelNotificationService;
             _channelService = channelService;
             _logger = logger;
             _memberService = memberService;
@@ -47,9 +47,9 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                 var channel = await _channelService.CreateChannelAsync(createChannelRequest);
                 var user = await _memberService.GetMemberSummaryBySaasUserIdAsync(createChannelRequest.SaasUserId);
 
-                await _channelNotificationHub.OnAddChannel(user, channel, createChannelRequest.ClientConnectionId);
+                await _channelNotificationService.OnAddChannel(user, channel, createChannelRequest.ClientConnectionId);
                 //todo filter creator connection id on join channel
-                await _channelNotificationHub.OnJoinChannel(user, channel);
+                await _channelNotificationService.OnJoinChannel(user, channel);
 
                 return channel;
             }
@@ -62,7 +62,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
         public async Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request)
         {
-            if (String.IsNullOrEmpty(request.Name))
+            if (string.IsNullOrEmpty(request.Name))
             {
                 throw new Exception(LanguageResources.RoomRequired);
             }
@@ -87,7 +87,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
                 var channelSummary = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
 
-                await _channelNotificationHub.OnUpdateChannel(member, channelSummary);
+                await _channelNotificationService.OnUpdateChannel(member, channelSummary);
 
                 return channelSummary;
             }
@@ -118,8 +118,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
                 var channelSummary = await _channelService.GetChannelSummaryAsync(request);
 
-                await _channelNotificationHub.OnCloseChannel(member, channelSummary);
-                await _channelNotificationHub.OnUpdateChannel(member, channelSummary);
+                await _channelNotificationService.OnCloseChannel(member, channelSummary);
+                await _channelNotificationService.OnUpdateChannel(member, channelSummary);
             }
             catch (ServiceException ex)
             {
@@ -146,7 +146,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
                     var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
    
-                    await _channelNotificationHub.OnJoinChannel(member, channel);
+                    await _channelNotificationService.OnJoinChannel(member, channel);
                 }
             }
             catch (NotFoundException ex)
@@ -172,7 +172,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
                 await _channelService.LeaveChannelAsync(request);
 
-                await _channelNotificationHub.OnLeaveChannel(member, channel);
+                await _channelNotificationService.OnLeaveChannel(member, channel);
             }
             catch (NotFoundException ex)
             {
@@ -181,7 +181,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             }
         }
 
-        public async Task InviteMemberAsync(InviteMemberRequest request)
+        public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
         {
             if (request.MemberId == Guid.Empty)
             {
@@ -203,9 +203,11 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                     throw new Exception(string.Format(LanguageResources.RoomClosed, channel.Name));
                 }
 
-                await _memberService.InviteMemberAsync(request);
+                var inviteMemberResponse = await _memberService.InviteMemberAsync(request);
 
-                await _channelNotificationHub.OnJoinChannel(invitedMember, channel);
+                await _channelNotificationService.OnJoinChannel(invitedMember, channel);
+
+                return inviteMemberResponse;
             }
             catch (ServiceException ex)
             {
@@ -220,6 +222,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                     throw new Exception(string.Format(LanguageResources.RoomNotFound, request.ChannelId));
                 }
             }
+
+            return default(ChannelResponse);
         }
 
         public async Task InviteMembersAsync(InviteMembersRequest request)

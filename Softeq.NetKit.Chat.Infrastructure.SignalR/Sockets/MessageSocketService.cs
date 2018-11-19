@@ -14,7 +14,7 @@ using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
-using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs;
+using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications;
 using Softeq.NetKit.Chat.Infrastructure.SignalR.Resources;
 using Softeq.Serilog.Extension;
 
@@ -26,20 +26,20 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
         private readonly IMemberService _memberService;
         private readonly IMessageService _messageService;
         private readonly ILogger _logger;
-        private readonly IMessageNotificationHub _messageNotificationHub;
+        private readonly IMessageNotificationService _messageNotificationService;
 
         public MessageSocketService(
             IChannelService channelService,
             ILogger logger,
             IMemberService memberService,
             IMessageService messageService,
-            IMessageNotificationHub messageNotificationHub)
+            IMessageNotificationService messageNotificationService)
         {
             _channelService = channelService;
             _logger = logger;
             _memberService = memberService;
             _messageService = messageService;
-            _messageNotificationHub = messageNotificationHub;
+            _messageNotificationService = messageNotificationService;
         }
 
         public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest createMessageRequest)
@@ -47,14 +47,14 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(createMessageRequest.SaasUserId, createMessageRequest.ChannelId));
             var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(createMessageRequest.SaasUserId);
 
-            if (String.IsNullOrEmpty(createMessageRequest.Body))
+            if (string.IsNullOrEmpty(createMessageRequest.Body))
             {
                 throw new Exception(string.Format(LanguageResources.Msg_MessageRequired, channel.Name));
             }
 
             var message = await _messageService.CreateMessageAsync(createMessageRequest);
 
-            await _messageNotificationHub.OnAddMessage(member, message, createMessageRequest.ClientConnectionId);
+            await _messageNotificationService.OnAddMessage(member, message, createMessageRequest.ClientConnectionId);
 
             return message;
         }
@@ -71,7 +71,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                 }
                 await _messageService.DeleteMessageAsync(request);
 
-                await _messageNotificationHub.OnDeleteMessage(member, message);
+                await _messageNotificationService.OnDeleteMessage(member, message);
             }
             catch (NotFoundException ex)
             {
@@ -91,14 +91,14 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             {
                 throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
             }
-            if (String.IsNullOrEmpty(request.Body))
+            if (string.IsNullOrEmpty(request.Body))
             {
                 throw new Exception(LanguageResources.Msg_MessageRequired);
             }
 
             var updatedMessage = await _messageService.UpdateMessageAsync(request);
 
-            await _messageNotificationHub.OnUpdateMessage(member, updatedMessage);
+            await _messageNotificationService.OnUpdateMessage(member, updatedMessage);
         }
 
         public async Task AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
@@ -120,7 +120,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
                 await _messageService.AddMessageAttachmentAsync(request);
 
-                await _messageNotificationHub.OnAddMessageAttachment(member, message);
+                await _messageNotificationService.OnAddMessageAttachment(member, message);
             }
             catch (ServiceException ex)
             {
@@ -145,7 +145,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
                 await _messageService.DeleteMessageAttachmentAsync(request);
 
-                await _messageNotificationHub.OnDeleteMessageAttachment(member, message);
+                await _messageNotificationService.OnDeleteMessageAttachment(member, message);
             }
             catch (ServiceException ex)
             {
@@ -179,7 +179,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                     messageOwner
                 };
 
-                await _messageNotificationHub.OnChangeLastReadMessage(members, message);
+                await _messageNotificationService.OnChangeLastReadMessage(members, message);
             }
             catch (NotFoundException ex)
             {
