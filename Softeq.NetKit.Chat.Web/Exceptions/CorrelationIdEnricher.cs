@@ -6,19 +6,20 @@ using Serilog.Core;
 using Serilog.Events;
 using Softeq.Serilog.Extension;
 
-namespace Softeq.NetKit.Chat.Common.Log
+namespace Softeq.NetKit.Chat.Web.Exceptions
 {
     public class CorrelationIdEnricher : ILogEventEnricher
     {
-        private readonly ICorrelationContextAccessor _correlationContextAccessor;
+        private readonly ICorrelationContextAccessor _correlationIdAccessor;
 
-        public CorrelationIdEnricher(ICorrelationContextAccessor correlationContextAccessor)
+        public CorrelationIdEnricher(ICorrelationContextAccessor correlationIdAccessor)
         {
-            _correlationContextAccessor = correlationContextAccessor;
+            _correlationIdAccessor = correlationIdAccessor;
         }
+
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId;
+            var correlationId = _correlationIdAccessor.CorrelationContext?.CorrelationId;
             var correlationIdProperty = new LogEventProperty(PropertyNames.CorrelationId, new ScalarValue(correlationId ?? "unknown"));
 
             logEvent.AddPropertyIfAbsent(correlationIdProperty);

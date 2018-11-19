@@ -6,13 +6,17 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.0" />
+    <PackageReference Include="CorrelationId" Version="2.1.0" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.3.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="Serilog" Version="2.7.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="2.6.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
+    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Softeq.CloudStorage.Extension" Version="1.0.0" />
     <PackageReference Include="Softeq.Serilog.Extension" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="3.0.0" />
@@ -26,7 +30,6 @@
     <Folder Include="logs\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Softeq.NetKit.Chat.Common\Softeq.NetKit.Chat.Common.csproj" />
     <ProjectReference Include="..\Domain\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Infrastructure.SignalR\Softeq.NetKit.Chat.Infrastructure.SignalR.csproj" />
   </ItemGroup>

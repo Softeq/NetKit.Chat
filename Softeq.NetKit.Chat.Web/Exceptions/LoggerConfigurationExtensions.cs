@@ -12,7 +12,7 @@ using Serilog.Events;
 using Serilog.ExtensionMethods;
 using Softeq.Serilog.Extension;
 
-namespace Softeq.NetKit.Chat.Web.App.Configuration
+namespace Softeq.NetKit.Chat.Web.Exceptions
 {
     public static class LoggerConfigurationExtensions
     {
@@ -58,7 +58,9 @@ namespace Softeq.NetKit.Chat.Web.App.Configuration
             var logger = loggerConfiguration.CreateLogger();
             AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
             {
-                logger.ErrorEvent("UnhandledExceptionCaughtByAppDomainUnhandledExceptionHandler", "{ExceptionObject} {IsTerminating}", args.ExceptionObject, args.IsTerminating);
+                logger.Event("UnhandledExceptionCaughtByAppDomainUnhandledExceptionHandler")
+                      .With.Message("Exception object = '{@ExceptionObject}'; Is terminating = '{IsTerminating}'", args.ExceptionObject, args.IsTerminating)
+                      .AsFatal();
             };
 
             Log.Logger = logger;
@@ -92,15 +94,14 @@ namespace Softeq.NetKit.Chat.Web.App.Configuration
 
         private static string GetLogTemplate()
         {
-            var template = new SerilogTemplateBuilder().Timestamp()
-                .Level()
-                .CorrelationId()
-                .EventId()
-                .Message()
-                .NewLine()
-                .Exception()
-                .Build();
-            return template;
+            return new SerilogTemplateBuilder().Timestamp()
+                                               .Level()
+                                               .CorrelationId()
+                                               .EventId()
+                                               .Message()
+                                               .NewLine()
+                                               .Exception()
+                                               .Build();
         }
     }
 }

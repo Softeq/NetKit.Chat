@@ -4,30 +4,25 @@
 using Autofac;
 using CorrelationId;
 using Serilog;
-using Softeq.NetKit.Chat.Common.Log;
-using SerilogLog = Serilog.Log;
 
-namespace Softeq.NetKit.Chat.Common
+namespace Softeq.NetKit.Chat.Web.Exceptions
 {
-    public class DIModule : Module
+    public static class LoggerRegistrationExtensions
     {
-        protected override void Load(ContainerBuilder builder)
+        public static void AddLogger(this ContainerBuilder builder)
         {
-            builder
-                .RegisterType<CorrelationContextAccessor>()
+            builder.RegisterType<CorrelationContextAccessor>()
                 .As<ICorrelationContextAccessor>()
                 .SingleInstance();
 
-            builder
-                .RegisterType<CorrelationContextFactory>()
+            builder.RegisterType<CorrelationContextFactory>()
                 .As<ICorrelationContextFactory>()
                 .InstancePerDependency();
 
-            builder
-                .Register((c, p) =>
+            builder.Register((c, p) =>
                 {
                     var correlationContextAccessor = c.Resolve<ICorrelationContextAccessor>();
-                    return SerilogLog.Logger.ForContext(new CorrelationIdEnricher(correlationContextAccessor));
+                    return Log.Logger.ForContext(new CorrelationIdEnricher(correlationContextAccessor));
                 })
                 .As<ILogger>()
                 .InstancePerLifetimeScope();
