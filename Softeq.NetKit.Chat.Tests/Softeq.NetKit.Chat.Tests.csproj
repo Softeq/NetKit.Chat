@@ -25,8 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Softeq.NetKit.Chat.Data.Repositories\Softeq.NetKit.Chat.Data.Repositories.csproj" />
-    <ProjectReference Include="..\..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Repositories\Softeq.NetKit.Chat.Data.Repositories.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
