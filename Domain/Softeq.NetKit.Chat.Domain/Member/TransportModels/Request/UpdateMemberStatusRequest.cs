@@ -3,14 +3,12 @@
 
 namespace Softeq.NetKit.Chat.Domain.Member.TransportModels.Request
 {
-    public class UpdateMemberStatusRequest
+    public class UpdateMemberStatusRequest : UserRequest
     {
-        public UpdateMemberStatusRequest(UserStatus userStatus)
+        public UpdateMemberStatusRequest(string saasUserId, UserStatus userStatus) : base(saasUserId)
         {
             UserStatus = userStatus;
         }
-
-        public string SaasUserId { get; set; }
         public UserStatus UserStatus { get; set; }
     }
 }

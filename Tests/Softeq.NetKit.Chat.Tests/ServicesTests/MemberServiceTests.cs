@@ -5,9 +5,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using ServiceStack;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.Client.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member;
+using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
 
@@ -75,6 +78,91 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             Assert.NotNull(channel);
             Assert.True(channel.MembersCount > 0);
             Assert.True(members.Count() < channel.MembersCount);
+        }
+
+        [Fact]
+        public async Task GetOrAddClientAsync_ShouldCreateAndReturnNewClient()
+        {
+            var addClientRequest = new AddClientRequest()
+            {
+                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
+                SaasUserId = "4A356C96-40C3-410C-B8C3-16EE02205491",
+                UserAgent =  "user agent1",
+                UserName = "user@test.test"
+            };
+
+            var newClient = await _memberService.GetOrAddClientAsync(addClientRequest);
+
+            // Assert
+            Assert.NotNull(newClient);
+            Assert.Equal(addClientRequest.SaasUserId, newClient.SaasUserId);
+            Assert.Equal(addClientRequest.ConnectionId, newClient.ConnectionClientId);
+            Assert.Equal(addClientRequest.UserName, newClient.UserName);
+        }
+
+        [Fact]
+        public async Task GetOrAddClientAsync_ShouldNotCreateClientWithNullParameter()
+        {
+            var addClientRequestWithNullSaasUserId = new AddClientRequest()
+            {
+                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
+                SaasUserId = null,
+                UserAgent = "user agent1",
+                UserName = "user@test.test"
+            };
+
+            await Assert.ThrowsAsync<NullReferenceException>(() => _memberService.GetOrAddClientAsync(addClientRequestWithNullSaasUserId));
+         }
+       
+        [Fact]
+        public async Task UpdateMemberStatusAsync_ShouldUpdateMemberStatus()
+        {
+            var addClientRequest = new AddClientRequest()
+            {
+                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
+                SaasUserId = "8c7dd32c-2677-4ed7-821b-d349ac56e90c",
+                UserAgent = "user agent1",
+                UserName = "user@test.test"
+            };
+            var addedClient = await _memberService.GetOrAddClientAsync(addClientRequest);
+            var createdMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
+
+            await _memberService.UpdateMemberStatusAsync(new UpdateMemberStatusRequest(createdMember.SaasUserId, UserStatus.Active));
+            var changedMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
+
+            Assert.Equal(UserStatus.Active, changedMember.Status);
+
+            await _memberService.UpdateMemberStatusAsync(new UpdateMemberStatusRequest(createdMember.SaasUserId, UserStatus.Offline));
+            var offlineMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
+
+            Assert.Equal(UserStatus.Offline, offlineMember.Status);
+        }
+
+        [Fact]
+        public async Task UpdateMemberStatusAsync_ShouldSetMemberStatusOfflineIfNoClients()
+        {
+            var addClientRequest = new AddClientRequest()
+            {
+                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
+                SaasUserId = "8c7dd32c-2677-4ed7-821b-d349ac56e90c",
+                UserAgent = "user agent1",
+                UserName = "user@test.test"
+            };
+            var addedClient = await _memberService.GetOrAddClientAsync(addClientRequest);
+            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
+
+            Assert.Equal(UserStatus.Active, member.Status);
+
+            var clients = await _memberService.GetMemberClientsAsync(member.Id);
+
+            clients.Each(async client => 
+                await _memberService.DeleteClientAsync(new DeleteClientRequest(client.ClientConnectionId, member.SaasUserId)));
+
+            var emptyClients = await _memberService.GetMemberClientsAsync(member.Id);
+            Assert.Empty(emptyClients);
+
+            var offlineMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(addedClient.SaasUserId);
+            Assert.Equal(UserStatus.Offline, offlineMember.Status);
         }
     }
 }

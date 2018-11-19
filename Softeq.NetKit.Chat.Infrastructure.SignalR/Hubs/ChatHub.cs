@@ -15,6 +15,7 @@ using Softeq.NetKit.Chat.Domain.ChannelMember.TransportModels;
 using Softeq.NetKit.Chat.Domain.Client.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Client.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Member;
+using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
@@ -54,12 +55,14 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         public override Task OnConnectedAsync()
         {
             _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnConnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
+
             return base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var deleteRequest = new DeleteClientRequest(Context.ConnectionId);
+            var deleteRequest = new DeleteClientRequest(Context.ConnectionId, Context.GetSaasUserId());
+            deleteRequest.SaasUserId = Context.GetSaasUserId();
             await _memberService.DeleteClientAsync(deleteRequest);
 
             _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
@@ -90,7 +93,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
             {
-                var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
+                var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId, Context.GetSaasUserId());
                 await _memberService.DeleteClientAsync(deleteClientRequest);
             }));
         }
