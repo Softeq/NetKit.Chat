@@ -13,6 +13,7 @@ namespace Softeq.NetKit.Chat.Data.Interfaces.Repository
         Task<List<Message>> GetAllChannelMessagesAsync(Guid channelId);
         Task<List<Message>> GetPreviousMessagesAsync(Guid channelId, Guid messageId);
         Task<Message> GetMessageByIdAsync(Guid messageId);
+        Task<Message> GetPreviousMessageAsync(Message currentMessage);
         Task AddMessageAsync(Message message);
         Task DeleteMessageAsync(Guid messageId);
         Task UpdateMessageAsync(Message message);
