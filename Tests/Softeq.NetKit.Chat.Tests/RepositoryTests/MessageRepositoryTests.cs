@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.ChannelMember;
 using Softeq.NetKit.Chat.Domain.Member;
@@ -170,10 +171,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             var secondMessage = await GenerateAndAddMessage(DateTimeOffset.UtcNow.AddHours(1));
             var previousForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage);
-
-            Assert.NotNull(previousForSecondMessage);
-            Assert.NotStrictEqual(firstMessage, previousForSecondMessage);
-
+            previousForSecondMessage.Should().BeEquivalentTo(firstMessage, compareOptions => compareOptions.Excluding(message => message.Owner));
         }
 
         [Fact]

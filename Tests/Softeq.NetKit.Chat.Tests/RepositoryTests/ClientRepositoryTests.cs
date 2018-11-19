@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.Client;
 using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Tests.Abstract;
@@ -167,29 +168,33 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         [Fact]
         public async Task UpdateClientAsync_ShouldUpdateClient()
         {
-            var client = new Client
+            var originalClient = new Client
             {
-                Id = Guid.NewGuid(),
-                ClientConnectionId = Guid.NewGuid().ToString(),
+                Id = new Guid("9AC1494F-DA85-41E7-9D4F-CEC9ED4E3CE8"),
+                ClientConnectionId = new Guid("EAD90FAF-D0F7-4C8E-80AE-84A6E9CE08DD").ToString(),
                 LastActivity = DateTimeOffset.UtcNow,
                 LastClientActivity = DateTimeOffset.UtcNow,
-                Name = "test",
+                Name = "client",
                 MemberId = _memberId,
-                UserAgent = "test"
+                UserAgent = "clientUserAgent"
             };
+            await UnitOfWork.ClientRepository.AddClientAsync(originalClient);
 
-            await UnitOfWork.ClientRepository.AddClientAsync(client);
-            client.Name = "updated_name";
-            client.UserAgent = "updated_agent";
-            await UnitOfWork.ClientRepository.UpdateClientAsync(client);
-            var updatedClient = await UnitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
-           
-            Assert.NotNull(updatedClient);
-            Assert.Equal(client.Id, updatedClient.Id);
-            Assert.Equal(client.ClientConnectionId, updatedClient.ClientConnectionId);
-            Assert.Equal(client.Name, updatedClient.Name);
-            Assert.Equal(client.MemberId, updatedClient.MemberId);
-            Assert.Equal(client.UserAgent, updatedClient.UserAgent);
+            var changedClient = new Client
+            {
+                Id = originalClient.Id,
+                ClientConnectionId = new Guid("5E8841DC-630C-44AC-B434-B43205ED2D00").ToString(),
+                LastActivity = originalClient.LastActivity.AddDays(1),
+                LastClientActivity = originalClient.LastClientActivity.AddDays(1),
+                Name = "changedClient",
+                MemberId = originalClient.MemberId,
+                UserAgent = "changedClientUserAgent"
+            };
+            await UnitOfWork.ClientRepository.UpdateClientAsync(changedClient);
+
+            var updatedClient = await UnitOfWork.ClientRepository.GetClientByIdAsync(originalClient.Id);
+
+            updatedClient.Should().BeEquivalentTo(changedClient, compareOptions => compareOptions.Excluding(client => client.Member));
         }
     }
 }
