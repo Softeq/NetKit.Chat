@@ -164,20 +164,16 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         [Fact]
         public async Task GetPreviousMessageAsync_ShouldReturnPreviousMessageIfExists()
         {
-            // Arrange
             var firstMessage = await GenerateAndAddMessage();
+            var previousForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage);
+            Assert.Null(previousForFirstMessage);
 
             var secondMessage = await GenerateAndAddMessage(DateTimeOffset.UtcNow.AddHours(1));
+            var previousForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage);
 
-            // Act 1
-            var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage);
-                
-            // Assert 1
-            Assert.NotNull(previousMessage);
-            // Act 2
-            previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage);
-            // Assert 2
-            Assert.Null(previousMessage);
+            Assert.NotNull(previousForSecondMessage);
+            Assert.NotStrictEqual(firstMessage, previousForSecondMessage);
+
         }
 
         [Fact]

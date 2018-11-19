@@ -248,7 +248,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                             msg.OwnerId = member.Id;
                             return msg;
                         },
-                        new { Id = message.Id, channelId = message.ChannelId, ownerId = message.OwnerId, createdDate = message.Created }))
+                        new { channelId = message.ChannelId, ownerId = message.OwnerId, createdDate = message.Created }))
                     .FirstOrDefault();
                 return previousMessage;
             }
