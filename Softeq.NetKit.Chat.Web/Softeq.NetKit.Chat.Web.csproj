@@ -30,7 +30,7 @@
     <Folder Include="logs\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Infrastructure.SignalR\Softeq.NetKit.Chat.Infrastructure.SignalR.csproj" />
   </ItemGroup>
 </Project>

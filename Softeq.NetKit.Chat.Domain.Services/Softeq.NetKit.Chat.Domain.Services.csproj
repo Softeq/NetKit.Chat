@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Softeq.NetKit.Chat.Data.Repositories\Softeq.NetKit.Chat.Data.Repositories.csproj" />
-    <ProjectReference Include="..\..\Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Repositories\Softeq.NetKit.Chat.Data.Repositories.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj" />
   </ItemGroup>
 
 </Project>
