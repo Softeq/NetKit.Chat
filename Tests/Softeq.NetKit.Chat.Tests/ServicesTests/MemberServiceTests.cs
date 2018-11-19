@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.Client.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
@@ -76,5 +77,40 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             Assert.True(channel.MembersCount > 0);
             Assert.True(members.Count() < channel.MembersCount);
         }
+
+        [Fact]
+        public async Task GetOrAddClientAsync_ShouldCreateAndReturnNewClient()
+        {
+            AddClientRequest addClientRequest = new AddClientRequest()
+            {
+                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
+                SaasUserId = "4A356C96-40C3-410C-B8C3-16EE02205491",
+                UserAgent =  "user agent1",
+                UserName = "user@test.test"
+            };
+
+            var newClient = await _memberService.GetOrAddClientAsync(addClientRequest);
+
+            // Assert
+            Assert.NotNull(newClient);
+            Assert.Equal(addClientRequest.SaasUserId, newClient.SaasUserId);
+            Assert.Equal(addClientRequest.ConnectionId, newClient.ConnectionClientId);
+            Assert.Equal(addClientRequest.UserName, newClient.UserName);
+        }
+
+        [Fact]
+        public async Task GetOrAddClientAsync_ShouldNotCreateClientWithNullParameter()
+        {
+            AddClientRequest addClientRequestWithNullSaasUserId = new AddClientRequest()
+            {
+                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
+                SaasUserId = null,
+                UserAgent = "user agent1",
+                UserName = "user@test.test"
+            };
+
+
+            await Assert.ThrowsAsync<NullReferenceException>(() => _memberService.GetOrAddClientAsync(addClientRequestWithNullSaasUserId));
+         }
     }
 }

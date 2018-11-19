@@ -120,7 +120,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             return members.Select(x => x.ToParticipantResponse());
         }
 
-        // TODO:Add unit test
         public async Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
@@ -141,11 +140,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             }
             else
             {
-                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest()
-                {
-                    UserStatus = UserStatus.Active,
-                    SaasUserId = member.SaasUserId
-                });
+                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest(member.SaasUserId, UserStatus.Active));
             }
 
             member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);         
@@ -180,11 +175,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var clients = await GetMemberClientsAsync(client.MemberId);
             if (!clients.Any())
             {
-                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest()
-                {
-                    UserStatus = UserStatus.Offline,
-                    SaasUserId = client.Member.SaasUserId
-                });
+                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest(client.Member.SaasUserId, UserStatus.Offline));
             }
         }
 
