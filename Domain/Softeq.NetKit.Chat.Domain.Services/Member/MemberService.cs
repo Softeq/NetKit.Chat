@@ -142,6 +142,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
 
             member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
+            var updateMemberStatusRequest = new UpdateMemberStatusRequest(UserStatus.Offline)
+            {
+                UserStatus = UserStatus.Offline,
+                SaasUserId = member.SaasUserId
+            };
+            UpdateMemberStatusAsync(updateMemberStatusRequest);
+
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
             if (client != null)
             {
@@ -168,6 +175,17 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
+
+            var clients = await this.GetMemberClientsAsync(client.MemberId);
+            if (clients.Count()==0)
+            {
+                var updateMemberStatusRequest = new UpdateMemberStatusRequest(UserStatus.Offline)
+                {
+                    UserStatus = UserStatus.Offline,
+                    SaasUserId = client.Member.SaasUserId
+                };
+                UpdateMemberStatusAsync(updateMemberStatusRequest);
+            }
         }
 
         // TODO:Add unit test
@@ -206,6 +224,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         {
             var member = await SurelyGetMemberBySaasUserIdAsync(request.SaasUserId);
             member.Status = request.UserStatus;
+            member.LastActivity = DateTimeOffset.Now;
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member.ToMember());
         }
 
