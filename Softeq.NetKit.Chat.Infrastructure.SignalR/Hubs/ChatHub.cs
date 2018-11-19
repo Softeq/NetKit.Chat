@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         public override Task OnConnectedAsync()
         {
-            _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnConnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
+            _logger.Event("SignalRClientConnected").With.Message("{@ConnectionId}", Context.ConnectionId).AsInformation();
             return base.OnConnectedAsync();
         }
 
@@ -62,7 +62,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             var deleteRequest = new DeleteClientRequest(Context.ConnectionId);
             await _memberService.DeleteClientAsync(deleteRequest);
 
-            _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
+            _logger.Event("SignalRClientDisconnected").With.Message("{@ConnectionId}", Context.ConnectionId).AsInformation();
             await base.OnDisconnectedAsync(exception);
         }
 
