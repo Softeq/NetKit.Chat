@@ -26,21 +26,6 @@ namespace Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response
         public string WelcomeMessage { get; set; }
         public ChannelType Type { get; set; }
         public MessageResponse LastMessage { get; set; }
-
-        // TODO: Implement logic for uploading photo
-        public string PhotoUrl
-        {
-            get
-            {
-                var avatarUrls = new List<string>()
-                {
-                    "https://f4.bcbits.com/img/0008335057_10.jpg",
-                    "https://cdn.pixabay.com/photo/2015/10/23/17/03/eye-1003315_960_720.jpg",
-                    "https://images.homedepot-static.com/productImages/a4e315b5-e2b7-4fd9-94a0-c7d51408285d/svn/brady-stock-signs-94143-64_1000.jpg"
-                };
-                var avatarCode = Math.Abs(Name.GetHashCode() % avatarUrls.Count);
-                return avatarUrls[avatarCode];
-            }
-        }
+        public string PhotoUrl { get; set; }
     }
 }

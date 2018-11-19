@@ -27,6 +27,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 channelResponse.WelcomeMessage = channel.WelcomeMessage;
                 channelResponse.Type = channel.Type;
                 channelResponse.CreatorId = channel.CreatorId;
+                channelResponse.PhotoUrl = channel.PhotoUrl;
             }
             return channelResponse;
         }
@@ -54,6 +55,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 channelListResponse.CreatorSaasUserId = channel.Creator?.SaasUserId ?? creator?.SaasUserId;    
                 channelListResponse.LastMessage = channel.Messages?.FirstOrDefault()?.ToMessageResponse(lastReadMessage, configuration);
                 channelListResponse.UnreadMessagesCount = lastReadMessage != null ? channel.Messages?.Count(x => x.Created > lastReadMessage.Created) ?? 0 : channel.Messages?.Count ?? 0;
+                channelListResponse.PhotoUrl = channel.PhotoUrl;
             }
 
             return channelListResponse;
