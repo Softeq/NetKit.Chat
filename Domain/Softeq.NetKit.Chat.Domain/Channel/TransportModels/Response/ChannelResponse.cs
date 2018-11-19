@@ -19,5 +19,6 @@ namespace Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response
         [JsonIgnore]
         public Guid? CreatorId { get; set; }
         public int MembersCount { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }
