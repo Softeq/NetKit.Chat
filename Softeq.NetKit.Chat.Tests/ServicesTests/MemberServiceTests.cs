@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             await _memberService.InviteMemberAsync(new InviteMemberRequest(SaasUserId, _channelId, _memberId));
 
             // Act
-            var members = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, _channelId));
+            var members = await _memberService.GetChannelMembersAsync(_channelId);
 
             // Assert
             Assert.NotNull(members);
@@ -67,7 +67,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task InviteMemberAsyncTest()
         {
             // Act
-            var members = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, _channelId));
+            var members = await _memberService.GetChannelMembersAsync(_channelId);
             var channel = await _memberService.InviteMemberAsync(new InviteMemberRequest(SaasUserId, _channelId, _memberId));
 
 

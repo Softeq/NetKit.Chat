@@ -60,10 +60,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
             return member.ToParticipantResponse();
         }
-        public async Task<IEnumerable<MemberSummary>> GetChannelMembersAsync(ChannelRequest request)
+
+        public async Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId)
         {
-            var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(request.ChannelId);
-            return members.Select(x => x.ToMemberSummary(_configuration));
+            var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);
+            return members.Select(x => x.ToMemberSummary(_configuration)).ToList().AsReadOnly();
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
@@ -73,7 +74,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.MemberId);
             Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
 
-            var channelMembers = await GetChannelMembersAsync(new ChannelRequest(member.SaasUserId, channel.Id));
+            var channelMembers = await GetChannelMembersAsync(channel.Id);
 
             if (channelMembers.Any(x => x.Id == request.MemberId))
             {
@@ -98,19 +99,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var newChannel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channel.Id);
 
             return newChannel.ToChannelResponse(_configuration);
-        }
-
-        public async Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request)
-        {
-            var channel = default(ChannelResponse);
-            foreach (var invitedSaasUserId in request.InvitedMembers)
-            {
-                var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(invitedSaasUserId);
-                Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-                var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id);
-                channel = await InviteMemberAsync(inviteMemberRequest);
-            }
-            return channel;
         }
 
         public async Task<IEnumerable<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request)

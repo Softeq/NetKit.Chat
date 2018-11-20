@@ -11,17 +11,21 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<ChannelSocketService>()
-                .As<IChannelSocketService>();
+            RegisterApplicationServices(builder);
+            RegisterNotificationServices(builder);
+        }
 
-            builder.RegisterType<MessageSocketService>()
-                .As<IMessageSocketService>();
+        private static void RegisterApplicationServices(ContainerBuilder builder)
+        {
+            builder.RegisterType<ChannelSocketService>().As<IChannelSocketService>();
+            builder.RegisterType<MessageSocketService>().As<IMessageSocketService>();
+            builder.RegisterType<MemberSocketService>().As<IMemberSocketService>();
+        }
 
-            builder.RegisterType<ChannelNotificationService>()
-                .As<IChannelNotificationService>();
-
-            builder.RegisterType<MessageNotificationService>()
-                .As<IMessageNotificationService>();
+        private static void RegisterNotificationServices(ContainerBuilder builder)
+        {
+            builder.RegisterType<ChannelNotificationService>().As<IChannelNotificationService>();
+            builder.RegisterType<MessageNotificationService>().As<IMessageNotificationService>();
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             // Act
             var channel = await _channelService.CreateChannelAsync(request);
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var channelMessagesCount = await _channelService.GetChannelMessagesCountAsync(channel.Id);
             // Assert
             Assert.NotNull(channel);
             Assert.Equal(request.Name, channel.Name);
@@ -80,7 +80,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var channel = await _channelService.CreateChannelAsync(request);
 
             // Act
-            var channels = await _channelService.GetMyChannelsAsync(new UserRequest(SaasUserId));
+            var channels = await _channelService.GetUserChannelsAsync(new UserRequest(SaasUserId));
 
             // Assert
             Assert.NotNull(channels);
@@ -117,7 +117,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             // Act
             var updatedChannel = await _channelService.UpdateChannelAsync(updatedRequest);
 
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var channelMessagesCount = await _channelService.GetChannelMessagesCountAsync(channel.Id);
 
             // Assert
             Assert.NotNull(updatedChannel);
@@ -143,11 +143,11 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             };
 
             var channel = await _channelService.CreateChannelAsync(request);
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var channelMessagesCount = await _channelService.GetChannelMessagesCountAsync(channel.Id);
 
             // Act
-            var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
-            var channelMembers = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var newChannel = await _channelService.GetChannelByIdAsync(channel.Id);
+            var channelMembers = await _memberService.GetChannelMembersAsync(channel.Id);
 
             // Assert
             Assert.NotNull(channelMembers);
@@ -176,7 +176,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             // Act
             await _channelService.CloseChannelAsync(new ChannelRequest(SaasUserId, channel.Id));
-            var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var newChannel = await _channelService.GetChannelByIdAsync(channel.Id);
 
             // Assert
             Assert.NotNull(newChannel);
@@ -199,7 +199,8 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             // Act
             var channels = await _channelService.GetAllChannelsAsync();
-            var channelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channels.First().Id));
+            var firstChannelId = channels.First().Id;
+            var channelMessagesCount = await _channelService.GetChannelMessagesCountAsync(firstChannelId);
 
             // Assert
             Assert.NotNull(channels);
@@ -271,8 +272,8 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             
             // Act
             await _channelService.JoinToChannelAsync(new JoinToChannelRequest(SaasUserId2, channel.Id));
-            var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
-            var channelMembers = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var newChannel = await _channelService.GetChannelByIdAsync(channel.Id);
+            var channelMembers = await _memberService.GetChannelMembersAsync(channel.Id);
 
             // Assert
             Assert.NotNull(newChannel);
@@ -307,12 +308,12 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
             var channel = await _channelService.CreateChannelAsync(request);
             await _channelService.JoinToChannelAsync(new JoinToChannelRequest(SaasUserId2, channel.Id));
-            var previousMembersCount = (await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId2, channel.Id))).Count();
+            var previousMembersCount = (await _memberService.GetChannelMembersAsync(channel.Id)).Count;
             
             // Act
             await _channelService.LeaveChannelAsync(new ChannelRequest(SaasUserId2, channel.Id));
-            var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, channel.Id));
-            var channelMembers = await _memberService.GetChannelMembersAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var newChannel = await _channelService.GetChannelByIdAsync(channel.Id);
+            var channelMembers = await _memberService.GetChannelMembersAsync(channel.Id);
 
             // Assert
             Assert.NotNull(newChannel);

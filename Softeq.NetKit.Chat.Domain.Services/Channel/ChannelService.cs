@@ -115,7 +115,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             return channel.ToChannelSummaryResponse(creator.IsMuted, null, null, _configuration);
         }
 
-        public async Task<IEnumerable<ChannelResponse>> GetMyChannelsAsync(UserRequest request)
+        public async Task<IReadOnlyCollection<ChannelResponse>> GetUserChannelsAsync(UserRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             Ensure.That(member)
@@ -123,7 +123,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .IsNotNull();
             var channels = await UnitOfWork.ChannelRepository.GetChannelsByMemberId(member.Id);
         
-            return channels.Select(x => x.ToChannelResponse(_configuration));
+            return channels.Select(x => x.ToChannelResponse(_configuration)).ToList().AsReadOnly();
         }
 
         public async Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest request)
@@ -181,9 +181,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             return channel.ToChannelSummaryResponse(channelMember.IsMuted, lastReadMessage, member, _configuration);
         }
 
-        public async Task<ChannelResponse> GetChannelByIdAsync(ChannelRequest request)
+        public async Task<ChannelResponse> GetChannelByIdAsync(Guid channelId)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
+            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
             Ensure.That(channel)
                 .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
                 .IsNotNull();
@@ -211,7 +211,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             return channel.ToChannelResponse(_configuration);
         }
 
-        public async Task<IEnumerable<ChannelSummaryResponse>> GetAllowedChannelsAsync(UserRequest request)
+        public async Task<IReadOnlyCollection<ChannelSummaryResponse>> GetAllowedChannelsAsync(UserRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             Ensure.That(member)
@@ -237,21 +237,25 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             }
 
             // TODO: Improve performance
-            var sortedChannels = channelsResponse.Select(x => new
-            {
-                Channel = x,
-                SortedDate = x.LastMessage?.Created ?? x.Created
-            })
-            .OrderByDescending(x => x.SortedDate)
-            .Select(x => x.Channel);
+            var sortedChannels = channelsResponse
+                .Select(x => new
+                {
+                    Channel = x,
+                    SortedDate = x.LastMessage?.Created ?? x.Created
+
+                })
+                .OrderByDescending(x => x.SortedDate)
+                .Select(x => x.Channel)
+                .ToList()
+                .AsReadOnly();
 
             return sortedChannels;
         }
 
-        public async Task<IEnumerable<ChannelResponse>> GetAllChannelsAsync()
+        public async Task<IReadOnlyCollection<ChannelResponse>> GetAllChannelsAsync()
         {
             var channels = await UnitOfWork.ChannelRepository.GetAllChannelsAsync();
-            return channels.Select(x => x.ToChannelResponse(_configuration));
+            return channels.Select(x => x.ToChannelResponse(_configuration)).ToList().AsReadOnly();
         }
 
         public async Task<SettingsResponse> GetChannelSettingsAsync(Guid channelId)
@@ -352,10 +356,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             }
         }
 
-        public async Task<int> GetChannelMessageCountAsync(ChannelRequest request)
+        public async Task<int> GetChannelMessagesCountAsync(Guid channelId)
         {
-            var messagesCount = await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(request.ChannelId);
-            return messagesCount;
+            return await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(channelId);
         }
     }
 }

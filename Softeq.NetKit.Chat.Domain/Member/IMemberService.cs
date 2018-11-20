@@ -19,9 +19,8 @@ namespace Softeq.NetKit.Chat.Domain.Member
         Task<MemberSummary> GetMemberSummaryBySaasUserIdAsync(string saasUserId);
         Task<MemberSummary> GetMemberByIdAsync(Guid memberId);
         Task<ParticipantResponse> GetMemberAsync(UserRequest request);
-        Task<IEnumerable<MemberSummary>> GetChannelMembersAsync(ChannelRequest request);
+        Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId);
         Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request);
-        Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request);
         Task<IEnumerable<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request);
 
         Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request);

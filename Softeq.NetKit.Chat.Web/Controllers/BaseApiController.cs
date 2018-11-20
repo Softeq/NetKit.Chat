@@ -2,6 +2,7 @@
 // http://www.softeq.com
  
 using System.Security.Claims;
+using EnsureThat;
 using IdentityModel;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -16,6 +17,8 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         public BaseApiController(ILogger logger)
         {
+            Ensure.That(logger).IsNotNull();
+
             Logger = logger;
         }
 

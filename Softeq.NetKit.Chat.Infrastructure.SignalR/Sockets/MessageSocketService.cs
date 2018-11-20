@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 using Softeq.NetKit.Chat.Domain.Channel;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message;
@@ -44,7 +43,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
         public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest createMessageRequest)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(createMessageRequest.SaasUserId, createMessageRequest.ChannelId));
+            var channel = await _channelService.GetChannelByIdAsync(createMessageRequest.ChannelId);
             var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(createMessageRequest.SaasUserId);
 
             if (string.IsNullOrEmpty(createMessageRequest.Body))

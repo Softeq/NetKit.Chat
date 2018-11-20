@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
 
         public async Task OnUpdateMessage(MemberSummary member, MessageResponse message)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
+            var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
 
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
 
@@ -63,7 +63,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
 
         public async Task OnAddMessageAttachment(MemberSummary member, MessageResponse message)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
+            var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
 
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
 
@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
 
         public async Task OnDeleteMessageAttachment(MemberSummary member, MessageResponse message)
         {
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
+            var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
 
             var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
 
@@ -83,10 +83,9 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
 
         public async Task OnChangeLastReadMessage(List<MemberSummary> members, MessageResponse message)
         {
+            var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
+
             var channelRequest = new ChannelRequest(members.First().SaasUserId, message.ChannelId);
-
-            var channel = await _channelService.GetChannelByIdAsync(channelRequest);
-
             var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelRequest, members.Select(x => x.Id));
 
             // Notify owner about read message

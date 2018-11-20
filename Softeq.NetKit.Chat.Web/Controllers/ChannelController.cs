@@ -1,17 +1,16 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
- 
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
@@ -24,171 +23,160 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [Route("api/channel")]
     [Authorize(Roles = "Admin, User")]
     [ApiVersion("1.0")]
-    [ProducesResponseType(typeof(List<ErrorDto>), 400)]
-    [ProducesResponseType(typeof(ErrorDto), 400)]
-    [ProducesResponseType(typeof(ErrorDto), 500)]
+    [ProducesResponseType(typeof(List<ErrorDto>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
     public class ChannelController : BaseApiController
     {
-        private readonly IChannelService _channelService;
-        private readonly IMemberService _memberService;
         private readonly IChannelSocketService _channelSocketService;
+        private readonly IMemberSocketService _memberSocketService;
 
-        public ChannelController(ILogger logger, IChannelService channelService, IMemberService memberService, IChannelSocketService channelSocketService) 
+        public ChannelController(ILogger logger, IChannelSocketService channelSocketService, IMemberSocketService memberSocketService)
             : base(logger)
         {
-            _channelService = channelService;
-            _memberService = memberService;
+            Ensure.That(channelSocketService).IsNotNull();
+            Ensure.That(memberSocketService).IsNotNull();
+
             _channelSocketService = channelSocketService;
+            _memberSocketService = memberSocketService;
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(ChannelResponse), 200)]
+        [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}")]
         public async Task<IActionResult> GetChannelInfoByIdAsync(Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(userId, channelId));
+            var channel = await _channelSocketService.GetChannelByIdAsync(channelId);
             return Ok(channel);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(ChannelSummaryResponse), 200)]
+        [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateChannelAsync([FromBody] CreateChannelRequest request)
         {
-            var userId = GetCurrentSaasUserId();
-            request.SaasUserId = userId;
-            var channel = await _channelService.CreateChannelAsync(request);
+            request.SaasUserId = GetCurrentSaasUserId();
+            var channel = await _channelSocketService.CreateChannelAsync(request);
             return Ok(channel);
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(ChannelResponse), 200)]
+        [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}")]
         public async Task<IActionResult> UpdateChannelAsync(Guid channelId, [FromBody] UpdateChannelRequest request)
         {
             request.ChannelId = channelId;
             request.SaasUserId = GetCurrentSaasUserId();
-            var channel = await _channelService.UpdateChannelAsync(request);
+            var channel = await _channelSocketService.UpdateChannelAsync(request);
             return Ok(channel);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ChannelResponse>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ChannelResponse>), StatusCodes.Status200OK)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllChannelsAsync()
         {
-            var channels = await _channelService.GetAllChannelsAsync();
+            var channels = await _channelSocketService.GetAllChannelsAsync();
             return Ok(channels);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ChannelResponse>), 200)]
+        [ProducesResponseType(typeof(IReadOnlyCollection<ChannelResponse>), StatusCodes.Status200OK)]
         [Route("/api/me/channel")]
         public async Task<IActionResult> GetMyChannelsAsync()
         {
-            var userId = GetCurrentSaasUserId();
-            var channels = await _channelService.GetMyChannelsAsync(new UserRequest(userId));
+            var channels = await _channelSocketService.GetUserChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
             return Ok(channels);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ChannelSummaryResponse>), 200)]
+        [ProducesResponseType(typeof(IReadOnlyCollection<ChannelSummaryResponse>), StatusCodes.Status200OK)]
         [Route("allowed")]
         public async Task<IActionResult> GetAllowedChannelsAsync()
         {
-            var userId = GetCurrentSaasUserId();
-            var channels = await _channelService.GetAllowedChannelsAsync(new UserRequest(userId));
+            var channels = await _channelSocketService.GetAllowedChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
             return Ok(channels);
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/close")]
         public async Task<IActionResult> CloseChannelAsync(Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            await _channelService.CloseChannelAsync(new ChannelRequest(userId, channelId));
+            await _channelSocketService.CloseChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
             return Ok();
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ParticipantResponse>), 200)]
+        [ProducesResponseType(typeof(IReadOnlyCollection<MemberSummary>), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/participant")]
         public async Task<IActionResult> GetChannelParticipantsAsync(Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            var members = await _memberService.GetChannelMembersAsync(new ChannelRequest(userId, channelId));
+            var members = await _memberSocketService.GetChannelMembersAsync(channelId);
             return Ok(members);
-        }       
+        }
 
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/{memberId:guid}")]
         public async Task<IActionResult> InviteMemberAsync(Guid channelId, Guid memberId)
         {
-            var userId = GetCurrentSaasUserId();
-            var response = await _channelSocketService.InviteMemberAsync(new InviteMemberRequest(userId, channelId, memberId));
+            var response = await _channelSocketService.InviteMemberAsync(new InviteMemberRequest(GetCurrentSaasUserId(), channelId, memberId));
             return Ok(response);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(ChannelSummaryResponse), 200)]
+        [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/member")]
         public async Task<IActionResult> InviteMembersAsync([FromBody] InviteMembersRequest request, Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            request.SaasUserId = userId;
+            request.SaasUserId = GetCurrentSaasUserId();
             request.ChannelId = channelId;
-            var channel = await _memberService.InviteMultipleMembersAsync(request);
+            var channel = await _channelSocketService.InviteMembersAsync(request);
             return Ok(channel);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(SettingsResponse), 200)]
+        [ProducesResponseType(typeof(SettingsResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/settings")]
         public async Task<IActionResult> GetChannelSettingsAsync(Guid channelId)
         {
-            var settings = await _channelService.GetChannelSettingsAsync(channelId);
+            var settings = await _channelSocketService.GetChannelSettingsAsync(channelId);
             return Ok(settings);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/join")]
         public async Task<IActionResult> JoinToChannelAsync(Guid channelId)
         {
-            var saasUserId = GetCurrentSaasUserId();
-            await _channelService.JoinToChannelAsync(new JoinToChannelRequest(saasUserId, channelId));
+            await _channelSocketService.JoinToChannelAsync(new JoinToChannelRequest(GetCurrentSaasUserId(), channelId));
             return Ok();
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/leave")]
         public async Task<IActionResult> LeaveChannelAsync(Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            await _channelService.LeaveChannelAsync(new ChannelRequest(userId, channelId));
+            await _channelSocketService.LeaveChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
             return Ok();
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/mute")]
         public async Task<IActionResult> MuteChannelAsync(Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            await _channelService.MuteChannelAsync(new ChannelRequest(userId, channelId));
+            await _channelSocketService.MuteChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
             return Ok();
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/message/count")]
         public async Task<IActionResult> GetChannelMessagesCountAsync(Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            var messagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(userId, channelId));
+            var messagesCount = await _channelSocketService.GetChannelMessagesCountAsync(channelId);
             return Ok(messagesCount);
         }
     }

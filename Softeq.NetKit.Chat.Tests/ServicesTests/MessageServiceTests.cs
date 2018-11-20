@@ -63,11 +63,11 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             };
 
             // Act
-            var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, _channelId));
-            var oldChannelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, channel.Id));
+            var channel = await _channelService.GetChannelByIdAsync(_channelId);
+            var oldChannelMessagesCount = await _channelService.GetChannelMessagesCountAsync(channel.Id);
             var message = await _messageService.CreateMessageAsync(request);
-            var newChannel = await _channelService.GetChannelByIdAsync(new ChannelRequest(SaasUserId, _channelId));
-            var newChannelMessagesCount = await _channelService.GetChannelMessageCountAsync(new ChannelRequest(SaasUserId, newChannel.Id));
+            var newChannel = await _channelService.GetChannelByIdAsync(_channelId);
+            var newChannelMessagesCount = await _channelService.GetChannelMessagesCountAsync(newChannel.Id);
             
             // Assert
             Assert.NotNull(message);

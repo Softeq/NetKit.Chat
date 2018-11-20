@@ -14,18 +14,18 @@ namespace Softeq.NetKit.Chat.Domain.Channel
     public interface IChannelService
     {
         Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request);
-        Task<IEnumerable<ChannelResponse>> GetMyChannelsAsync(UserRequest request);
+        Task<IReadOnlyCollection<ChannelResponse>> GetUserChannelsAsync(UserRequest request);
         Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest request);
         Task<ChannelSummaryResponse> GetChannelSummaryAsync(ChannelRequest request);
-        Task<ChannelResponse> GetChannelByIdAsync(ChannelRequest request);
+        Task<ChannelResponse> GetChannelByIdAsync(Guid channelId);
         Task<ChannelResponse> CloseChannelAsync(ChannelRequest request);
-        Task<IEnumerable<ChannelSummaryResponse>> GetAllowedChannelsAsync(UserRequest request);
-        Task<IEnumerable<ChannelResponse>> GetAllChannelsAsync();
+        Task<IReadOnlyCollection<ChannelSummaryResponse>> GetAllowedChannelsAsync(UserRequest request);
+        Task<IReadOnlyCollection<ChannelResponse>> GetAllChannelsAsync();
         Task<SettingsResponse> GetChannelSettingsAsync(Guid channelId);
         Task JoinToChannelAsync(JoinToChannelRequest request);
         Task LeaveChannelAsync(ChannelRequest request);
         Task<bool> CheckIfMemberExistInChannelAsync(InviteMemberRequest request);
         Task MuteChannelAsync(ChannelRequest request);
-        Task<int> GetChannelMessageCountAsync(ChannelRequest request);
+        Task<int> GetChannelMessagesCountAsync(Guid channelId);
     }
 }
