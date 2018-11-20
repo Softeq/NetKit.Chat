@@ -145,7 +145,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                     await _channelService.JoinToChannelAsync(request);
 
                     var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-   
+
                     await _channelNotificationHub.OnJoinChannel(member, channel);
                 }
             }
@@ -229,6 +229,43 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                 var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(invitedMember);
                 var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id);
                 await InviteMemberAsync(inviteMemberRequest);
+            }
+        }
+
+        public async Task DeleteMemberAsync(DeleteMemberRequest request)
+        {
+            try
+            {
+                if (request.MemberId == Guid.Empty)
+                {
+                    throw new Exception(LanguageResources.Invite_UserRequired);
+                }
+
+                var member = await _memberService.GetMemberByIdAsync(request.MemberId);
+                var channelRequest = new ChannelRequest(request.SaasUserId, request.ChannelId);
+                var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+                var channelAdmin = await _memberService.GetMemberByIdAsync(channel.CreatorId.Value);
+
+                if (channel.CreatorId != channelAdmin.Id)
+                {
+                    throw new Exception(LanguageResources.AdminRequired);
+                }
+
+                await _channelService.LeaveChannelAsync(new ChannelRequest(member.SaasUserId, request.ChannelId));
+                await _channelNotificationHub.OnDeletedFromChannel(member, channel);
+            }
+            catch (ServiceException ex)
+            {
+                if (ex.Errors.Any(x => x.Description == "Member does not exist."))
+                {
+                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Member does not exist. MemberId: {memberId}", request.MemberId).Exception(ex).AsError();
+                    throw new Exception(String.Format(LanguageResources.UserNotFound, request.MemberId));
+                }
+                if (ex.Errors.Any(x => x.Description == "Channel does not exist."))
+                {
+                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Channel does not exist. ChannelId: {channelId}", request.ChannelId).Exception(ex).AsError();
+                    throw new Exception(String.Format(LanguageResources.RoomNotFound, request.ChannelId));
+                }
             }
         }
 

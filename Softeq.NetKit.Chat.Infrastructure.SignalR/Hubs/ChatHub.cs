@@ -205,6 +205,16 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             request.RequestId);
         }
 
+        public async Task DeleteMemberAsync(DeleteMemberRequest request)
+        {
+            await CheckAccessTokenAndExecute(new TaskReference(async () =>
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.DeleteMemberAsync(request);
+                }),
+                request.RequestId);
+        }
+
         public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
         {
             return await CheckAccessTokenAndExecute(new TaskReference<ChannelSummaryResponse>(async () =>
@@ -304,6 +314,15 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
             // Tell the people in this room that you've leaved
             await Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channel?.Id);
+        }
+
+        async Task IChannelNotificationHub.OnDeletedFromChannel(MemberSummary member, ChannelSummaryResponse channel)
+        {
+            var channelClients = await GetChannelClientsExceptCallerAsync(new ChannelRequest(Context.GetSaasUserId(), channel.Id), Context.ConnectionId);
+            var deletingMemberClients = (await _memberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();
+            
+            await Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channel?.Id);
+            await Clients.Clients(channelClients).SendAsync(HubEvents.MemberDeleted, member, channel?.Id);
         }
 
         async Task IMessageNotificationHub.OnAddMessage(MemberSummary member, MessageResponse message, string clientConnectionId)
