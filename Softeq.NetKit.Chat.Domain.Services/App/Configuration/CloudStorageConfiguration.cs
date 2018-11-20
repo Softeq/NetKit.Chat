@@ -1,36 +1,32 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using Microsoft.Extensions.Configuration;
+
 namespace Softeq.NetKit.Chat.Domain.Services.App.Configuration
 {
     public class CloudStorageConfiguration
     {
-        public string ContentStorageHost { get; set; }
-        public string MessageAttachmentsContainer { get; set; }
-        public string MemberAvatarsContainer { get; set; }
-        public string ChannelImagesContainer { get; set; }
-        public string TempContainerName { get; set; }
-        public int MessagePhotoSize { get; set; }
-        
-        public CloudStorageConfiguration(
-            string contentStorageHost,
-            string messageAttachmentsContainer,
-            string memberAvatarsContainer,
-            string channelImagesContainer,
-            string tempContainerName,
-            int messagePhotoSize)
+        public CloudStorageConfiguration(IConfiguration configuration)
         {
-            ContentStorageHost = contentStorageHost;
-            MessageAttachmentsContainer = messageAttachmentsContainer;
-            MemberAvatarsContainer = memberAvatarsContainer;
-            MessagePhotoSize = messagePhotoSize;
-            TempContainerName = tempContainerName;
-            ChannelImagesContainer = channelImagesContainer;
+            ContentStorageHost = configuration["AzureStorage:ContentStorageHost"];
+            MessageAttachmentsContainer = configuration["AzureStorage:MessageAttachmentsContainer"];
+            MemberAvatarsContainer = configuration["AzureStorage:MemberAvatarsContainer"];
+            ChannelImagesContainer = configuration["AzureStorage:ChannelImagesContainer"];
+            TempContainerName = configuration["AzureStorage:TempContainerName"];
+            MessagePhotoSize = configuration.GetValue<int>("AzureStorage:MessagePhotoSize");
         }
 
-        public string GetUrl(string fileName, string container)
-        {
-            return string.IsNullOrWhiteSpace(fileName) ? null : ContentStorageHost + '/' + container + '/' + fileName;
-        }
+        public string ContentStorageHost { get; }
+
+        public string MessageAttachmentsContainer { get; }
+
+        public string MemberAvatarsContainer { get; }
+
+        public string ChannelImagesContainer { get; }
+
+        public string TempContainerName { get; }
+
+        public int MessagePhotoSize { get; }
     }
 }

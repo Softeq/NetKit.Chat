@@ -31,21 +31,9 @@ namespace Softeq.NetKit.Chat.Domain.Services
 
             builder.RegisterType<ChannelMemberService>()
                 .As<IChannelMemberService>();
-            
-            builder.Register(x =>
-            {
-                var context = x.Resolve<IComponentContext>();
-                var configurationRoot = context.Resolve<IConfiguration>();
 
-                var cfg = new CloudStorageConfiguration(
-                    configurationRoot["AzureStorage:ContentStorageHost"],
-                    configurationRoot["AzureStorage:MessageAttachmentsContainer"],
-                    configurationRoot["AzureStorage:MemberAvatarsContainer"],
-                    configurationRoot["AzureStorage:ChannelImagesContainer"],
-                    configurationRoot["AzureStorage:TempContainerName"],
-                    Convert.ToInt32(configurationRoot["AzureStorage:MessagePhotoSize"]));
-                return cfg;
-            });
+            builder.RegisterType<CloudStorageConfiguration>()
+                .AsSelf();
 
             builder.Register(x =>
             {

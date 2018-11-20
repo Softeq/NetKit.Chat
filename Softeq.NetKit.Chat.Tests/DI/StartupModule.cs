@@ -18,9 +18,9 @@ namespace Softeq.NetKit.Chat.Tests.DI
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            builder.RegisterInstance(
-                    configurationRoot)
-                .As<IConfigurationRoot>();
+            builder.RegisterInstance(configurationRoot)
+                .As<IConfigurationRoot>()
+                .As<IConfiguration>();
 
             builder.Register(x =>
                 {
@@ -29,17 +29,8 @@ namespace Softeq.NetKit.Chat.Tests.DI
                 })
                 .As<IContentStorage>();
 
-            builder.Register(x =>
-            {
-                var cfg = new CloudStorageConfiguration(
-                    configurationRoot["AzureStorage:ContentStorageHost"],
-                    configurationRoot["AzureStorage:MessageAttachmentsContainer"],
-                    configurationRoot["AzureStorage:MemberAvatarsContainer"],
-                    configurationRoot["AzureStorage:ChannelImagesContainer"],
-                    configurationRoot["AzureStorage:TempContainerName"],
-                    Convert.ToInt32(configurationRoot["AzureStorage:MessagePhotoSize"]));
-                return cfg;
-            });
+            builder.RegisterType<CloudStorageConfiguration>()
+                .AsSelf();
 
             builder.Register(x =>
             {
