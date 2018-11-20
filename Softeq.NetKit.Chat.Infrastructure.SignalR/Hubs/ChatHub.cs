@@ -61,9 +61,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var deleteRequest = new DeleteClientRequest(Context.ConnectionId, Context.GetSaasUserId());
-            deleteRequest.SaasUserId = Context.GetSaasUserId();
-            await _memberService.DeleteClientAsync(deleteRequest);
+            var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
+            await _memberService.DeleteClientAsync(deleteClientRequest);
 
             _logger.Event(PropertyNames.EventId).With.Message($"SignalR Client OnDisconnectedAsync({Context.ConnectionId})", Context.ConnectionId).AsInformation();
             await base.OnDisconnectedAsync(exception);
@@ -93,7 +92,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
             {
-                var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId, Context.GetSaasUserId());
+                var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
                 await _memberService.DeleteClientAsync(deleteClientRequest);
             }));
         }
