@@ -15,5 +15,6 @@ namespace Softeq.NetKit.Chat.Infrastructure.Storage.Sql.Repositories
         Task<Attachment> GetAttachmentByIdAsync(Guid attachmentId);
         Task<List<Attachment>> GetMessageAttachmentsAsync(Guid messageId);
         Task DeleteMessageAttachmentsAsync(Guid messageId);
+        Task<int> GetMessageAttachmentsCountAsync(Guid messageId);
     }
 }

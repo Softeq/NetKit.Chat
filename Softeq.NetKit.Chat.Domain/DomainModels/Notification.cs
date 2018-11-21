@@ -11,9 +11,9 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public Guid MemberId { get; set; }
         public Guid MessageId { get; set; }
         public Guid ChannelId { get; set; }
-        public DomainModels.Member Member { get; set; }
-        public DomainModels.Message Message { get; set; }
-        public DomainModels.Channel Channel { get; set; }
+        public Member Member { get; set; }
+        public Message Message { get; set; }
+        public Channel Channel { get; set; }
         public bool IsRead { get; set; }
     }
 }

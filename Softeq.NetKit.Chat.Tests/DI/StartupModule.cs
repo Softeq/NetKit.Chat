@@ -29,14 +29,8 @@ namespace Softeq.NetKit.Chat.Tests.DI
                 })
                 .As<IContentStorage>();
 
-            builder.RegisterType<CloudStorageConfiguration>()
-                .AsSelf();
-
-            builder.Register(x =>
-            {
-                var cfg = new AttachmentConfiguration(Convert.ToInt32(configurationRoot["MessageAttachments:Limit"]));
-                return cfg;
-            });
+            builder.RegisterType<CloudStorageConfiguration>().AsSelf();
+            builder.RegisterType<AttachmentConfiguration>().AsSelf();
 
             builder.Register(context =>
                 {

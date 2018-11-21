@@ -124,8 +124,8 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                     throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
                 }
 
-                var attachmentsCount = await _messageService.GetMessageAttachmentsCount(message.Id);
-                if (attachmentsCount == 10)
+                var isAttachmentLimitExceeded = await _messageService.IsAttachmentLimitExceededAsync(message.Id);
+                if (isAttachmentLimitExceeded)
                 {
                     throw new Exception(LanguageResources.Msg_LimitedAttachments);
                 }

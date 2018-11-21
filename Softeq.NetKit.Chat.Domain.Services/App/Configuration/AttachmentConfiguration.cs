@@ -1,15 +1,17 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using Microsoft.Extensions.Configuration;
+
 namespace Softeq.NetKit.Chat.Domain.Services.App.Configuration
 {
     internal class AttachmentConfiguration
     {
-        public AttachmentConfiguration(int limit)
+        public AttachmentConfiguration(IConfiguration configuration)
         {
-            Limit = limit;
+            Limit = configuration.GetValue<int>("MessageAttachments:Limit");
         }
 
-        public int Limit { get; set; }
+        public int Limit { get; }
     }
 }

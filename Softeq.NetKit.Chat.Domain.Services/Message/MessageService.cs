@@ -11,10 +11,8 @@ using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Attachment;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
@@ -27,11 +25,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         private readonly IContentStorage _contentStorage;
         private readonly CloudStorageConfiguration _cloudStorageConfiguration;
         private readonly AttachmentConfiguration _attachmentConfiguration;
-        public MessageService(
-            IUnitOfWork unitOfWork,
-            IContentStorage contentStorage,
-            CloudStorageConfiguration cloudStorageConfiguration,
-            AttachmentConfiguration attachmentConfiguration) : base(unitOfWork)
+
+        public MessageService(IUnitOfWork unitOfWork,
+                              IContentStorage contentStorage,
+                              CloudStorageConfiguration cloudStorageConfiguration,
+                              AttachmentConfiguration attachmentConfiguration) 
+            : base(unitOfWork)
         {
             _contentStorage = contentStorage;
             _cloudStorageConfiguration = cloudStorageConfiguration;
@@ -133,8 +132,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
             Ensure.That(message).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Message does not exist."))).IsNotNull();
-            var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
-            if (messageAttachments.Count == _attachmentConfiguration.Limit)
+            var isAttachmentLimitExceeded = await IsAttachmentLimitExceededAsync(message.Id);
+            if (isAttachmentLimitExceeded)
             {
                 throw new LimitedAttachmentsException(new ErrorDto(ErrorCode.LimmitedAttachmentsError, "Attachments count is limited."));
             }
@@ -185,10 +184,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
             return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration));
         }
 
-        public async Task<int> GetMessageAttachmentsCount(Guid messageId)
+        public async Task<bool> IsAttachmentLimitExceededAsync(Guid messageId)
         {
-            var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(messageId);
-            return messageAttachments.Count;
+            var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(messageId);
+            return attachmentsCount >= _attachmentConfiguration.Limit;
         }
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)

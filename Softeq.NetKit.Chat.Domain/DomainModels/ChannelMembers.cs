@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 
         // Channel info
         public Guid ChannelId { get; set; }
-        public DomainModels.Channel Channel { get; set; }
+        public Channel Channel { get; set; }
         public bool IsMuted { get; set; }
 
         // Last channel message info

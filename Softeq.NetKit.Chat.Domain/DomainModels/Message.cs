@@ -11,8 +11,8 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public Guid Id { get; set; }
         public Guid ChannelId  { get; set; }
         public Guid? OwnerId { get; set; }
-        public DomainModels.Channel Channel { get; set; }
-        public DomainModels.Member Owner { get; set; }
+        public Channel Channel { get; set; }
+        public Member Owner { get; set; }
         public string Body { get; set; }
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset? Updated { get; set; }
@@ -21,6 +21,6 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         // Notifications
         public string ImageUrl { get; set; }
         public List<Notification> Notifications { get; set; }
-        public List<DomainModels.Attachment> Attachments { get; set; }
+        public List<Attachment> Attachments { get; set; }
     }
 }

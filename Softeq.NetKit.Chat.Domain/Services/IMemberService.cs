@@ -15,14 +15,10 @@ namespace Softeq.NetKit.Chat.Domain.Services
 {
     public interface IMemberService
     {
-        Task<ParticipantResponse> SurelyGetMemberBySaasUserIdAsync(string saasUserId);
         Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId);
         Task<MemberSummary> GetMemberByIdAsync(Guid memberId);
-        Task<ParticipantResponse> GetMemberAsync(UserRequest request);
         Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId);
         Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request);
-        Task<IReadOnlyCollection<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request);
-
         Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request);
         Task DeleteClientAsync(DeleteClientRequest request);
         Task UpdateActivityAsync(AddClientRequest request);

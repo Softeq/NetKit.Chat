@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.Services
         Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request);
         Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request);
         Task<PagedResults<MessageResponse>> GetChannelMessagesAsync(MessageRequest request);
-        Task<int> GetMessageAttachmentsCount(Guid messageId);
+        Task<bool> IsAttachmentLimitExceededAsync(Guid messageId);
         Task SetLastReadMessageAsync(SetLastReadMessageRequest request);
         Task<MessagesResult> GetOlderMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request);

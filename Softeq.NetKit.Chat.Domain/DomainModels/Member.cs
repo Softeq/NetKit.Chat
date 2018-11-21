@@ -26,12 +26,12 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public bool IsBanned { get; set; }
 
         public string PhotoName { get; set; }
-        public List<DomainModels.Channel> OwnedChannels { get; set; }
+        public List<Channel> OwnedChannels { get; set; }
 
         public List<Message> Messages { get; set; }
 
         // List of clients that are currently connected for this user
-        public List<DomainModels.Client> ConnectedClients { get; set; }
+        public List<Client> ConnectedClients { get; set; }
         public List<ChannelMembers> Channels { get; set; }
 
         public List<Notification> Notifications { get; set; }

@@ -33,13 +33,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         {
             _configuration = configuration;
         }
-        
-        public async Task<ParticipantResponse> SurelyGetMemberBySaasUserIdAsync(string saasUserId)
-        {
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            return member.ToParticipantResponse();
-        }
 
         //TODO: Add Unit Tests
         public async Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId)
@@ -54,13 +47,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
             return member.ToMemberSummary(_configuration);
-        }
-
-        public async Task<ParticipantResponse> GetMemberAsync(UserRequest request)
-        {
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            return member.ToParticipantResponse();
         }
 
         public async Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId)
@@ -101,12 +87,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var newChannel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channel.Id);
 
             return newChannel.ToChannelResponse(_configuration);
-        }
-
-        public async Task<IReadOnlyCollection<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request)
-        {
-            var members = await UnitOfWork.MemberRepository.GetOnlineMembersInChannelAsync(request.ChannelId);
-            return members.Select(x => x.ToParticipantResponse()).ToList().AsReadOnly();
         }
 
         public async Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request)
@@ -239,6 +219,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
 
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
             await UnitOfWork.ClientRepository.UpdateClientAsync(client);
+        }
+
+        private async Task<ParticipantResponse> SurelyGetMemberBySaasUserIdAsync(string saasUserId)
+        {
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+            Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+            return member.ToParticipantResponse();
         }
     }
 }

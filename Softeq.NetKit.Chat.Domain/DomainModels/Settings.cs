@@ -10,6 +10,6 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public Guid Id { get; set; }
         public string RawSettings { get; set; }
         public Guid ChannelId { get; set; }
-        public DomainModels.Channel Channel { get; set; }
+        public Channel Channel { get; set; }
     }
 }
