@@ -316,13 +316,13 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             await Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channel?.Id);
         }
 
-        async Task IChannelNotificationHub.OnDeletedFromChannel(MemberSummary member, ChannelSummaryResponse channel)
+        async Task IChannelNotificationHub.OnDeletedFromChannel(MemberSummary member, Guid channelId)
         {
-            var channelClients = await GetChannelClientsExceptCallerAsync(new ChannelRequest(Context.GetSaasUserId(), channel.Id), Context.ConnectionId);
+            var channelClients = await GetChannelClientsExceptCallerAsync(new ChannelRequest(Context.GetSaasUserId(), channelId), Context.ConnectionId);
             var deletingMemberClients = (await _memberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();
             
-            await Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channel?.Id);
-            await Clients.Clients(channelClients).SendAsync(HubEvents.MemberDeleted, member, channel?.Id);
+            await Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channelId);
+            await Clients.Clients(channelClients).SendAsync(HubEvents.MemberDeleted, member, channelId);
         }
 
         async Task IMessageNotificationHub.OnAddMessage(MemberSummary member, MessageResponse message, string clientConnectionId)

@@ -23,7 +23,7 @@ namespace Softeq.NetKit.Chat.Domain.Channel
         Task<IEnumerable<ChannelResponse>> GetAllChannelsAsync();
         Task<SettingsResponse> GetChannelSettingsAsync(Guid channelId);
         Task JoinToChannelAsync(JoinToChannelRequest request);
-        Task LeaveChannelAsync(ChannelRequest request);
+        Task RemoveMemberFromChannelAsync(ChannelRequest request);
         Task<bool> CheckIfMemberExistInChannelAsync(InviteMemberRequest request);
         Task MuteChannelAsync(ChannelRequest request);
         Task<int> GetChannelMessageCountAsync(ChannelRequest request);

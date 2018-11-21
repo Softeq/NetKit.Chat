@@ -2,8 +2,6 @@
 // http://www.softeq.com
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 
 namespace Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request

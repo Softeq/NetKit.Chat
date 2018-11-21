@@ -170,7 +170,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                     throw new Exception(String.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
                 }
 
-                await _channelService.LeaveChannelAsync(request);
+                await _channelService.RemoveMemberFromChannelAsync(request);
 
                 await _channelNotificationHub.OnLeaveChannel(member, channel);
             }
@@ -238,32 +238,33 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             {
                 if (request.MemberId == Guid.Empty)
                 {
-                    throw new Exception(LanguageResources.Invite_UserRequired);
+                    //TODO apply validation
+                    throw new Exception(LanguageResources.RemoveAdmin_UserRequired);
                 }
 
                 var member = await _memberService.GetMemberByIdAsync(request.MemberId);
-                var channelRequest = new ChannelRequest(request.SaasUserId, request.ChannelId);
-                var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-                var channelAdmin = await _memberService.GetMemberByIdAsync(channel.CreatorId.Value);
+                var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+                var currentMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
 
-                if (channel.CreatorId != channelAdmin.Id)
+                if (channel.CreatorId != currentMember.Id)
                 {
+                    //TODO apply validation
                     throw new Exception(LanguageResources.AdminRequired);
                 }
 
-                await _channelService.LeaveChannelAsync(new ChannelRequest(member.SaasUserId, request.ChannelId));
-                await _channelNotificationHub.OnDeletedFromChannel(member, channel);
+                await _channelService.RemoveMemberFromChannelAsync(new ChannelRequest(member.SaasUserId, request.ChannelId));
+                await _channelNotificationHub.OnDeletedFromChannel(member, channel.Id);
             }
             catch (ServiceException ex)
             {
                 if (ex.Errors.Any(x => x.Description == "Member does not exist."))
                 {
-                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Member does not exist. MemberId: {memberId}", request.MemberId).Exception(ex).AsError();
+                    _logger.Event("MemberDoesNotExist").With.Message("Attempt to delete nonexistent Member from channel. MemberId: {memberId}; ChannelId:{channelId}", request.MemberId, request.ChannelId).Exception(ex).AsError();
                     throw new Exception(String.Format(LanguageResources.UserNotFound, request.MemberId));
                 }
                 if (ex.Errors.Any(x => x.Description == "Channel does not exist."))
                 {
-                    _logger.Event(PropertyNames.EventId).With.Message("Exception: Channel does not exist. ChannelId: {channelId}", request.ChannelId).Exception(ex).AsError();
+                    _logger.Event("ChannelDoesNotExist").With.Message("Attempt to delete member from nonexistent channel. MemberId: {memberId}; ChannelId: {channelId}", request.MemberId, request.ChannelId).Exception(ex).AsError();
                     throw new Exception(String.Format(LanguageResources.RoomNotFound, request.ChannelId));
                 }
             }
