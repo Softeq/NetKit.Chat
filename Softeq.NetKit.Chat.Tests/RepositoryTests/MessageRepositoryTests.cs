@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.ChannelMember;
 using Softeq.NetKit.Chat.Domain.Member;
@@ -162,6 +163,18 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
+        public async Task GetPreviousMessageAsync_ShouldReturnPreviousMessageIfExists()
+        {
+            var firstMessage = await GenerateAndAddMessage();
+            var previousForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage);
+            Assert.Null(previousForFirstMessage);
+
+            var secondMessage = await GenerateAndAddMessage(DateTimeOffset.UtcNow.AddHours(1));
+            var previousForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage);
+            previousForSecondMessage.Should().BeEquivalentTo(firstMessage, compareOptions => compareOptions.Excluding(message => message.Owner));
+        }
+
+        [Fact]
         public async Task GetPreviousMessagesAsyncTest()
         {
             // Arrange
@@ -169,16 +182,14 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(1));
             
             // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
-                _channelId, firstMessage.Id);
+            var actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(_channelId, firstMessage.Id);
 
             // Assert 1
             Assert.NotNull(actualMessages);
             Assert.Empty(actualMessages);
 
             // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(
-                _channelId, secondMessage.Id);
+            actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(_channelId, secondMessage.Id);
 
             // Assert 2
             Assert.NotNull(actualMessages);

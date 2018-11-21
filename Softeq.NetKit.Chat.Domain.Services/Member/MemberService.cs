@@ -108,7 +108,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             return members.Select(x => x.ToParticipantResponse()).ToList().AsReadOnly();
         }
 
-        // TODO:Add unit test
         public async Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
@@ -127,9 +126,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 };
                 await UnitOfWork.MemberRepository.AddMemberAsync(newMember);
             }
+            else
+            {
+                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest(member.SaasUserId, UserStatus.Active));
+            }
 
-            member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
+            member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);         
+           
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
             if (client != null)
             {
@@ -156,6 +159,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
             Ensure.That(client).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Client does not exist.")));
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
+
+            var clients = await GetMemberClientsAsync(client.MemberId);
+            if (!clients.Any())
+            {
+                await UpdateMemberStatusAsync(new UpdateMemberStatusRequest(client.Member.SaasUserId, UserStatus.Offline));
+            }
         }
 
         // TODO:Add unit test
@@ -194,6 +203,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         {
             var member = await SurelyGetMemberBySaasUserIdAsync(request.SaasUserId);
             member.Status = request.UserStatus;
+            member.LastActivity = DateTimeOffset.Now;
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member.ToMember());
         }
 

@@ -3,6 +3,7 @@
 
 using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Softeq.NetKit.Chat.Domain.Member.TransportModels.Response
 {
@@ -13,6 +14,7 @@ namespace Softeq.NetKit.Chat.Domain.Member.TransportModels.Response
         public string SaasUserId { get; set; }
         public string UserName { get; set; }
         public UserRole Role { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
         public UserStatus Status { get; set; }
         public bool IsAfk { get; set; }
         public DateTimeOffset LastActivity { get; set; }

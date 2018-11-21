@@ -227,6 +227,32 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
+        public async Task<Message> GetPreviousMessageAsync(Message message)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                await connection.OpenAsync();
+                var sqlQuery = @"
+		            SELECT TOP(1) *
+		            FROM Messages m    
+		            LEFT JOIN Members mem ON mem.Id = m.OwnerId   
+		            WHERE m.ChannelId = @channelId AND OwnerId = @ownerId AND m.Created < @createdDate
+		            ORDER BY Created ASC";
+
+                var previousMessage = (await connection.QueryAsync<Message, Member, Message>(
+                        sqlQuery,
+                        (msg, member) =>
+                        {
+                            msg.Owner = member;
+                            msg.OwnerId = member.Id;
+                            return msg;
+                        },
+                        new { channelId = message.ChannelId, ownerId = message.OwnerId, createdDate = message.Created }))
+                    .FirstOrDefault();
+                return previousMessage;
+            }
+        }
+
         public async Task AddMessageAsync(Message message)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
