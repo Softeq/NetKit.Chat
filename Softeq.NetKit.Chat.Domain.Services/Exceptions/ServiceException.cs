@@ -15,38 +15,39 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
 
         public ServiceException(string message) : base(message)
         {
-            InitializeErorrs(message);
+            InitializeErrors(message);
         }
 
         public ServiceException(params ErrorDto[] errors)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         public ServiceException(string message, params ErrorDto[] errors) : base(message)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         public ServiceException(Exception innerException, params ErrorDto[] errors) : base("See inner exception.", innerException)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         protected ServiceException(string message, Exception innerException, params ErrorDto[] errors) : base(message, innerException)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         protected ServiceException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
-        protected void InitializeErorrs(IEnumerable<ErrorDto> errors)
+        protected void InitializeErrors(IEnumerable<ErrorDto> errors)
         {
             Errors.AddRange(errors);
         }
-        protected void InitializeErorrs(string message)
+
+        protected void InitializeErrors(string message)
         {
             Errors.Add(new ErrorDto(ErrorCode.UnknownError, message));
         }

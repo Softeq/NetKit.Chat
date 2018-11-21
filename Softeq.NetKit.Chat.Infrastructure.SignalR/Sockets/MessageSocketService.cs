@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Channel;
+using Softeq.NetKit.Chat.Domain.Client.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message;
@@ -41,19 +43,27 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             _messageNotificationService = messageNotificationService;
         }
 
-        public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest createMessageRequest)
+        public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest request)
         {
-            var channel = await _channelService.GetChannelByIdAsync(createMessageRequest.ChannelId);
-            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(createMessageRequest.SaasUserId);
+            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
-            if (string.IsNullOrEmpty(createMessageRequest.Body))
+            if (string.IsNullOrEmpty(request.Body))
             {
                 throw new Exception(string.Format(LanguageResources.Msg_MessageRequired, channel.Name));
             }
 
-            var message = await _messageService.CreateMessageAsync(createMessageRequest);
+            var message = await _messageService.CreateMessageAsync(request);
 
-            await _messageNotificationService.OnAddMessage(member, message, createMessageRequest.ClientConnectionId);
+            await _messageNotificationService.OnAddMessage(member, message, request.ClientConnectionId);
+
+            await _memberService.UpdateActivityAsync(new AddClientRequest
+            {
+                SaasUserId = member.SaasUserId,
+                UserName = member.UserName,
+                ConnectionId = request.ClientConnectionId,
+                UserAgent = null
+            });
 
             return message;
         }
@@ -62,7 +72,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
         {
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var message = await _messageService.GetMessageByIdAsync(request.MessageId);
                 if (message.Sender.Id != member.Id)
                 {
@@ -82,9 +92,9 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             }
         }
 
-        public async Task UpdateMessageAsync(UpdateMessageRequest request)
+        public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
         {
-            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
             if (message.Sender.Id != member.Id)
             {
@@ -98,13 +108,15 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             var updatedMessage = await _messageService.UpdateMessageAsync(request);
 
             await _messageNotificationService.OnUpdateMessage(member, updatedMessage);
+
+            return updatedMessage;
         }
 
-        public async Task AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
+        public async Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
         {
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var message = await _messageService.GetMessageByIdAsync(request.MessageId);
                 if (message.Sender.Id != member.Id)
                 {
@@ -117,9 +129,11 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                     throw new Exception(LanguageResources.Msg_LimitedAttachments);
                 }
 
-                await _messageService.AddMessageAttachmentAsync(request);
+                var attachmentResponse = await _messageService.AddMessageAttachmentAsync(request);
 
                 await _messageNotificationService.OnAddMessageAttachment(member, message);
+
+                return attachmentResponse;
             }
             catch (ServiceException ex)
             {
@@ -129,13 +143,15 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                     throw new Exception(string.Format(LanguageResources.Msg_NotFound, request.MessageId));
                 }
             }
+
+            return default(AttachmentResponse);
         }
 
         public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
         {
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var message = await _messageService.GetMessageByIdAsync(request.MessageId);
                 if (message.Sender.Id != member.Id)
                 {
@@ -161,14 +177,14 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             }
         }
 
-        public async Task AddLastReadMessageAsync(AddLastReadMessageRequest request)
+        public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)
         {
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
-                await _messageService.AddLastReadMessageAsync(request);
+                await _messageService.SetLastReadMessageAsync(request);
 
                 var messageOwner = await _memberService.GetMemberByIdAsync(message.Sender.Id);
 

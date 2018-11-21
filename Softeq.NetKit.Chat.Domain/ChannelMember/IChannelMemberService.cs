@@ -10,7 +10,7 @@ namespace Softeq.NetKit.Chat.Domain.ChannelMember
 {
     public interface IChannelMemberService
     {
-        Task<IEnumerable<ChannelMemberResponse>> GetChannelMembersAsync(ChannelRequest request);
+        Task<IReadOnlyCollection<ChannelMemberResponse>> GetChannelMembersAsync(ChannelRequest request);
         Task<ChannelMemberResponse> GetChannelMemberAsync(GetChannelMemberRequest request);
     }
 }

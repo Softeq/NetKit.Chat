@@ -1,6 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
- 
+
 using System.Security.Claims;
 using EnsureThat;
 using IdentityModel;
@@ -22,18 +22,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             Logger = logger;
         }
 
-        #region helpers
-
         protected string GetCurrentSaasUserId()
         {
             return User.FindFirstValue(JwtClaimTypes.Subject);
         }
-
-        protected string GetCurrentUserEmail()
-        {
-            return User.FindFirstValue(JwtClaimTypes.Name);
-        }
-
-        #endregion
     }
 }

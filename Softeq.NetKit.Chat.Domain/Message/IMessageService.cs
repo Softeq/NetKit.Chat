@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.Message
         Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request);
         Task<PagedResults<MessageResponse>> GetChannelMessagesAsync(MessageRequest request);
         Task<int> GetMessageAttachmentsCount(Guid messageId);
-        Task AddLastReadMessageAsync(AddLastReadMessageRequest request);
+        Task SetLastReadMessageAsync(SetLastReadMessageRequest request);
         Task<MessagesResult> GetOlderMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetLastMessagesAsync(GetLastMessagesRequest request);

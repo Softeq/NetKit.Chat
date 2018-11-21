@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
     {
         public DuplicateException(params ErrorDto[] errors)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         public DuplicateException(string message) : base(message, new ErrorDto(ErrorCode.NotFound, message))

@@ -172,7 +172,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
                 .IsNotNull();
 
-            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
             var channelMember = await _channelMemberService.GetChannelMemberAsync(new GetChannelMemberRequest(member.Id, request.ChannelId));
 

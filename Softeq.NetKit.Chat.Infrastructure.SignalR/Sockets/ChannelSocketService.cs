@@ -2,7 +2,6 @@
 // http://www.softeq.com
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
@@ -10,9 +9,7 @@ using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Member;
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
-using Softeq.NetKit.Chat.Domain.Settings.TransportModels.Response;
 using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications;
 using Softeq.NetKit.Chat.Infrastructure.SignalR.Resources;
 using Softeq.Serilog.Extension;
@@ -48,7 +45,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             try
             {
                 var channel = await _channelService.CreateChannelAsync(createChannelRequest);
-                var user = await _memberService.GetMemberSummaryBySaasUserIdAsync(createChannelRequest.SaasUserId);
+                var user = await _memberService.GetMemberBySaasUserIdAsync(createChannelRequest.SaasUserId);
 
                 await _channelNotificationService.OnAddChannel(user, channel, createChannelRequest.ClientConnectionId);
                 //todo filter creator connection id on join channel
@@ -79,7 +76,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             {
                 var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
 
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
                 if (channel.CreatorId != member.Id)
                 {
@@ -106,7 +103,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             try
             {
                 var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
                 if (channel.CreatorId != member.Id && member.Role != UserRole.Admin)
                 {
@@ -141,7 +138,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
             // Locate the room, does NOT have to be open
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
                 if (!isMemberExistInChannel)
                 {
@@ -163,7 +160,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
         {
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var channel = await _channelService.GetChannelSummaryAsync(request);
 
                 var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
@@ -193,7 +190,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var invitedMember = await _memberService.GetMemberByIdAsync(request.MemberId);
                 if (member.Id == invitedMember.Id)
                 {
@@ -235,7 +232,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
 
             foreach (var invitedMember in request.InvitedMembers)
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(invitedMember);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(invitedMember);
                 var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id);
                 response = await InviteMemberAsync(inviteMemberRequest);
             }
@@ -247,7 +244,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
         {
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
                 var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
 
                 var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
@@ -264,36 +261,6 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets
                 _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelId}", request.ChannelId).Exception(ex).AsError();
                 throw new Exception(string.Format(LanguageResources.RoomNotFound, request.ChannelId));
             }
-        }
-
-        public Task<int> GetChannelMessagesCountAsync(Guid channelId)
-        {
-            return _channelService.GetChannelMessagesCountAsync(channelId);
-        }
-
-        public Task<SettingsResponse> GetChannelSettingsAsync(Guid channelId)
-        {
-            return _channelService.GetChannelSettingsAsync(channelId);
-        }
-
-        public Task<IReadOnlyCollection<ChannelSummaryResponse>> GetAllowedChannelsAsync(UserRequest request)
-        {
-            return _channelService.GetAllowedChannelsAsync(request);
-        }
-
-        public Task<IReadOnlyCollection<ChannelResponse>> GetUserChannelsAsync(UserRequest request)
-        {
-            return _channelService.GetUserChannelsAsync(request);
-        }
-
-        public Task<IReadOnlyCollection<ChannelResponse>> GetAllChannelsAsync()
-        {
-            return _channelService.GetAllChannelsAsync();
-        }
-
-        public Task<ChannelResponse> GetChannelByIdAsync(Guid channelId)
-        {
-            return _channelService.GetChannelByIdAsync(channelId);
         }
     }
 }

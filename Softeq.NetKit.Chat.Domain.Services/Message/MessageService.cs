@@ -58,7 +58,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
             {
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
-                await AddLastReadMessageAsync(new AddLastReadMessageRequest(request.ChannelId, message.Id, request.SaasUserId));
+                await SetLastReadMessageAsync(new SetLastReadMessageRequest(request.ChannelId, message.Id, request.SaasUserId));
 
                 transactionScope.Complete();
             }
@@ -186,11 +186,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
             return messageAttachments.Count;
         }
 
-        public async Task AddLastReadMessageAsync(AddLastReadMessageRequest request)
+        public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            await UnitOfWork.ChannelMemberRepository.AddLastReadMessageAsync(member.Id, request.ChannelId, request.MessageId);
+            await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(member.Id, request.ChannelId, request.MessageId);
         }
 
         public async Task<MessagesResult> GetOlderMessagesAsync(GetMessagesRequest request)

@@ -86,7 +86,8 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
             var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
 
             var channelRequest = new ChannelRequest(members.First().SaasUserId, message.ChannelId);
-            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelRequest, members.Select(x => x.Id));
+            var notifyMemberIds = members.Select(x => x.Id).ToList();
+            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelRequest, notifyMemberIds);
 
             // Notify owner about read message
             await HubContext.Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Name);

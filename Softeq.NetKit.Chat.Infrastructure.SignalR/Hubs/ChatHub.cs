@@ -91,16 +91,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             {
                 request.SaasUserId = Context.GetSaasUserId();
                 request.ClientConnectionId = Context.ConnectionId;
-                var message = await _messageSocketService.AddMessageAsync(request);
-                var user = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
-                await _memberService.UpdateActivityAsync(new AddClientRequest()
-                {
-                    SaasUserId = user.SaasUserId,
-                    UserName = user.UserName,
-                    ConnectionId = Context.ConnectionId,
-                    UserAgent = null,
-                });
-                return message;
+                return await _messageSocketService.AddMessageAsync(request);
             }),
             request.RequestId);
         }
@@ -145,12 +136,12 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             request.RequestId);
         }
 
-        public async Task MarkAsReadMessageAsync(AddLastReadMessageRequest request)
+        public async Task MarkAsReadMessageAsync(SetLastReadMessageRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
             {
                 request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.AddLastReadMessageAsync(request);
+                await _messageSocketService.SetLastReadMessageAsync(request);
             }), request.RequestId);
         }
 

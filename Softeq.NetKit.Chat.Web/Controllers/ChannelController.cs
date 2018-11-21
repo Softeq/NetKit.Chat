@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
@@ -28,17 +30,20 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
     public class ChannelController : BaseApiController
     {
+        private readonly IChannelService _channelService;
         private readonly IChannelSocketService _channelSocketService;
-        private readonly IMemberSocketService _memberSocketService;
+        private readonly IMemberService _memberService;
 
-        public ChannelController(ILogger logger, IChannelSocketService channelSocketService, IMemberSocketService memberSocketService)
+        public ChannelController(ILogger logger, IChannelService channelService, IChannelSocketService channelSocketService, IMemberService memberService)
             : base(logger)
         {
+            Ensure.That(channelService).IsNotNull();
             Ensure.That(channelSocketService).IsNotNull();
-            Ensure.That(memberSocketService).IsNotNull();
+            Ensure.That(memberService).IsNotNull();
 
+            _channelService = channelService;
             _channelSocketService = channelSocketService;
-            _memberSocketService = memberSocketService;
+            _memberService = memberService;
         }
 
         [HttpGet]
@@ -46,7 +51,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}")]
         public async Task<IActionResult> GetChannelInfoByIdAsync(Guid channelId)
         {
-            var channel = await _channelSocketService.GetChannelByIdAsync(channelId);
+            var channel = await _channelService.GetChannelByIdAsync(channelId);
             return Ok(channel);
         }
 
@@ -71,11 +76,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ChannelResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IReadOnlyCollection<ChannelResponse>), StatusCodes.Status200OK)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllChannelsAsync()
         {
-            var channels = await _channelSocketService.GetAllChannelsAsync();
+            var channels = await _channelService.GetAllChannelsAsync();
             return Ok(channels);
         }
 
@@ -84,7 +89,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("/api/me/channel")]
         public async Task<IActionResult> GetMyChannelsAsync()
         {
-            var channels = await _channelSocketService.GetUserChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
+            var channels = await _channelService.GetUserChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
             return Ok(channels);
         }
 
@@ -93,7 +98,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("allowed")]
         public async Task<IActionResult> GetAllowedChannelsAsync()
         {
-            var channels = await _channelSocketService.GetAllowedChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
+            var channels = await _channelService.GetAllowedChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
             return Ok(channels);
         }
 
@@ -111,7 +116,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/participant")]
         public async Task<IActionResult> GetChannelParticipantsAsync(Guid channelId)
         {
-            var members = await _memberSocketService.GetChannelMembersAsync(channelId);
+            var members = await _memberService.GetChannelMembersAsync(channelId);
             return Ok(members);
         }
 
@@ -140,7 +145,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/settings")]
         public async Task<IActionResult> GetChannelSettingsAsync(Guid channelId)
         {
-            var settings = await _channelSocketService.GetChannelSettingsAsync(channelId);
+            var settings = await _channelService.GetChannelSettingsAsync(channelId);
             return Ok(settings);
         }
 
@@ -176,7 +181,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/message/count")]
         public async Task<IActionResult> GetChannelMessagesCountAsync(Guid channelId)
         {
-            var messagesCount = await _channelSocketService.GetChannelMessagesCountAsync(channelId);
+            var messagesCount = await _channelService.GetChannelMessagesCountAsync(channelId);
             return Ok(messagesCount);
         }
     }

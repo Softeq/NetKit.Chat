@@ -39,8 +39,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
             return member.ToParticipantResponse();
         }
+
         //TODO: Add Unit Tests
-        public async Task<MemberSummary> GetMemberSummaryBySaasUserIdAsync(string saasUserId)
+        public async Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             Ensure.That(member).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
@@ -101,10 +102,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             return newChannel.ToChannelResponse(_configuration);
         }
 
-        public async Task<IEnumerable<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request)
+        public async Task<IReadOnlyCollection<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request)
         {
             var members = await UnitOfWork.MemberRepository.GetOnlineMembersInChannelAsync(request.ChannelId);
-            return members.Select(x => x.ToParticipantResponse());
+            return members.Select(x => x.ToParticipantResponse()).ToList().AsReadOnly();
         }
 
         // TODO:Add unit test
@@ -158,10 +159,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         }
 
         // TODO:Add unit test
-        public async Task<IEnumerable<Domain.Client.Client>> GetMemberClientsAsync(Guid memberId)
+        public async Task<IReadOnlyCollection<Domain.Client.Client>> GetMemberClientsAsync(Guid memberId)
         {
             var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);
-            return clients;
+            return clients.ToList().AsReadOnly();
         }
 
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
@@ -196,16 +197,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member.ToMember());
         }
 
-        public async Task<IEnumerable<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds)
+        public async Task<IReadOnlyCollection<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds)
         {
             var clients = await UnitOfWork.ClientRepository.GetClientsByMemberIdsAsync(memberIds);
-            return clients.Select(x => x.ToClientResponse(x.Member.SaasUserId));
+            return clients.Select(x => x.ToClientResponse(x.Member.SaasUserId)).ToList().AsReadOnly();
         }
 
-        public async Task<IEnumerable<MemberSummary>> GetAllMembersAsync()
+        public async Task<IReadOnlyCollection<MemberSummary>> GetAllMembersAsync()
         {
             var members = await UnitOfWork.MemberRepository.GetAllMembersAsync();
-            return members.Select(x => x.ToMemberSummary(_configuration));
+            return members.Select(x => x.ToMemberSummary(_configuration)).ToList().AsReadOnly();
         }
 
         public async Task UpdateActivityAsync(AddClientRequest request)

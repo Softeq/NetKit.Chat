@@ -15,7 +15,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
         Task UpdateChannelMemberAsync(ChannelMembers channelMember);
         Task<List<ChannelMembers>> GetChannelMembersAsync(Guid channelId);
         Task MuteChannelAsync(Guid memberId, Guid channelId);
-        Task AddLastReadMessageAsync(Guid memberId, Guid channelId, Guid messageId);
+        Task SetLastReadMessageAsync(Guid memberId, Guid channelId, Guid messageId);
         Task UpdateLastReadMessageAsync(Guid messageId);
         Task<ChannelMembers> GetChannelMemberAsync(Guid memberId, Guid channelId);
     }

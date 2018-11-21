@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
     {
         public ConflictException(params ErrorDto[] errors)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         public ConflictException(string message) : base(message, new ErrorDto(ErrorCode.NotFound, message))

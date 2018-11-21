@@ -9,7 +9,8 @@ namespace Softeq.NetKit.Chat.Domain.Message.TransportModels.Request
 {
     public class AddMessageAttachmentRequest : UserRequest
     {
-        public AddMessageAttachmentRequest(string saasUserId, Guid messageId, Stream content, string extension, string contentType, long size) : base(saasUserId) 
+        public AddMessageAttachmentRequest(string saasUserId, Guid messageId, Stream content, string extension, string contentType, long size)
+            : base(saasUserId)
         {
             MessageId = messageId;
             Content = content;
@@ -18,10 +19,14 @@ namespace Softeq.NetKit.Chat.Domain.Message.TransportModels.Request
             Size = size;
         }
 
-        public Guid MessageId { get; set; }
-        public Stream Content { get; set; }
-        public string Extension { get; set; }
-        public string ContentType { get; set; }
-        public long Size { get; set; }
+        public Guid MessageId { get; }
+
+        public Stream Content { get; }
+
+        public string Extension { get; }
+
+        public string ContentType { get; }
+
+        public long Size { get; }
     }
 }

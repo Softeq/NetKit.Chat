@@ -20,10 +20,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.ChannelMember
         {
         }
         
-        public async Task<IEnumerable<ChannelMemberResponse>> GetChannelMembersAsync(ChannelRequest request)
+        public async Task<IReadOnlyCollection<ChannelMemberResponse>> GetChannelMembersAsync(ChannelRequest request)
         {
             var channelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(request.ChannelId);
-            return channelMembers.Select(x => x.ToChannelMemberResponse());
+            return channelMembers.Select(x => x.ToChannelMemberResponse()).ToList().AsReadOnly();
         }
 
         public async Task<ChannelMemberResponse> GetChannelMemberAsync(GetChannelMemberRequest request)

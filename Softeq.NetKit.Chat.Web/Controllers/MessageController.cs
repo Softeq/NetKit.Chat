@@ -5,14 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets;
 using Softeq.NetKit.Chat.Web.Common;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
@@ -21,126 +24,126 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [Route("api/channel/{channelId:guid}/message")]
     [ApiVersion("1.0")]
     [Authorize(Roles = "Admin, User")]
-    [ProducesResponseType(typeof(List<ErrorDto>), 400)]
-    [ProducesResponseType(typeof(ErrorDto), 400)]
-    [ProducesResponseType(typeof(ErrorDto), 500)]
+    [ProducesResponseType(typeof(List<ErrorDto>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
     public class MessageController : BaseApiController
     {
         private readonly IMessageService _messageService;
-        public MessageController(ILogger logger, IMessageService messageService) : base(logger)
+        private readonly IMessageSocketService _messageSocketService;
+
+        public MessageController(ILogger logger, IMessageService messageService, IMessageSocketService messageSocketService) 
+            : base(logger)
         {
+            Ensure.That(messageService).IsNotNull();
+            Ensure.That(_messageSocketService).IsNotNull();
+
             _messageService = messageService;
+            _messageSocketService = messageSocketService;
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(MessageResponse), 200)]
+        [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("")]
-        public async Task<IActionResult> CreateMessageAsync(Guid channelId, [FromBody] CreateMessageRequest request)
+        public async Task<IActionResult> AddMessageAsync(Guid channelId, [FromBody] CreateMessageRequest request)
         {
             request.ChannelId = channelId;
             request.SaasUserId = GetCurrentSaasUserId();
-            var message = await _messageService.CreateMessageAsync(request);
-            return Ok(message);
+            var result = await _messageSocketService.AddMessageAsync(request);
+            return Ok(result);
         }
 
         [HttpDelete]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
         public async Task<IActionResult> DeleteMessageAsync(Guid channelId, Guid messageId)
         {
-            var userId = GetCurrentSaasUserId();
-            await _messageService.DeleteMessageAsync(new DeleteMessageRequest(userId, messageId));
+            await _messageSocketService.DeleteMessageAsync(new DeleteMessageRequest(GetCurrentSaasUserId(), messageId));
             return Ok();
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(MessageResponse), 200)]
+        [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
         public async Task<IActionResult> UpdateMessageAsync(Guid messageId, [FromBody] UpdateMessageRequest request)
         {
-            var userId = GetCurrentSaasUserId();
-            var message = await _messageService.UpdateMessageAsync(
-                new UpdateMessageRequest(userId, messageId, request.Body));
-            return Ok(message);
+            var result = await _messageSocketService.UpdateMessageAsync(new UpdateMessageRequest(GetCurrentSaasUserId(), messageId, request.Body));
+            return Ok(result);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(MessageResponse), 200)]
+        [ProducesResponseType(typeof(AttachmentResponse), StatusCodes.Status200OK)]
         [Route("{messageId:guid}/attachment")]
         public async Task<IActionResult> AddMessageAttachmentAsync(Guid messageId, IFormCollection model)
         {
-            var userId = GetCurrentSaasUserId();
-            if (model?.Files == null)
+            // TODO: Improve validation to validate both WebAPI and SignalR request models in the same place.
+            var file = model?.Files?.FirstOrDefault();
+            if (file == null || file.Length <= 0)
             {
-                return BadRequest(new ErrorDto(ErrorCode.NotFound, "There is not photo"));
+                return BadRequest(new Exception("Attached file can not be empty"));
             }
-            var file = model.Files.Count == 0 ? null : model.Files.First();
-            if (file == null)
+
+            // TODO: Replace this helper by some NuGet or smth else.
+            var extension = AttachmentsUtils.GetExtensionFromMimeType(file.ContentType);
+            var supportedExtensions = new[] { "jpg", "png", "mp4" };
+            if (extension == null || !supportedExtensions.Contains(extension))
             {
-                return BadRequest(new ErrorDto(ErrorCode.NotFound, "There is no files in the request"));
+                return BadRequest(new Exception($"Only {string.Join(", ", supportedExtensions)} formats are supported"));
             }
-            var type = AttachmentsUtils.GetExtentionFromMimeType(file.ContentType);
-            if (type != "jpg" && type != "png" && type != "mp4")
+
+            using (var stream = file.OpenReadStream())
             {
-                return BadRequest(new Exception("Only jpg, png, mp4 formats are supported."));
+                var request = new AddMessageAttachmentRequest(GetCurrentSaasUserId(), messageId, stream, extension, file.ContentType, file.Length);
+                var result = await _messageSocketService.AddMessageAttachmentAsync(request);
+                return Ok(result);
             }
-            if (file.Length > 0)
-            {
-                using (var stream = file.OpenReadStream())
-                {
-                    await _messageService.AddMessageAttachmentAsync(new AddMessageAttachmentRequest(userId, messageId, stream, type, file.ContentType, file.Length));
-                }
-            }
-            return Ok();
         }
 
         [HttpDelete]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}/attachment/{attachmentId:guid}")]
         public async Task<IActionResult> DeleteMessageAttachmentAsync(Guid messageId, Guid attachmentId)
         {
-            var userId = GetCurrentSaasUserId();
-            await _messageService.DeleteMessageAttachmentAsync(new DeleteMessageAttachmentRequest(userId, messageId, attachmentId));
+            var request = new DeleteMessageAttachmentRequest(GetCurrentSaasUserId(), messageId, attachmentId);
+            await _messageSocketService.DeleteMessageAttachmentAsync(request);
             return Ok();
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}/mark-as-read")]
-        public async Task<IActionResult> AddLastReadMessageAsync(Guid messageId, Guid channelId)
+        public async Task<IActionResult> MarkAsReadMessageAsync(Guid messageId, Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            await _messageService.AddLastReadMessageAsync(new AddLastReadMessageRequest(channelId, messageId, userId));
+            await _messageSocketService.SetLastReadMessageAsync(new SetLastReadMessageRequest(channelId, messageId, GetCurrentSaasUserId()));
             return Ok();
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(MessagesResult), 200)]
+        [ProducesResponseType(typeof(MessagesResult), StatusCodes.Status200OK)]
         [Route("old")]
         public async Task<IActionResult> GetReadMessagesAsync(Guid channelId, [FromQuery] Guid messageId, [FromQuery] DateTimeOffset messageCreated,  [FromQuery] int? pageSize)
         {
-            var userId = GetCurrentSaasUserId();
-            var messages = await _messageService.GetOlderMessagesAsync(new GetMessagesRequest(userId, channelId, messageId, messageCreated, pageSize));
-            return Ok(messages);
+            var request = new GetMessagesRequest(GetCurrentSaasUserId(), channelId, messageId, messageCreated, pageSize);
+            var result = await _messageService.GetOlderMessagesAsync(request);
+            return Ok(result);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(MessagesResult), 200)]
+        [ProducesResponseType(typeof(MessagesResult), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMessagesAsync(Guid channelId, [FromQuery] Guid messageId, [FromQuery] DateTimeOffset messageCreated, [FromQuery] int? pageSize)
         {
-            var userId = GetCurrentSaasUserId();
-            var messages = await _messageService.GetMessagesAsync(new GetMessagesRequest(userId, channelId, messageId, messageCreated, pageSize));
-            return Ok(messages);
+            var request = new GetMessagesRequest(GetCurrentSaasUserId(), channelId, messageId, messageCreated, pageSize);
+            var result = await _messageService.GetMessagesAsync(request);
+            return Ok(result);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(MessagesResult), 200)]
+        [ProducesResponseType(typeof(MessagesResult), StatusCodes.Status200OK)]
         [Route("last")]
         public async Task<IActionResult> GetLastMessagesAsync(Guid channelId)
         {
-            var userId = GetCurrentSaasUserId();
-            var messages = await _messageService.GetLastMessagesAsync(new GetLastMessagesRequest(userId, channelId));
-            return Ok(messages);
+            var result = await _messageService.GetLastMessagesAsync(new GetLastMessagesRequest(GetCurrentSaasUserId(), channelId));
+            return Ok(result);
         }
     }
 }

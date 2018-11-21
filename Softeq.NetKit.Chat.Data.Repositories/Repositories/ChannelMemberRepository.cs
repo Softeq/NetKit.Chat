@@ -95,7 +95,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task AddLastReadMessageAsync(Guid memberId, Guid channelId, Guid messageId)
+        public async Task SetLastReadMessageAsync(Guid memberId, Guid channelId, Guid messageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {

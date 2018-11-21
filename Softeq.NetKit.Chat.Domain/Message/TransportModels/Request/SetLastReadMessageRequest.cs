@@ -6,9 +6,10 @@ using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 
 namespace Softeq.NetKit.Chat.Domain.Message.TransportModels.Request
 {
-    public class AddLastReadMessageRequest : UserRequest
+    public class SetLastReadMessageRequest : UserRequest
     {
-        public AddLastReadMessageRequest(Guid channelId, Guid messageId, string saasUserId) : base(saasUserId)
+        public SetLastReadMessageRequest(Guid channelId, Guid messageId, string saasUserId) 
+            : base(saasUserId)
         {
             ChannelId = channelId;
             MessageId = messageId;

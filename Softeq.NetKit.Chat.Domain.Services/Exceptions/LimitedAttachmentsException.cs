@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
     {
         public LimitedAttachmentsException(params ErrorDto[] errors)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         public LimitedAttachmentsException(string message) : base(message, new ErrorDto(ErrorCode.NotFound, message))

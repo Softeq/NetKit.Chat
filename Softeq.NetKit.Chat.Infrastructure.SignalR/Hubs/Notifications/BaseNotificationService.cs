@@ -70,7 +70,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
             return clients;
         }
 
-        protected async Task<List<string>> FilterClients(IEnumerable<ChannelMemberResponse> members, string clientConnectionId)
+        protected async Task<List<string>> FilterClients(IReadOnlyCollection<ChannelMemberResponse> members, string clientConnectionId)
         {
             var mutedMemberIds = members.Where(x => x.IsMuted)
                 .Select(x => x.MemberId)
@@ -95,7 +95,7 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs.Notifications
             return clients;
         }
 
-        protected async Task<List<string>> GetNotMutedChannelMembersConnectionsAsync(ChannelRequest request, IEnumerable<Guid> notifyMemberIds)
+        protected async Task<List<string>> GetNotMutedChannelMembersConnectionsAsync(ChannelRequest request, IReadOnlyCollection<Guid> notifyMemberIds)
         {
             var channelMembers = await ChannelMemberService.GetChannelMembersAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
 

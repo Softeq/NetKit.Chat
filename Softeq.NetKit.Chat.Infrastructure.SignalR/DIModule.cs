@@ -19,7 +19,6 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR
         {
             builder.RegisterType<ChannelSocketService>().As<IChannelSocketService>();
             builder.RegisterType<MessageSocketService>().As<IMessageSocketService>();
-            builder.RegisterType<MemberSocketService>().As<IMemberSocketService>();
         }
 
         private static void RegisterNotificationServices(ContainerBuilder builder)

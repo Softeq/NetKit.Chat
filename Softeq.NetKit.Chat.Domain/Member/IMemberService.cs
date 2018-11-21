@@ -16,20 +16,20 @@ namespace Softeq.NetKit.Chat.Domain.Member
     public interface IMemberService
     {
         Task<ParticipantResponse> SurelyGetMemberBySaasUserIdAsync(string saasUserId);
-        Task<MemberSummary> GetMemberSummaryBySaasUserIdAsync(string saasUserId);
+        Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId);
         Task<MemberSummary> GetMemberByIdAsync(Guid memberId);
         Task<ParticipantResponse> GetMemberAsync(UserRequest request);
         Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId);
         Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request);
-        Task<IEnumerable<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request);
+        Task<IReadOnlyCollection<ParticipantResponse>> GetOnlineChannelMembersAsync(ChannelRequest request);
 
         Task<ClientResponse> GetOrAddClientAsync(AddClientRequest request);
         Task DeleteClientAsync(DeleteClientRequest request);
         Task UpdateActivityAsync(AddClientRequest request);
-        Task<IEnumerable<Client.Client>> GetMemberClientsAsync(Guid memberId);
+        Task<IReadOnlyCollection<Client.Client>> GetMemberClientsAsync(Guid memberId);
         Task<MemberSummary> AddMemberAsync(string saasUserId, string email);
         Task UpdateMemberStatusAsync(UpdateMemberStatusRequest request);
-        Task<IEnumerable<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds);
-        Task<IEnumerable<MemberSummary>> GetAllMembersAsync();
+        Task<IReadOnlyCollection<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds);
+        Task<IReadOnlyCollection<MemberSummary>> GetAllMembersAsync();
     }
 }

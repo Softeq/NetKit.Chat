@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Exceptions
     {
         public AccessForbiddenException(params ErrorDto[] errors)
         {
-            InitializeErorrs(errors);
+            InitializeErrors(errors);
         }
 
         public AccessForbiddenException(string message) : base(message, new ErrorDto(ErrorCode.NotFound, message))
