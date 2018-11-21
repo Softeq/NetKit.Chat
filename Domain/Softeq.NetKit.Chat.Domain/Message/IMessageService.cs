@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
@@ -24,5 +25,6 @@ namespace Softeq.NetKit.Chat.Domain.Message
         Task<MessagesResult> GetOlderMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetLastMessagesAsync(GetLastMessagesRequest request);
+        Task<IList<Guid>> SearchMessageIdsInChannelAsync(Guid channelId, string searchText);
     }
 }

@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -253,6 +254,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
             };
 
             return result;
+        }
+
+        public async Task<IList<Guid>> SearchMessageIdsInChannelAsync(Guid channelId, string searchText)
+        {
+            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
+            Ensure.That(channel).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist."))).IsNotNull();
+
+            var searchResult = await UnitOfWork.MessageRepository.SearchMessagesInChannelAsync(channelId, searchText);
+
+            return searchResult;
         }
     }
 }

@@ -50,6 +50,25 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
+        public async Task<List<Guid>> SearchMessagesInChannelAsync(Guid channelId, string searchText)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                await connection.OpenAsync();
+
+                var sqlQuery = @"
+                    SELECT Id
+                    FROM Messages m                    
+                    WHERE ChannelId = @channelId AND Body LIKE CONCAT('%',@searchText,'%')
+                    ORDER BY m.Created DESC";
+
+                searchText = searchText.Replace("[", "[[]").Replace("%", "[%]");
+                var data = (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchText })).ToList();
+
+                return data;
+            }
+        }
+
         public async Task<List<Message>> GetOlderMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated, int? pageSize)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

@@ -22,6 +22,6 @@ namespace Softeq.NetKit.Chat.Data.Interfaces.Repository
         Task<List<Message>> GetOlderMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated, int? pageSize);
         Task<List<Message>> GetMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated, int? pageSize);
         Task<List<Message>> GetLastMessagesAsync(Guid channelId, DateTimeOffset? lastReadMessageCreated, int pageSize = 20);
-
+        Task<List<Guid>> SearchMessagesInChannelAsync(Guid channelId, string searchText);
     }
 }

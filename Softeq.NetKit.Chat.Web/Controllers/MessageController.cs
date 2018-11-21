@@ -134,6 +134,14 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IList<Guid>), 200)]
+        public async Task<IActionResult> SearchMessagesAsync(Guid channelId, [FromQuery] string searchText)
+        {
+            var messageIds = await _messageService.SearchMessageIdsInChannelAsync(channelId, searchText);
+            return Ok(messageIds);
+        }
+
+        [HttpGet]
         [ProducesResponseType(typeof(MessagesResult), 200)]
         [Route("last")]
         public async Task<IActionResult> GetLastMessagesAsync(Guid channelId)

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member;
@@ -153,6 +154,21 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             Assert.NotNull(newMessages);
             Assert.Empty(newMessages.Results);
             Assert.True(messages.Results.Count() > newMessages.Results.Count());
+        }
+
+        [Fact]
+        public async Task SearchMessageIdsInChannelAsync_ShouldReturnFoundIdsByPattern()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                await _messageService.CreateMessageAsync(new CreateMessageRequest(SaasUserId){Body = $"test{i}", ChannelId = _channelId, ClientConnectionId = _channelId.ToString(), SaasUserId = SaasUserId, Type = 0});
+            }
+
+            var searchOneMessage = await _messageService.SearchMessageIdsInChannelAsync(_channelId, "test1");
+            var searchTestMessages = await _messageService.SearchMessageIdsInChannelAsync(_channelId, "test");
+
+            searchOneMessage.Count.Should().Be(1, "there is one message with text: test1");
+            searchTestMessages.Count.Should().Be(5, "there are 5 messages contains test phrase");
         }
     }
 }
