@@ -1,14 +1,15 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Member
 {
     internal static class MemberMapper
     {
-        public static ParticipantResponse ToParticipantResponse(this Domain.Member.Member member)
+        public static ParticipantResponse ToParticipantResponse(this DomainModels.Member member)
         {
             var participant = new ParticipantResponse();
             if (member != null)
@@ -27,9 +28,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             return participant;
         }
 
-        public static Domain.Member.Member ToMember(this ParticipantResponse response)
+        public static DomainModels.Member ToMember(this ParticipantResponse response)
         {
-            var member = new Domain.Member.Member();
+            var member = new DomainModels.Member();
             if (response != null)
             {
                 member.Id = response.Id;
@@ -46,7 +47,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             return member;
         }
 
-        public static MemberSummary ToMemberSummary(this Domain.Member.Member member, CloudStorageConfiguration configuration)
+        public static MemberSummary ToMemberSummary(this DomainModels.Member member, CloudStorageConfiguration configuration)
         {
             var summary = new MemberSummary();
             if (member != null)

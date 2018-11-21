@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Domain.Channel;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.ChannelMember;
-using Softeq.NetKit.Chat.Domain.ChannelMember.TransportModels;
-using Softeq.NetKit.Chat.Domain.Member;
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Extensions;
 using Softeq.NetKit.Chat.Domain.Services.Settings;
-using Softeq.NetKit.Chat.Domain.Settings.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.ChannelMember;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Channel
@@ -54,7 +54,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
 
             string permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
 
-            var newChannel = new Domain.Channel.Channel
+            var newChannel = new DomainModels.Channel
             {
                 Id = Guid.NewGuid(),
                 Created = DateTimeOffset.UtcNow,

@@ -7,19 +7,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.ChannelMember;
-using Softeq.NetKit.Chat.Domain.Client.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Client.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Member;
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Channel;
 using Softeq.NetKit.Chat.Domain.Services.Client;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Member
@@ -113,7 +114,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                var newMember = new Domain.Member.Member
+                var newMember = new DomainModels.Member
                 {
                     Id = Guid.NewGuid(),
                     Role = UserRole.User,
@@ -139,7 +140,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 return client.ToClientResponse(member.SaasUserId);
             }
 
-            client = new Domain.Client.Client
+            client = new DomainModels.Client
             {
                 Id = Guid.NewGuid(),
                 MemberId = member.Id,
@@ -168,7 +169,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
         }
 
         // TODO:Add unit test
-        public async Task<IReadOnlyCollection<Domain.Client.Client>> GetMemberClientsAsync(Guid memberId)
+        public async Task<IReadOnlyCollection<DomainModels.Client>> GetMemberClientsAsync(Guid memberId)
         {
             var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);
             return clients.ToList().AsReadOnly();
@@ -182,7 +183,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Member
                 return member.ToMemberSummary(_configuration);
             }
 
-            var newMember = new Domain.Member.Member
+            var newMember = new DomainModels.Member
             {
                 Id = Guid.NewGuid(),
                 Role = UserRole.User,

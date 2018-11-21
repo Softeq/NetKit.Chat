@@ -1,16 +1,16 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using System.Threading.Tasks;
 using Autofac;
 using Dapper;
-using Softeq.NetKit.Chat.Domain.Base;
 using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 using Softeq.NetKit.Chat.Infrastructure.Storage.Sql.Database;
 
 namespace Softeq.NetKit.Chat.Tests.Abstract
 {
-    public abstract class BaseTest : Disposable
+    public abstract class BaseTest : IDisposable
     {
         protected readonly ILifetimeScope LifetimeScope;
         protected readonly IUnitOfWork UnitOfWork;
@@ -29,10 +29,9 @@ namespace Softeq.NetKit.Chat.Tests.Abstract
             CleanUpDatabase(LifetimeScope).GetAwaiter().GetResult();
         }
 
-        protected override void DisposeCore()
+        public void Dispose()
         {
             CleanUpDatabase(LifetimeScope).GetAwaiter().GetResult();
-
             LifetimeScope.Dispose();
         }
 

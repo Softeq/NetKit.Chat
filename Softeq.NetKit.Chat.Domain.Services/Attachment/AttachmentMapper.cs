@@ -1,13 +1,14 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Attachment
 {
     public static class AttachmentMapper
     {
-        public static AttachmentResponse ToAttachmentResponse(this Domain.Attachment.Attachment attachment)
+        public static AttachmentResponse ToAttachmentResponse(this DomainModels.Attachment attachment)
         {
             var attachmentResponse = new AttachmentResponse();
             if (attachment != null)

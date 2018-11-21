@@ -1,13 +1,14 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Domain.Client.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Client
 {
     internal static class ClientMapper
     {
-        public static ClientResponse ToClientResponse(this Domain.Client.Client client, string saasUserId)
+        public static ClientResponse ToClientResponse(this DomainModels.Client client, string saasUserId)
         {
             var clientResponse = new ClientResponse();
             if (client != null)

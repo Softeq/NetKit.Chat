@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Softeq.NetKit.Chat.Domain.ChannelMember;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Infrastructure.Storage.Sql.Database;
 
 namespace Softeq.NetKit.Chat.Infrastructure.Storage.Sql.Repositories

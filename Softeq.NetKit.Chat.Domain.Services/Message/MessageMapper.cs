@@ -1,15 +1,16 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Message
 {
     internal static class MessageMapper
     {
-        public static MessageResponse ToMessageResponse(this Domain.Message.Message message, Domain.Message.Message lastReadMessage, CloudStorageConfiguration configuration)
+        public static MessageResponse ToMessageResponse(this DomainModels.Message message, DomainModels.Message lastReadMessage, CloudStorageConfiguration configuration)
         {
             var messageResponse = new MessageResponse();
             if (message != null)

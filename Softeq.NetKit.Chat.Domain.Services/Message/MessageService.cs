@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Message;
-using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Attachment;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 using Softeq.QueryUtils;
 
@@ -42,7 +44,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
             Ensure.That(channel).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist."))).IsNotNull();
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            var message = new Domain.Message.Message
+            var message = new DomainModels.Message
             {
                 Id = Guid.NewGuid(),
                 ChannelId = request.ChannelId,
@@ -137,7 +139,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
                 throw new LimitedAttachmentsException(new ErrorDto(ErrorCode.LimmitedAttachmentsError, "Attachments count is limited."));
             }
 
-            var attachment = new Domain.Attachment.Attachment
+            var attachment = new DomainModels.Attachment
             {
                 Id = Guid.NewGuid(),
                 ContentType = request.ContentType,

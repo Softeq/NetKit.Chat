@@ -2,17 +2,18 @@
 // http://www.softeq.com
 
 using System.Linq;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Member;
 using Softeq.NetKit.Chat.Domain.Services.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Channel
 {
     internal static class ChannelMapper
     {
-        public static ChannelResponse ToChannelResponse(this Domain.Channel.Channel channel, CloudStorageConfiguration configuration)
+        public static ChannelResponse ToChannelResponse(this DomainModels.Channel channel, CloudStorageConfiguration configuration)
         {
             var channelResponse = new ChannelResponse();
             if (channel != null)
@@ -32,9 +33,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             return channelResponse;
         }
 
-        public static ChannelSummaryResponse ToChannelSummaryResponse(this Domain.Channel.Channel channel, 
+        public static ChannelSummaryResponse ToChannelSummaryResponse(this DomainModels.Channel channel, 
             bool isMuted, 
-            Domain.Message.Message lastReadMessage,
+            DomainModels.Message lastReadMessage,
             MemberSummary creator, 
             CloudStorageConfiguration configuration)
         {

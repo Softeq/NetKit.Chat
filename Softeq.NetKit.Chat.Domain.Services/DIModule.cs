@@ -4,10 +4,6 @@
 using System;
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Softeq.NetKit.Chat.Domain.Channel;
-using Softeq.NetKit.Chat.Domain.ChannelMember;
-using Softeq.NetKit.Chat.Domain.Member;
-using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Channel;
 using Softeq.NetKit.Chat.Domain.Services.ChannelMember;

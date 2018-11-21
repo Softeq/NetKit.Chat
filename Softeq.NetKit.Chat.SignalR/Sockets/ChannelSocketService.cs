@@ -6,11 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Resources;
 using Serilog;
-using Softeq.NetKit.Chat.Domain.Channel;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Member;
+using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
 using Softeq.Serilog.Extension;
 
