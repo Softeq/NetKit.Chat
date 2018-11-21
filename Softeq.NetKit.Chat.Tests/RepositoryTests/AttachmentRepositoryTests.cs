@@ -120,5 +120,40 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.Equal(attachment.MessageId, newAttachment.MessageId);
             Assert.Equal(attachment.Size, newAttachment.Size);
         }
+
+        [Fact]
+        public async Task GetMessageAttachmentsCountAsync_ShouldReturnCorrectCount()
+        {
+            var attachments = new[]
+            {
+                new Attachment
+                {
+                    Id = Guid.NewGuid(),
+                    ContentType = "jpg",
+                    Created = DateTime.UtcNow,
+                    FileName = "pic",
+                    MessageId = _messageId,
+                    Size = 100
+                },
+                new Attachment
+                {
+                    Id = Guid.NewGuid(),
+                    ContentType = "png",
+                    Created = DateTime.UtcNow,
+                    FileName = "image",
+                    MessageId = _messageId,
+                    Size = 100
+                }
+            };
+
+            foreach (var attachment in attachments)
+            {
+                await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
+            }
+
+            var count = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_messageId);
+
+            Assert.Equal(attachments.Length, count);
+        }
     }
 }
