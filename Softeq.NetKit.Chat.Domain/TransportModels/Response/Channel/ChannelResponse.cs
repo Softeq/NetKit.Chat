@@ -17,8 +17,10 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel
         public string Description { get; set; }
         public string WelcomeMessage { get; set; }
         public ChannelType Type { get; set; }
+
         [JsonIgnore]
         public Guid? CreatorId { get; set; }
+
         public int MembersCount { get; set; }
         public string PhotoUrl { get; set; }
     }

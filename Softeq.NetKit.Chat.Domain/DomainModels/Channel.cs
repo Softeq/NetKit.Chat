@@ -10,13 +10,18 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
     public class Channel : IBaseEntity<Guid>, ICreated
     {
         public Guid Id { get; set; }
+
         [MaxLength(200)]
         public string Name { get; set; }
+
         public bool IsClosed { get; set; }
+
         [StringLength(80)]
         public string Description { get; set; }
+
         [StringLength(200)]
         public string WelcomeMessage { get; set; }
+
         public string PhotoUrl { get; set; }
 
         public ChannelType Type { get; set; }

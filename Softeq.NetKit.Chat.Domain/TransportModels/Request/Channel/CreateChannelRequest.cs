@@ -10,9 +10,9 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
     public class CreateChannelRequest : UserRequest
     {
         public CreateChannelRequest(string saasUserId) : base(saasUserId)
-        {          
+        {
         }
-        
+
         public string Name { get; set; }
         public string Description { get; set; }
         public string WelcomeMessage { get; set; }

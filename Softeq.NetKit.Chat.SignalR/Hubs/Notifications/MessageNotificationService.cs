@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.AspNetCore.SignalR;
 using Softeq.NetKit.Chat.Domain.Services;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;

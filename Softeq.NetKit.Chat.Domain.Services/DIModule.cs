@@ -1,14 +1,9 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using Autofac;
-using Microsoft.Extensions.Configuration;
-using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
-using Softeq.NetKit.Chat.Domain.Services.Channel;
-using Softeq.NetKit.Chat.Domain.Services.ChannelMember;
-using Softeq.NetKit.Chat.Domain.Services.Member;
-using Softeq.NetKit.Chat.Domain.Services.Message;
+using Softeq.NetKit.Chat.Domain.Services.Configuration;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 
 namespace Softeq.NetKit.Chat.Domain.Services
 {

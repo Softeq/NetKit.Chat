@@ -11,6 +11,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request
 
         [JsonIgnore]
         public string SaasUserId { get; set; }
+
         [JsonIgnore]
         public string ClientConnectionId { get; set; }
     }

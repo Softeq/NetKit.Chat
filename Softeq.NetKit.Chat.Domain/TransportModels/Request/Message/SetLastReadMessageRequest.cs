@@ -8,7 +8,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
     public class SetLastReadMessageRequest : UserRequest
     {
-        public SetLastReadMessageRequest(Guid channelId, Guid messageId, string saasUserId) 
+        public SetLastReadMessageRequest(Guid channelId, Guid messageId, string saasUserId)
             : base(saasUserId)
         {
             ChannelId = channelId;

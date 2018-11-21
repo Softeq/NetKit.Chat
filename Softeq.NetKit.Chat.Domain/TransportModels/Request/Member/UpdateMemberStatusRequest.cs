@@ -11,6 +11,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Member
         {
             UserStatus = userStatus;
         }
+
         public UserStatus UserStatus { get; set; }
     }
 }
