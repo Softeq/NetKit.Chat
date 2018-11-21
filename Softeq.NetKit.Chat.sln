@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Infrastructure.SignalR", "Softeq.NetKit.Chat.Infrastructure.SignalR\Softeq.NetKit.Chat.Infrastructure.SignalR.csproj", "{006920D5-96E2-4900-BE64-A783F2C863A4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Web", "Softeq.NetKit.Chat.Web\Softeq.NetKit.Chat.Web.csproj", "{A8ABD055-ACDC-4533-822C-8662A58B2333}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Domain", "Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj", "{F384D557-EE76-42C5-8DBA-990C74920E6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.NetKit.Chat.Data.Repositories", "Softeq.NetKit.Chat.Data.Repositories\Softeq.NetKit.Chat.Data.Repositories.csproj", "{6AC107C1-5743-4AAD-834F-7F76FAFA8417}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.NetKit.Chat.Domain.Services", "Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj", "{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Domain.Services", "Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj", "{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Tests", "Softeq.NetKit.Chat.Tests\Softeq.NetKit.Chat.Tests.csproj", "{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.SignalR", "Softeq.NetKit.Chat.SignalR\Softeq.NetKit.Chat.SignalR.csproj", "{A54D2056-8B81-4427-9FB6-76A43AE7501B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.NetKit.Chat.Infrastructure", "Softeq.NetKit.Chat.Infrastructure\Softeq.NetKit.Chat.Infrastructure.csproj", "{78204D83-5BAB-4AEB-B1DF-37114DF3A9F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{006920D5-96E2-4900-BE64-A783F2C863A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{006920D5-96E2-4900-BE64-A783F2C863A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{006920D5-96E2-4900-BE64-A783F2C863A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{006920D5-96E2-4900-BE64-A783F2C863A4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A8ABD055-ACDC-4533-822C-8662A58B2333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8ABD055-ACDC-4533-822C-8662A58B2333}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8ABD055-ACDC-4533-822C-8662A58B2333}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,10 +29,6 @@ Global
 		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AC107C1-5743-4AAD-834F-7F76FAFA8417}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +37,14 @@ Global
 		{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78204D83-5BAB-4AEB-B1DF-37114DF3A9F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78204D83-5BAB-4AEB-B1DF-37114DF3A9F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78204D83-5BAB-4AEB-B1DF-37114DF3A9F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78204D83-5BAB-4AEB-B1DF-37114DF3A9F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

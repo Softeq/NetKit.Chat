@@ -17,7 +17,7 @@ using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Settings.TransportModels.Response;
-using Softeq.NetKit.Chat.Infrastructure.SignalR.Sockets;
+using Softeq.NetKit.Chat.SignalR.Sockets;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {

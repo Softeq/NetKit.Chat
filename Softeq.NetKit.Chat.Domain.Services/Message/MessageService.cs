@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Data.Repositories;
 using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
@@ -16,6 +15,7 @@ using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Attachment;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 using Softeq.QueryUtils;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Message

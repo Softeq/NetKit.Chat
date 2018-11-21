@@ -2,7 +2,7 @@
 // http://www.softeq.com
 
 using EnsureThat;
-using Softeq.NetKit.Chat.Data.Repositories;
+using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 
 namespace Softeq.NetKit.Chat.Domain.Services
 {
