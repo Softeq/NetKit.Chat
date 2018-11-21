@@ -255,6 +255,16 @@ namespace Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs
             request.RequestId);
         }
 
+        public async Task PinChannelAsync(ChannelRequest request)
+        {
+            await CheckAccessTokenAndExecute(new TaskReference(async () =>
+                {
+                    request.SaasUserId = Context.GetSaasUserId();
+                    await _channelSocketService.PinChannelAsync(request);
+                }),
+                request.RequestId);
+        }
+
         #endregion
 
         #region HubEvents

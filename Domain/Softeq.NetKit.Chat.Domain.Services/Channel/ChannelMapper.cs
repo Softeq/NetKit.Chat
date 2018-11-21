@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
@@ -34,6 +35,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
 
         public static ChannelSummaryResponse ToChannelSummaryResponse(this Domain.Channel.Channel channel, 
             bool isMuted, 
+            bool isPinned,
             Domain.Message.Message lastReadMessage,
             MemberSummary creator, 
             CloudStorageConfiguration configuration)
@@ -50,6 +52,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 channelListResponse.WelcomeMessage = channel.WelcomeMessage;
                 channelListResponse.Type = channel.Type;
                 channelListResponse.IsMuted = isMuted;
+                channelListResponse.IsPinned = isPinned;
                 channelListResponse.CreatorId = channel.CreatorId ?? creator?.Id;
                 channelListResponse.Creator = channel.Creator?.ToMemberSummary(configuration) ?? creator;
                 channelListResponse.CreatorSaasUserId = channel.Creator?.SaasUserId ?? creator?.SaasUserId;    
