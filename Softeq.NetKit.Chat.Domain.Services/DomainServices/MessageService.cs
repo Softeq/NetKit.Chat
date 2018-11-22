@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -255,6 +256,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             };
 
             return result;
+        }
+
+        public async Task<IReadOnlyCollection<Guid>> FindMessageIdsAsync(Guid channelId, string searchText)
+        {
+            return await UnitOfWork.MessageRepository.FindMessageIdsAsync(channelId, searchText);
         }
     }
 }

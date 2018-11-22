@@ -313,7 +313,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var previousMembersCount = (await _memberService.GetChannelMembersAsync(channel.Id)).Count;
             
             // Act
-            await _channelService.LeaveChannelAsync(new ChannelRequest(SaasUserId2, channel.Id));
+            await _channelService.RemoveMemberFromChannelAsync(new ChannelRequest(SaasUserId2, channel.Id));
             var newChannel = await _channelService.GetChannelByIdAsync(channel.Id);
             var channelMembers = await _memberService.GetChannelMembersAsync(channel.Id);
 

@@ -49,6 +49,21 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<IReadOnlyList<Guid>> FindMessageIdsAsync(Guid channelId, string searchText)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"
+                    SELECT Id
+                    FROM Messages m                    
+                    WHERE ChannelId = @channelId AND Body LIKE @searchTerm
+                    ORDER BY m.Created DESC";
+
+                var searchTerm = $"%{searchText.Trim().Replace("[", "[[]").Replace("%", "[%]").Replace("_","[_]")}%";
+                return (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchTerm })).ToList().AsReadOnly();
+            }
+        }
+
         public async Task<List<Message>> GetOlderMessagesAsync(Guid channelId, DateTimeOffset lastReadMessageCreated, int? pageSize)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
