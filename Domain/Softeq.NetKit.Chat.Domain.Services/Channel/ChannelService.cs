@@ -111,7 +111,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             }
 
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(newChannel.Id);
-            return channel.ToChannelSummaryResponse(creator.IsMuted, creator.IsPinned, null, null, _configuration);
+            return channel.ToChannelSummaryResponse(creator, null, null, _configuration);
         }
 
         public async Task<IEnumerable<ChannelResponse>> GetMyChannelsAsync(UserRequest request)
@@ -172,12 +172,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .IsNotNull();
 
             var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
-
-            var channelMember = await _channelMemberService.GetChannelMemberAsync(new GetChannelMemberRequest(member.Id, request.ChannelId));
-
+            var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, request.ChannelId);
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
 
-            return channel.ToChannelSummaryResponse(channelMember.IsMuted, channelMember.IsPinned, lastReadMessage, member, _configuration);
+            return channel.ToChannelSummaryResponse(channelMember, lastReadMessage, member, _configuration);
         }
 
         public async Task<ChannelResponse> GetChannelByIdAsync(ChannelRequest request)
@@ -227,11 +225,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 if (channelMember.LastReadMessageId != null)
                 {
                     var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync((Guid) channelMember.LastReadMessageId);
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember.IsMuted, channelMember.IsPinned, lastReadMessage, channelCreator, _configuration));
+                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, lastReadMessage, channelCreator, _configuration));
                 }
                 else
                 {
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember.IsMuted, channelMember.IsPinned, null, channelCreator, _configuration));
+                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, null, channelCreator, _configuration));
                 }
             }
 
@@ -304,15 +302,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             Ensure.That(channel)
                 .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
                 .IsNotNull();
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member)
-                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
-                .IsNotNull();
-            var ifMemberExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channel.Id);
-            if (!ifMemberExist)
-            {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
-            }
+            var member = await GetChannelMember(request.SaasUserId, request.ChannelId);
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -334,15 +324,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             Ensure.That(channel)
                 .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
                 .IsNotNull();
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member)
-                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
-                .IsNotNull();
-            var ifMemberExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channel.Id);
-            if (!ifMemberExist)
-            {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
-            }
+            var member = await GetChannelMember(request.SaasUserId, request.ChannelId);
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -354,16 +336,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
 
         public async Task PinChannelAsync(ChannelRequest request)
         {
-
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member)
-                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
-                .IsNotNull();
-            var ifMemberExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, request.ChannelId);
-            if (!ifMemberExist)
-            {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
-            }
+            var member = await GetChannelMember(request.SaasUserId, request.ChannelId);
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -377,6 +350,21 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
         {
             var messagesCount = await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(request.ChannelId);
             return messagesCount;
+        }
+
+        private async Task<Domain.Member.Member> GetChannelMember(String saasUserId, Guid channelId)
+        {
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+            Ensure.That(member)
+                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
+                .IsNotNull();
+            var ifMemberExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, channelId);
+            if (!ifMemberExist)
+            {
+                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
+            }
+
+            return member;
         }
     }
 }

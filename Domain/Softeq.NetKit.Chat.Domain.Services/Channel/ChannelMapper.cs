@@ -4,6 +4,7 @@
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.ChannelMember;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Member;
@@ -34,8 +35,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
         }
 
         public static ChannelSummaryResponse ToChannelSummaryResponse(this Domain.Channel.Channel channel, 
-            bool isMuted, 
-            bool isPinned,
+            ChannelMembers channelMember,
             Domain.Message.Message lastReadMessage,
             MemberSummary creator, 
             CloudStorageConfiguration configuration)
@@ -51,8 +51,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 channelListResponse.Description = channel.Description;
                 channelListResponse.WelcomeMessage = channel.WelcomeMessage;
                 channelListResponse.Type = channel.Type;
-                channelListResponse.IsMuted = isMuted;
-                channelListResponse.IsPinned = isPinned;
+                channelListResponse.IsMuted = channelMember.IsMuted;
+                channelListResponse.IsPinned = channelMember.IsPinned;
                 channelListResponse.CreatorId = channel.CreatorId ?? creator?.Id;
                 channelListResponse.Creator = channel.Creator?.ToMemberSummary(configuration) ?? creator;
                 channelListResponse.CreatorSaasUserId = channel.Creator?.SaasUserId ?? creator?.SaasUserId;    

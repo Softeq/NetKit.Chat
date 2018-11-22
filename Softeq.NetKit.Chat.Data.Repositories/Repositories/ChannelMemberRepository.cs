@@ -58,7 +58,8 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                                  SET ChannelId = @ChannelId, 
                                      MemberId = @MemberId, 
                                      LastReadMessageId = @LastReadMessageId, 
-                                     IsMuted = @IsMuted
+                                     IsMuted = @IsMuted,
+                                     IsPinned = @IsPinned
                                  WHERE ChannelId = @ChannelId AND MemberId = @MemberId";
                 
                 await connection.ExecuteAsync(sqlQuery, channelMember);
@@ -72,7 +73,7 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    SELECT MemberId, ChannelId, LastReadMessageId, IsMuted
+                    SELECT MemberId, ChannelId, LastReadMessageId, IsMuted, IsPinned
                     FROM ChannelMembers
                     WHERE ChannelId = @channelId";
 
