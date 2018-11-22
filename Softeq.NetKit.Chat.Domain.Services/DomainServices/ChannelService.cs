@@ -52,7 +52,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             string permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
 
-            var newChannel = new DomainModels.Channel
+            var newChannel = new Channel
             {
                 Id = Guid.NewGuid(),
                 Created = DateTimeOffset.UtcNow,

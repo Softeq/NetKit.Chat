@@ -8,6 +8,7 @@ using System.Transactions;
 using EnsureThat;
 using Softeq.CloudStorage.Extension;
 using Softeq.NetKit.Chat.Data.Persistent;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
@@ -43,7 +44,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             Ensure.That(channel).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist."))).IsNotNull();
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-            var message = new DomainModels.Message
+            var message = new Message
             {
                 Id = Guid.NewGuid(),
                 ChannelId = request.ChannelId,
@@ -138,7 +139,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new LimitedAttachmentsException(new ErrorDto(ErrorCode.LimmitedAttachmentsError, "Attachments count is limited."));
             }
 
-            var attachment = new DomainModels.Attachment
+            var attachment = new Attachment
             {
                 Id = Guid.NewGuid(),
                 ContentType = request.ContentType,
@@ -207,7 +208,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
-            var results = messages.Select(x => MessageMapper.ToMessageResponse(x, lastReadMessage, _cloudStorageConfiguration)).ToList();
+            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
 
             var result = new MessagesResult
             {
