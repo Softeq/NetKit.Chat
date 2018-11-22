@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
+using System;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Member
 {
@@ -11,6 +12,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Member
             ChannelId = channelId;
             MemberId = memberId;
         }
+
         public Guid ChannelId { get; set; }
         public Guid MemberId { get; set; }
     }
