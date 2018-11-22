@@ -60,9 +60,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     ORDER BY m.Created DESC";
 
                 var searchTerm = $"%{searchText.Trim().Replace("[", "[[]").Replace("%", "[%]").Replace("_","[_]")}%";
-                var data = (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchTerm })).ToList().AsReadOnly();
-
-                return data;
+                return (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchTerm })).ToList().AsReadOnly();
             }
         }
 

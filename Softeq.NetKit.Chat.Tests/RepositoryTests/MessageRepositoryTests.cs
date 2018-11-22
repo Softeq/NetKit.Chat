@@ -271,7 +271,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         [InlineData(5, "test")]
         [InlineData(0, "nonExistingTest")]
         [InlineData(1, "[]test1")]
-        public async Task SearchMessagesInChannelAsync_ShouldReturnFoundMessageIds(int messagesCount, String phrase)
+        public async Task SearchMessagesInChannelAsync_ShouldReturnFoundMessageIds(int messagesCount, string phrase)
         {
             for (var i = 0; i < 5; i++)
             {
