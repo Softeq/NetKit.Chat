@@ -33,9 +33,9 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnAddMessage(MemberSummary member, MessageResponse message, string clientConnectionId)
         {
-            var getChannelClientsExceptCallerRequest = new ChannelRequest(member.SaasUserId, message.ChannelId);
+            var callerRequest = new ChannelRequest(member.SaasUserId, message.ChannelId);
 
-            var clientIds = await GetChannelClientsExceptCallerAsync(getChannelClientsExceptCallerRequest, clientConnectionId);
+            var clientIds = await GetChannelClientsExceptCallerAsync(callerRequest, clientConnectionId);
 
             // Notify all clients for the uploaded message
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageAdded, message);
@@ -53,9 +53,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnUpdateMessage(MemberSummary member, MessageResponse message)
         {
-            var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
-
-            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
+            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, message.ChannelId));
 
             // Notify all clients for the deleted message
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageUpdated, message);

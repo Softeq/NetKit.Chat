@@ -15,7 +15,6 @@ using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Member;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Settings.TransportModels.Response;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 
@@ -25,9 +24,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [Route("api/channel")]
     [Authorize(Roles = "Admin, User")]
     [ApiVersion("1.0")]
-    [ProducesResponseType(typeof(List<ErrorDto>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
     public class ChannelController : BaseApiController
     {
         private readonly IChannelService _channelService;
@@ -132,11 +128,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/member")]
-        public async Task<IActionResult> InviteMembersAsync([FromBody] InviteMembersRequest request, Guid channelId)
+        public async Task<IActionResult> InviteMultipleMembersAsync([FromBody] InviteMembersRequest request, Guid channelId)
         {
             request.SaasUserId = GetCurrentSaasUserId();
             request.ChannelId = channelId;
-            var channel = await _channelSocketService.InviteMembersAsync(request);
+            var channel = await _channelSocketService.InviteMultipleMembersAsync(request);
             return Ok(channel);
         }
 

@@ -226,7 +226,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             return default(ChannelResponse);
         }
 
-        public async Task<ChannelResponse> InviteMembersAsync(InviteMembersRequest request)
+        public async Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request)
         {
             var response = default(ChannelResponse);
 

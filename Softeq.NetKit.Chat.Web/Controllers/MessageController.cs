@@ -2,7 +2,6 @@
 // http://www.softeq.com
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
@@ -14,7 +13,6 @@ using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.Message;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using Softeq.NetKit.Chat.Web.Common;
 
@@ -24,9 +22,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [Route("api/channel/{channelId:guid}/message")]
     [ApiVersion("1.0")]
     [Authorize(Roles = "Admin, User")]
-    [ProducesResponseType(typeof(List<ErrorDto>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
     public class MessageController : BaseApiController
     {
         private readonly IMessageService _messageService;

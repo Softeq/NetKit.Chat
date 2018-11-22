@@ -4,9 +4,10 @@
 using System.Threading.Tasks;
 using Autofac;
 using Dapper;
+using Softeq.NetKit.Chat.Data.Persistent;
+using Softeq.NetKit.Chat.Data.Persistent.Database;
+using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.Base;
-using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
-using Softeq.NetKit.Chat.Infrastructure.Storage.Sql.Database;
 
 namespace Softeq.NetKit.Chat.Tests.Abstract
 {

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
+using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.Channel.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.ChannelMember;
@@ -20,7 +21,6 @@ using Softeq.NetKit.Chat.Domain.Services.Channel;
 using Softeq.NetKit.Chat.Domain.Services.Client;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
-using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Member
 {
