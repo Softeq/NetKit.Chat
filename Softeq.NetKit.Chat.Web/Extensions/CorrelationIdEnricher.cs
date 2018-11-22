@@ -6,7 +6,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Softeq.Serilog.Extension;
 
-namespace Softeq.NetKit.Chat.Web.Exceptions
+namespace Softeq.NetKit.Chat.Web.Extensions
 {
     public class CorrelationIdEnricher : ILogEventEnricher
     {

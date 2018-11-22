@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Autofac;
 
-namespace Softeq.NetKit.Chat.Web.App.DI
+namespace Softeq.NetKit.Chat.Web.Extensions
 {
     public static class ModuleRegistrationExtensions
     {

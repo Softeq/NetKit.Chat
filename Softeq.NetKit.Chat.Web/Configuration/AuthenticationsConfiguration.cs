@@ -1,7 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-namespace Softeq.NetKit.Chat.Web.App.Configuration
+namespace Softeq.NetKit.Chat.Web.Configuration
 {
     public class AuthenticationsConfiguration
     {

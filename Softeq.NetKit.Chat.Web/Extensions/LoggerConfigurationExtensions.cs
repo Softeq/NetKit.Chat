@@ -12,7 +12,7 @@ using Serilog.Events;
 using Serilog.ExtensionMethods;
 using Softeq.Serilog.Extension;
 
-namespace Softeq.NetKit.Chat.Web.Exceptions
+namespace Softeq.NetKit.Chat.Web.Extensions
 {
     public static class LoggerConfigurationExtensions
     {

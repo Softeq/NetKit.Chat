@@ -5,7 +5,7 @@ using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Softeq.NetKit.Chat.Web.Exceptions;
+using Softeq.NetKit.Chat.Web.Extensions;
 
 namespace Softeq.NetKit.Chat.Web
 {
