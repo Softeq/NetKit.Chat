@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {

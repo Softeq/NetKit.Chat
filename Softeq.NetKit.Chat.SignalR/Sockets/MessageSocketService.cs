@@ -7,15 +7,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Resources;
 using Serilog;
-using Softeq.NetKit.Chat.Domain.Attachment.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Channel;
-using Softeq.NetKit.Chat.Domain.Client.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Member;
-using Softeq.NetKit.Chat.Domain.Member.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Message;
-using Softeq.NetKit.Chat.Domain.Message.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.Message.TransportModels.Response;
-using Softeq.NetKit.Chat.Domain.Services.Exceptions;
+using Softeq.NetKit.Chat.Domain.Exceptions;
+using Softeq.NetKit.Chat.Domain.Services;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
 using Softeq.Serilog.Extension;
 
@@ -123,8 +125,8 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                     throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
                 }
 
-                var attachmentsCount = await _messageService.GetMessageAttachmentsCount(message.Id);
-                if (attachmentsCount == 10)
+                var isAttachmentLimitExceeded = await _messageService.IsAttachmentLimitExceededAsync(message.Id);
+                if (isAttachmentLimitExceeded)
                 {
                     throw new Exception(LanguageResources.Msg_LimitedAttachments);
                 }

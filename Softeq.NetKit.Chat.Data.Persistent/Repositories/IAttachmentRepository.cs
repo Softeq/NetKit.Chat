@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.Attachment;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
 {
@@ -15,5 +15,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task<Attachment> GetAttachmentByIdAsync(Guid attachmentId);
         Task<List<Attachment>> GetMessageAttachmentsAsync(Guid messageId);
         Task DeleteMessageAttachmentsAsync(Guid messageId);
+        Task<int> GetMessageAttachmentsCountAsync(Guid messageId);
     }
 }

@@ -6,7 +6,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
+using Softeq.NetKit.Chat.Domain.Services.Configuration;
 
 namespace Softeq.NetKit.Chat.Tests.DI
 {
@@ -29,14 +29,8 @@ namespace Softeq.NetKit.Chat.Tests.DI
                 })
                 .As<IContentStorage>();
 
-            builder.RegisterType<CloudStorageConfiguration>()
-                .AsSelf();
-
-            builder.Register(x =>
-            {
-                var cfg = new AttachmentConfiguration(Convert.ToInt32(configurationRoot["MessageAttachments:Limit"]));
-                return cfg;
-            });
+            builder.RegisterType<CloudStorageConfiguration>().AsSelf();
+            builder.RegisterType<AttachmentConfiguration>().AsSelf();
 
             builder.Register(context =>
                 {

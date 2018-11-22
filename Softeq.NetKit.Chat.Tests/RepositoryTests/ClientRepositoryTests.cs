@@ -4,8 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Softeq.NetKit.Chat.Domain.Client;
-using Softeq.NetKit.Chat.Domain.Member;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
 

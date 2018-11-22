@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
-using Softeq.NetKit.Chat.Domain.Settings;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
