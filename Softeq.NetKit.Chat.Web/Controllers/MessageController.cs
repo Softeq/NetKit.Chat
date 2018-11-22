@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
@@ -131,6 +132,14 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             var request = new GetMessagesRequest(GetCurrentSaasUserId(), channelId, messageId, messageCreated, pageSize);
             var result = await _messageService.GetMessagesAsync(request);
             return Ok(result);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IReadOnlyCollection<Guid>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SearchMessagesAsync(Guid channelId, [FromQuery] string searchText)
+        {
+            var messageIds = await _messageService.FindMessageIdsAsync(channelId, searchText);
+            return Ok(messageIds);
         }
 
         [HttpGet]
