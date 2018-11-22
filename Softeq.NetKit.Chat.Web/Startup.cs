@@ -12,11 +12,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Softeq.NetKit.Chat.Data.Repositories.Infrastructure;
-using Softeq.NetKit.Chat.Infrastructure.SignalR.Hubs;
-using Softeq.NetKit.Chat.Web.App;
-using Softeq.NetKit.Chat.Web.App.DI;
+using Softeq.NetKit.Chat.Data.Persistent.Database;
+using Softeq.NetKit.Chat.SignalR.Hubs;
+using Softeq.NetKit.Chat.Web.Configuration;
 using Softeq.NetKit.Chat.Web.ExceptionHandling;
+using Softeq.NetKit.Chat.Web.Extensions;
 using Softeq.Serilog.Extension;
 using Swashbuckle.AspNetCore.Swagger;
 using ILogger = Serilog.ILogger;
@@ -73,6 +73,7 @@ namespace Softeq.NetKit.Chat.Web
 
             var builder = new ContainerBuilder();
             builder.RegisterSolutionModules();
+            builder.AddLogger();
             builder.Populate(services);
             _applicationContainer = builder.Build();
             return new AutofacServiceProvider(_applicationContainer);
