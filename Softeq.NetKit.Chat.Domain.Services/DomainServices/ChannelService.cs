@@ -366,7 +366,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(channelId);
         }
 
-        private async Task<Domain.Member.Member> GetChannelMemberAsync(String saasUserId)
+        private async Task<Member> GetChannelMemberAsync(String saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             Ensure.That(member)

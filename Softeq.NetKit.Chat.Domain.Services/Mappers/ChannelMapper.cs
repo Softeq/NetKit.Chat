@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System.Linq;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
@@ -31,9 +32,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
             return channelResponse;
         }
 
-        public static ChannelSummaryResponse ToChannelSummaryResponse(this Domain.Channel.Channel channel, 
+        public static ChannelSummaryResponse ToChannelSummaryResponse(this Channel channel, 
             ChannelMembers channelMember,
-            Domain.Message.Message lastReadMessage,
+            Message lastReadMessage,
             MemberSummary creator, 
             CloudStorageConfiguration configuration)
         {
