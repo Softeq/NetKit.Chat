@@ -137,7 +137,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(IList<Guid>), 200)]
         public async Task<IActionResult> SearchMessagesAsync(Guid channelId, [FromQuery] string searchText)
         {
-            var messageIds = await _messageService.SearchMessageIdsInChannelAsync(channelId, searchText);
+            var messageIds = await _messageService.FindMessageIdsAsync(channelId, searchText);
             return Ok(messageIds);
         }
 

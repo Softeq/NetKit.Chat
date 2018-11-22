@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Softeq.NetKit.Chat.Data.Interfaces.UnitOfWork;
 using Softeq.NetKit.Chat.Domain.Channel;
 using Softeq.NetKit.Chat.Domain.ChannelMember;
 using Softeq.NetKit.Chat.Domain.Member;
@@ -269,20 +270,20 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.Null(newMessage);
         }
 
-        [Fact]
-        public async Task SearchMessagesInChannelAsync_ShouldReturnFoundMessageIds()
+        [Theory]
+        [InlineData(1, "test1")]
+        [InlineData(5, "test")]
+        [InlineData(0, "nonExistingTest")]
+        [InlineData(1, "[]test1")]
+        public async Task SearchMessagesInChannelAsync_ShouldReturnFoundMessageIds(int messagesCount, String phrase)
         {
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
-                await GenerateAndAddMessage(body:"test"+i);
+                await GenerateAndAddMessage(body:$"[]test{i}");
             }
+            var searchMessagesCount = await UnitOfWork.MessageRepository.FindMessageIdsAsync(_channelId, phrase);
 
-            var searchOneMessage = await UnitOfWork.MessageRepository.SearchMessagesInChannelAsync(_channelId, "test1");
-            var searchTestMessages = await UnitOfWork.MessageRepository.SearchMessagesInChannelAsync(_channelId, "test");
-
-            
-            searchOneMessage.Count.Should().Be(1, "there is one message with text: test1");
-            searchTestMessages.Count.Should().Be(5, "there are 5 messages contains test phrase");
+            searchMessagesCount.Count.Should().Be(messagesCount, $"there is {messagesCount} messages with text: {phrase}");
         }
 
         #region Private methods

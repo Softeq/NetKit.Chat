@@ -25,6 +25,6 @@ namespace Softeq.NetKit.Chat.Domain.Message
         Task<MessagesResult> GetOlderMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetLastMessagesAsync(GetLastMessagesRequest request);
-        Task<IList<Guid>> SearchMessageIdsInChannelAsync(Guid channelId, string searchText);
+        Task<IReadOnlyCollection<Guid>> FindMessageIdsAsync(Guid channelId, string searchText);
     }
 }

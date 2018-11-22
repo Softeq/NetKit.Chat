@@ -50,20 +50,18 @@ namespace Softeq.NetKit.Chat.Data.Repositories.Repositories
             }
         }
 
-        public async Task<List<Guid>> SearchMessagesInChannelAsync(Guid channelId, string searchText)
+        public async Task<IReadOnlyList<Guid>> FindMessageIdsAsync(Guid channelId, string searchText)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
                 var sqlQuery = @"
                     SELECT Id
                     FROM Messages m                    
-                    WHERE ChannelId = @channelId AND Body LIKE CONCAT('%',@searchText,'%')
+                    WHERE ChannelId = @channelId AND Body LIKE @searchTerm
                     ORDER BY m.Created DESC";
 
-                searchText = searchText.Replace("[", "[[]").Replace("%", "[%]");
-                var data = (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchText })).ToList();
+                var searchTerm = $"%{searchText.Trim().Replace("[", "[[]").Replace("%", "[%]").Replace("_","[_]")}%";
+                var data = (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchTerm })).ToList().AsReadOnly();
 
                 return data;
             }

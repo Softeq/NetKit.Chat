@@ -164,8 +164,8 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
                 await _messageService.CreateMessageAsync(new CreateMessageRequest(SaasUserId){Body = $"test{i}", ChannelId = _channelId, ClientConnectionId = _channelId.ToString(), SaasUserId = SaasUserId, Type = 0});
             }
 
-            var searchOneMessage = await _messageService.SearchMessageIdsInChannelAsync(_channelId, "test1");
-            var searchTestMessages = await _messageService.SearchMessageIdsInChannelAsync(_channelId, "test");
+            var searchOneMessage = await _messageService.FindMessageIdsAsync(_channelId, "test1");
+            var searchTestMessages = await _messageService.FindMessageIdsAsync(_channelId, "test");
 
             searchOneMessage.Count.Should().Be(1, "there is one message with text: test1");
             searchTestMessages.Count.Should().Be(5, "there are 5 messages contains test phrase");
