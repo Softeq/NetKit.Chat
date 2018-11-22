@@ -28,14 +28,14 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
             var url = context.HttpContext.Request.Path.Value;
             if (context.Exception is ServiceException)
             {
-                _logger.Event(PropertyNames.EventId).With.Message("ServiceException: Requester UserName: {username}, Url: {url}", username, url).Exception(context.Exception).AsError();
+                _logger.Event("ServiceException").With.Message("Requester UserName: {username}, Url: {url}", username, url).Exception(context.Exception).AsError();
                 var serviceException = (ServiceException)(context.Exception);
                 var response = new ObjectResult(serviceException.Errors) { StatusCode = 400 };
                 context.Result = response;
             }
             else
             {
-                _logger.Event(PropertyNames.EventId).With.Message("Exception: UserName: {username}, Url: {url}", username, url).Exception(context.Exception).AsError();
+                _logger.Event("UnknownException").With.Message("Requester UserName: {username}, Url: {url}", username, url).Exception(context.Exception).AsError();
                 var response = new ObjectResult(new List<ErrorDto>
                     {
                         new ErrorDto(ErrorCode.UnknownError, "Something went wrong during your request.")
