@@ -5,7 +5,7 @@ using Autofac;
 using CorrelationId;
 using Serilog;
 
-namespace Softeq.NetKit.Chat.Web.Exceptions
+namespace Softeq.NetKit.Chat.Web.Extensions
 {
     public static class LoggerRegistrationExtensions
     {

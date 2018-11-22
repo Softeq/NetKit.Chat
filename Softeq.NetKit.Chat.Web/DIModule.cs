@@ -5,7 +5,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using Softeq.CloudStorage.Extension;
 
-namespace Softeq.NetKit.Chat.Web.App.DI
+namespace Softeq.NetKit.Chat.Web
 {
     public class DIModule : Module
     {

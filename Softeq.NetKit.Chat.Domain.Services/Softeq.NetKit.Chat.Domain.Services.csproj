@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Persistent.Sql\Softeq.NetKit.Chat.Data.Persistent.Sql.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Persistent\Softeq.NetKit.Chat.Data.Persistent.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj" />
   </ItemGroup>
