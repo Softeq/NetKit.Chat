@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
@@ -12,6 +13,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
     {
         Task OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel);
         Task OnLeaveChannel(MemberSummary member, ChannelSummaryResponse channel);
+        Task OnDeletedFromChannel(MemberSummary member, Guid channelId, string clientConnectionId);
         Task OnUpdateChannel(MemberSummary member, ChannelSummaryResponse channel);
         Task OnCloseChannel(MemberSummary member, ChannelSummaryResponse channel);
         Task OnAddChannel(MemberSummary member, ChannelSummaryResponse channel, string clientConnectionId);
