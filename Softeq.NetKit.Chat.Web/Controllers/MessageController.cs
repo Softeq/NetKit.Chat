@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
@@ -133,7 +134,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IList<Guid>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IReadOnlyCollection<Guid>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchMessagesAsync(Guid channelId, [FromQuery] string searchText)
         {
             var messageIds = await _messageService.FindMessageIdsAsync(channelId, searchText);
