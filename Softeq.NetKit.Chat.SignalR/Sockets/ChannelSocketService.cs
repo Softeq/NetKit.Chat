@@ -8,9 +8,9 @@ using Resources;
 using Serilog;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
 using Softeq.Serilog.Extension;
@@ -145,7 +145,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 {
                     await _channelService.JoinToChannelAsync(request);
                     var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-                    await _channelNotificationHub.OnJoinChannel(member, channel);
+                    await _channelNotificationService.OnJoinChannel(member, channel);
                 }
             }
             catch (NotFoundException ex)
@@ -250,8 +250,8 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 }
 
                 var member = await _memberService.GetMemberByIdAsync(request.MemberId);
-                var channel = await _channelService.GetChannelByIdAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-                var currentMember = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+                var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
+                var currentMember = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
                 if (channel.CreatorId != currentMember.Id)
                 {
@@ -260,7 +260,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 }
 
                 await _channelService.RemoveMemberFromChannelAsync(new ChannelRequest(member.SaasUserId, request.ChannelId));
-                await _channelNotificationHub.OnDeletedFromChannel(member, channel.Id);
+                await _channelNotificationService.OnDeletedFromChannel(member, channel.Id, request.ClientConnectionId);
             }
             catch (ServiceException ex)
             {
