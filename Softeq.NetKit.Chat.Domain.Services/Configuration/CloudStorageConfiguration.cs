@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Configuration
 {
+    //TODO: Move from Domain
     public class CloudStorageConfiguration
     {
         public CloudStorageConfiguration(IConfiguration configuration)

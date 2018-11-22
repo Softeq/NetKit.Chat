@@ -22,12 +22,12 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnAddChannel(MemberSummary member, ChannelSummaryResponse channel, string clientConnectionId)
         {
-            var getClientsExceptCallerRequest = new ChannelRequest(member.SaasUserId, channel.Id)
+            var channelRequest = new ChannelRequest(member.SaasUserId, channel.Id)
             {
                 ClientConnectionId = clientConnectionId
             };
 
-            var clientIds = await GetChannelClientsExceptCallerAsync(getClientsExceptCallerRequest, clientConnectionId);
+            var clientIds = await GetChannelClientsExceptCallerAsync(channelRequest, clientConnectionId);
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelCreated, channel);
         }

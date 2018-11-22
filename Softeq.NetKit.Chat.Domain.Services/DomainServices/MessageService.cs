@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
 using Softeq.CloudStorage.Extension;
+using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
@@ -15,7 +16,6 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
-using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 using Softeq.QueryUtils;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
@@ -94,10 +94,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message);
                 if (previousMessage != null)
                 {
-                    await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(previousMessage.Id);
+                    await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage.Id);
                 }
 
-                // Delete message from database
                 await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);
 
                 transactionScope.Complete();

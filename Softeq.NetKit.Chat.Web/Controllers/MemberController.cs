@@ -9,10 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
@@ -21,9 +18,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [Route("api/member")]
     [Authorize(Roles = "Admin, User")]
     [ApiVersion("1.0")]
-    [ProducesResponseType(typeof(List<ErrorDto>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
     public class MemberController : BaseApiController
     {
         private readonly IMemberService _memberService;

@@ -1,7 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
@@ -18,9 +16,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [Route("api/file")]
     [Authorize(Roles = "Admin, User")]
     [ApiVersion("1.0")]
-    [ProducesResponseType(typeof(List<ErrorDto>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status500InternalServerError)]
     public class FileController : BaseApiController
     {
         private const int TemporaryStorageAccessTokenExpirationTimeMinutes = 20;

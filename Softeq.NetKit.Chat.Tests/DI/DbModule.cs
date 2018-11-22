@@ -4,8 +4,10 @@
 using System.Data.SqlClient;
 using Autofac;
 using Microsoft.Extensions.Configuration;
-using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
-using Softeq.NetKit.Chat.Infrastructure.Storage.Sql.Database;
+using Softeq.NetKit.Chat.Data.Persistent;
+using Softeq.NetKit.Chat.Data.Persistent.Database;
+using Softeq.NetKit.Chat.Data.Persistent.Sql;
+using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 
 namespace Softeq.NetKit.Chat.Tests.DI
 {

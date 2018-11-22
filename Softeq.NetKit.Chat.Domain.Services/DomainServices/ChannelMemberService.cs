@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
+using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.ChannelMember;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
-using Softeq.NetKit.Chat.Infrastructure.Storage.Sql;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

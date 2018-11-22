@@ -174,12 +174,12 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             request.RequestId);
         }
 
-        public async Task InviteMembersAsync(InviteMembersRequest request)
+        public async Task InviteMultipleMembersAsync(InviteMembersRequest request)
         {
             await CheckAccessTokenAndExecute(new TaskReference(async () =>
             {
                 request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.InviteMembersAsync(request);
+                await _channelSocketService.InviteMultipleMembersAsync(request);
             }),
             request.RequestId);
         }

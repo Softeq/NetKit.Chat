@@ -27,9 +27,6 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="logs\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.SignalR\Softeq.NetKit.Chat.SignalR.csproj" />
   </ItemGroup>
