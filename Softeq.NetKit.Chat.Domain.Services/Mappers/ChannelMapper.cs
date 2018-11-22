@@ -11,7 +11,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
 {
     internal static class ChannelMapper
     {
-        public static ChannelResponse ToChannelResponse(this DomainModels.Channel channel, CloudStorageConfiguration configuration)
+        public static ChannelResponse ToChannelResponse(this Channel channel, CloudStorageConfiguration configuration)
         {
             var channelResponse = new ChannelResponse();
             if (channel != null)

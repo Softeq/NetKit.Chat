@@ -353,8 +353,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task PinChannelAsync(ChannelRequest request)
         {
             var member = await GetChannelMemberAsync(request.SaasUserId);
-            var ifMemberExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, request.ChannelId);
-            if (!ifMemberExist)
+            var isMemberExists = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, request.ChannelId);
+            if (!isMemberExists)
             {
                 throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
             }
