@@ -172,7 +172,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
                 .WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist.")))
                 .IsNotNull();
 
-            var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, request.ChannelId);
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
 
@@ -242,7 +242,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Channel
             })
             .OrderByDescending(x=>x.Channel.IsPinned)
             .ThenByDescending(x => x.SortedDate)
-            .Select(x => x.Channel);
+            .Select(x => x.Channel)
+            .ToList()
+            .AsReadOnly();
 
             return sortedChannels;
         }

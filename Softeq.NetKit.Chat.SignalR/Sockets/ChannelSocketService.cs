@@ -267,8 +267,8 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         {
             try
             {
-                var member = await _memberService.GetMemberSummaryBySaasUserIdAsync(request.SaasUserId);
-                var channel = await _channelService.GetChannelByIdAsync(request);
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+                var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
 
                 var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
 
