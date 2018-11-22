@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Softeq.NetKit.Chat.Domain.Services.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Domain.Exceptions;
+using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 
 namespace Softeq.NetKit.Chat.Web.ExceptionHandling
 {

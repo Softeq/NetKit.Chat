@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Domain.Services.App.Configuration;
+using Softeq.NetKit.Chat.Domain.Services.Configuration;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
