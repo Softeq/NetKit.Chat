@@ -4,7 +4,7 @@ namespace Softeq.NetKit.Chat.Web.Common
 {
     public static class AttachmentsUtils
     {
-        public static string GetExtentionFromMimeType(string mimeType)
+        public static string GetExtensionFromMimeType(string mimeType)
         {
             switch (mimeType)
             {

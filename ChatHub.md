@@ -1,4 +1,4 @@
-﻿# Hub Commands
+# Hub Commands
 ## Add Client (AddClientAsync)
 
 #### Request:
@@ -103,7 +103,7 @@
 	 "MemberId": "Guid"
 	}
 	
-## Invite Members (InviteMembersAsync)
+## Invite Multiple Members (InviteMultipleMembersAsync)
 #### Request:
 	{
 	 "ChannelId": "Guid",
