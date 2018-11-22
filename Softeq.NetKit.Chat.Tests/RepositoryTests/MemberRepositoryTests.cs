@@ -4,10 +4,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.Channel;
-using Softeq.NetKit.Chat.Domain.ChannelMember;
-using Softeq.NetKit.Chat.Domain.Client;
-using Softeq.NetKit.Chat.Domain.Member;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
 

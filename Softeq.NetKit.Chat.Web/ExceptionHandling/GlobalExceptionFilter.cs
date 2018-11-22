@@ -7,8 +7,8 @@ using IdentityModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
-using Softeq.NetKit.Chat.Domain.Services.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Domain.Exceptions;
+using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 using Softeq.Serilog.Extension;
 
 namespace Softeq.NetKit.Chat.Web.ExceptionHandling
