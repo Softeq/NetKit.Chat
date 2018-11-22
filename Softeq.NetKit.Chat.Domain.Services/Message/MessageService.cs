@@ -88,14 +88,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Message
                 {
                     await _contentStorage.DeleteContentAsync(attachment.FileName, _cloudStorageConfiguration.MessageAttachmentsContainer);
                 }
-                
+
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message);
                 if (previousMessage != null)
                 {
-                    await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(previousMessage.Id);
+                    await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage.Id);
                 }
 
-                // Delete message from database
                 await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);
 
                 transactionScope.Complete();
