@@ -21,19 +21,75 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task<List<Member>> GetAllMembersAsync()
+        public async Task<QueryResult<Member>> GetPagedMembersAsync(int pageNumber, int pageSize)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = @"
-                    SELECT Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status  
-                    FROM Members";
+                var sqlQuery = @"SELECT Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status
+                                 FROM Members
+                                 ORDER BY Name
+                                 OFFSET @pageSize * (@pageNumber - 1) ROWS
+                                 FETCH NEXT @pageSize ROWS ONLY
 
-                var data = (await connection.QueryAsync<Member>(sqlQuery)).ToList();
+                                 SELECT COUNT(*)
+                                 FROM Members";
 
-                return data;
+                var data = (await connection.QueryMultipleAsync(sqlQuery, new { pageNumber, pageSize }));
+
+                var members = await data.ReadAsync<Member>();
+                var totalRows = await data.ReadSingleAsync<int>();
+
+                return new QueryResult<Member>
+                {
+                    Entities = members,
+                    TotalRows = totalRows,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+            }
+        }
+
+        public async Task<QueryResult<Member>> GetPotentialChannelMembersAsync(Guid channelId, int pageNumber, int pageSize, string nameFilter)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                await connection.OpenAsync();
+
+                var sqlQuery = @"SELECT Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status  
+                                 FROM Members
+                                 WHERE Id NOT IN (
+                                    SELECT ChannelMembers.MemberId
+                                    FROM Members
+                                    INNER JOIN ChannelMembers
+                                    ON Members.Id = ChannelMembers.MemberId
+                                    WHERE ChannelMembers.ChannelId = @channelId) AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')
+                                ORDER BY Name
+                                OFFSET @pageSize * (@pageNumber - 1) ROWS
+                                FETCH NEXT @pageSize ROWS ONLY
+
+                                SELECT COUNT(*)  
+                                 FROM Members
+                                 WHERE Id NOT IN (
+                                    SELECT ChannelMembers.MemberId
+                                    FROM Members
+                                    INNER JOIN ChannelMembers
+                                    ON Members.Id = ChannelMembers.MemberId
+                                    WHERE ChannelMembers.ChannelId = @channelId) AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')";
+
+                var data = (await connection.QueryMultipleAsync(sqlQuery, new { channelId, pageNumber, pageSize, nameFilter }));
+
+                var members = await data.ReadAsync<Member>();
+                var totalRows = await data.ReadSingleAsync<int>();
+
+                return new QueryResult<Member>
+                {
+                    Entities = members,
+                    TotalRows = totalRows,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
             }
         }
 

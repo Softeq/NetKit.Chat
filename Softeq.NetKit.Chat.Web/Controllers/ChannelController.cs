@@ -115,6 +115,21 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             return Ok(members);
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(PagedMembersResponse), 200)]
+        [Route("{channelId:guid}/invite/user")]
+        public async Task<IActionResult> GetPotentialChannelMembersAsync(Guid channelId, int pageNumber, int pageSize, string nameFilter)
+        {
+            var result = await _memberService.GetPotentialChannelMembersAsync(channelId, new GetPotentialChannelMembers
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                NameFilter = nameFilter
+            });
+
+            return Ok(result);
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/{memberId:guid}")]

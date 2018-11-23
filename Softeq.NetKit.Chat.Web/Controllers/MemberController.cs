@@ -38,10 +38,10 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyCollection<MemberSummary>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetMembersAsync()
+        [ProducesResponseType(typeof(PagedMembersResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPagedMembersAsync(int pageNumber, int pageSize)
         {
-            var result = await _memberService.GetAllMembersAsync();
+            var result = await _memberService.GetPagedMembersAsync(pageNumber, pageSize);
             return Ok(result);
         }
 
