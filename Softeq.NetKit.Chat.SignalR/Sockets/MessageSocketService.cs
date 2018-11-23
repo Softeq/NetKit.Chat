@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Resources;
 using Serilog;
-using Softeq.NetKit.Chat.Domain.Exceptions;
+using Softeq.NetKit.Chat.Domain.Exceptions_OLD;
 using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request;
@@ -72,26 +72,15 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task DeleteMessageAsync(DeleteMessageRequest request)
         {
-            try
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var message = await _messageService.GetMessageByIdAsync(request.MessageId);
+            if (message.Sender.Id != member.Id)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-                if (message.Sender.Id != member.Id)
-                {
-                    throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-                }
-                await _messageService.DeleteMessageAsync(request);
+                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
+            }
+            await _messageService.DeleteMessageAsync(request);
 
-                await _messageNotificationService.OnDeleteMessage(member, message);
-            }
-            catch (NotFoundException ex)
-            {
-                if (ex.Errors.Any(x => x.Description == "Message does not exist."))
-                {
-                    _logger.Event("MessageDoesNotExist").With.Message("{@MessageId}", request.MessageId).Exception(ex).AsError();
-                    throw new Exception(string.Format(LanguageResources.Msg_NotFound, request.MessageId));
-                }
-            }
+            await _messageNotificationService.OnDeleteMessage(member, message);
         }
 
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
@@ -123,12 +112,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 if (message.Sender.Id != member.Id)
                 {
                     throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-                }
-
-                var isAttachmentLimitExceeded = await _messageService.IsAttachmentLimitExceededAsync(message.Id);
-                if (isAttachmentLimitExceeded)
-                {
-                    throw new Exception(LanguageResources.Msg_LimitedAttachments);
                 }
 
                 var attachmentResponse = await _messageService.AddMessageAttachmentAsync(request);
@@ -181,28 +164,15 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)
         {
-            try
-            {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var message = await _messageService.GetMessageByIdAsync(request.MessageId);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
-                await _messageService.SetLastReadMessageAsync(request);
+            await _messageService.SetLastReadMessageAsync(request);
 
-                var messageOwner = await _memberService.GetMemberByIdAsync(message.Sender.Id);
+            var messageOwner = await _memberService.GetMemberByIdAsync(message.Sender.Id);
 
-                var members = new List<MemberSummary>
-                {
-                    member,
-                    messageOwner
-                };
-
-                await _messageNotificationService.OnChangeLastReadMessage(members, message);
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.Event("MessageDoesNotExist").With.Message("{@MessageId}", request.MessageId).Exception(ex).AsError();
-                throw new Exception(string.Format(LanguageResources.RoomMemberButNotExists, request.SaasUserId));
-            }
+            var members = new List<MemberSummary> { member, messageOwner };
+            await _messageNotificationService.OnChangeLastReadMessage(members, message);
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var channel = await _channelService.CreateChannelAsync(request);
 
             // Act
-            var channels = await _channelService.GetUserChannelsAsync(new UserRequest(SaasUserId));
+            var channels = await _channelService.GetMemberChannelsAsync(new UserRequest(SaasUserId));
 
             // Assert
             Assert.NotNull(channels);

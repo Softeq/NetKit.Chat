@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling
+namespace Softeq.NetKit.Chat.Domain.Exceptions_OLD.ErrorHandling
 {
     public class ErrorDto
     {

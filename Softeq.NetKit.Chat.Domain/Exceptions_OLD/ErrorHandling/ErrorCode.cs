@@ -1,7 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-namespace Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling
+namespace Softeq.NetKit.Chat.Domain.Exceptions_OLD.ErrorHandling
 {
     public static class ErrorCode
     {

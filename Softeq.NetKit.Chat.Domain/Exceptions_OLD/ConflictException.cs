@@ -3,9 +3,9 @@
 
 using System;
 using System.Runtime.Serialization;
-using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Domain.Exceptions_OLD.ErrorHandling;
 
-namespace Softeq.NetKit.Chat.Domain.Exceptions
+namespace Softeq.NetKit.Chat.Domain.Exceptions_OLD
 {
     [Serializable]
     public class ConflictException : ServiceException

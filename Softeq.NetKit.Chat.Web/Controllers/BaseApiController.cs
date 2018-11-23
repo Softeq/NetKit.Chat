@@ -8,7 +8,7 @@ using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Domain.Exceptions_OLD.ErrorHandling;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {

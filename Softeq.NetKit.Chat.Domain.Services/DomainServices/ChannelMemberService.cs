@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.ChannelMember;
@@ -30,7 +29,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<ChannelMemberResponse> GetChannelMemberAsync(GetChannelMemberRequest request)
         {
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(request.MemberId, request.ChannelId);
-            Ensure.That(channelMember).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Channel member does not exist."))).IsNotNull();
+            Ensure.That(channelMember).WithException(x => new NetKitChatChannelMemberNotFoundException(request.ChannelId, request.MemberId, "Unable to get channel member")).IsNotNull();
+
             return channelMember.ToChannelMemberResponse();
         }
     }

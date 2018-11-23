@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Resources;
 using Serilog;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.Exceptions;
+using Softeq.NetKit.Chat.Domain.Exceptions_OLD;
 using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
@@ -43,22 +43,14 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 throw new Exception(LanguageResources.RoomRequired);
             }
 
-            try
-            {
-                var channel = await _channelService.CreateChannelAsync(createChannelRequest);
-                var user = await _memberService.GetMemberBySaasUserIdAsync(createChannelRequest.SaasUserId);
+            var channel = await _channelService.CreateChannelAsync(createChannelRequest);
+            var user = await _memberService.GetMemberBySaasUserIdAsync(createChannelRequest.SaasUserId);
 
-                await _channelNotificationService.OnAddChannel(user, channel, createChannelRequest.ClientConnectionId);
-                //todo filter creator connection id on join channel
-                await _channelNotificationService.OnJoinChannel(user, channel);
+            await _channelNotificationService.OnAddChannel(user, channel, createChannelRequest.ClientConnectionId);
+            //todo filter creator connection id on join channel
+            await _channelNotificationService.OnJoinChannel(user, channel);
 
-                return channel;
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelName}", createChannelRequest.Name).Exception(ex).AsError();
-                throw new Exception(string.Format(LanguageResources.RoomNotFound, createChannelRequest.Name));
-            }
+            return channel;
         }
 
         public async Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request)
@@ -73,30 +65,22 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 throw new Exception(LanguageResources.RoomInvalidNameSpaces);
             }
 
-            try
+            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
+
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+
+            if (channel.CreatorId != member.Id)
             {
-                var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-                if (channel.CreatorId != member.Id)
-                {
-                    throw new Exception(string.Format(LanguageResources.RoomAccessPermission, channel.Name));
-                }
-
-                await _channelService.UpdateChannelAsync(request);
-
-                var channelSummary = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-
-                await _channelNotificationService.OnUpdateChannel(member, channelSummary);
-
-                return channelSummary;
+                throw new Exception(string.Format(LanguageResources.RoomAccessPermission, channel.Name));
             }
-            catch (NotFoundException ex)
-            {
-                _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelName}", request.Name).Exception(ex).AsError();
-                throw new Exception(string.Format(LanguageResources.RoomNotFound, request.Name));
-            }
+
+            await _channelService.UpdateChannelAsync(request);
+
+            var channelSummary = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+
+            await _channelNotificationService.OnUpdateChannel(member, channelSummary);
+
+            return channelSummary;
         }
 
         public async Task CloseChannelAsync(ChannelRequest request)
@@ -137,49 +121,33 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             }
 
             // Locate the room, does NOT have to be open
-            try
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
+            if (!isMemberExistInChannel)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
-                if (!isMemberExistInChannel)
-                {
-                    await _channelService.JoinToChannelAsync(request);
+                await _channelService.JoinToChannelAsync(request);
 
-                    var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-   
-                    await _channelNotificationService.OnJoinChannel(member, channel);
-                }
-            }
-            catch (NotFoundException ex)
-            {
-                _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelId}", request.ChannelId).Exception(ex).AsError();
-                throw new Exception(string.Format(LanguageResources.RoomNotFound, request.ChannelId));
+                var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+
+                await _channelNotificationService.OnJoinChannel(member, channel);
             }
         }
 
         public async Task LeaveChannelAsync(ChannelRequest request)
         {
-            try
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var channel = await _channelService.GetChannelSummaryAsync(request);
+
+            var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
+
+            if (!isMemberExistInChannel)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var channel = await _channelService.GetChannelSummaryAsync(request);
-
-                var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
-
-                if (!isMemberExistInChannel)
-                {
-                    throw new Exception(string.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
-                }
-
-                await _channelService.LeaveChannelAsync(request);
-
-                await _channelNotificationService.OnLeaveChannel(member, channel);
+                throw new Exception(string.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
             }
-            catch (NotFoundException ex)
-            {
-                _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelId}", request.ChannelId).Exception(ex).AsError();
-                throw new Exception(string.Format(LanguageResources.RoomNotFound, request.ChannelId));
-            }
+
+            await _channelService.LeaveChannelAsync(request);
+
+            await _channelNotificationService.OnLeaveChannel(member, channel);
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
@@ -243,25 +211,17 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task MuteChannelAsync(ChannelRequest request)
         {
-            try
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
+
+            var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
+
+            if (!isMemberExistInChannel)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-
-                var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
-
-                if (!isMemberExistInChannel)
-                {
-                    throw new Exception(string.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
-                }
-
-                await _channelService.MuteChannelAsync(request);
+                throw new Exception(string.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
             }
-            catch (NotFoundException ex)
-            {
-                _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelId}", request.ChannelId).Exception(ex).AsError();
-                throw new Exception(string.Format(LanguageResources.RoomNotFound, request.ChannelId));
-            }
+
+            await _channelService.MuteChannelAsync(request);
         }
     }
 }

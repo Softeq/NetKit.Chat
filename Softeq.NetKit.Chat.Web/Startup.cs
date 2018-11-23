@@ -8,6 +8,7 @@ using CorrelationId;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -72,6 +73,10 @@ namespace Softeq.NetKit.Chat.Web
             });
 
             var builder = new ContainerBuilder();
+
+            builder.RegisterType<MyHubDispatcher>().As<DefaultHubDispatcher<ChatHub>>().SingleInstance();
+            builder.RegisterType<MyHubDispatcher>().As<HubDispatcher<ChatHub>>().SingleInstance();
+
             builder.RegisterSolutionModules();
             builder.AddLogger();
             builder.Populate(services);
@@ -117,24 +122,18 @@ namespace Softeq.NetKit.Chat.Web
                 });
             }
 
-            app.UseCors(x => x.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
-
-            app.UseExceptionHandler(options =>
-            {
-                options.Run(async c => await ExceptionHandler.Handle(c, loggerFactory));
-            });
-
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            //app.UseExceptionHandler(options =>
+            //{
+            //    options.Run(async c => await ExceptionHandler.Handle(c, loggerFactory));
+            //});
             app.UseCorrelationId();
-
             app.UseAuthentication();
-
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
             });
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseMvc();
         }
 

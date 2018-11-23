@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
+using Softeq.NetKit.Chat.Domain.Exceptions_OLD.ErrorHandling;
 
-namespace Softeq.NetKit.Chat.Domain.Exceptions
+namespace Softeq.NetKit.Chat.Domain.Exceptions_OLD
 {
     [Serializable]
-    public class ServiceException : Exception, IServiceException
+    public class ServiceException : Exception
     {
         public List<ErrorDto> Errors { get; set; } = new List<ErrorDto>();
 
