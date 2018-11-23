@@ -44,13 +44,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
             Ensure.That(channel).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Channel does not exist."))).IsNotNull();
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
+          
             var message = new Message
             {
                 Id = Guid.NewGuid(),
                 ChannelId = request.ChannelId,
                 OwnerId = member.Id,
-                Owner = member,
                 Body = request.Body,
                 Created = DateTimeOffset.UtcNow,
                 Type = request.Type,
@@ -64,7 +63,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage();
                     await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
                     message.ForwardedMessage = forwardMessage;
-                    message.ForwardId = forwardMessage.Id;
+                    message.ForwardMessageId = forwardMessage.Id;
                 }
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
                 await SetLastReadMessageAsync(new SetLastReadMessageRequest(request.ChannelId, message.Id, request.SaasUserId));

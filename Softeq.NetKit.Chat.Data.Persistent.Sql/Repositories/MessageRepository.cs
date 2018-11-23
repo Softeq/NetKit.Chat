@@ -198,13 +198,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     SELECT *
                     FROM Messages m
                     INNER JOIN Members me ON m.OwnerId = me.Id
+                    LEFT JOIN ForwardMessages fm ON m.ForwardMessageId = fm.Id
                     WHERE m.ChannelId = @channelId AND 
                     (SELECT Created FROM Messages WHERE Id = @messageId) > m.Created";
 
-                var data = (await connection.QueryAsync<Message, Member, Message>(
+                var data = (await connection.QueryAsync<Message, Member, ForwardMessage, Message>(
                         sqlQuery,
-                        (message, member) =>
+                        (message, member, forwardedMessage) =>
                         {
+                            message.ForwardedMessage = forwardedMessage
                             message.Owner = member;
                             return message;
                         },
@@ -224,13 +226,16 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
                 var sqlQuery = @"
                     SELECT *
-                    FROM Messages m INNER JOIN Members mem ON m.OwnerId = mem.Id
+                    FROM Messages m 
+                    INNER JOIN Members mem ON m.OwnerId = mem.Id
+                    LEFT JOIN ForwardMessages fm ON  m.ForwardMessageId = fm.Id
                     WHERE m.Id = @messageId";
 
-                var data = (await connection.QueryAsync<Message, Member, Message>(
+                var data = (await connection.QueryAsync<Message, Member, ForwardMessage, Message>(
                         sqlQuery,
-                        (message, member) =>
+                        (message, member, forwarded) =>
                         {
+                            message.ForwardedMessage = forwarded;
                             message.Owner = member;
                             message.OwnerId = member.Id;
                             return message;
@@ -272,11 +277,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
                 var sqlQuery = @"
-                    INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId, ForwardId) 
-                    VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId, @ForwardId)";
+                    INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId, ForwardMessageId) 
+                    VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId, @ForwardMessageId)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, message);
             }
@@ -335,12 +338,14 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     FROM Messages m 
                     INNER JOIN ChannelMembers c ON m.Id = c.LastReadMessageId
                     INNER JOIN Members mem ON c.MemberId = mem.Id
+                    LEFT JOIN  ForwardMessages  fm ON m.ForwardMessageId = fm.Id
                     WHERE c.MemberId = @memberId AND c.ChannelId = @channelId";
 
-                var data = (await connection.QueryAsync<Message, Member, Message>(
+                var data = (await connection.QueryAsync<Message, Member, ForwardMessage, Message>(
                         sqlQuery,
-                        (message, member) =>
+                        (message, member, forwardedMessage) =>
                         {
+                            message.ForwardedMessage = forwardedMessage;
                             message.Owner = member;
                             message.OwnerId = member.Id;
                             return message;
