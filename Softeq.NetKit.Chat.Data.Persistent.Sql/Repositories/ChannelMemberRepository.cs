@@ -97,14 +97,14 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task PinChannelAsync(Guid memberId, Guid channelId)
+        public async Task PinChannelAsync(Guid memberId, Guid channelId, bool isPinned)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = @"UPDATE ChannelMembers
-                                SET IsPinned = IsPinned^1
+                var sqlQuery = $@"UPDATE ChannelMembers
+                                SET IsPinned = '{isPinned}'
                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
                 await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });

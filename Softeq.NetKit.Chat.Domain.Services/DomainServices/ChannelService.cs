@@ -358,7 +358,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
             }
-            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(member.Id, request.ChannelId);
+            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(member.Id, request.ChannelId, request.IsPinned);
         }
 
         public async Task<int> GetChannelMessagesCountAsync(Guid channelId)
