@@ -1,6 +1,8 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
@@ -24,7 +26,20 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
                 messageResponse.IsRead = lastReadMessage != null && message.Created <= lastReadMessage.Created;
             }
             return messageResponse;
+        }
 
+        public static ForwardMessage ToForwardMessage(this DomainModels.Message message)
+        {
+            var forwardMessage = new ForwardMessage();
+            if (message != null)
+            {
+                forwardMessage.Id = Guid.NewGuid();
+                forwardMessage.ChannelId = message.ChannelId;
+                forwardMessage.Body = message.Body;
+                forwardMessage.Created = message.Created;
+                forwardMessage.OwnerId = message.OwnerId;
+            }
+            return forwardMessage;
         }
     }
 }

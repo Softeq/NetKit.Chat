@@ -59,8 +59,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                if (request.Type == MessageType.Forward)
+                {
+                    var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage();
+                    await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
+                    message.ForwardId = forwardMessage.Id;
+                }
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
-
                 await SetLastReadMessageAsync(new SetLastReadMessageRequest(request.ChannelId, message.Id, request.SaasUserId));
 
                 transactionScope.Complete();

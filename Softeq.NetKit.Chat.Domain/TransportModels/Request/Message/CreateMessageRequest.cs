@@ -19,5 +19,8 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 
         // If Message type is Notification
         public string ImageUrl { get; set; }
+
+        // If Message type is Forward
+        public Guid ForwardedMessageId { get; set; }
     }
 }
