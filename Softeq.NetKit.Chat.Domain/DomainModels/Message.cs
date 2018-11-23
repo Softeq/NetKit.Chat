@@ -25,5 +25,6 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 
         // Forward message
         public Guid ForwardId { get; set; }
+        public ForwardMessage ForwardedMessage { get; set; }
     }
 }

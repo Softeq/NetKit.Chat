@@ -24,6 +24,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
                 messageResponse.Updated = message.Updated;
                 messageResponse.Sender = message.Owner.ToMemberSummary(configuration);
                 messageResponse.IsRead = lastReadMessage != null && message.Created <= lastReadMessage.Created;
+                messageResponse.ForwardedMessage = message.ForwardedMessage;
             }
             return messageResponse;
         }

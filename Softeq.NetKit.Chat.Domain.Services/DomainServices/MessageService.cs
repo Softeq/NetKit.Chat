@@ -63,6 +63,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 {
                     var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage();
                     await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
+                    message.ForwardedMessage = forwardMessage;
                     message.ForwardId = forwardMessage.Id;
                 }
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);

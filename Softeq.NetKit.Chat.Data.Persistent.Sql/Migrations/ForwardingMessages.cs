@@ -32,6 +32,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
                 REFERENCES [dbo].[Members] ([Id])
 
                 ALTER TABLE [dbo].[ForwardMessages] CHECK CONSTRAINT [FK_ForwardMessages_Members]
+
+                ALTER TABLE [dbo].[Messages] ADD ForwardId uniqueidentifier NULL
             ");
         }
 

@@ -275,8 +275,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId) 
-                    VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId)";
+                    INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId, ForwardId) 
+                    VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId, @ForwardId)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, message);
             }
