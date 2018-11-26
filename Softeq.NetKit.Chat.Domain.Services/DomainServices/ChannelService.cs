@@ -323,7 +323,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
         }
 
-        public async Task LeaveChannelAsync(ChannelRequest request)
+        public async Task RemoveMemberFromChannelAsync(ChannelRequest request)
         {
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
             if (channel == null)

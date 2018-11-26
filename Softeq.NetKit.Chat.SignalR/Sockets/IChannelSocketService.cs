@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
@@ -17,5 +18,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request);
         Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request);
         Task MuteChannelAsync(ChannelRequest request);
+        Task DeleteMemberAsync(DeleteMemberRequest request);
     }
 }

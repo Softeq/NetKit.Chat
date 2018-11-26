@@ -1,13 +1,12 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
@@ -56,14 +55,23 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
         }
 
-        public async Task OnLeaveChannel(MemberSummary member, ChannelSummaryResponse channel)
+        public async Task OnLeaveChannel(MemberSummary member, Guid channelId)
         {
-            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
+            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channelId));
             var senderClients = await MemberService.GetMemberClientsAsync(member.Id);
             clientIds.AddRange(senderClients.Select(x => x.ClientConnectionId));
 
             // Tell the people in this room that you've leaved
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channel?.Id);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channelId);
+        }
+
+        public async Task OnDeletedFromChannel(MemberSummary member, Guid channelId, string clientConnectionId)
+        {
+            var channelClients = await GetChannelClientsExceptCallerAsync(new ChannelRequest(member.SaasUserId, channelId), clientConnectionId);
+            var deletingMemberClients = (await MemberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();
+
+            await HubContext.Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channelId);
+            await HubContext.Clients.Clients(channelClients).SendAsync(HubEvents.MemberDeleted, member, channelId);
         }
     }
 }

@@ -158,7 +158,16 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/leave")]
         public async Task<IActionResult> LeaveChannelAsync(Guid channelId)
         {
-            await _channelSocketService.LeaveChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
+            await _channelService.RemoveMemberFromChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
+            return Ok();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route("{channelId:guid}/delete/{memberId:guid}")]
+        public async Task<IActionResult> DeleteMemberAsync(Guid channelId, Guid memberId)
+        {
+            await _channelSocketService.DeleteMemberAsync(new DeleteMemberRequest(GetCurrentSaasUserId(), channelId, memberId));
             return Ok();
         }
 

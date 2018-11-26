@@ -10,6 +10,7 @@ using Serilog;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
@@ -226,6 +227,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             {
                 request.SaasUserId = Context.GetSaasUserId();
                 await _channelSocketService.LeaveChannelAsync(request);
+            }),
+            request.RequestId);
+        }
+
+        public async Task DeleteMemberAsync(DeleteMemberRequest request)
+        {
+            await SafeExecuteAsync(new TaskReference(async () =>
+            {
+                request.SaasUserId = Context.GetSaasUserId();
+                await _channelSocketService.DeleteMemberAsync(request);
             }),
             request.RequestId);
         }

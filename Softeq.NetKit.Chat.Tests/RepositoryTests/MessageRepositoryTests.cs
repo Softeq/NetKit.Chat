@@ -266,14 +266,30 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.Null(newMessage);
         }
 
+        [Theory]
+        [InlineData(1, "test1")]
+        [InlineData(5, "test")]
+        [InlineData(0, "nonExistingTest")]
+        [InlineData(1, "[]test1")]
+        public async Task SearchMessagesInChannelAsync_ShouldReturnFoundMessageIds(int messagesCount, string phrase)
+        {
+            for (var i = 0; i < 5; i++)
+            {
+                await GenerateAndAddMessage(body:$"[]test{i}");
+            }
+            var searchMessagesCount = await UnitOfWork.MessageRepository.FindMessageIdsAsync(_channelId, phrase);
+
+            searchMessagesCount.Count.Should().Be(messagesCount, $"there is {messagesCount} messages with text: {phrase}");
+        }
+
         #region Private methods
 
-        private async Task<Message> GenerateAndAddMessage(DateTimeOffset? customCreated = null)
+        private async Task<Message> GenerateAndAddMessage(DateTimeOffset? customCreated = null, string body = "test")
         {
             var message = new Message
             {
                 Id = Guid.NewGuid(),
-                Body = "test",
+                Body = body,
                 Created = customCreated ?? DateTimeOffset.UtcNow.AddMinutes(-10),
                 ImageUrl = "test",
                 Type = 0,
