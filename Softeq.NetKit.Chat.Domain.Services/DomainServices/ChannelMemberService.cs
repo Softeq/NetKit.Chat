@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(request.MemberId, request.ChannelId);
             if (channelMember == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel member. Member {nameof(request.MemberId)}:{request.MemberId} not found in channel {request.ChannelId}");
+                throw new NetKitChatNotFoundException($"Unable to get channel member. Member {nameof(request.MemberId)}:{request.MemberId} not found in channel {nameof(request.ChannelId)}:{request.ChannelId}");
             }
 
             return channelMember.ToChannelMemberResponse();

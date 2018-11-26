@@ -340,7 +340,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, channel.Id);
             if (!isMemberExistsInChannel)
             {
-                throw new NetKitChatInvalidOperationException($"Unable to leave channel {nameof(request.ChannelId)}:{channel.Id}. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not joined to channel.");
+                throw new NetKitChatInvalidOperationException($"Unable to leave channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not joined to channel {nameof(request.ChannelId)}:{channel.Id}.");
             }
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -374,7 +374,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, channel.Id);
             if (!isMemberExistsInChannel)
             {
-                throw new NetKitChatInvalidOperationException($"Unable to mute channel {nameof(request.ChannelId)}:{request.ChannelId}. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not joined channel.");
+                throw new NetKitChatInvalidOperationException($"Unable to mute channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not joined channel {nameof(request.ChannelId)}:{request.ChannelId}.");
             }
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))

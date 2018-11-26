@@ -91,7 +91,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner.Id != message.OwnerId)
             {
-                throw new NetKitChatInsufficientRightsException($"Unable to delete message {nameof(request.MessageId)}:{request.MessageId}. Message owner required.");
+                throw new NetKitChatInsufficientRightsException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
             var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
@@ -130,7 +130,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner.Id != message.OwnerId)
             {
-                throw new NetKitChatInsufficientRightsException($"Unable to update message {nameof(request.MessageId)}:{request.MessageId}. Message owner required.");
+                throw new NetKitChatInsufficientRightsException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
             message.Body = request.Body;
