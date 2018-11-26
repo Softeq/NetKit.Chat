@@ -116,10 +116,6 @@ namespace Softeq.NetKit.Chat.Web
             }
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            //app.UseExceptionHandler(options =>
-            //{
-            //    options.Run(async c => await ExceptionHandler.Handle(c, loggerFactory));
-            //});
             app.UseCorrelationId();
             app.UseAuthentication();
             app.UseSignalR(routes =>
