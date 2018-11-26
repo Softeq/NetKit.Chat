@@ -15,7 +15,6 @@ using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Extensions;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.ChannelMember;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
@@ -363,7 +362,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to mute channel. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
             }
 
-            var member = await GetChannelMemberAsync(request.SaasUserId);
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to mute channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, channel.Id);
             if (!isMemberExistsInChannel)
@@ -381,28 +384,24 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task PinChannelAsync(ChannelRequest request)
         {
-            var member = await GetChannelMemberAsync(request.SaasUserId);
-            var isMemberExists = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(member.Id, request.ChannelId);
-            if (!isMemberExists)
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member == null)
             {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "You did not join to this channel."));
+                throw new NetKitChatNotFoundException($"Unable to pin channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
             }
+
+            var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, request.ChannelId);
+            if (!isMemberExistsInChannel)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to pin channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not joined channel {nameof(request.ChannelId)}:{request.ChannelId}.");
+            }
+
             await UnitOfWork.ChannelMemberRepository.PinChannelAsync(member.Id, request.ChannelId, request.IsPinned);
         }
 
         public async Task<int> GetChannelMessagesCountAsync(Guid channelId)
         {
             return await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(channelId);
-        }
-
-        private async Task<Member> GetChannelMemberAsync(String saasUserId)
-        {
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            Ensure.That(member)
-                .WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Member does not exist.")))
-                .IsNotNull();
-
-            return member;
         }
     }
 }
