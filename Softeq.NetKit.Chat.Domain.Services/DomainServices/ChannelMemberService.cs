@@ -4,10 +4,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Exceptions.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.ChannelMember;
@@ -17,7 +15,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     internal class ChannelMemberService : BaseService, IChannelMemberService
     {
-        public ChannelMemberService(IUnitOfWork unitOfWork) : base(unitOfWork)
+        public ChannelMemberService(IUnitOfWork unitOfWork)
+            : base(unitOfWork)
         {
         }
 
@@ -30,7 +29,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<ChannelMemberResponse> GetChannelMemberAsync(GetChannelMemberRequest request)
         {
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(request.MemberId, request.ChannelId);
-            Ensure.That(channelMember).WithException(x => new ServiceException(new ErrorDto(ErrorCode.NotFound, "Channel member does not exist."))).IsNotNull();
+            if (channelMember == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get channel member. Member {nameof(request.MemberId)}:{request.MemberId} not found in channel {nameof(request.ChannelId)}:{request.ChannelId}");
+            }
+
             return channelMember.ToChannelMemberResponse();
         }
     }

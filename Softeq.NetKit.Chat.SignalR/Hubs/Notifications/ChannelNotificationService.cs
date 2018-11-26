@@ -55,14 +55,14 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
         }
 
-        public async Task OnLeaveChannel(MemberSummary member, ChannelSummaryResponse channel)
+        public async Task OnLeaveChannel(MemberSummary member, Guid channelId)
         {
-            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
+            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channelId));
             var senderClients = await MemberService.GetMemberClientsAsync(member.Id);
             clientIds.AddRange(senderClients.Select(x => x.ClientConnectionId));
 
             // Tell the people in this room that you've leaved
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channel?.Id);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channelId);
         }
 
         public async Task OnDeletedFromChannel(MemberSummary member, Guid channelId, string clientConnectionId)
