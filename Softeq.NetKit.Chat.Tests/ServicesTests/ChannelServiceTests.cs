@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Tests.Abstract;
@@ -333,13 +331,17 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
                 Type = ChannelType.Public
             };
             var channel = await _channelService.CreateChannelAsync(createChannelRequest);
-            var channelRequest = new ChannelRequest(SaasUserId, channel.Id);
+            var channelRequest = new ChannelRequest(SaasUserId, channel.Id)
+            {
+                IsPinned = true
+            };
 
             await _channelService.PinChannelAsync(channelRequest);
             var pinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
 
             pinnedChannel.IsPinned.Should().BeTrue();
 
+            channelRequest.IsPinned = false;
             await _channelService.PinChannelAsync(channelRequest);
             var unPinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
 
