@@ -4,6 +4,8 @@
 using Autofac;
 using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Notifications;
+using Softeq.NetKit.Chat.Notifications.PushNotifications;
 
 namespace Softeq.NetKit.Chat.Tests.DI
 {

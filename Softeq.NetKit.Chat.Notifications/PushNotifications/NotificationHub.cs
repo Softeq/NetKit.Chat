@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
 
         public NotificationHub(IConfiguration configuration)
         {
-            _hubClient = new NotificationHubClient(configuration["AzureNotificationHub:ConnectionString"], configuration["AzureNotificationHub:HubName"]);
+            _hubClient = NotificationHubClient.CreateClientFromConnectionString(configuration["AzureNotificationHub:ConnectionString"], configuration["AzureNotificationHub:HubName"]);
         }
 
         public async Task DeleteAllRegistrationAsync(string tag)
@@ -30,7 +31,7 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
                 {
                     if (registration != null)
                     {
-                        await _hubClient.DeleteInstallationAsync(registration.RegistrationId);
+                        await _hubClient.DeleteRegistrationAsync(registration.RegistrationId);
                     }
                 }
             }
@@ -40,7 +41,7 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
             }
         }
 
-        public async Task<IEnumerable<string>> GetAllRegistrations(string tag)
+        public async Task<IEnumerable<string>> GetAllRegistrationsAsync(string tag)
         {
             try
             {
@@ -82,7 +83,7 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
             }
         }
 
-        public async Task CreateOrUpdateRegistrationAsync(string registrationId, DeviceRegistration deviceUpdate)
+        public async Task<RegistrationDescription> CreateOrUpdateRegistrationAsync(string registrationId, DeviceRegistration deviceUpdate)
         {
             RegistrationDescription registration = null;
             switch (deviceUpdate.Platform)
@@ -96,11 +97,10 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
                     };
                     break;
                 case DevicePlatform.Android:
-                    registration = new GcmRegistrationDescription(deviceUpdate.DeviceToken)
+                    registration = new GcmRegistrationDescription(deviceUpdate.DeviceToken, deviceUpdate.Tags)
                     {
                         GcmRegistrationId = deviceUpdate.DeviceToken,
-                        RegistrationId = registrationId,
-                        Tags = new HashSet<string>(deviceUpdate.Tags)
+                        RegistrationId = registrationId
                     };
                     break;
                 default:
@@ -108,7 +108,7 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
             }
             try
             {
-                var res = await _hubClient.CreateOrUpdateRegistrationAsync(registration);
+                return await _hubClient.CreateOrUpdateRegistrationAsync(registration);
             }
             catch (Exception e)
             {
@@ -153,6 +153,10 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
             }
         }
 
+        public async Task<string> CreateRegistrationId()
+        {
+            return await _hubClient.CreateRegistrationIdAsync();
+        }
 
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Softeq.NoName.Service.TransportModels.Setting.Response
+namespace Softeq.NetKit.Chat.Name.Service.TransportModels.Setting.Response
 {
     public class NotificationSettingResponse
     {

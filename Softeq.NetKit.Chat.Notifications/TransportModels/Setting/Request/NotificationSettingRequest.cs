@@ -4,7 +4,7 @@ using System.Text;
 using Softeq.NetKit.Chat.Notifications.TransportModels.Notification.Settings;
 using Softeq.NetKit.Chat.Notifications.TransportModels.Shared.Request;
 
-namespace Softeq.NoName.Service.TransportModels.Setting.Request
+namespace Softeq.NetKit.Chat.Notifications.TransportModels.Setting.Request
 {
     public class NotificationSettingRequest : UserRequest
     {

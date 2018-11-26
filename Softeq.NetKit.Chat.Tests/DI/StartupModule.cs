@@ -7,6 +7,8 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Softeq.CloudStorage.Extension;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
+using Softeq.NetKit.Chat.Notifications;
+using Softeq.NetKit.Chat.Notifications.PushNotifications;
 
 namespace Softeq.NetKit.Chat.Tests.DI
 {
@@ -21,6 +23,9 @@ namespace Softeq.NetKit.Chat.Tests.DI
             builder.RegisterInstance(configurationRoot)
                 .As<IConfigurationRoot>()
                 .As<IConfiguration>();
+
+            builder.RegisterType<NotificationHub>()
+                .As<INotificationHub>();
 
             builder.Register(x =>
                 {
