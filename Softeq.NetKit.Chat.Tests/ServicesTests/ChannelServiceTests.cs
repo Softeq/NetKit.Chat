@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
@@ -319,6 +320,30 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             // Assert
             Assert.NotNull(newChannel);
             Assert.NotNull(channelMembers);
+        }
+
+        [Fact]
+        public async Task PinChannelAsync_ShouldChangeIsPinnedStatus()
+        {
+            var createChannelRequest = new CreateChannelRequest(SaasUserId)
+            {
+                Name = "test",
+                Description = "test",
+                WelcomeMessage = "test",
+                Type = ChannelType.Public
+            };
+            var channel = await _channelService.CreateChannelAsync(createChannelRequest);
+            var channelRequest = new ChannelRequest(SaasUserId, channel.Id);
+
+            await _channelService.PinChannelAsync(channelRequest);
+            var pinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
+
+            pinnedChannel.IsPinned.Should().BeTrue();
+
+            await _channelService.PinChannelAsync(channelRequest);
+            var unPinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
+
+            unPinnedChannel.IsPinned.Should().BeFalse();
         }
     }
 }

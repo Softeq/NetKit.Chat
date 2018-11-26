@@ -250,6 +250,13 @@
 	 "ChannelId": Guid
 	}
 	
+## Pin Channel (PinChannelAsync)
+#### Request:
+	{
+	 "ChannelId": Guid,
+	 "SaasUserId": String 
+	}
+	
 # Hub Events
 
 ## Channel Added (ChannelAdded)

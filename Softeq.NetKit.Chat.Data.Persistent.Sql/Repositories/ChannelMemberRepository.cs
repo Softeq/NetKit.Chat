@@ -28,8 +28,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    INSERT INTO ChannelMembers(ChannelId, MemberId, LastReadMessageId, IsMuted) 
-                    VALUES (@ChannelId, @MemberId, @LastReadMessageId, @IsMuted)";
+                    INSERT INTO ChannelMembers(ChannelId, MemberId, LastReadMessageId, IsMuted, IsPinned) 
+                    VALUES (@ChannelId, @MemberId, @LastReadMessageId, @IsMuted, @IsPinned)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, channelMember);
             }
@@ -58,7 +58,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                  SET ChannelId = @ChannelId, 
                                      MemberId = @MemberId, 
                                      LastReadMessageId = @LastReadMessageId, 
-                                     IsMuted = @IsMuted
+                                     IsMuted = @IsMuted,
+                                     IsPinned = @IsPinned
                                  WHERE ChannelId = @ChannelId AND MemberId = @MemberId";
                 
                 await connection.ExecuteAsync(sqlQuery, channelMember);
@@ -72,7 +73,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    SELECT MemberId, ChannelId, LastReadMessageId, IsMuted
+                    SELECT MemberId, ChannelId, LastReadMessageId, IsMuted, IsPinned
                     FROM ChannelMembers
                     WHERE ChannelId = @channelId";
 
@@ -93,6 +94,20 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
                 await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
+            }
+        }
+
+        public async Task PinChannelAsync(Guid memberId, Guid channelId, bool isPinned)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                await connection.OpenAsync();
+
+                var sqlQuery = @"UPDATE ChannelMembers
+                                SET IsPinned = '@isPinned'
+                                WHERE ChannelId = @channelId AND MemberId = @memberId";
+
+                await connection.ExecuteAsync(sqlQuery, new { isPinned, channelId, memberId });
             }
         }
 
@@ -131,7 +146,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 await connection.OpenAsync();
 
                 var sqlQuery = @"
-                    SELECT ChannelId, MemberId, LastReadMessageId, IsMuted 
+                    SELECT ChannelId, MemberId, LastReadMessageId, IsMuted, IsPinned 
                     FROM ChannelMembers
                     WHERE ChannelId = @channelId AND MemberId = @memberId";
 

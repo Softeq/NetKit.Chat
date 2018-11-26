@@ -227,7 +227,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         public async Task DeleteMemberAsync(DeleteMemberRequest request)
         {
-            await CheckAccessTokenAndExecute(new TaskReference(async () =>
+            await SafeExecuteAsync(new TaskReference(async () =>
                 {
                     request.SaasUserId = Context.GetSaasUserId();
                     await _channelSocketService.DeleteMemberAsync(request);
@@ -241,6 +241,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             {
                 request.SaasUserId = Context.GetSaasUserId();
                 await _channelSocketService.MuteChannelAsync(request);
+            }),
+            request.RequestId);
+        }
+
+        public async Task PinChannelAsync(ChannelRequest request)
+        {
+            await SafeExecuteAsync(new TaskReference(async () =>
+            {
+                request.SaasUserId = Context.GetSaasUserId();
+                await _channelSocketService.PinChannelAsync(request);
             }),
             request.RequestId);
         }

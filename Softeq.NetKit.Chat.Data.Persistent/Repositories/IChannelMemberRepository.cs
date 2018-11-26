@@ -15,6 +15,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task UpdateChannelMemberAsync(ChannelMembers channelMember);
         Task<List<ChannelMembers>> GetChannelMembersAsync(Guid channelId);
         Task MuteChannelAsync(Guid memberId, Guid channelId);
+        Task PinChannelAsync(Guid memberId, Guid channelId, bool isPinned);
         Task SetLastReadMessageAsync(Guid memberId, Guid channelId, Guid messageId);
         Task UpdateLastReadMessageAsync(Guid previousLastReadMessageId, Guid currentLastReadMessageId);
         Task<ChannelMembers> GetChannelMemberAsync(Guid memberId, Guid channelId);
