@@ -17,10 +17,5 @@ namespace Softeq.NetKit.Chat.Notifications.Services
         Task PostNotificationAsync(CreateNotificationRequest request);
         Task RemoveNotificationsAsync(UserRequest request);
         Task UpdateNotificationAsync(UpdateNotificationRequest request);
-
-        // User notification settings
-        Task<NotificationSettingResponse> CreateNotificationSettingsAsync(UserRequest request);
-        Task<NotificationSettingResponse> GetUserNotificationSettingsAsync(UserRequest request);
-        Task<NotificationSettingResponse> UpdateUserNotificationSettingsAsync(NotificationSettingRequest request);
     }
 }
