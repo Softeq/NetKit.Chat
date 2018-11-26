@@ -89,6 +89,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                if (message.Type == MessageType.Forward)
+                {
+                    await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(message.ForwardMessageId);
+                }
                 // Delete message attachments from database
                 await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(message.Id);
 
