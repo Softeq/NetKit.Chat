@@ -103,11 +103,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = $@"UPDATE ChannelMembers
-                                SET IsPinned = '{isPinned}'
+                var sqlQuery = @"UPDATE ChannelMembers
+                                SET IsPinned = '@isPinned'
                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
+                await connection.ExecuteAsync(sqlQuery, new { isPinned, channelId, memberId });
             }
         }
 
