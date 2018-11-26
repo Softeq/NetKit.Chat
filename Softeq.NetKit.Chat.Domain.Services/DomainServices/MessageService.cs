@@ -91,7 +91,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner.Id != message.OwnerId)
             {
-                throw new NetKitChatInsufficientRightsException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
+                throw new NetKitChatAccessForbiddenException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
             var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
@@ -127,10 +127,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
             }
 
-            var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            if (owner.Id != message.OwnerId)
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member.Id != message.OwnerId)
             {
-                throw new NetKitChatInsufficientRightsException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
+                throw new NetKitChatAccessForbiddenException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
             message.Body = request.Body;
@@ -157,6 +157,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (message == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+            }
+
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member.Id != message.OwnerId)
+            {
+                throw new NetKitChatAccessForbiddenException($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
             var isAttachmentLimitExceeded = await IsAttachmentLimitExceededAsync(message.Id);
@@ -190,6 +196,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (message == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to delete message attachment. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+            }
+
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member.Id != message.OwnerId)
+            {
+                throw new NetKitChatAccessForbiddenException($"Unable to delete message attachment. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
             var attachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(request.AttachmentId);

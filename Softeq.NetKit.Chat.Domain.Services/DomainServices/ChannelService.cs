@@ -145,7 +145,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member.Id != channel.CreatorId)
             {
-                throw new NetKitChatInsufficientRightsException($"Unable to update channel {nameof(request.ChannelId)}:{request.ChannelId}. Channel owner required.");
+                throw new NetKitChatAccessForbiddenException($"Unable to update channel {nameof(request.ChannelId)}:{request.ChannelId}. Channel owner required.");
             }
 
             var permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
@@ -216,7 +216,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             if (member.Id != channel.CreatorId)
             {
-                throw new NetKitChatInsufficientRightsException($"Unable to close channel {nameof(request.ChannelId)}:{request.ChannelId}. Channel owner required.");
+                throw new NetKitChatAccessForbiddenException($"Unable to close channel {nameof(request.ChannelId)}:{request.ChannelId}. Channel owner required.");
             }
 
             channel.IsClosed = true;
@@ -301,7 +301,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (channel.Type == ChannelType.Private && channel.CreatorId != member.Id)
             {
                 // TODO: Why only creator could join the channel? Is it even possible?
-                throw new NetKitChatInsufficientRightsException("Unable to join private channel.");
+                throw new NetKitChatAccessForbiddenException("Unable to join private channel.");
             }
 
             var channelMember = new ChannelMembers

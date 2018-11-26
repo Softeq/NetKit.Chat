@@ -177,7 +177,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member != null)
             {
-                // TODO: Should we throw exception here?
+                // TODO [az]: Should we throw exception here?
                 return member.ToMemberSummary(_configuration);
             }
 

@@ -64,10 +64,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         {
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-            if (message.Sender.Id != member.Id)
-            {
-                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-            }
+
             await _messageService.DeleteMessageAsync(request);
 
             await _messageNotificationService.OnDeleteMessage(member, message);
@@ -75,16 +72,12 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
         {
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-            if (message.Sender.Id != member.Id)
-            {
-                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-            }
             if (string.IsNullOrEmpty(request.Body))
             {
                 throw new Exception(LanguageResources.Msg_MessageRequired);
             }
+
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
             var updatedMessage = await _messageService.UpdateMessageAsync(request);
 
@@ -97,10 +90,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         {
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-            if (message.Sender.Id != member.Id)
-            {
-                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-            }
 
             var attachmentResponse = await _messageService.AddMessageAttachmentAsync(request);
 
@@ -113,10 +102,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         {
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-            if (message.Sender.Id != member.Id)
-            {
-                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-            }
 
             await _messageService.DeleteMessageAttachmentAsync(request);
 

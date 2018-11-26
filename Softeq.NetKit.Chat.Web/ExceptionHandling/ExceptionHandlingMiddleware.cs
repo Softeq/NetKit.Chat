@@ -33,17 +33,21 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
             {
                 await HandleExceptionAsync(context, env, ex, StatusCodes.Status404NotFound, ex.ErrorCode);
             }
-            catch (NetKitChatException ex)
+            catch (NetKitChatAccessForbiddenException ex)
             {
                 await HandleExceptionAsync(context, env, ex, StatusCodes.Status403Forbidden, ex.ErrorCode);
             }
+            catch (NetKitChatException ex)
+            {
+                await HandleExceptionAsync(context, env, ex, StatusCodes.Status400BadRequest, ex.ErrorCode);
+            }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, env, ex, StatusCodes.Status500InternalServerError);
+                await HandleExceptionAsync(context, env, ex, StatusCodes.Status500InternalServerError, NetKitChatErrorCode.InternalServer);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, IHostingEnvironment env, Exception ex, int statusCode, string errorCode = null)
+        private async Task HandleExceptionAsync(HttpContext context, IHostingEnvironment env, Exception ex, int statusCode, string errorCode)
         {
             _logger.Event("UnhandledExceptionCaughtByMiddleware")
                    .With.Exception(ex)
@@ -54,18 +58,14 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
             {
                 _logger.Event("UnableToModifyResponse")
                        .With.Exception(ex)
-                       .Message("The response has already started, the http status code middleware will not be executed.")
+                       .Message("The response has already started, the exception handling middleware will not be executed.")
                        .AsError();
                 throw ex;
             }
 
             dynamic errorMessageObject = new ExpandoObject();
+            errorMessageObject.ErrorCode = errorCode;
             errorMessageObject.Message = ex.Message;
-
-            if (errorCode != null)
-            {
-                errorMessageObject.ErrorCode = errorCode;
-            }
 
             if (!env.IsStaging() && !env.IsProduction())
             {
@@ -77,7 +77,6 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
             context.Response.Clear();
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
-
             await context.Response.WriteAsync(message);
         }
     }
