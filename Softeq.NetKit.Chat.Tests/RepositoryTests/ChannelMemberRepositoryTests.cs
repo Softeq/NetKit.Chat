@@ -115,12 +115,12 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             };
 
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(_memberId, _channelId);
+            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(_memberId, _channelId, true);
 
             var pinnedChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(_memberId, _channelId);
             pinnedChannelMember.IsPinned.Should().BeTrue();
 
-            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(_memberId, _channelId);
+            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(_memberId, _channelId, false);
             var unPinnedChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(_memberId, _channelId);
             unPinnedChannelMember.IsPinned.Should().BeFalse();
         }
