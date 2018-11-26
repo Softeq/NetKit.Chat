@@ -18,6 +18,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request);
         Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request);
         Task MuteChannelAsync(ChannelRequest request);
+        Task PinChannelAsync(ChannelRequest request);
         Task DeleteMemberAsync(DeleteMemberRequest request);
     }
 }

@@ -205,5 +205,28 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelService.MuteChannelAsync(request);
         }
+
+        public async Task PinChannelAsync(ChannelRequest request)
+        {
+            try
+            {
+                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+                var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
+
+                var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
+
+                if (!isMemberExistInChannel)
+                {
+                    throw new Exception(String.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
+                }
+
+                await _channelService.PinChannelAsync(request);
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.Event("ChannelNotFound").With.Message("Pinned channel does not exist. ChannelId: {channelId}", request.ChannelId).Exception(ex).AsError();
+                throw new Exception(String.Format(LanguageResources.RoomNotFound, request.ChannelId));
+            }
+        }
     }
 }

@@ -251,6 +251,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             request.RequestId);
         }
 
+        public async Task PinChannelAsync(ChannelRequest request)
+        {
+            await SafeExecuteAsync(new TaskReference(async () =>
+            {
+                request.SaasUserId = Context.GetSaasUserId();
+                await _channelSocketService.PinChannelAsync(request);
+            }),
+            request.RequestId);
+        }
+
         #endregion
 
         private async Task SafeExecuteAsync(TaskReference funcRequest, string requestId = null)
