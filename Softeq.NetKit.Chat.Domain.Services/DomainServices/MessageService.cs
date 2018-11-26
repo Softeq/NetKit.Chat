@@ -10,8 +10,6 @@ using Softeq.CloudStorage.Extension;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Exceptions_OLD;
-using Softeq.NetKit.Chat.Domain.Exceptions_OLD.ErrorHandling;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
@@ -34,6 +32,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             AttachmentConfiguration attachmentConfiguration)
             : base(unitOfWork)
         {
+            Ensure.That(contentStorage).IsNotNull();
+            Ensure.That(cloudStorageConfiguration).IsNotNull();
+            Ensure.That(attachmentConfiguration).IsNotNull();
+
             _contentStorage = contentStorage;
             _cloudStorageConfiguration = cloudStorageConfiguration;
             _attachmentConfiguration = attachmentConfiguration;
@@ -42,10 +44,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
         {
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
-            Ensure.That(channel).WithException(x => new NetKitChatChannelNotFoundException(request.ChannelId, "Unable to create message")).IsNotNull();
+            if (channel == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
+            }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.SaasUserId, "Unable to create message")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to create message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             var message = new Message
             {
@@ -74,12 +82,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task DeleteMessageAsync(DeleteMessageRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NetKitChatMessageNotFoundException(request.MessageId, "Unable to delete message")).IsNotNull();
+            if (message == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+            }
 
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner.Id != message.OwnerId)
             {
-                throw new NetKitChatMessageOwnerRequiredException(request.MessageId, "Unable to delete message");
+                throw new NetKitChatInsufficientRightsException($"Unable to delete message {nameof(request.MessageId)}:{request.MessageId}. Message owner required.");
             }
 
             var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
@@ -110,12 +121,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NetKitChatMessageNotFoundException(request.MessageId, "Unable to update message")).IsNotNull();
+            if (message == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+            }
 
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner.Id != message.OwnerId)
             {
-                throw new NetKitChatMessageOwnerRequiredException(request.MessageId, "Unable to update message");
+                throw new NetKitChatInsufficientRightsException($"Unable to update message {nameof(request.MessageId)}:{request.MessageId}. Message owner required.");
             }
 
             message.Body = request.Body;
@@ -128,7 +142,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MessageResponse> GetMessageByIdAsync(Guid messageId)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(messageId);
-            Ensure.That(message).WithException(x => new NetKitChatMessageNotFoundException(messageId, "Unable to get message by id")).IsNotNull();
+            if (message == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get message by id. Message {nameof(messageId)}:{messageId} not found.");
+            }
 
             return message.ToMessageResponse(null, _cloudStorageConfiguration);
         }
@@ -136,10 +153,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NetKitChatMessageNotFoundException(request.MessageId, "Unable to add message attachment")).IsNotNull();
+            if (message == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+            }
 
             var isAttachmentLimitExceeded = await IsAttachmentLimitExceededAsync(message.Id);
-            Ensure.That(isAttachmentLimitExceeded).WithException(x => new NetKitChatAttachmentLimitExceededException(_attachmentConfiguration.MessageAttachmentsLimit, "Unable to add message attachment")).IsFalse();
+            if (isAttachmentLimitExceeded)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to add message attachment. Attachment limit {_attachmentConfiguration.MessageAttachmentsLimit} exceeded.");
+            }
 
             var attachment = new Attachment
             {
@@ -163,15 +186,20 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
-            Ensure.That(message).WithException(x => new NetKitChatMessageNotFoundException(request.MessageId, "Unable to delete message attachment")).IsNotNull();
+            if (message == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to delete message attachment. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+            }
 
             var attachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(request.AttachmentId);
-            Ensure.That(attachment).WithException(x => new NetKitChatAttachmentNotFoundException(request.AttachmentId, "Unable to delete message attachment")).IsNotNull();
+            if (attachment == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to delete message attachment. Attachment {nameof(request.AttachmentId)}:{request.AttachmentId} not found.");
+            }
 
             if (attachment.MessageId != message.Id)
             {
-                throw new ConflictException(new ErrorDto(ErrorCode.ConflictError, "Message does not contain this attachment."));
-                //throw new NetKitChatInvalidOperationException(message.Id, attachment.Id, "Unable to delete message attachment");
+                throw new NetKitChatInvalidOperationException($"Unable to delete message attachment. Message {nameof(request.MessageId)}:{request.MessageId} does not contain attachment {nameof(request.AttachmentId)}:{request.AttachmentId}.");
             }
 
             // Delete message attachment from database
@@ -184,7 +212,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<PagedResults<MessageResponse>> GetChannelMessagesAsync(MessageRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.SaasUserId, "Unable to get channel messages")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get channel messages. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesAsync(request.ChannelId);
@@ -194,7 +225,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.SaasUserId, "Unable to set last read message")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to set last read message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(member.Id, request.ChannelId, request.MessageId);
         }
@@ -202,7 +236,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MessagesResult> GetOlderMessagesAsync(GetMessagesRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.SaasUserId, "Unable to get older messages")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get older messages. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             var lastMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
             var lastMessageCreatedDate = lastMessage?.Created ?? request.MessageCreatedDate;
@@ -223,7 +260,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.SaasUserId, "Unable to get messages")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get messages. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             var lastMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
             var lastMessageCreatedDate = lastMessage?.Created ?? request.MessageCreatedDate;
@@ -244,7 +284,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MessagesResult> GetLastMessagesAsync(GetLastMessagesRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.SaasUserId, "Unable to get last messages")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get last messages. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetLastMessagesAsync(request.ChannelId, lastReadMessage?.Created);

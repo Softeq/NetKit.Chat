@@ -29,22 +29,25 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
             {
                 await _next(context);
             }
+            catch (NetKitChatNotFoundException ex)
+            {
+                await HandleExceptionAsync(context, env, ex, StatusCodes.Status404NotFound, ex.ErrorCode);
+            }
             catch (NetKitChatException ex)
             {
                 await HandleExceptionAsync(context, env, ex, StatusCodes.Status403Forbidden, ex.ErrorCode);
             }
-            // TODO: split exception handling by StatusCodes
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, env, ex);
+                await HandleExceptionAsync(context, env, ex, StatusCodes.Status500InternalServerError);
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, IHostingEnvironment env, Exception ex, int statusCode = StatusCodes.Status500InternalServerError, NetKitChatErrorCode? errorCode = null)
+        private async Task HandleExceptionAsync(HttpContext context, IHostingEnvironment env, Exception ex, int statusCode, string errorCode = null)
         {
             _logger.Event("UnhandledExceptionCaughtByMiddleware")
                    .With.Exception(ex)
-                   .Message("Exception was caught by status code middleware. Status code = {StatusCode}; error code = {ErrorCode}", statusCode, errorCode)
+                   .Message("Exception was caught by exception handling middleware. Status code = {StatusCode}; error code = {ErrorCode}", statusCode, errorCode)
                    .AsError();
 
             if (context.Response.HasStarted)
@@ -59,9 +62,9 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
             dynamic errorMessageObject = new ExpandoObject();
             errorMessageObject.Message = ex.Message;
 
-            if (errorCode.HasValue)
+            if (errorCode != null)
             {
-                errorMessageObject.ErrorCode = errorCode.Value;
+                errorMessageObject.ErrorCode = errorCode;
             }
 
             if (!env.IsStaging() && !env.IsProduction())
@@ -72,7 +75,6 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
             var message = Newtonsoft.Json.JsonConvert.SerializeObject((object)errorMessageObject);
 
             context.Response.Clear();
-
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
 

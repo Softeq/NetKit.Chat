@@ -3,19 +3,10 @@
 
 namespace Softeq.NetKit.Chat.Domain.Exceptions
 {
-    public enum NetKitChatErrorCode
+    public static class NetKitChatErrorCode
     {
-        MemberNotFound = 1,
-        ChannelNotFound = 2,
-        ClientNotFound = 3,
-        MessageNotFound = 4,
-        AttachmentNotFound = 5,
-        AttachmentLimitExceeded = 6,
-        MessageOwnerRequired = 7,
-        ChannelOwnerRequired = 8,
-        ChannelMemberNotFound = 9,
-        MemberAlreadyJoined = 10,
-        MemberNotJoined = 11,
-        InsufficientRights = 12
+        public static string NotFound => "not_found";
+        public static string InsufficientRights => "insufficient_rights";
+        public static string InvalidOperation => "invalid_operation";
     }
 }

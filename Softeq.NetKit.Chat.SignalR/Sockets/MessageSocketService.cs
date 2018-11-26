@@ -3,23 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Resources;
-using Serilog;
-using Softeq.NetKit.Chat.Domain.Exceptions_OLD;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
-using Softeq.Serilog.Extension;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
@@ -28,18 +21,15 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         private readonly IChannelService _channelService;
         private readonly IMemberService _memberService;
         private readonly IMessageService _messageService;
-        private readonly ILogger _logger;
         private readonly IMessageNotificationService _messageNotificationService;
 
         public MessageSocketService(
             IChannelService channelService,
-            ILogger logger,
             IMemberService memberService,
             IMessageService messageService,
             IMessageNotificationService messageNotificationService)
         {
             _channelService = channelService;
-            _logger = logger;
             _memberService = memberService;
             _messageService = messageService;
             _messageNotificationService = messageNotificationService;
@@ -105,61 +95,32 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
         {
-            try
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var message = await _messageService.GetMessageByIdAsync(request.MessageId);
+            if (message.Sender.Id != member.Id)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-                if (message.Sender.Id != member.Id)
-                {
-                    throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-                }
-
-                var attachmentResponse = await _messageService.AddMessageAttachmentAsync(request);
-
-                await _messageNotificationService.OnAddMessageAttachment(member, message);
-
-                return attachmentResponse;
-            }
-            catch (ServiceException ex)
-            {
-                if (ex.Errors.Any(x => x.Description == "Message does not exist."))
-                {
-                    _logger.Event("MessageDoesNotExist").With.Message("{@MessageId}", request.MessageId).Exception(ex).AsError();
-                    throw new Exception(string.Format(LanguageResources.Msg_NotFound, request.MessageId));
-                }
+                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
             }
 
-            return default(AttachmentResponse);
+            var attachmentResponse = await _messageService.AddMessageAttachmentAsync(request);
+
+            await _messageNotificationService.OnAddMessageAttachment(member, message);
+
+            return attachmentResponse;
         }
 
         public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
         {
-            try
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var message = await _messageService.GetMessageByIdAsync(request.MessageId);
+            if (message.Sender.Id != member.Id)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-                if (message.Sender.Id != member.Id)
-                {
-                    throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
-                }
-
-                await _messageService.DeleteMessageAttachmentAsync(request);
-
-                await _messageNotificationService.OnDeleteMessageAttachment(member, message);
+                throw new Exception(string.Format(LanguageResources.Msg_AccessPermission, message.Id));
             }
-            catch (ServiceException ex)
-            {
-                if (ex.Errors.Any(x => x.Description == "Message does not exist."))
-                {
-                    _logger.Event("MessageDoesNotExist").With.Message("{@MessageId}", request.MessageId).Exception(ex).AsError();
-                    throw new Exception(string.Format(LanguageResources.Msg_NotFound, request.MessageId));
-                }
-                if (ex.Errors.Any(x => x.Description == "Attachment does not exist."))
-                {
-                    _logger.Event("AttachmentDoesNotExist").With.Message("{@AttachmentId}", request.AttachmentId).Exception(ex).AsError();
-                    throw new Exception(string.Format(LanguageResources.Msg_AttachmentNotFound, request.AttachmentId));
-                }
-            }
+
+            await _messageService.DeleteMessageAttachmentAsync(request);
+
+            await _messageNotificationService.OnDeleteMessageAttachment(member, message);
         }
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)

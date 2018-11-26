@@ -25,8 +25,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     {
         private readonly CloudStorageConfiguration _configuration;
 
-        public MemberService(IUnitOfWork unitOfWork, CloudStorageConfiguration configuration) : base(unitOfWork)
+        public MemberService(IUnitOfWork unitOfWork, CloudStorageConfiguration configuration)
+            : base(unitOfWork)
         {
+            Ensure.That(configuration).IsNotNull();
+
             _configuration = configuration;
         }
 
@@ -34,7 +37,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(saasUserId, "Unable to get member by saasUserId")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} not found.");
+            }
 
             return member.ToMemberSummary(_configuration);
         }
@@ -42,7 +48,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<MemberSummary> GetMemberByIdAsync(Guid memberId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(memberId, "Unable to get member by id")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} not found.");
+            }
 
             return member.ToMemberSummary(_configuration);
         }
@@ -56,15 +65,21 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
         {
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
-            Ensure.That(channel).WithException(x => new NetKitChatChannelNotFoundException(request.ChannelId, "Unable to invite member")).IsNotNull();
+            if (channel == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
+            }
 
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.MemberId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.MemberId, "Unable to invite member")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to invite member. Member {nameof(request.MemberId)}:{request.MemberId} not found.");
+            }
 
             var channelMembers = await GetChannelMembersAsync(channel.Id);
             if (channelMembers.Any(x => x.Id == request.MemberId))
             {
-                throw new NetKitChatMemberAlreadyJoinedException(member.Id, request.ChannelId, "Unable to invite member");
+                throw new NetKitChatInvalidOperationException($"Unable to invite member. Member {nameof(request.MemberId)}:{request.MemberId} already joined channel {nameof(request.ChannelId)}:{request.ChannelId}.");
             }
 
             var channelMember = new ChannelMembers
@@ -136,7 +151,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task DeleteClientAsync(DeleteClientRequest request)
         {
             var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
-            Ensure.That(client).WithException(x => new NetKitChatClientNotFoundException(request.ClientConnectionId, "Unable to delete client"));
+            if (client == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
+            }
 
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
 
@@ -159,6 +177,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member != null)
             {
+                // TODO: Should we throw exception here?
                 return member.ToMemberSummary(_configuration);
             }
 
@@ -182,7 +201,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task UpdateMemberStatusAsync(UpdateMemberStatusRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NetKitChatMemberNotFoundException(request.SaasUserId, "Unable to update member status")).IsNotNull();
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to update member status. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
 
             member.Status = request.UserStatus;
             member.LastActivity = DateTimeOffset.Now;

@@ -37,10 +37,7 @@ namespace Softeq.NetKit.Chat.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcCore(o =>
-                {
-                    o.Filters.Add(typeof(GlobalExceptionFilter));
-                })
+            services.AddMvcCore()
                 .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonFormatters();
@@ -73,10 +70,6 @@ namespace Softeq.NetKit.Chat.Web
             });
 
             var builder = new ContainerBuilder();
-
-            builder.RegisterType<MyHubDispatcher>().As<DefaultHubDispatcher<ChatHub>>().SingleInstance();
-            builder.RegisterType<MyHubDispatcher>().As<HubDispatcher<ChatHub>>().SingleInstance();
-
             builder.RegisterSolutionModules();
             builder.AddLogger();
             builder.Populate(services);

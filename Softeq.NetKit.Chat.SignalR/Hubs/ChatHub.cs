@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
@@ -32,6 +33,11 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                        IChannelSocketService channelSocketService,
                        IMessageSocketService messageSocketService)
         {
+            Ensure.That(memberService).IsNotNull();
+            Ensure.That(logger).IsNotNull();
+            Ensure.That(channelSocketService).IsNotNull();
+            Ensure.That(messageSocketService).IsNotNull();
+
             _memberService = memberService;
             _logger = logger;
             _channelSocketService = channelSocketService;
@@ -268,8 +274,9 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             {
                 try
                 {
+                    var result = await funcRequest.RunAsync();
                     await Clients.Caller.SendAsync(HubEvents.RequestSuccess, requestId);
-                    return await funcRequest.RunAsync();
+                    return result;
                 }
                 catch (Exception ex)
                 {

@@ -2,18 +2,13 @@
 // http://www.softeq.com
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Resources;
-using Serilog;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.Exceptions_OLD;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
-using Softeq.Serilog.Extension;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
@@ -22,17 +17,14 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         private readonly IChannelService _channelService;
         private readonly IMemberService _memberService;
         private readonly IChannelNotificationService _channelNotificationService;
-        private readonly ILogger _logger;
 
         public ChannelSocketService(
             IChannelService channelService,
-            ILogger logger,
             IMemberService memberService,
             IChannelNotificationService channelNotificationService)
         {
             _channelNotificationService = channelNotificationService;
             _channelService = channelService;
-            _logger = logger;
             _memberService = memberService;
         }
 
@@ -85,32 +77,24 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task CloseChannelAsync(ChannelRequest request)
         {
-            try
+            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+
+            if (channel.CreatorId != member.Id && member.Role != UserRole.Admin)
             {
-                var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-                if (channel.CreatorId != member.Id && member.Role != UserRole.Admin)
-                {
-                    throw new Exception(string.Format(LanguageResources.RoomOwnerRequired, channel.Name));
-                }
-                if (channel.IsClosed)
-                {
-                    throw new Exception(string.Format(LanguageResources.RoomAlreadyClosed, channel.Name));
-                }
-
-                await _channelService.CloseChannelAsync(request);
-
-                var channelSummary = await _channelService.GetChannelSummaryAsync(request);
-
-                await _channelNotificationService.OnCloseChannel(member, channelSummary);
-                await _channelNotificationService.OnUpdateChannel(member, channelSummary);
+                throw new Exception(string.Format(LanguageResources.RoomOwnerRequired, channel.Name));
             }
-            catch (ServiceException ex)
+            if (channel.IsClosed)
             {
-                _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelId}", request.ChannelId).Exception(ex).AsError();
-                throw new Exception(string.Format(LanguageResources.RoomNotFound, request.ChannelId));
+                throw new Exception(string.Format(LanguageResources.RoomAlreadyClosed, channel.Name));
             }
+
+            await _channelService.CloseChannelAsync(request);
+
+            var channelSummary = await _channelService.GetChannelSummaryAsync(request);
+
+            await _channelNotificationService.OnCloseChannel(member, channelSummary);
+            await _channelNotificationService.OnUpdateChannel(member, channelSummary);
         }
 
         public async Task JoinToChannelAsync(JoinToChannelRequest request)
@@ -157,42 +141,24 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 throw new Exception(LanguageResources.Invite_UserRequired);
             }
 
-            try
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var invitedMember = await _memberService.GetMemberByIdAsync(request.MemberId);
+            if (member.Id == invitedMember.Id)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-                var invitedMember = await _memberService.GetMemberByIdAsync(request.MemberId);
-                if (member.Id == invitedMember.Id)
-                {
-                    throw new Exception(LanguageResources.Invite_CannotInviteSelf);
-                }
-
-                var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-                if (channel.IsClosed)
-                {
-                    throw new Exception(string.Format(LanguageResources.RoomClosed, channel.Name));
-                }
-
-                var inviteMemberResponse = await _memberService.InviteMemberAsync(request);
-
-                await _channelNotificationService.OnJoinChannel(invitedMember, channel);
-
-                return inviteMemberResponse;
-            }
-            catch (ServiceException ex)
-            {
-                if (ex.Errors.Any(x => x.Description == "Member does not exist."))
-                {
-                    _logger.Event("MemberDoesNotExist").With.Message("{@MemberId}", request.MemberId).Exception(ex).AsError();
-                    throw new Exception(string.Format(LanguageResources.UserNotFound, request.MemberId));
-                }
-                if (ex.Errors.Any(x => x.Description == "Channel does not exist."))
-                {
-                    _logger.Event("ChannelDoesNotExist").With.Message("{@ChannelId}", request.ChannelId).Exception(ex).AsError();
-                    throw new Exception(string.Format(LanguageResources.RoomNotFound, request.ChannelId));
-                }
+                throw new Exception(LanguageResources.Invite_CannotInviteSelf);
             }
 
-            return default(ChannelResponse);
+            var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            if (channel.IsClosed)
+            {
+                throw new Exception(string.Format(LanguageResources.RoomClosed, channel.Name));
+            }
+
+            var inviteMemberResponse = await _memberService.InviteMemberAsync(request);
+
+            await _channelNotificationService.OnJoinChannel(invitedMember, channel);
+
+            return inviteMemberResponse;
         }
 
         public async Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request)

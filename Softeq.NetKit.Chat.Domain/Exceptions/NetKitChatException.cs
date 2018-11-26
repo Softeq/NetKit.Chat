@@ -8,23 +8,23 @@ namespace Softeq.NetKit.Chat.Domain.Exceptions
     [Serializable]
     public abstract class NetKitChatException : Exception
     {
-        protected NetKitChatException(NetKitChatErrorCode errorCode)
+        protected NetKitChatException(string errorCode)
         {
             ErrorCode = errorCode;
         }
 
-        protected NetKitChatException(NetKitChatErrorCode errorCode, string message)
+        protected NetKitChatException(string errorCode, string message)
             : base(message)
         {
             ErrorCode = errorCode;
         }
 
-        protected NetKitChatException(NetKitChatErrorCode errorCode, string message, Exception innerException)
+        protected NetKitChatException(string errorCode, string message, Exception innerException)
             : base(message, innerException)
         {
             ErrorCode = errorCode;
         }
 
-        public NetKitChatErrorCode ErrorCode { get; }
+        public string ErrorCode { get; }
     }
 }

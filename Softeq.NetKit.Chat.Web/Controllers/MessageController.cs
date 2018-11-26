@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             : base(logger)
         {
             Ensure.That(messageService).IsNotNull();
-            Ensure.That(_messageSocketService).IsNotNull();
+            Ensure.That(messageSocketService).IsNotNull();
 
             _messageService = messageService;
             _messageSocketService = messageSocketService;
@@ -76,7 +76,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             var file = model?.Files?.FirstOrDefault();
             if (file == null || file.Length <= 0)
             {
-                return BadRequest(new Exception("Attached file can not be empty"));
+                return BadRequest("Attached file can not be empty");
             }
 
             // TODO: Replace this helper by some NuGet or smth else.
@@ -84,7 +84,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             var supportedExtensions = new[] { "jpg", "png", "mp4" };
             if (extension == null || !supportedExtensions.Contains(extension))
             {
-                return BadRequest(new Exception($"Only {string.Join(", ", supportedExtensions)} formats are supported"));
+                return BadRequest($"Only {string.Join(", ", supportedExtensions)} formats are supported");
             }
 
             using (var stream = file.OpenReadStream())
