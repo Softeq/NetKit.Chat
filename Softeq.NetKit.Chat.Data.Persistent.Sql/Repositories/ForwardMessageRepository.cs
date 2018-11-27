@@ -1,4 +1,6 @@
-﻿
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,21 +36,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"DELETE FROM ForwardMessages WHERE Id = @messageId";
+                var sqlQuery = @"DELETE FROM ForwardMessages 
+                                 WHERE Id = @messageId";
 
                 await connection.ExecuteAsync(sqlQuery, new { messageId });
-            }
-        }
-
-        public async Task UpdateForwardMessageAsync(ForwardMessage message)
-        {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
-            {
-                var sqlQuery = @"UPDATE ForwardMessages 
-                                 SET Body = @Body
-                                 WHERE Id = @Id";
-
-                await connection.ExecuteAsync(sqlQuery, message);
             }
         }
 
@@ -56,8 +47,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
                 var sqlQuery = @"
                     SELECT *
                     FROM ForwardMessages m INNER JOIN Members mem ON m.OwnerId = mem.Id

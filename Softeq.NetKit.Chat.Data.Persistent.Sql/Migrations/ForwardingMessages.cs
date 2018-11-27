@@ -11,35 +11,32 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         protected override void Up()
         {
             Execute(@"
-                CREATE TABLE [dbo].[ForwardMessages](
-	                [Id] [uniqueidentifier] NOT NULL,
-	                [Body] [nvarchar](max) NULL,
-	                [Created] [datetimeoffset](7) NOT NULL,
-	                [ChannelId] [uniqueidentifier] NOT NULL,
-	                [OwnerId] [uniqueidentifier] NULL,
-                PRIMARY KEY CLUSTERED 
-                (
-	                [Id] ASC
-                )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-                ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+                 CREATE TABLE dbo.ForwardMessages(
+	                    Id        uniqueidentifier  NOT NULL PRIMARY KEY CLUSTERED,
+	                    Body      nvarchar(max)     NULL,
+	                    Created   datetimeoffset(7) NOT NULL,
+	                    ChannelId uniqueidentifier  NOT NULL,
+	                    OwnerId   uniqueidentifier  NULL
+                );
 
-                ALTER TABLE [dbo].[ForwardMessages]  WITH CHECK ADD  CONSTRAINT [FK_ForwardMessages_Channels] FOREIGN KEY([ChannelId])
-                REFERENCES [dbo].[Channels] ([Id])
+                ALTER TABLE dbo.ForwardMessages 
+                WITH CHECK ADD CONSTRAINT FK_ForwardMessages_Channels FOREIGN KEY(ChannelId)
+                REFERENCES dbo.Channels (Id)
 
-                ALTER TABLE [dbo].[ForwardMessages] CHECK CONSTRAINT [FK_ForwardMessages_Channels]
+                ALTER TABLE dbo.ForwardMessages
+                WITH CHECK ADD CONSTRAINT FK_ForwardMessages_Members FOREIGN KEY(OwnerId)
+                REFERENCES dbo.Members (Id)
 
-                ALTER TABLE [dbo].[ForwardMessages]  WITH CHECK ADD  CONSTRAINT [FK_ForwardMessages_Members] FOREIGN KEY([OwnerId])
-                REFERENCES [dbo].[Members] ([Id])
-
-                ALTER TABLE [dbo].[ForwardMessages] CHECK CONSTRAINT [FK_ForwardMessages_Members]
-
-                ALTER TABLE [dbo].[Messages] ADD ForwardMessageId uniqueidentifier NULL
+                ALTER TABLE dbo.Messages
+                ADD ForwardMessageId uniqueidentifier NULL
             ");
         }
 
         protected override void Down()
         {
-            Execute(@"DROP TABLE [dbo].[ForwardMessages]");
+            Execute(@"
+                ALTER TABLE [dbo].[Messages] DROP COLUMN ForwardMessageId
+                DROP TABLE [dbo].[ForwardMessages]");
         }
     }
 }

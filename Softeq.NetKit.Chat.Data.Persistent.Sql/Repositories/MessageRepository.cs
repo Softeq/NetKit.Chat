@@ -206,7 +206,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member, forwardedMessage) =>
                         {
-                            message.ForwardedMessage = forwardedMessage
+                            message.ForwardedMessage = forwardedMessage;
                             message.Owner = member;
                             return message;
                         },

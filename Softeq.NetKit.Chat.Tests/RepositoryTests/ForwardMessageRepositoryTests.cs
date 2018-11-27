@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -12,8 +13,8 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
     public class ForwardMessageRepositoryTests : BaseTest
     {
         private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BD9B-55C3862262AA");
-        private const string _memberName = "testMember";
         private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BD9B-11C3862262EE");
+        private readonly ForwardMessage _forwardMessage;
 
         public ForwardMessageRepositoryTests()
         {
@@ -22,7 +23,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Active,
-                Name = _memberName
+                Name = "testMember"
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
@@ -35,12 +36,8 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MembersCount = 0
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
-        }
 
-        [Fact]
-        public async Task AddForwardMessageAsync_ShouldCreateNewRecord()
-        {
-            var forwardMessage = new ForwardMessage()
+            _forwardMessage = new ForwardMessage()
             {
                 Id = Guid.NewGuid(),
                 Body = "test forward message body",
@@ -48,10 +45,36 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 OwnerId = _memberId,
                 Created = DateTimeOffset.UtcNow
             };
-            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
-            var createdForwardMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageByIdAsync(forwardMessage.Id);
+        }
 
-            createdForwardMessage.Should().BeEquivalentTo(createdForwardMessage, options=>options.Excluding(message=>message.Owner));
+        [Fact]
+        public async Task AddForwardMessageAsync_ShouldCreateNewRecord()
+        {
+            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(_forwardMessage);
+            var createdForwardMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageByIdAsync(_forwardMessage.Id);
+
+            createdForwardMessage.Should().BeEquivalentTo(createdForwardMessage, options => options.Excluding(message => message.Owner));
+        }
+
+        [Fact]
+        public async Task DeleteForwardMessageAsync_ShouldDeleteCreatedRecord()
+        {
+            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(_forwardMessage);
+            await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(_forwardMessage.Id);
+            var nullForwardMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageByIdAsync(_forwardMessage.Id);
+
+            nullForwardMessage.Should().BeNull("Created message was deleted");
+        }
+
+        [Fact]
+        public async Task GetForwardMessageByIdAsync_ShouldFindRecordById()
+        {
+            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(_forwardMessage);
+            var findedMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageByIdAsync(_forwardMessage.Id);
+
+            findedMessage.Should().BeEquivalentTo(_forwardMessage, options => options
+                .Excluding(message => message.Channel)
+                .Excluding(message => message.Owner));
         }
     }
 }

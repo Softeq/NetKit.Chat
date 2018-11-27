@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
+using System;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 
@@ -10,7 +11,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
     {
         Task AddForwardMessageAsync(ForwardMessage message);
         Task DeleteForwardMessageAsync(Guid messageId);
-        Task UpdateForwardMessageAsync(ForwardMessage message);
         Task<ForwardMessage> GetForwardMessageByIdAsync(Guid messageId);
     }
 }
