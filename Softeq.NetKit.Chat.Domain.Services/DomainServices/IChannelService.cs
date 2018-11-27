@@ -14,7 +14,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     public interface IChannelService
     {
         Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request);
-        Task<IReadOnlyCollection<ChannelResponse>> GetUserChannelsAsync(UserRequest request);
+        Task<IReadOnlyCollection<ChannelResponse>> GetMemberChannelsAsync(UserRequest request);
         Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest request);
         Task<ChannelSummaryResponse> GetChannelSummaryAsync(ChannelRequest request);
         Task<ChannelResponse> GetChannelByIdAsync(Guid channelId);
@@ -26,6 +26,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task RemoveMemberFromChannelAsync(ChannelRequest request);
         Task<bool> CheckIfMemberExistInChannelAsync(InviteMemberRequest request);
         Task MuteChannelAsync(ChannelRequest request);
+        Task PinChannelAsync(ChannelRequest request);
         Task<int> GetChannelMessagesCountAsync(Guid channelId);
     }
 }

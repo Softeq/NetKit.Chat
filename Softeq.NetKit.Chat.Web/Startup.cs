@@ -8,6 +8,7 @@ using CorrelationId;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -36,10 +37,7 @@ namespace Softeq.NetKit.Chat.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcCore(o =>
-                {
-                    o.Filters.Add(typeof(GlobalExceptionFilter));
-                })
+            services.AddMvcCore()
                 .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonFormatters();
@@ -117,24 +115,14 @@ namespace Softeq.NetKit.Chat.Web
                 });
             }
 
-            app.UseCors(x => x.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
-
-            app.UseExceptionHandler(options =>
-            {
-                options.Run(async c => await ExceptionHandler.Handle(c, loggerFactory));
-            });
-
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseCorrelationId();
-
             app.UseAuthentication();
-
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
             });
-
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseMvc();
         }
 
