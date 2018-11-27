@@ -61,7 +61,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Id = Guid.NewGuid(),
                 ChannelId = request.ChannelId,
                 OwnerId = member.Id,
-                Owner = member,
                 Body = request.Body,
                 Created = DateTimeOffset.UtcNow,
                 Type = request.Type,
@@ -70,9 +69,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                if (request.Type == MessageType.Forward)
+                {
+                    var forwardMessageId = Guid.NewGuid();
+                    var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage(forwardMessageId);
+                    await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
+                    message.ForwardedMessage = forwardMessage;
+                    message.ForwardMessageId = forwardMessage.Id;
+                }
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
-
-                await SetLastReadMessageAsync(new SetLastReadMessageRequest(request.ChannelId, message.Id, request.SaasUserId));
+                await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(member.Id, request.ChannelId, message.Id);
 
                 transactionScope.Complete();
             }
@@ -98,6 +104,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
+                if (message.Type == MessageType.Forward && message.ForwardMessageId.HasValue)
+                {
+                    await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(message.ForwardMessageId.Value);
+                }
+
                 // Delete message attachments from database
                 await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(message.Id);
 

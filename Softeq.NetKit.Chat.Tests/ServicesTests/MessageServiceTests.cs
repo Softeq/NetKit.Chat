@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
@@ -151,6 +152,31 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             Assert.NotNull(newMessages);
             Assert.Empty(newMessages.Results);
             Assert.True(messages.Results.Count() > newMessages.Results.Count());
+        }
+
+        [Fact]
+        public async Task CreateMessageAsync_ShouldForwardMessageWithForwardType()
+        {
+            var defaultMessageRequest = new CreateMessageRequest(SaasUserId)
+            {
+                Body = "this message supposed to be forwarded",
+                ChannelId = _channelId,
+                Type = MessageType.Default,
+                ImageUrl = "test"
+            };
+            var messageForForwarding = await _messageService.CreateMessageAsync(defaultMessageRequest);
+
+            var forwardMessage = new CreateMessageRequest(SaasUserId)
+            {
+                Body = "comment for forwarded message",
+                ChannelId = _channelId,
+                Type = MessageType.Forward,
+                ImageUrl = "test",
+                ForwardedMessageId = messageForForwarding.Id
+            };
+            var forwardMessageResult = await _messageService.CreateMessageAsync(forwardMessage);
+
+            forwardMessageResult.ForwardedMessage.Body.Should().BeEquivalentTo(messageForForwarding.Body);
         }
     }
 }
