@@ -83,17 +83,17 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task MuteChannelAsync(Guid memberId, Guid channelId)
+        public async Task MuteChannelAsync(Guid memberId, Guid channelId, bool isMuted)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 await connection.OpenAsync();
 
                 var sqlQuery = @"UPDATE ChannelMembers
-                                SET IsMuted = 1
+                                SET IsMuted = @isMuted
                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
+                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId, isMuted });
             }
         }
 

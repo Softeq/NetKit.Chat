@@ -28,21 +28,29 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         private readonly ILogger _logger;
         private readonly IChannelSocketService _channelSocketService;
         private readonly IMessageSocketService _messageSocketService;
+        private readonly IChannelService _channelService;
+        private readonly IClientService _clientService;
 
         public ChatHub(IMemberService memberService,
                        ILogger logger,
                        IChannelSocketService channelSocketService,
-                       IMessageSocketService messageSocketService)
+                       IMessageSocketService messageSocketService,
+                       IChannelService channelService,
+                       IClientService clientService)
         {
             Ensure.That(memberService).IsNotNull();
             Ensure.That(logger).IsNotNull();
             Ensure.That(channelSocketService).IsNotNull();
             Ensure.That(messageSocketService).IsNotNull();
+            Ensure.That(channelService).IsNotNull();
+            Ensure.That(clientService).IsNotNull();
 
             _memberService = memberService;
             _logger = logger;
             _channelSocketService = channelSocketService;
             _messageSocketService = messageSocketService;
+            _channelService = channelService;
+            _clientService = clientService;
         }
 
         #region Override
@@ -56,8 +64,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
-            await _memberService.DeleteClientAsync(deleteClientRequest);
+            await _clientService.DeleteClientAsync(Context.ConnectionId);
 
             _logger.Event("SignalRClientDisconnected").With.Message("{@ConnectionId}", Context.ConnectionId).AsInformation();
             await base.OnDisconnectedAsync(exception);
@@ -66,6 +73,14 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         #endregion
 
         #region Client Hub Commands
+
+        public async Task<ClientResponse> GetClientAsync()
+        {
+            return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
+            {
+                return await _clientService.GetClientAsync(Context.GetSaasUserId(), Context.ConnectionId);
+            }));
+        }
 
         public async Task<ClientResponse> AddClientAsync()
         {
@@ -79,7 +94,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                     SaasUserId = Context.GetSaasUserId()
                 };
 
-                return await _memberService.GetOrAddClientAsync(addClientRequest);
+                return await _clientService.AddClientAsync(addClientRequest);
             }));
         }
 
@@ -87,8 +102,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
-                await _memberService.DeleteClientAsync(deleteClientRequest);
+                await _clientService.DeleteClientAsync(Context.ConnectionId);
             }));
         }
 
@@ -236,7 +250,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             await SafeExecuteAsync(new TaskReference(async () =>
             {
                 request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.DeleteMemberAsync(request);
+                await _channelSocketService.DeleteMemberFromChannelAsync(request);
             }),
             request.RequestId);
         }
@@ -245,8 +259,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.MuteChannelAsync(request);
+                await _channelService.MuteChannelAsync(Context.GetSaasUserId(), request.ChannelId, true);
+            }),
+            request.RequestId);
+        }
+
+        public async Task UnmuteChannelAsync(ChannelRequest request)
+        {
+            await SafeExecuteAsync(new TaskReference(async () =>
+            {
+                await _channelService.MuteChannelAsync(Context.GetSaasUserId(), request.ChannelId, false);
             }),
             request.RequestId);
         }
@@ -255,8 +277,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.PinChannelAsync(request);
+                await _channelService.PinChannelAsync(Context.GetSaasUserId(), request.ChannelId, true);
+            }),
+            request.RequestId);
+        }
+
+        public async Task UnpinChannelAsync(ChannelRequest request)
+        {
+            await SafeExecuteAsync(new TaskReference(async () =>
+            {
+                await _channelService.PinChannelAsync(Context.GetSaasUserId(), request.ChannelId, false);
             }),
             request.RequestId);
         }

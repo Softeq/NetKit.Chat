@@ -195,5 +195,28 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             updatedClient.Should().BeEquivalentTo(changedClient, compareOptions => compareOptions.Excluding(client => client.Member));
         }
+
+        [Fact]
+        public async Task IsClientExistsAsync_ShouldReturnTrueIfClientExists()
+        {
+            var client = new Client
+            {
+                Id = Guid.NewGuid(),
+                ClientConnectionId = Guid.NewGuid().ToString(),
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                Name = "test",
+                MemberId = _memberId,
+                UserAgent = "test"
+            };
+
+            var exists = await UnitOfWork.ClientRepository.IsClientExistsAsync(client.ClientConnectionId);
+            exists.Should().BeFalse();
+
+            await UnitOfWork.ClientRepository.AddClientAsync(client);
+
+            exists = await UnitOfWork.ClientRepository.IsClientExistsAsync(client.ClientConnectionId);
+            exists.Should().BeTrue();
+        }
     }
 }

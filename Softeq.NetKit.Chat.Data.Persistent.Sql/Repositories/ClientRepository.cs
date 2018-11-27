@@ -185,5 +185,19 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 return data;
             }
         }
+
+        public async Task<bool> IsClientExistsAsync(string clientConnectionId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT 1
+                                 FROM Clients c 
+                                    INNER JOIN Members m 
+                                    ON c.MemberId = m.Id
+                                 WHERE c.ClientConnectionId = @clientConnectionId";
+
+                return await connection.ExecuteScalarAsync<bool>(sqlQuery, new { clientConnectionId });
+            }
+        }
     }
 }

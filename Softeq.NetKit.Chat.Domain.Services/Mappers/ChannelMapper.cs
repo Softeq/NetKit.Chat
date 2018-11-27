@@ -34,8 +34,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
 
         public static ChannelSummaryResponse ToChannelSummaryResponse(this Channel channel, 
             ChannelMembers channelMember,
-            Message lastReadMessage,
-            MemberSummary creator, 
+            Message lastReadMessage, 
             CloudStorageConfiguration configuration)
         {
             var channelListResponse = new ChannelSummaryResponse();
@@ -51,9 +50,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
                 channelListResponse.Type = channel.Type;
                 channelListResponse.IsMuted = channelMember.IsMuted;
                 channelListResponse.IsPinned = channelMember.IsPinned;
-                channelListResponse.CreatorId = channel.CreatorId ?? creator?.Id;
-                channelListResponse.Creator = channel.Creator?.ToMemberSummary(configuration) ?? creator;
-                channelListResponse.CreatorSaasUserId = channel.Creator?.SaasUserId ?? creator?.SaasUserId;
+                channelListResponse.CreatorId = channel.CreatorId;
+                channelListResponse.Creator = channel.Creator.ToMemberSummary(configuration);
+                channelListResponse.CreatorSaasUserId = channel.Creator.SaasUserId;
                 channelListResponse.LastMessage = channel.Messages?.FirstOrDefault()?.ToMessageResponse(lastReadMessage, configuration);
                 channelListResponse.UnreadMessagesCount = lastReadMessage != null ? channel.Messages?.Count(x => x.Created > lastReadMessage.Created) ?? 0 : channel.Messages?.Count ?? 0;
                 channelListResponse.PhotoUrl = channel.PhotoUrl;

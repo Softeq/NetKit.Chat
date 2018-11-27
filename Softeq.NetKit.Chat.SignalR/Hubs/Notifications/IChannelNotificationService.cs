@@ -15,6 +15,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         Task OnDeletedFromChannel(MemberSummary member, Guid channelId, string clientConnectionId);
         Task OnUpdateChannel(MemberSummary member, ChannelSummaryResponse channel);
         Task OnCloseChannel(MemberSummary member, ChannelSummaryResponse channel);
-        Task OnAddChannel(MemberSummary member, ChannelSummaryResponse channel, string clientConnectionId);
+        Task OnAddChannel(string saasUserId, ChannelSummaryResponse channel, string clientConnectionId);
     }
 }

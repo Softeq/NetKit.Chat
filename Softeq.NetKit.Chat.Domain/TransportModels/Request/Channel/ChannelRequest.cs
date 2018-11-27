@@ -15,6 +15,5 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
         }
 
         public Guid ChannelId { get; set; }
-        public bool IsPinned { get; set; }
     }
 }

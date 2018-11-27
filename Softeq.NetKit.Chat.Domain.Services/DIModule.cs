@@ -23,6 +23,9 @@ namespace Softeq.NetKit.Chat.Domain.Services
             builder.RegisterType<ChannelMemberService>()
                 .As<IChannelMemberService>();
 
+            builder.RegisterType<ClientService>()
+                .As<IClientService>();
+
             builder.RegisterType<CloudStorageConfiguration>()
                 .AsSelf();
 

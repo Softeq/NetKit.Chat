@@ -77,10 +77,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
                 Type = ChannelType.Public
             };
 
-            var channel = await _channelService.CreateChannelAsync(request);
+            await _channelService.CreateChannelAsync(request);
 
             // Act
-            var channels = await _channelService.GetMemberChannelsAsync(new UserRequest(SaasUserId));
+            var channels = await _channelService.GetMemberChannelsAsync(SaasUserId);
 
             // Assert
             Assert.NotNull(channels);
@@ -311,7 +311,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var previousMembersCount = (await _memberService.GetChannelMembersAsync(channel.Id)).Count;
             
             // Act
-            await _channelService.RemoveMemberFromChannelAsync(new ChannelRequest(SaasUserId2, channel.Id));
+            await _channelService.LeaveFromChannelAsync(SaasUserId2, channel.Id);
             var newChannel = await _channelService.GetChannelByIdAsync(channel.Id);
             var channelMembers = await _memberService.GetChannelMembersAsync(channel.Id);
 
@@ -331,18 +331,14 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
                 Type = ChannelType.Public
             };
             var channel = await _channelService.CreateChannelAsync(createChannelRequest);
-            var channelRequest = new ChannelRequest(SaasUserId, channel.Id)
-            {
-                IsPinned = true
-            };
+            var channelRequest = new ChannelRequest(SaasUserId, channel.Id);
 
-            await _channelService.PinChannelAsync(channelRequest);
+            await _channelService.PinChannelAsync(channelRequest.SaasUserId, channelRequest.ChannelId, true);
             var pinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
 
             pinnedChannel.IsPinned.Should().BeTrue();
 
-            channelRequest.IsPinned = false;
-            await _channelService.PinChannelAsync(channelRequest);
+            await _channelService.PinChannelAsync(channelRequest.SaasUserId, channelRequest.ChannelId, false);
             var unPinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
 
             unPinnedChannel.IsPinned.Should().BeFalse();

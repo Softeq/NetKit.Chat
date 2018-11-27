@@ -19,9 +19,9 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         {
         }
 
-        public async Task OnAddChannel(MemberSummary member, ChannelSummaryResponse channel, string clientConnectionId)
+        public async Task OnAddChannel(string saasUserId, ChannelSummaryResponse channel, string clientConnectionId)
         {
-            var channelRequest = new ChannelRequest(member.SaasUserId, channel.Id)
+            var channelRequest = new ChannelRequest(saasUserId, channel.Id)
             {
                 ClientConnectionId = clientConnectionId
             };

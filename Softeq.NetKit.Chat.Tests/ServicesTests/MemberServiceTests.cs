@@ -5,14 +5,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
-using ServiceStack;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
 
@@ -26,10 +21,12 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         private const string SaasUserId = "4d048b6c-37b8-499a-a9e3-d3fe5211d5fc";
 
         private readonly IMemberService _memberService;
+        private readonly IClientService _clientService;
 
         public MemberServiceTests()
         {
             _memberService = LifetimeScope.Resolve<IMemberService>();
+            _clientService = LifetimeScope.Resolve<IClientService>();
 
             var member = new Member
             {
@@ -55,7 +52,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task GetChannelMembersAsyncTest()
         {
             // Arrange
-            await _memberService.InviteMemberAsync(new InviteMemberRequest(SaasUserId, _channelId, _memberId));
+            await _memberService.InviteMemberAsync(_memberId, _channelId);
 
             // Act
             var members = await _memberService.GetChannelMembersAsync(_channelId);
@@ -73,7 +70,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         {
             // Act
             var members = await _memberService.GetChannelMembersAsync(_channelId);
-            var channel = await _memberService.InviteMemberAsync(new InviteMemberRequest(SaasUserId, _channelId, _memberId));
+            var channel = await _memberService.InviteMemberAsync(_memberId, _channelId);
 
 
             // Assert
@@ -93,7 +90,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
                 UserName = "user@test.test"
             };
 
-            var newClient = await _memberService.GetOrAddClientAsync(addClientRequest);
+            var newClient = await _clientService.AddClientAsync(addClientRequest);
 
             Assert.NotNull(newClient);
             Assert.Equal(addClientRequest.SaasUserId, newClient.SaasUserId);
@@ -111,12 +108,12 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
                 UserAgent = "user agent1",
                 UserName = "user@test.test"
             };
-            var addedClient = await _memberService.GetOrAddClientAsync(addClientRequest);
+            var addedClient = await _clientService.AddClientAsync(addClientRequest);
             var createdMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
 
             Assert.Equal(UserStatus.Active, createdMember.Status);
 
-            await _memberService.UpdateMemberStatusAsync(new UpdateMemberStatusRequest(createdMember.SaasUserId, UserStatus.Offline));
+            await _memberService.UpdateMemberStatusAsync(createdMember.SaasUserId, UserStatus.Offline);
             var changedMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
 
             Assert.Equal(UserStatus.Offline, changedMember.Status);
@@ -132,7 +129,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
                 UserAgent = "user agent1",
                 UserName = "user@test.test"
             };
-            var addedClient = await _memberService.GetOrAddClientAsync(addClientRequest);
+            var addedClient = await _clientService.AddClientAsync(addClientRequest);
             var member = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
 
             Assert.Equal(UserStatus.Active, member.Status);
@@ -140,7 +137,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var clients = await _memberService.GetMemberClientsAsync(member.Id);
             foreach (var client in clients)
             {
-                await _memberService.DeleteClientAsync(new DeleteClientRequest(client.ClientConnectionId));
+                await _clientService.DeleteClientAsync(client.ClientConnectionId);
             }
 
             var offlineMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);

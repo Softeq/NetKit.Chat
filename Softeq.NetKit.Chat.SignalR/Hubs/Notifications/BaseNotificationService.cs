@@ -7,10 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.AspNetCore.SignalR;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
@@ -37,7 +35,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         protected async Task<List<string>> GetChannelClientsAsync(ChannelRequest request)
         {
             // TODO: Change this code. Recommended to use Clients.Group()
-            var members = await ChannelMemberService.GetChannelMembersAsync(request);
+            var members = await ChannelMemberService.GetChannelMembersAsync(request.ChannelId);
 
             return await FilterClients(members, request.ClientConnectionId);
         }
@@ -45,7 +43,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         protected async Task<List<string>> GetChannelClientsExceptCallerAsync(ChannelRequest request, string callerConnectionId)
         {
             // TODO: Change this code. Recommended to use Clients.Group()
-            var members = await ChannelMemberService.GetChannelMembersAsync(request);
+            var members = await ChannelMemberService.GetChannelMembersAsync(request.ChannelId);
 
             var mutedMemberIds = members.Where(x => x.IsMuted)
                 .Select(x => x.MemberId)
@@ -96,9 +94,9 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             return clients;
         }
 
-        protected async Task<List<string>> GetNotMutedChannelMembersConnectionsAsync(ChannelRequest request, IReadOnlyCollection<Guid> notifyMemberIds)
+        protected async Task<List<string>> GetNotMutedChannelMembersConnectionsAsync(Guid channelId, IReadOnlyCollection<Guid> notifyMemberIds)
         {
-            var channelMembers = await ChannelMemberService.GetChannelMembersAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            var channelMembers = await ChannelMemberService.GetChannelMembersAsync(channelId);
 
             var notMutedMemberIds = channelMembers.Where(x => !x.IsMuted && notifyMemberIds.Contains(x.MemberId))
                 .Select(x => x.MemberId)

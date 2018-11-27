@@ -6,10 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.AspNetCore.SignalR;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
@@ -83,9 +81,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         {
             var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
 
-            var channelRequest = new ChannelRequest(members.First().SaasUserId, message.ChannelId);
             var notifyMemberIds = members.Select(x => x.Id).ToList();
-            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelRequest, notifyMemberIds);
+            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(message.ChannelId, notifyMemberIds);
 
             // Notify owner about read message
             await HubContext.Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Name);

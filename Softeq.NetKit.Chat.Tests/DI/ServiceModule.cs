@@ -2,7 +2,6 @@
 // http://www.softeq.com
 
 using Autofac;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 
 namespace Softeq.NetKit.Chat.Tests.DI
@@ -11,8 +10,6 @@ namespace Softeq.NetKit.Chat.Tests.DI
     {
         protected override void Load(ContainerBuilder builder)
         {
-            #region Services
-
             builder.RegisterType<ChannelService>()
                 .As<IChannelService>();
 
@@ -25,7 +22,8 @@ namespace Softeq.NetKit.Chat.Tests.DI
             builder.RegisterType<ChannelMemberService>()
                 .As<IChannelMemberService>();
 
-            #endregion
+            builder.RegisterType<ClientService>()
+                .As<IClientService>();
         }
     }
 }

@@ -18,5 +18,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task DeleteClientAsync(Guid clientId);
         Task<List<Client>> GetMemberClientsAsync(Guid memberId);
         Task<List<Client>> GetClientsByMemberIdsAsync(List<Guid> memberIds);
+        Task<bool> IsClientExistsAsync(string clientConnectionId);
     }
 }

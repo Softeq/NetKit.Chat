@@ -119,11 +119,12 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = @"
-                    SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
-                    m.Id, m.SaasUserId, m.Name, m.Status, m.Role, m.IsAfk, m.Email, m.LastActivity
-                    FROM Channels c LEFT JOIN Members m ON c.CreatorId = m.Id
-                    WHERE c.Id = @channelId";
+                var sqlQuery = @"SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
+                                        m.Id, m.SaasUserId, m.Name, m.Status, m.Role, m.IsAfk, m.Email, m.LastActivity
+                                 FROM Channels c 
+                                     LEFT JOIN Members m 
+                                     ON c.CreatorId = m.Id
+                                 WHERE c.Id = @channelId";
 
                 var data = (await connection.QueryAsync<Channel, Member, Channel>(
                         sqlQuery,

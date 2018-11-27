@@ -27,7 +27,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public ChannelType Type { get; set; }
 
         // Creator of the channel
-        public Guid? CreatorId { get; set; }
+        public Guid CreatorId { get; set; }
         public Member Creator { get; set; }
 
         public DateTimeOffset Created { get; set; }
