@@ -39,9 +39,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(PagedMembersResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPagedMembersAsync(int pageNumber, int pageSize)
+        public async Task<IActionResult> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter)
         {
-            var result = await _memberService.GetPagedMembersAsync(pageNumber, pageSize);
+            var result = await _memberService.GetPagedMembersAsync(pageNumber, pageSize, nameFilter);
             return Ok(result);
         }
 

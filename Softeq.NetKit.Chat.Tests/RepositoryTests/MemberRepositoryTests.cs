@@ -157,14 +157,14 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             };
 
             // Act
-            var members = await UnitOfWork.MemberRepository.GetAllMembersAsync();
+            var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 10, string.Empty);
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var newMembers = await UnitOfWork.MemberRepository.GetAllMembersAsync();
+            var newMembers = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 10, string.Empty);
 
             // Assert
             Assert.NotNull(newMembers);
-            Assert.NotEmpty(newMembers);
-            Assert.True(newMembers.Count > members.Count);
+            Assert.NotEmpty(newMembers.Entities);
+            Assert.True(newMembers.Entities.Count() > members.Entities.Count());
         }
 
         [Fact]
