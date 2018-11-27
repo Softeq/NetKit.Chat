@@ -52,7 +52,7 @@ namespace Softeq.NetKit.Chat.Notifications.Services
             try
             {
                 model.RecipientIds = new[] { userId };
-                return await _notificationHub.SendAsync(DevicePlatform.iOS, model);
+                return await _notificationHub.SendNotificationAsync(DevicePlatform.iOS, model);
             }
             catch (Exception ex)
             {

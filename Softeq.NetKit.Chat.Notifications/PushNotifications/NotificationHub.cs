@@ -116,7 +116,7 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
             }
         }
 
-        public async Task<bool> SendAsync(DevicePlatform platform, IPushNotificationModel model)
+        public async Task<bool> SendNotificationAsync(DevicePlatform platform, IPushNotificationModel model)
         {
             try
             {
@@ -157,6 +157,7 @@ namespace Softeq.NetKit.Chat.Notifications.PushNotifications
         {
             return await _hubClient.CreateRegistrationIdAsync();
         }
+
 
     }
 }

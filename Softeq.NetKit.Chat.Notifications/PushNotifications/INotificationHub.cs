@@ -16,7 +16,7 @@ namespace Softeq.NetKit.Chat.Notifications
         Task DeleteAllRegistrationAsync(string tag);
 
         Task<RegistrationDescription> CreateOrUpdateRegistrationAsync(string registrationId, DeviceRegistration deviceUpdate);
-        Task<bool> SendAsync(DevicePlatform platform, IPushNotificationModel model);
+        Task<bool> SendNotificationAsync(DevicePlatform platform, IPushNotificationModel model);
         Task<string> CreateRegistrationId();
     }
 }
