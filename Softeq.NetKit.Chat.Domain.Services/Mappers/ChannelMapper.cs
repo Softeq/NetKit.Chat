@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System.Linq;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
@@ -10,7 +11,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
 {
     internal static class ChannelMapper
     {
-        public static ChannelResponse ToChannelResponse(this DomainModels.Channel channel, CloudStorageConfiguration configuration)
+        public static ChannelResponse ToChannelResponse(this Channel channel, CloudStorageConfiguration configuration)
         {
             var channelResponse = new ChannelResponse();
             if (channel != null)
@@ -31,10 +32,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
             return channelResponse;
         }
 
-        public static ChannelSummaryResponse ToChannelSummaryResponse(this DomainModels.Channel channel,
-            bool isMuted,
-            DomainModels.Message lastReadMessage,
-            MemberSummary creator,
+        public static ChannelSummaryResponse ToChannelSummaryResponse(this Channel channel, 
+            ChannelMembers channelMember,
+            Message lastReadMessage,
+            MemberSummary creator, 
             CloudStorageConfiguration configuration)
         {
             var channelListResponse = new ChannelSummaryResponse();
@@ -48,7 +49,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
                 channelListResponse.Description = channel.Description;
                 channelListResponse.WelcomeMessage = channel.WelcomeMessage;
                 channelListResponse.Type = channel.Type;
-                channelListResponse.IsMuted = isMuted;
+                channelListResponse.IsMuted = channelMember.IsMuted;
+                channelListResponse.IsPinned = channelMember.IsPinned;
                 channelListResponse.CreatorId = channel.CreatorId ?? creator?.Id;
                 channelListResponse.Creator = channel.Creator?.ToMemberSummary(configuration) ?? creator;
                 channelListResponse.CreatorSaasUserId = channel.Creator?.SaasUserId ?? creator?.SaasUserId;

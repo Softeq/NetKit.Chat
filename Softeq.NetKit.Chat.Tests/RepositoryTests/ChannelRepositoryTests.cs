@@ -242,8 +242,8 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel2);
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
 
-            var ensureExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(_memberId, channel.Id);
-            var ensureNonExist = await UnitOfWork.ChannelRepository.CheckIfMemberExistInChannelAsync(_memberId, channel2.Id);
+            var ensureExist = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(_memberId, channel.Id);
+            var ensureNonExist = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(_memberId, channel2.Id);
 
             // Assert
             Assert.True(ensureExist);

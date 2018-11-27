@@ -14,6 +14,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public Guid ChannelId { get; set; }
         public Channel Channel { get; set; }
         public bool IsMuted { get; set; }
+        public bool IsPinned { get; set; }
 
         // Last channel message info
         public Guid? LastReadMessageId { get; set; }

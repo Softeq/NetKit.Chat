@@ -140,7 +140,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<bool> CheckIfMemberExistInChannelAsync(Guid memberId, Guid channelId)
+        public async Task<bool> IsMemberExistsInChannelAsync(Guid memberId, Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
