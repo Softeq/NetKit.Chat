@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
 using SimpleMigrations;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations

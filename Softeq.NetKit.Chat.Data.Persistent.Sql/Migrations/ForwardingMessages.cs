@@ -35,8 +35,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         protected override void Down()
         {
             Execute(@"
-                ALTER TABLE [dbo].[Messages] DROP COLUMN ForwardMessageId
-                DROP TABLE [dbo].[ForwardMessages]");
+                ALTER TABLE dbo.Messages 
+                DROP COLUMN ForwardMessageId
+
+                DROP TABLE dbo.ForwardMessages
+            ");
         }
     }
 }

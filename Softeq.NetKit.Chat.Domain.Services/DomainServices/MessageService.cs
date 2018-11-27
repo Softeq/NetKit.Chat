@@ -51,8 +51,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            Ensure.That(member).WithException(x => new NotFoundException(new ErrorDto(ErrorCode.NotFound, "Member does not exist."))).IsNotNull();
-
             if (member == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to create message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
@@ -73,13 +71,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 if (request.Type == MessageType.Forward)
                 {
-                    var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage();
+                    var forwardMessageId = Guid.NewGuid();
+                    var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage(forwardMessageId);
                     await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
                     message.ForwardedMessage = forwardMessage;
                     message.ForwardMessageId = forwardMessage.Id;
                 }
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
-                await SetLastReadMessageAsync(new SetLastReadMessageRequest(request.ChannelId, message.Id, request.SaasUserId));
+                await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(member.Id, request.ChannelId, message.Id);
 
                 transactionScope.Complete();
             }
@@ -105,10 +104,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (message.Type == MessageType.Forward)
+                if (message.Type == MessageType.Forward && message.ForwardMessageId.HasValue)
                 {
-                    await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(message.ForwardMessageId);
+                    await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(message.ForwardMessageId.Value);
                 }
+
                 // Delete message attachments from database
                 await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(message.Id);
 

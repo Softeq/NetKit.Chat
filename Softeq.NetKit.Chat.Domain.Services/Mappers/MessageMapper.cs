@@ -10,7 +10,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
 {
     internal static class MessageMapper
     {
-        public static MessageResponse ToMessageResponse(this DomainModels.Message message, DomainModels.Message lastReadMessage, CloudStorageConfiguration configuration)
+        public static MessageResponse ToMessageResponse(this Message message, Message lastReadMessage, CloudStorageConfiguration configuration)
         {
             var messageResponse = new MessageResponse();
             if (message != null)
@@ -29,12 +29,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
             return messageResponse;
         }
 
-        public static ForwardMessage ToForwardMessage(this DomainModels.Message message)
+        public static ForwardMessage ToForwardMessage(this Message message, Guid forwardMessageId)
         {
             var forwardMessage = new ForwardMessage();
             if (message != null)
             {
-                forwardMessage.Id = Guid.NewGuid();
+                forwardMessage.Id = forwardMessageId;
                 forwardMessage.ChannelId = message.ChannelId;
                 forwardMessage.Body = message.Body;
                 forwardMessage.Created = message.Created;
