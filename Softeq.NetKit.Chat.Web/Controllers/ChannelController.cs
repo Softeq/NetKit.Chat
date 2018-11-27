@@ -84,7 +84,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("/api/me/channel")]
         public async Task<IActionResult> GetMyChannelsAsync()
         {
-            var channels = await _channelService.GetUserChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
+            var channels = await _channelService.GetMemberChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
             return Ok(channels);
         }
 

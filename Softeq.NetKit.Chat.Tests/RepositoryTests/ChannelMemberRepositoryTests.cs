@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
@@ -100,6 +101,28 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.Equal(channelMember.MemberId, newChannelMember.MemberId);
             Assert.Equal(channelMember.ChannelId, newChannelMember.ChannelId);
             Assert.Equal(channelMember.IsMuted, newChannelMember.IsMuted);
+        }
+
+        [Fact]
+        public async Task PinChannelAsync_ShouldChangeIsPinnedStatus()
+        {
+            var channelMember = new ChannelMembers
+            {
+                MemberId = _memberId,
+                ChannelId = _channelId,
+                LastReadMessageId = null,
+                IsPinned = false
+            };
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
+            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(_memberId, _channelId, true);
+
+            var pinnedChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(_memberId, _channelId);
+            pinnedChannelMember.IsPinned.Should().BeTrue();
+
+            await UnitOfWork.ChannelMemberRepository.PinChannelAsync(_memberId, _channelId, false);
+            var unPinnedChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(_memberId, _channelId);
+            unPinnedChannelMember.IsPinned.Should().BeFalse();
         }
     }
 }

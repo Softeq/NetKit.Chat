@@ -5,10 +5,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Tests.Abstract;
@@ -81,7 +80,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var channel = await _channelService.CreateChannelAsync(request);
 
             // Act
-            var channels = await _channelService.GetUserChannelsAsync(new UserRequest(SaasUserId));
+            var channels = await _channelService.GetMemberChannelsAsync(new UserRequest(SaasUserId));
 
             // Assert
             Assert.NotNull(channels);
@@ -319,6 +318,34 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             // Assert
             Assert.NotNull(newChannel);
             Assert.NotNull(channelMembers);
+        }
+
+        [Fact]
+        public async Task PinChannelAsync_ShouldChangeIsPinnedStatus()
+        {
+            var createChannelRequest = new CreateChannelRequest(SaasUserId)
+            {
+                Name = "test",
+                Description = "test",
+                WelcomeMessage = "test",
+                Type = ChannelType.Public
+            };
+            var channel = await _channelService.CreateChannelAsync(createChannelRequest);
+            var channelRequest = new ChannelRequest(SaasUserId, channel.Id)
+            {
+                IsPinned = true
+            };
+
+            await _channelService.PinChannelAsync(channelRequest);
+            var pinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
+
+            pinnedChannel.IsPinned.Should().BeTrue();
+
+            channelRequest.IsPinned = false;
+            await _channelService.PinChannelAsync(channelRequest);
+            var unPinnedChannel = await _channelService.GetChannelSummaryAsync(channelRequest);
+
+            unPinnedChannel.IsPinned.Should().BeFalse();
         }
     }
 }
