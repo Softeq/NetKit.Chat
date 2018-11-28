@@ -45,12 +45,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task CreateChannelAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
-            { 
-                Name = "test",
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
+            {
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             // Act
@@ -69,12 +67,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task GetMyChannelsAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             await _channelService.CreateChannelAsync(request);
@@ -96,12 +92,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task UpdateChannelAsync()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             var channel = await _channelService.CreateChannelAsync(request);
@@ -134,12 +128,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task GetChannelByIdAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             var channel = await _channelService.CreateChannelAsync(request);
@@ -164,12 +156,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task CloseChannelAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             var channel = await _channelService.CreateChannelAsync(request);
@@ -187,12 +177,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task GetAllChannelsAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = Guid.NewGuid() + "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             var channel = await _channelService.CreateChannelAsync(request);
@@ -218,12 +206,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task GetChannelSettingsAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             var channel = await _channelService.CreateChannelAsync(request);
@@ -251,12 +237,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task JoinToChannelAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             var member = new Member
@@ -289,12 +273,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task LeaveChannelAsyncTest()
         {
             // Arrange
-            var request = new CreateChannelRequest(SaasUserId)
+            var request = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
 
             var member = new Member
@@ -323,12 +305,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task PinChannelAsync_ShouldChangeIsPinnedStatus()
         {
-            var createChannelRequest = new CreateChannelRequest(SaasUserId)
+            var createChannelRequest = new CreateChannelRequest(SaasUserId, "a0ec95b3-d806-4348-8af2-a30837e5cb80", "name", ChannelType.Public)
             {
-                Name = "test",
                 Description = "test",
-                WelcomeMessage = "test",
-                Type = ChannelType.Public
+                WelcomeMessage = "test"
             };
             var channel = await _channelService.CreateChannelAsync(createChannelRequest);
             var channelRequest = new ChannelRequest(SaasUserId, channel.Id);

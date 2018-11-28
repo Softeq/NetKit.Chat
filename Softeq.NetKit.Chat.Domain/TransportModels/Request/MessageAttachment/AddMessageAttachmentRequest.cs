@@ -3,21 +3,22 @@
 
 using System;
 using System.IO;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment
 {
-    public class AddMessageAttachmentRequest : UserRequest
+    public class AddMessageAttachmentRequest
     {
         public AddMessageAttachmentRequest(string saasUserId, Guid messageId, Stream content, string extension, string contentType, long size)
-            : base(saasUserId)
         {
+            SaasUserId = saasUserId;
             MessageId = messageId;
             Content = content;
             Extension = extension;
             ContentType = contentType;
             Size = size;
         }
+
+        public string SaasUserId { get; }
 
         public Guid MessageId { get; }
 

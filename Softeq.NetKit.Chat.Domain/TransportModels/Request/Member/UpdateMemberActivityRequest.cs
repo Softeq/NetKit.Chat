@@ -1,21 +1,18 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Client
+namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Member
 {
-    public class AddClientRequest
+    public class UpdateMemberActivityRequest
     {
-        public AddClientRequest(string saasUserId, string userName, string connectionId, string userAgent)
+        public UpdateMemberActivityRequest(string saasUserId, string connectionId, string userAgent)
         {
             SaasUserId = saasUserId;
-            UserName = userName;
             ConnectionId = connectionId;
             UserAgent = userAgent;
         }
 
         public string SaasUserId { get; }
-
-        public string UserName { get; }
 
         public string ConnectionId { get; }
 

@@ -54,8 +54,14 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateChannelAsync([FromBody] CreateChannelRequest request)
         {
-            request.SaasUserId = GetCurrentSaasUserId();
-            var channel = await _channelSocketService.CreateChannelAsync(request);
+            var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.ClientConnectionId, request.Name, request.Type)
+            {
+                AllowedMembers = request.AllowedMembers,
+                Description = request.Description,
+                PhotoUrl = request.PhotoUrl,
+                WelcomeMessage = request.WelcomeMessage
+            };
+            var channel = await _channelSocketService.CreateChannelAsync(createChannelRequest);
             return Ok(channel);
         }
 
@@ -127,11 +133,10 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/member")]
-        public async Task<IActionResult> InviteMultipleMembersAsync([FromBody] InviteMembersRequest request, Guid channelId)
+        public async Task<IActionResult> InviteMultipleMembersAsync([FromBody] InviteMultipleMembersRequest request, Guid channelId)
         {
-            request.SaasUserId = GetCurrentSaasUserId();
-            request.ChannelId = channelId;
-            var channel = await _channelSocketService.InviteMultipleMembersAsync(request);
+            var inviteMultipleMembersRequest = new InviteMultipleMembersRequest(GetCurrentSaasUserId(), channelId, request.InvitedMembersIds);
+            var channel = await _channelSocketService.InviteMultipleMembersAsync(inviteMultipleMembersRequest);
             return Ok(channel);
         }
 

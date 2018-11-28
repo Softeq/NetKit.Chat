@@ -82,13 +82,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task AddClientAsync_ShouldCreateAndReturnNewClient()
         {
-            var addClientRequest = new AddClientRequest
-            {
-                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
-                SaasUserId = SaasUserId,
-                UserAgent = "user agent1",
-                UserName = "user@test.test"
-            };
+            var addClientRequest = new AddClientRequest(SaasUserId, "user@test.test", "7F97D474-3CBA-45E8-A90C-3955A3CBF59D", "user agent1");
 
             var newClient = await _clientService.AddClientAsync(addClientRequest);
 
@@ -101,13 +95,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task UpdateMemberStatusAsync_ShouldUpdateMemberStatus()
         {
-            var addClientRequest = new AddClientRequest
-            {
-                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
-                SaasUserId = SaasUserId,
-                UserAgent = "user agent1",
-                UserName = "user@test.test"
-            };
+            var addClientRequest = new AddClientRequest(SaasUserId, "user@test.test", "7F97D474-3CBA-45E8-A90C-3955A3CBF59D", "user agent1");
             var addedClient = await _clientService.AddClientAsync(addClientRequest);
             var createdMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
 
@@ -122,13 +110,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task UpdateMemberStatusAsync_ShouldSetMemberStatusOfflineIfNoClients()
         {
-            var addClientRequest = new AddClientRequest
-            {
-                ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
-                SaasUserId = SaasUserId,
-                UserAgent = "user agent1",
-                UserName = "user@test.test"
-            };
+            var addClientRequest = new AddClientRequest(SaasUserId, "user@test.test", "7F97D474-3CBA-45E8-A90C-3955A3CBF59D", "user agent1");
             var addedClient = await _clientService.AddClientAsync(addClientRequest);
             var member = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
 
@@ -137,7 +119,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var clients = await _memberService.GetMemberClientsAsync(member.Id);
             foreach (var client in clients)
             {
-                await _clientService.DeleteClientAsync(client.ClientConnectionId);
+                await _clientService.DeleteClientAsync(new DeleteClientRequest(client.ClientConnectionId));
             }
 
             var offlineMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);

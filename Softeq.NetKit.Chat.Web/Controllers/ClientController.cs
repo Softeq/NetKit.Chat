@@ -35,7 +35,8 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(ClientResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetClientAsync(string connectionId)
         {
-            var result = await _clientService.GetClientAsync(GetCurrentSaasUserId(), connectionId);
+            var getClientRequest = new GetClientRequest(GetCurrentSaasUserId(), connectionId);
+            var result = await _clientService.GetClientAsync(getClientRequest);
             return Ok(result);
         }
 
@@ -43,14 +44,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(ClientResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddClientAsync(string connectionId)
         {
-            var addClientRequest = new AddClientRequest
-            {
-                ConnectionId = connectionId,
-                UserAgent = null,
-                UserName = GetCurrentUserName(),
-                SaasUserId = GetCurrentSaasUserId()
-            };
-
+            var addClientRequest = new AddClientRequest(GetCurrentSaasUserId(), GetCurrentUserName(), connectionId, null);
             var result = await _clientService.AddClientAsync(addClientRequest);
             return Ok(result);
         }
@@ -59,7 +53,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteClientAsync(string connectionId)
         {
-            await _clientService.DeleteClientAsync(connectionId);
+            await _clientService.DeleteClientAsync(new DeleteClientRequest(connectionId));
             return Ok();
         }
 

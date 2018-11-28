@@ -7,7 +7,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     public interface IClientService
     {
         Task<ClientResponse> AddClientAsync(AddClientRequest request);
-        Task<ClientResponse> GetClientAsync(string saasUserId, string clientConnectionId);
-        Task DeleteClientAsync(string clientConnectionId);
+        Task<ClientResponse> GetClientAsync(GetClientRequest request);
+        Task DeleteClientAsync(DeleteClientRequest request);
     }
 }

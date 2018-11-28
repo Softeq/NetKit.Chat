@@ -7,6 +7,7 @@ using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
@@ -16,36 +17,35 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
+using Softeq.NetKit.Chat.SignalR.Dto.Request.Message;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using Softeq.Serilog.Extension;
+using DomainRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request;
+using SignalRRequest = Softeq.NetKit.Chat.SignalR.Dto.Request;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs
 {
     [Authorize]
     public class ChatHub : Hub
     {
-        private readonly IMemberService _memberService;
         private readonly ILogger _logger;
         private readonly IChannelSocketService _channelSocketService;
         private readonly IMessageSocketService _messageSocketService;
         private readonly IChannelService _channelService;
         private readonly IClientService _clientService;
 
-        public ChatHub(IMemberService memberService,
-                       ILogger logger,
+        public ChatHub(ILogger logger,
                        IChannelSocketService channelSocketService,
                        IMessageSocketService messageSocketService,
                        IChannelService channelService,
                        IClientService clientService)
         {
-            Ensure.That(memberService).IsNotNull();
             Ensure.That(logger).IsNotNull();
             Ensure.That(channelSocketService).IsNotNull();
             Ensure.That(messageSocketService).IsNotNull();
             Ensure.That(channelService).IsNotNull();
             Ensure.That(clientService).IsNotNull();
 
-            _memberService = memberService;
             _logger = logger;
             _channelSocketService = channelSocketService;
             _messageSocketService = messageSocketService;
@@ -57,14 +57,15 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         public override Task OnConnectedAsync()
         {
-            _logger.Event("SignalRClientConnected").With.Message("{@ConnectionId}", Context.ConnectionId).AsInformation();
+            // TODO [az]: should we create client here?
 
+            _logger.Event("SignalRClientConnected").With.Message("{@ConnectionId}", Context.ConnectionId).AsInformation();
             return base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await _clientService.DeleteClientAsync(Context.ConnectionId);
+            await _clientService.DeleteClientAsync(new DeleteClientRequest(Context.ConnectionId));
 
             _logger.Event("SignalRClientDisconnected").With.Message("{@ConnectionId}", Context.ConnectionId).AsInformation();
             await base.OnDisconnectedAsync(exception);
@@ -76,24 +77,15 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         public async Task<ClientResponse> GetClientAsync()
         {
-            return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
-            {
-                return await _clientService.GetClientAsync(Context.GetSaasUserId(), Context.ConnectionId);
-            }));
+            var getClientRequest = new GetClientRequest(Context.GetSaasUserId(), Context.ConnectionId);
+            return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () => await _clientService.GetClientAsync(getClientRequest)));
         }
 
         public async Task<ClientResponse> AddClientAsync()
         {
             return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
             {
-                var addClientRequest = new AddClientRequest
-                {
-                    ConnectionId = Context.ConnectionId,
-                    UserAgent = null,
-                    UserName = Context.GetUserName(),
-                    SaasUserId = Context.GetSaasUserId()
-                };
-
+                var addClientRequest = new AddClientRequest(Context.GetSaasUserId(), Context.GetUserName(), Context.ConnectionId, null);
                 return await _clientService.AddClientAsync(addClientRequest);
             }));
         }
@@ -102,7 +94,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                await _clientService.DeleteClientAsync(Context.ConnectionId);
+                var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
+                await _clientService.DeleteClientAsync(deleteClientRequest);
             }));
         }
 
@@ -110,107 +103,158 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #region Message Hub Commands
 
-        public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest request)
+        public async Task<MessageResponse> AddDefaultMessageAsync(AddDefaultMessageRequest request)
         {
             return await SafeExecuteAsync(new TaskReference<MessageResponse>(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                request.ClientConnectionId = Context.ConnectionId;
-                return await _messageSocketService.AddMessageAsync(request);
+                var createMessageRequest = new CreateMessageRequest
+                {
+                    SaasUserId = Context.GetSaasUserId(),
+                    ClientConnectionId = Context.ConnectionId,
+                    ChannelId = request.ChannelId,
+                    Body = request.Body,
+                    Type = MessageType.Default
+                };
+                return await _messageSocketService.AddMessageAsync(createMessageRequest);
             }),
             request.RequestId);
         }
 
-        public async Task DeleteMessageAsync(DeleteMessageRequest request)
+        public async Task<MessageResponse> AddNotificationMessageAsync(AddNotificationMessageRequest request)
         {
-            await SafeExecuteAsync(new TaskReference(async () =>
+            return await SafeExecuteAsync(new TaskReference<MessageResponse>(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.DeleteMessageAsync(request);
+                var createMessageRequest = new CreateMessageRequest
+                {
+                    SaasUserId = Context.GetSaasUserId(),
+                    ClientConnectionId = Context.ConnectionId,
+                    ChannelId = request.ChannelId,
+                    Body = request.Body,
+                    Type = MessageType.Notification,
+                    ImageUrl = request.ImageUrl
+                };
+                return await _messageSocketService.AddMessageAsync(createMessageRequest);
             }),
             request.RequestId);
         }
 
-        public async Task UpdateMessageAsync(UpdateMessageRequest request)
+        public async Task<MessageResponse> AddForwardMessageAsync(AddForwardMessageRequest request)
         {
-            await SafeExecuteAsync(new TaskReference(async () =>
+            return await SafeExecuteAsync(new TaskReference<MessageResponse>(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.UpdateMessageAsync(request);
+                var createMessageRequest = new CreateMessageRequest
+                {
+                    SaasUserId = Context.GetSaasUserId(),
+                    ClientConnectionId = Context.ConnectionId,
+                    ChannelId = request.ChannelId,
+                    Body = request.Body,
+                    Type = MessageType.Forward,
+                    ForwardedMessageId = request.ForwardedMessageId
+                };
+                return await _messageSocketService.AddMessageAsync(createMessageRequest);
             }),
             request.RequestId);
         }
 
-        public async Task AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
+        public async Task DeleteMessageAsync(SignalRRequest.Message.DeleteMessageRequest request)
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.AddMessageAttachmentAsync(request);
+                var deleteMessageRequest = new DomainRequest.Message.DeleteMessageRequest(Context.GetSaasUserId(), request.MessageId);
+                await _messageSocketService.DeleteMessageAsync(deleteMessageRequest);
             }),
             request.RequestId);
         }
 
-        public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
+        public async Task UpdateMessageAsync(SignalRRequest.Message.UpdateMessageRequest request)
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.DeleteMessageAttachmentAsync(request);
+                var updateMessageRequest = new DomainRequest.Message.UpdateMessageRequest(Context.GetSaasUserId(), request.MessageId, request.Body);
+                await _messageSocketService.UpdateMessageAsync(updateMessageRequest);
             }),
             request.RequestId);
         }
 
-        public async Task MarkAsReadMessageAsync(SetLastReadMessageRequest request)
+        public async Task MarkAsReadMessageAsync(SignalRRequest.Message.SetLastReadMessageRequest request)
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _messageSocketService.SetLastReadMessageAsync(request);
+                var setLastReadMessageRequest = new DomainRequest.Message.SetLastReadMessageRequest(Context.GetSaasUserId(), request.ChannelId, request.MessageId);
+                await _messageSocketService.SetLastReadMessageAsync(setLastReadMessageRequest);
             }), request.RequestId);
+        }
+
+        #endregion
+
+        #region Message Attachment Hub Commands
+
+        public async Task AddMessageAttachmentAsync(SignalRRequest.MessageAttachment.AddMessageAttachmentRequest request)
+        {
+            await SafeExecuteAsync(new TaskReference(async () =>
+            {
+                var addMessageAttachmentRequest = new AddMessageAttachmentRequest(Context.GetSaasUserId(), request.MessageId, request.Content, request.Extension, request.ContentType, request.Size);
+                await _messageSocketService.AddMessageAttachmentAsync(addMessageAttachmentRequest);
+            }),
+            request.RequestId);
+        }
+
+        public async Task DeleteMessageAttachmentAsync(SignalRRequest.MessageAttachment.DeleteMessageAttachmentRequest request)
+        {
+            await SafeExecuteAsync(new TaskReference(async () =>
+            {
+                var deleteMessageAttachmentRequest = new DeleteMessageAttachmentRequest(Context.GetSaasUserId(), request.MessageId, request.AttachmentId);
+                await _messageSocketService.DeleteMessageAttachmentAsync(deleteMessageAttachmentRequest);
+            }),
+            request.RequestId);
         }
 
         #endregion
 
         #region Channel Hub Commands
 
-        public async Task JoinToChannelAsync(JoinToChannelRequest request)
+        public async Task JoinToChannelAsync(SignalRRequest.Channel.JoinToChannelRequest request)
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.JoinToChannelAsync(request);
+                var joinToChannelRequest = new JoinToChannelRequest(Context.GetSaasUserId(), request.ChannelId);
+                await _channelSocketService.JoinToChannelAsync(joinToChannelRequest);
             }),
             request.RequestId);
         }
 
-        public async Task InviteMemberAsync(InviteMemberRequest request)
+        public async Task InviteMemberAsync(SignalRRequest.Channel.InviteMemberRequest request)
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.InviteMemberAsync(request);
+                var inviteMemberRequest = new InviteMemberRequest(Context.GetSaasUserId(), request.ChannelId, request.MemberId);
+                await _channelSocketService.InviteMemberAsync(inviteMemberRequest);
             }),
             request.RequestId);
         }
 
-        public async Task InviteMultipleMembersAsync(InviteMembersRequest request)
+        public async Task InviteMultipleMembersAsync(SignalRRequest.Channel.InviteMultipleMembersRequest request)
         {
             await SafeExecuteAsync(new TaskReference(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                await _channelSocketService.InviteMultipleMembersAsync(request);
+                var inviteMultipleMembersRequest = new InviteMultipleMembersRequest(Context.GetSaasUserId(), request.ChannelId, request.InvitedMembersIds);
+                await _channelSocketService.InviteMultipleMembersAsync(inviteMultipleMembersRequest);
             }),
             request.RequestId);
         }
 
-        public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
+        public async Task<ChannelSummaryResponse> CreateChannelAsync(SignalRRequest.Channel.CreateChannelRequest request)
         {
             return await SafeExecuteAsync(new TaskReference<ChannelSummaryResponse>(async () =>
             {
-                request.SaasUserId = Context.GetSaasUserId();
-                request.ClientConnectionId = Context.ConnectionId;
-                return await _channelSocketService.CreateChannelAsync(request);
+                var createChannelRequest = new CreateChannelRequest(Context.GetSaasUserId(), Context.ConnectionId, request.Name, request.Type)
+                {
+                    AllowedMembers = request.AllowedMembers,
+                    Description = request.Description,
+                    PhotoUrl = request.PhotoUrl,
+                    WelcomeMessage = request.WelcomeMessage
+                };
+                return await _channelSocketService.CreateChannelAsync(createChannelRequest);
             }),
             request.RequestId);
         }

@@ -53,8 +53,9 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task CreateMessageAsyncTest()
         {
             // Arrange
-            var request = new CreateMessageRequest(SaasUserId)
+            var request = new CreateMessageRequest
             {
+                SaasUserId = SaasUserId,
                 Body = "test",
                 ChannelId = _channelId,
                 Type = MessageType.Default,
@@ -82,8 +83,9 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task UpdateMessageAsync()
         {
             // Arrange
-            var request = new CreateMessageRequest(SaasUserId)
+            var request = new CreateMessageRequest
             {
+                SaasUserId = SaasUserId,
                 Body = "test",
                 ChannelId = _channelId,
                 Type = MessageType.Default,
@@ -107,8 +109,9 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task GetChannelMessagesAsyncTest()
         {
             // Arrange
-            var request = new CreateMessageRequest(SaasUserId)
+            var request = new CreateMessageRequest
             {
+                SaasUserId = SaasUserId,
                 Body = "test",
                 ChannelId = _channelId,
                 Type = MessageType.Default,
@@ -133,8 +136,9 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         public async Task DeleteMessageAsyncTest()
         {
             // Arrange
-            var request = new CreateMessageRequest(SaasUserId)
+            var request = new CreateMessageRequest
             {
+                SaasUserId = SaasUserId,
                 Body = "test",
                 ChannelId = _channelId,
                 Type = MessageType.Default,
@@ -145,7 +149,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             // Act
             var messages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
-            await _messageService.DeleteMessageAsync(SaasUserId, message.Id);
+            await _messageService.DeleteMessageAsync(new DeleteMessageRequest(SaasUserId, message.Id));
             var newMessages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
 
             // Assert
@@ -157,8 +161,9 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         [Fact]
         public async Task CreateMessageAsync_ShouldForwardMessageWithForwardType()
         {
-            var defaultMessageRequest = new CreateMessageRequest(SaasUserId)
+            var defaultMessageRequest = new CreateMessageRequest
             {
+                SaasUserId = SaasUserId,
                 Body = "this message supposed to be forwarded",
                 ChannelId = _channelId,
                 Type = MessageType.Default,
@@ -166,8 +171,9 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             };
             var messageForForwarding = await _messageService.CreateMessageAsync(defaultMessageRequest);
 
-            var forwardMessage = new CreateMessageRequest(SaasUserId)
+            var forwardMessage = new CreateMessageRequest
             {
+                SaasUserId = SaasUserId,
                 Body = "comment for forwarded message",
                 ChannelId = _channelId,
                 Type = MessageType.Forward,

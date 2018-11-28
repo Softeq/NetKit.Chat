@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using EnsureThat;
 using Softeq.CloudStorage.Extension;
 using Softeq.NetKit.Chat.Data.Cloud.Azure.Configuration;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 
 namespace Softeq.NetKit.Chat.Data.Cloud.Azure.DataProviders
 {
-    internal class CloudImageProvider : ICloudImageProvider
+    internal class CloudImageProvider : BaseCloudProvider, ICloudImageProvider
     {
-        private readonly IContentStorage _contentStorage;
-        private readonly AzureStorageConfiguration _storageConfiguration;
-
-        public CloudImageProvider(IContentStorage contentStorage, AzureStorageConfiguration storageConfiguration)
+        public CloudImageProvider(IContentStorage storage, AzureStorageConfiguration configuration)
+            : base(storage, configuration)
         {
-            Ensure.That(contentStorage).IsNotNull();
-            Ensure.That(storageConfiguration).IsNotNull();
-
-            _contentStorage = contentStorage;
-            _storageConfiguration = storageConfiguration;
         }
 
         public async Task<string> CopyImageToDestinationContainerAsync(string photoUrl)
@@ -29,7 +21,7 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure.DataProviders
             {
                 var fileName = photoUrl.Substring(photoUrl.LastIndexOf("/", StringComparison.Ordinal) + 1);
 
-                permanentChannelImageUrl = await _contentStorage.CopyBlobAsync(fileName, _storageConfiguration.TempContainerName, _storageConfiguration.ChannelImagesContainer);
+                permanentChannelImageUrl = await Storage.CopyBlobAsync(fileName, Configuration.TempContainerName, Configuration.ChannelImagesContainer);
             }
 
             return permanentChannelImageUrl;
@@ -37,7 +29,7 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure.DataProviders
 
         public string GetMemberAvatarUrl(string memberPhotoName)
         {
-            return string.IsNullOrEmpty(memberPhotoName) ? null : $"{_storageConfiguration.ContentStorageHost}/{_storageConfiguration.MemberAvatarsContainer}/{memberPhotoName}";
+            return string.IsNullOrEmpty(memberPhotoName) ? null : $"{Configuration.ContentStorageHost}/{Configuration.MemberAvatarsContainer}/{memberPhotoName}";
         }
     }
 }

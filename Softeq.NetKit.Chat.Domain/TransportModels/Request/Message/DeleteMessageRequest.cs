@@ -2,17 +2,19 @@
 // http://www.softeq.com
 
 using System;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
-    public class DeleteMessageRequest : UserRequest
+    public class DeleteMessageRequest
     {
-        public DeleteMessageRequest(string saasUserId, Guid messageId) : base(saasUserId)
+        public DeleteMessageRequest(string saasUserId, Guid messageId)
         {
+            SaasUserId = saasUserId;
             MessageId = messageId;
         }
 
-        public Guid MessageId { get; set; }
+        public string SaasUserId { get; }
+
+        public Guid MessageId { get; }
     }
 }

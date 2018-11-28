@@ -26,20 +26,20 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _memberService = memberService;
         }
 
-        public async Task<ClientResponse> GetClientAsync(string saasUserId, string clientConnectionId)
+        public async Task<ClientResponse> GetClientAsync(GetClientRequest request)
         {
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get client. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get client. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
             }
 
             await _memberService.UpdateMemberStatusAsync(member.SaasUserId, UserStatus.Active);
 
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(clientConnectionId);
+            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get client by {nameof(clientConnectionId)}. Client {nameof(clientConnectionId)}:{clientConnectionId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
             }
 
             return client.ToClientResponse();
@@ -77,12 +77,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return client.ToClientResponse();
         }
 
-        public async Task DeleteClientAsync(string clientConnectionId)
+        public async Task DeleteClientAsync(DeleteClientRequest request)
         {
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(clientConnectionId);
+            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(clientConnectionId)}:{clientConnectionId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
             }
 
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);

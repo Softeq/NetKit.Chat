@@ -111,7 +111,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}/mark-as-read")]
         public async Task<IActionResult> MarkAsReadMessageAsync(Guid messageId, Guid channelId)
         {
-            await _messageSocketService.SetLastReadMessageAsync(new SetLastReadMessageRequest(channelId, messageId, GetCurrentSaasUserId()));
+            await _messageSocketService.SetLastReadMessageAsync(new SetLastReadMessageRequest(GetCurrentSaasUserId(), channelId, messageId));
             return Ok();
         }
 

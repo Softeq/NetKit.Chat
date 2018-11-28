@@ -12,7 +12,7 @@ using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
@@ -77,6 +77,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (channel == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} not found.");
+            }
+
+            if (channel.IsClosed)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is closed.");
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
@@ -172,7 +177,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }).ToList().AsReadOnly();
         }
 
-        public async Task UpdateActivityAsync(AddClientRequest request)
+        public async Task UpdateActivityAsync(UpdateMemberActivityRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             member.Status = UserStatus.Active;

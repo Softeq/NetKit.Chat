@@ -2,19 +2,22 @@
 // http://www.softeq.com
 
 using System;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
 {
-    public class InviteMemberRequest : UserRequest
+    public class InviteMemberRequest
     {
-        public InviteMemberRequest(string saasUserId, Guid channelId, Guid memberId) : base(saasUserId)
+        public InviteMemberRequest(string saasUserId, Guid channelId, Guid memberId)
         {
+            SaasUserId = saasUserId;
             ChannelId = channelId;
             MemberId = memberId;
         }
 
-        public Guid ChannelId { get; set; }
-        public Guid MemberId { get; set; }
+        public string SaasUserId { get; }
+
+        public Guid ChannelId { get; }
+
+        public Guid MemberId { get; }
     }
 }

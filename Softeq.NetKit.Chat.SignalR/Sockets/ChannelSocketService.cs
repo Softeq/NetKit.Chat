@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using EnsureThat;
 using Resources;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
@@ -19,11 +20,12 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         private readonly IMemberService _memberService;
         private readonly IChannelNotificationService _channelNotificationService;
 
-        public ChannelSocketService(
-            IChannelService channelService,
-            IMemberService memberService,
-            IChannelNotificationService channelNotificationService)
+        public ChannelSocketService(IChannelService channelService, IMemberService memberService, IChannelNotificationService channelNotificationService)
         {
+            Ensure.That(channelService).IsNotNull();
+            Ensure.That(memberService).IsNotNull();
+            Ensure.That(channelNotificationService).IsNotNull();
+
             _channelNotificationService = channelNotificationService;
             _channelService = channelService;
             _memberService = memberService;
@@ -31,11 +33,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest createChannelRequest)
         {
-            if (string.IsNullOrEmpty(createChannelRequest.Name))
-            {
-                throw new Exception(LanguageResources.RoomRequired);
-            }
-
             var channel = await _channelService.CreateChannelAsync(createChannelRequest);
             var member = await _memberService.GetMemberBySaasUserIdAsync(createChannelRequest.SaasUserId);
 
@@ -93,53 +90,36 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task JoinToChannelAsync(JoinToChannelRequest request)
         {
-            if (request.ChannelId == Guid.Empty)
-            {
-                throw new Exception(LanguageResources.Join_RoomRequired);
-            }
-
             // Locate the room, does NOT have to be open
             await _channelService.JoinToChannelAsync(request);
+
             var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+
             await _channelNotificationService.OnJoinChannel(member, channel);
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
         {
-            if (request.MemberId == Guid.Empty)
-            {
-                throw new Exception(LanguageResources.Invite_UserRequired);
-            }
+            var inviteMemberResponse = await _memberService.InviteMemberAsync(request.MemberId, request.ChannelId);
 
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var invitedMember = await _memberService.GetMemberByIdAsync(request.MemberId);
-            if (member.Id == invitedMember.Id)
-            {
-                throw new Exception(LanguageResources.Invite_CannotInviteSelf);
-            }
 
             var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-            if (channel.IsClosed)
-            {
-                throw new Exception(string.Format(LanguageResources.RoomClosed, channel.Name));
-            }
-
-            var inviteMemberResponse = await _memberService.InviteMemberAsync(request.MemberId, request.ChannelId);
 
             await _channelNotificationService.OnJoinChannel(invitedMember, channel);
 
             return inviteMemberResponse;
         }
 
-        public async Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request)
+        public async Task<ChannelResponse> InviteMultipleMembersAsync(InviteMultipleMembersRequest request)
         {
             var response = default(ChannelResponse);
 
-            foreach (var invitedMember in request.InvitedMembers)
+            foreach (var memberId in request.InvitedMembersIds)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(invitedMember);
-                var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id);
+                var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, memberId);
                 response = await InviteMemberAsync(inviteMemberRequest);
             }
 
