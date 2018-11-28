@@ -7,10 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
+using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
@@ -21,14 +21,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     internal class MemberService : BaseService, IMemberService
     {
-        private readonly CloudStorageConfiguration _configuration;
+        private readonly ICloudImageProvider _cloudImageProvider;
 
-        public MemberService(IUnitOfWork unitOfWork, CloudStorageConfiguration configuration)
+        public MemberService(IUnitOfWork unitOfWork, ICloudImageProvider cloudImageProvider)
             : base(unitOfWork)
         {
-            Ensure.That(configuration).IsNotNull();
+            Ensure.That(cloudImageProvider).IsNotNull();
 
-            _configuration = configuration;
+            _cloudImageProvider = cloudImageProvider;
         }
 
         public async Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId)
@@ -39,7 +39,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} not found.");
             }
 
-            return member.ToMemberSummary(_configuration);
+            var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(member.PhotoName);
+            return member.ToMemberSummary(memberAvatarUrl);
         }
 
         public async Task<MemberSummary> GetMemberByIdAsync(Guid memberId)
@@ -50,7 +51,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} not found.");
             }
 
-            return member.ToMemberSummary(_configuration);
+            var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(member.PhotoName);
+            return member.ToMemberSummary(memberAvatarUrl);
         }
 
         public async Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId)
@@ -62,7 +64,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);
-            return members.Select(x => x.ToMemberSummary(_configuration)).ToList().AsReadOnly();
+            return members.Select(x =>
+            {
+                var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(x.PhotoName);
+                return x.ToMemberSummary(memberAvatarUrl);
+            }).ToList().AsReadOnly();
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(Guid memberId, Guid channelId)
@@ -100,9 +106,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 transactionScope.Complete();
             }
 
-            var newChannel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channel.Id);
+            channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channel.Id);
 
-            return newChannel.ToChannelResponse(_configuration);
+            return channel.ToChannelResponse();
         }
 
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
@@ -127,7 +133,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(newMember);
 
-            return newMember.ToMemberSummary(_configuration);
+            var newMemberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(newMember.PhotoName);
+            return newMember.ToMemberSummary(newMemberAvatarUrl);
         }
 
         public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
@@ -158,7 +165,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<IReadOnlyCollection<MemberSummary>> GetAllMembersAsync()
         {
             var members = await UnitOfWork.MemberRepository.GetAllMembersAsync();
-            return members.Select(x => x.ToMemberSummary(_configuration)).ToList().AsReadOnly();
+            return members.Select(x =>
+            {
+                var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(x.PhotoName);
+                return x.ToMemberSummary(memberAvatarUrl);
+            }).ToList().AsReadOnly();
         }
 
         public async Task UpdateActivityAsync(AddClientRequest request)

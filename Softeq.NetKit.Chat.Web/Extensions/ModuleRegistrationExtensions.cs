@@ -1,12 +1,11 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using Autofac;
+using Softeq.NetKit.Chat.Data.Cloud.Azure;
+using Softeq.NetKit.Chat.Data.Persistent.Sql;
+using Softeq.NetKit.Chat.Domain.Services;
+using Softeq.NetKit.Chat.SignalR;
 
 namespace Softeq.NetKit.Chat.Web.Extensions
 {
@@ -14,24 +13,10 @@ namespace Softeq.NetKit.Chat.Web.Extensions
     {
         public static void RegisterSolutionModules(this ContainerBuilder builder)
         {
-            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-
-            var rootNamespace = GetNamespaceMask();
-            const string assemblyExtension = "dll";
-            var assemblyLookupPattern = $"{rootNamespace}.*.{assemblyExtension}";
-            var assemblies = Directory.EnumerateFiles(Directory.GetCurrentDirectory(), assemblyLookupPattern, SearchOption.AllDirectories)
-                .Select(Assembly.LoadFrom)
-                .ToArray();
-
-            builder.RegisterAssemblyModules(assemblies);
-        }
-
-        private static string GetNamespaceMask()
-        {
-            var currentNamespace = typeof(ModuleRegistrationExtensions).Namespace;
-            const string rootNamespaceMatchName = "rootNamespace";
-            var matches = Regex.Match(currentNamespace, $"(^(?<{rootNamespaceMatchName}>\\w+)\\.)");
-            return matches.Groups[rootNamespaceMatchName].Value;
+            builder.RegisterModule<SignalRDiModule>();
+            builder.RegisterModule<DomainServicesDiModule>();
+            builder.RegisterModule<DataPersistentSqlDiModule>();
+            builder.RegisterModule<DataCloudAzureDiModule>();
         }
     }
 }

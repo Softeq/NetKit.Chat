@@ -7,13 +7,13 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="Ensure.That" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+    <PackageReference Include="Softeq.CloudStorage.Extension" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Cloud\Softeq.NetKit.Chat.Data.Cloud.csproj" />
-    <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Persistent\Softeq.NetKit.Chat.Data.Persistent.csproj" />
-    <ProjectReference Include="..\Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj" />
   </ItemGroup>
 
 </Project>

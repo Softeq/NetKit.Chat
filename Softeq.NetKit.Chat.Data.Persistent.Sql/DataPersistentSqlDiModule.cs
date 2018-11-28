@@ -9,7 +9,7 @@ using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 {
-    public class DIModule : Module
+    public class DataPersistentSqlDiModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {

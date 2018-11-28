@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Cloud.Azure\Softeq.NetKit.Chat.Data.Cloud.Azure.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Persistent.Sql\Softeq.NetKit.Chat.Data.Persistent.Sql.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
   </ItemGroup>

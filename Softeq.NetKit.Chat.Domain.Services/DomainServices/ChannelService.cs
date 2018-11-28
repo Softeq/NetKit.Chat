@@ -7,11 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
-using Softeq.CloudStorage.Extension;
+using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Extensions;
 using Softeq.NetKit.Chat.Domain.Services.Mappers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
@@ -23,23 +22,19 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     internal class ChannelService : BaseService, IChannelService
     {
         private readonly IMemberService _memberService;
-        private readonly CloudStorageConfiguration _configuration;
-        private readonly IContentStorage _contentStorage;
+        private readonly ICloudImageProvider _cloudImageProvider;
 
         public ChannelService(
             IUnitOfWork unitOfWork,
             IMemberService memberService,
-            CloudStorageConfiguration configuration,
-            IContentStorage contentStorage)
+            ICloudImageProvider cloudImageProvider)
             : base(unitOfWork)
         {
             Ensure.That(memberService).IsNotNull();
-            Ensure.That(configuration).IsNotNull();
-            Ensure.That(contentStorage).IsNotNull();
+            Ensure.That(cloudImageProvider).IsNotNull();
 
             _memberService = memberService;
-            _configuration = configuration;
-            _contentStorage = contentStorage;
+            _cloudImageProvider = cloudImageProvider;
         }
 
         public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
@@ -50,7 +45,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to create channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
             }
 
-            var permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
+            var permanentChannelImageUrl = await _cloudImageProvider.CopyImageToDestinationContainerAsync(request.PhotoUrl);
 
             var newChannel = new Channel
             {
@@ -114,7 +109,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(newChannel.Id);
-            return channel.ToChannelSummaryResponse(creator, null, _configuration);
+            return channel.ToChannelSummaryResponse(creator, null, _cloudImageProvider);
         }
 
         public async Task<IReadOnlyCollection<ChannelResponse>> GetMemberChannelsAsync(string saasUserId)
@@ -126,7 +121,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var channels = await UnitOfWork.ChannelRepository.GetChannelsByMemberId(member.Id);
-            return channels.Select(x => x.ToChannelResponse(_configuration)).ToList().AsReadOnly();
+            return channels.Select(x => x.ToChannelResponse()).ToList().AsReadOnly();
         }
 
         public async Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest request)
@@ -143,7 +138,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatAccessForbiddenException($"Unable to update channel {nameof(request.ChannelId)}:{request.ChannelId}. Channel owner required.");
             }
 
-            var permanentChannelImageUrl = await CopyImageToDestinationContainerAsync(request.PhotoUrl);
+            var permanentChannelImageUrl = await _cloudImageProvider.CopyImageToDestinationContainerAsync(request.PhotoUrl);
 
             channel.Description = request.Topic;
             channel.WelcomeMessage = request.WelcomeMessage;
@@ -152,21 +147,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             channel.Updated = DateTimeOffset.UtcNow;
 
             await UnitOfWork.ChannelRepository.UpdateChannelAsync(channel);
-            return channel.ToChannelResponse(_configuration);
-        }
-
-        private async Task<string> CopyImageToDestinationContainerAsync(string photoUrl)
-        {
-            string permanentChannelImageUrl = null;
-
-            if (!string.IsNullOrEmpty(photoUrl))
-            {
-                var fileName = photoUrl.Substring(photoUrl.LastIndexOf("/", StringComparison.Ordinal) + 1);
-
-                permanentChannelImageUrl = await _contentStorage.CopyBlobAsync(fileName, _configuration.TempContainerName, _configuration.ChannelImagesContainer);
-            }
-
-            return permanentChannelImageUrl;
+            return channel.ToChannelResponse();
         }
 
         public async Task<ChannelSummaryResponse> GetChannelSummaryAsync(ChannelRequest request)
@@ -181,7 +162,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, request.ChannelId);
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
 
-            return channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _configuration);
+            return channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _cloudImageProvider);
         }
 
         public async Task<ChannelResponse> GetChannelByIdAsync(Guid channelId)
@@ -192,7 +173,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get channel by id. Channel {nameof(channelId)}:{channelId} not found.");
             }
 
-            return channel.ToChannelResponse(_configuration);
+            return channel.ToChannelResponse();
         }
 
         public async Task<ChannelResponse> CloseChannelAsync(ChannelRequest request)
@@ -217,7 +198,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             channel.IsClosed = true;
             await UnitOfWork.ChannelRepository.UpdateChannelAsync(channel);
 
-            return channel.ToChannelResponse(_configuration);
+            return channel.ToChannelResponse();
         }
 
         public async Task<IReadOnlyCollection<ChannelSummaryResponse>> GetAllowedChannelsAsync(string saasUserId)
@@ -237,11 +218,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 if (channelMember.LastReadMessageId.HasValue)
                 {
                     var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(channelMember.LastReadMessageId.Value);
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _configuration));
+                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _cloudImageProvider));
                 }
                 else
                 {
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, null, _configuration));
+                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, null, _cloudImageProvider));
                 }
             }
 
@@ -263,7 +244,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<IReadOnlyCollection<ChannelResponse>> GetAllChannelsAsync()
         {
             var channels = await UnitOfWork.ChannelRepository.GetAllChannelsAsync();
-            return channels.Select(x => x.ToChannelResponse(_configuration)).ToList().AsReadOnly();
+            return channels.Select(x => x.ToChannelResponse()).ToList().AsReadOnly();
         }
 
         public async Task<SettingsResponse> GetChannelSettingsAsync(Guid channelId)

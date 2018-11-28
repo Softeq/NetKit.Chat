@@ -7,7 +7,7 @@ using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 
 namespace Softeq.NetKit.Chat.Domain.Services
 {
-    public class DIModule : Module
+    public class DomainServicesDiModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
@@ -25,9 +25,6 @@ namespace Softeq.NetKit.Chat.Domain.Services
 
             builder.RegisterType<ClientService>()
                 .As<IClientService>();
-
-            builder.RegisterType<CloudStorageConfiguration>()
-                .AsSelf();
 
             builder.RegisterType<AttachmentConfiguration>()
                 .AsSelf();

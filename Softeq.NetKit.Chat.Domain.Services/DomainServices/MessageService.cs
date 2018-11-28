@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
-using Softeq.CloudStorage.Extension;
+using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
@@ -23,23 +23,20 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     internal class MessageService : BaseService, IMessageService
     {
-        private readonly IContentStorage _contentStorage;
-        private readonly CloudStorageConfiguration _cloudStorageConfiguration;
         private readonly AttachmentConfiguration _attachmentConfiguration;
+        private readonly ICloudImageProvider _cloudImageProvider;
+        private readonly ICloudAttachmentProvider _cloudAttachmentProvider;
 
-        public MessageService(IUnitOfWork unitOfWork,
-            IContentStorage contentStorage,
-            CloudStorageConfiguration cloudStorageConfiguration,
-            AttachmentConfiguration attachmentConfiguration)
+        public MessageService(IUnitOfWork unitOfWork, AttachmentConfiguration attachmentConfiguration, ICloudImageProvider cloudImageProvider, ICloudAttachmentProvider cloudAttachmentProvider)
             : base(unitOfWork)
         {
-            Ensure.That(contentStorage).IsNotNull();
-            Ensure.That(cloudStorageConfiguration).IsNotNull();
             Ensure.That(attachmentConfiguration).IsNotNull();
+            Ensure.That(cloudImageProvider).IsNotNull();
+            Ensure.That(cloudAttachmentProvider).IsNotNull();
 
-            _contentStorage = contentStorage;
-            _cloudStorageConfiguration = cloudStorageConfiguration;
             _attachmentConfiguration = attachmentConfiguration;
+            _cloudImageProvider = cloudImageProvider;
+            _cloudAttachmentProvider = cloudAttachmentProvider;
         }
 
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
@@ -74,8 +71,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     var forwardMessageId = Guid.NewGuid();
                     var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage(forwardMessageId);
                     await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
-
-                    message.ForwardedMessage = forwardMessage;
                     message.ForwardMessageId = forwardMessage.Id;
                 }
 
@@ -85,7 +80,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 transactionScope.Complete();
             }
 
-            return message.ToMessageResponse(null, _cloudStorageConfiguration);
+            message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(message.Id);
+
+            return message.ToMessageResponse(null, _cloudImageProvider);
         }
 
         public async Task DeleteMessageAsync(string saasUserId, Guid messageId)
@@ -119,10 +116,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 // Delete message attachments from database
                 await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(message.Id);
 
-                // Delete message attachments from blob storage
+                // Delete message attachments from cloud
                 foreach (var attachment in messageAttachments)
                 {
-                    await _contentStorage.DeleteContentAsync(attachment.FileName, _cloudStorageConfiguration.MessageAttachmentsContainer);
+                    await _cloudAttachmentProvider.DeleteMessageAttachmentAsync(attachment.FileName);
                 }
 
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message);
@@ -160,7 +157,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             message.Updated = DateTimeOffset.UtcNow;
 
             await UnitOfWork.MessageRepository.UpdateMessageAsync(message);
-            return message.ToMessageResponse(null, _cloudStorageConfiguration);
+            return message.ToMessageResponse(null, _cloudImageProvider);
         }
 
         public async Task<MessageResponse> GetMessageByIdAsync(Guid messageId)
@@ -171,7 +168,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get message by {nameof(messageId)}. Message {nameof(messageId)}:{messageId} not found.");
             }
 
-            return message.ToMessageResponse(null, _cloudStorageConfiguration);
+            return message.ToMessageResponse(null, _cloudImageProvider);
         }
 
         public async Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
@@ -212,8 +209,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             // Save attachment in database
             await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
 
-            // Save attachment in blob storage
-            await _contentStorage.SaveContentAsync(attachment.FileName, request.Content, _cloudStorageConfiguration.MessageAttachmentsContainer);
+            // Save attachment in cloud
+            await _cloudAttachmentProvider.SaveAttachmentAsync(attachment.FileName, request.Content);
 
             return attachment.ToAttachmentResponse();
         }
@@ -251,8 +248,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             // Delete message attachment from database
             await UnitOfWork.AttachmentRepository.DeleteAttachmentAsync(attachment.Id);
 
-            // Delete attachment from blob storage
-            await _contentStorage.DeleteContentAsync(attachment.FileName, _cloudStorageConfiguration.MessageAttachmentsContainer);
+            // Delete attachment from cloud
+            await _cloudAttachmentProvider.DeleteMessageAttachmentAsync(attachment.FileName);
         }
 
         public async Task<PagedResults<MessageResponse>> GetChannelMessagesAsync(MessageRequest request)
@@ -267,7 +264,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesAsync(request.ChannelId);
 
-            return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration));
+            return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider));
         }
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)
@@ -294,7 +291,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
+            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider)).ToList();
 
             var result = new MessagesResult
             {
@@ -318,7 +315,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetMessagesAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
+            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider)).ToList();
 
             var result = new MessagesResult
             {
@@ -339,7 +336,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetLastMessagesAsync(request.ChannelId, lastReadMessage?.Created);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration)).ToList();
+            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider)).ToList();
 
             var result = new MessagesResult
             {

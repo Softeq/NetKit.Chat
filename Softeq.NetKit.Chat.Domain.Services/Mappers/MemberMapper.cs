@@ -1,14 +1,13 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappers
 {
     internal static class MemberMapper
     {
-        public static MemberSummary ToMemberSummary(this DomainModels.Member member, CloudStorageConfiguration configuration)
+        public static MemberSummary ToMemberSummary(this DomainModels.Member member, string memberAvatarUrl)
         {
             var summary = new MemberSummary();
             if (member != null)
@@ -21,7 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
                 summary.IsAfk = member.IsAfk;
                 summary.Email = member.Email;
                 summary.LastActivity = member.LastActivity;
-                summary.AvatarUrl = member.PhotoName != null ? $"{configuration.ContentStorageHost}/{configuration.MemberAvatarsContainer}/{member.PhotoName}" : null;
+                summary.AvatarUrl = memberAvatarUrl;
             }
             return summary;
         }

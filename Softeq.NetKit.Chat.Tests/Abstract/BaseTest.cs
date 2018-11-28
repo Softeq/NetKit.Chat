@@ -5,9 +5,13 @@ using System;
 using System.Threading.Tasks;
 using Autofac;
 using Dapper;
+using Microsoft.Extensions.Configuration;
+using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Data.Persistent.Database;
+using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
+using Softeq.NetKit.Chat.Domain.Services;
 
 namespace Softeq.NetKit.Chat.Tests.Abstract
 {
@@ -18,9 +22,21 @@ namespace Softeq.NetKit.Chat.Tests.Abstract
 
         protected BaseTest()
         {
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterAssemblyModules(typeof(BaseTest).Assembly);
-            LifetimeScope = containerBuilder.Build();
+            var builder = new ContainerBuilder();
+
+            var configurationRoot = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            builder.RegisterInstance(configurationRoot)
+                .As<IConfigurationRoot>()
+                .As<IConfiguration>();
+
+            builder.RegisterModule<DataPersistentSqlDiModule>();
+            builder.RegisterModule<DataCloudAzureDiModule>();
+            builder.RegisterModule<DomainServicesDiModule>();
+
+            LifetimeScope = builder.Build();
             UnitOfWork = LifetimeScope.Resolve<IUnitOfWork>();
 
             var databaseManager = LifetimeScope.Resolve<IDatabaseManager>();

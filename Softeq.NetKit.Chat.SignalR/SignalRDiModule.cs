@@ -7,7 +7,7 @@ using Softeq.NetKit.Chat.SignalR.Sockets;
 
 namespace Softeq.NetKit.Chat.SignalR
 {
-    public class DIModule : Module
+    public class SignalRDiModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {

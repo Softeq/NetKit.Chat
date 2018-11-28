@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using Softeq.CloudStorage.Extension;
-using Softeq.NetKit.Chat.Domain.Services.Configuration;
+using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -20,17 +19,14 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     {
         private const int TemporaryStorageAccessTokenExpirationTimeMinutes = 20;
 
-        private readonly CloudStorageConfiguration _storageConfiguration;
-        private readonly IContentStorage _contentStorage;
+        private readonly ICloudTokenProvider _cloudTokenProvider;
 
-        public FileController(ILogger logger, CloudStorageConfiguration storageConfiguration, IContentStorage contentStorage)
+        public FileController(ILogger logger, ICloudTokenProvider cloudTokenProvider)
             : base(logger)
         {
-            Ensure.That(storageConfiguration).IsNotNull();
-            Ensure.That(contentStorage).IsNotNull();
+            Ensure.That(cloudTokenProvider).IsNotNull();
 
-            _storageConfiguration = storageConfiguration;
-            _contentStorage = contentStorage;
+            _cloudTokenProvider = cloudTokenProvider;
         }
 
         [HttpGet]
@@ -38,7 +34,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("get-access-token")]
         public async Task<IActionResult> GetTemporaryStorageAccessTokenAsync()
         {
-            var accessToken = await _contentStorage.GetContainerSasTokenAsync(_storageConfiguration.TempContainerName, TemporaryStorageAccessTokenExpirationTimeMinutes);
+            var accessToken = await _cloudTokenProvider.GetTemporaryStorageAccessTokenAsync(TemporaryStorageAccessTokenExpirationTimeMinutes);
             return Ok(accessToken);
         }
     }

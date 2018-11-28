@@ -3,12 +3,11 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Softeq.NetKit.Chat.Domain.Services.Configuration
+namespace Softeq.NetKit.Chat.Data.Cloud.Azure.Configuration
 {
-    //TODO: Move from Domain
-    public class CloudStorageConfiguration
+    public class AzureStorageConfiguration
     {
-        public CloudStorageConfiguration(IConfiguration configuration)
+        public AzureStorageConfiguration(IConfiguration configuration)
         {
             ContentStorageHost = configuration["AzureStorage:ContentStorageHost"];
             MessageAttachmentsContainer = configuration["AzureStorage:MessageAttachmentsContainer"];

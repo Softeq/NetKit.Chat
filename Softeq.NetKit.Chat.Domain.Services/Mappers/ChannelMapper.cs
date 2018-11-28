@@ -2,16 +2,16 @@
 // http://www.softeq.com
 
 using System.Linq;
+using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappers
 {
     internal static class ChannelMapper
     {
-        public static ChannelResponse ToChannelResponse(this Channel channel, CloudStorageConfiguration configuration)
+        public static ChannelResponse ToChannelResponse(this Channel channel)
         {
             var channelResponse = new ChannelResponse();
             if (channel != null)
@@ -32,10 +32,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
             return channelResponse;
         }
 
-        public static ChannelSummaryResponse ToChannelSummaryResponse(this Channel channel, 
-            ChannelMembers channelMember,
-            Message lastReadMessage, 
-            CloudStorageConfiguration configuration)
+        public static ChannelSummaryResponse ToChannelSummaryResponse(this Channel channel, ChannelMembers channelMember, Message lastReadMessage, ICloudImageProvider cloudImageProvider)
         {
             var channelListResponse = new ChannelSummaryResponse();
             if (channel != null)
@@ -51,9 +48,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
                 channelListResponse.IsMuted = channelMember.IsMuted;
                 channelListResponse.IsPinned = channelMember.IsPinned;
                 channelListResponse.CreatorId = channel.CreatorId;
-                channelListResponse.Creator = channel.Creator.ToMemberSummary(configuration);
+                var memberAvatarUrl = cloudImageProvider.GetMemberAvatarUrl(channel.Creator.PhotoName);
+                channelListResponse.Creator = channel.Creator.ToMemberSummary(memberAvatarUrl);
                 channelListResponse.CreatorSaasUserId = channel.Creator.SaasUserId;
-                channelListResponse.LastMessage = channel.Messages?.FirstOrDefault()?.ToMessageResponse(lastReadMessage, configuration);
+                channelListResponse.LastMessage = channel.Messages?.FirstOrDefault()?.ToMessageResponse(lastReadMessage, cloudImageProvider);
                 channelListResponse.UnreadMessagesCount = lastReadMessage != null ? channel.Messages?.Count(x => x.Created > lastReadMessage.Created) ?? 0 : channel.Messages?.Count ?? 0;
                 channelListResponse.PhotoUrl = channel.PhotoUrl;
             }
