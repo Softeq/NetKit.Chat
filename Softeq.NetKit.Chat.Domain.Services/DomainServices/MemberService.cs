@@ -110,8 +110,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member != null)
             {
-                // TODO [az]: Should we throw exception here?
-                return member.ToMemberSummary(_configuration);
+                throw new NetKitChatInvalidOperationException($"Unable to add member. Member {nameof(saasUserId)}:{saasUserId} already exists.");
             }
 
             var newMember = new Member
@@ -131,7 +130,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return newMember.ToMemberSummary(_configuration);
         }
 
-        // TODO:Add unit test
         public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
         {
             var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);

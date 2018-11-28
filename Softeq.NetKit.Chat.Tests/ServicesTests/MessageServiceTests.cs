@@ -145,7 +145,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
 
             // Act
             var messages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
-            await _messageService.DeleteMessageAsync(new DeleteMessageRequest(SaasUserId, message.Id));
+            await _messageService.DeleteMessageAsync(SaasUserId, message.Id);
             var newMessages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
 
             // Assert

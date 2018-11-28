@@ -65,7 +65,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
-            await _messageService.DeleteMessageAsync(request);
+            await _messageService.DeleteMessageAsync(request.SaasUserId, request.MessageId);
 
             await _messageNotificationService.OnDeleteMessage(member, message);
         }

@@ -80,12 +80,12 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         }
 
         [Fact]
-        public async Task GetOrAddClientAsync_ShouldCreateAndReturnNewClient()
+        public async Task AddClientAsync_ShouldCreateAndReturnNewClient()
         {
             var addClientRequest = new AddClientRequest
             {
                 ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
-                SaasUserId = "4A356C96-40C3-410C-B8C3-16EE02205491",
+                SaasUserId = SaasUserId,
                 UserAgent = "user agent1",
                 UserName = "user@test.test"
             };
@@ -104,7 +104,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var addClientRequest = new AddClientRequest
             {
                 ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
-                SaasUserId = "8c7dd32c-2677-4ed7-821b-d349ac56e90c",
+                SaasUserId = SaasUserId,
                 UserAgent = "user agent1",
                 UserName = "user@test.test"
             };
@@ -125,7 +125,7 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var addClientRequest = new AddClientRequest
             {
                 ConnectionId = "7F97D474-3CBA-45E8-A90C-3955A3CBF59D",
-                SaasUserId = "8c7dd32c-2677-4ed7-821b-d349ac56e90c",
+                SaasUserId = SaasUserId,
                 UserAgent = "user agent1",
                 UserName = "user@test.test"
             };

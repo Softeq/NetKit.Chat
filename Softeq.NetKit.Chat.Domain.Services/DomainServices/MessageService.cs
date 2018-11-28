@@ -74,9 +74,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     var forwardMessageId = Guid.NewGuid();
                     var forwardMessage = (await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.ForwardedMessageId)).ToForwardMessage(forwardMessageId);
                     await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
+
                     message.ForwardedMessage = forwardMessage;
                     message.ForwardMessageId = forwardMessage.Id;
                 }
+
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
                 await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(member.Id, request.ChannelId, message.Id);
 
@@ -86,18 +88,23 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return message.ToMessageResponse(null, _cloudStorageConfiguration);
         }
 
-        public async Task DeleteMessageAsync(DeleteMessageRequest request)
+        public async Task DeleteMessageAsync(string saasUserId, Guid messageId)
         {
-            var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(request.MessageId);
+            var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(messageId);
             if (message == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to delete message. Message {nameof(messageId)}:{messageId} not found.");
             }
 
-            var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            if (owner.Id != message.OwnerId)
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+            if (member == null)
             {
-                throw new NetKitChatAccessForbiddenException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
+                throw new NetKitChatNotFoundException($"Unable to delete message. Member {nameof(saasUserId)}:{saasUserId} not found.");
+            }
+
+            if (member.Id != message.OwnerId)
+            {
+                throw new NetKitChatAccessForbiddenException($"Unable to delete message. Message {nameof(messageId)}:{messageId} owner required.");
             }
 
             var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
@@ -139,6 +146,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to update message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
+
             if (member.Id != message.OwnerId)
             {
                 throw new NetKitChatAccessForbiddenException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
@@ -156,7 +168,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var message = await UnitOfWork.MessageRepository.GetMessageByIdAsync(messageId);
             if (message == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get message by id. Message {nameof(messageId)}:{messageId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get message by {nameof(messageId)}. Message {nameof(messageId)}:{messageId} not found.");
             }
 
             return message.ToMessageResponse(null, _cloudStorageConfiguration);
@@ -171,6 +183,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to add message attachment. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
+
             if (member.Id != message.OwnerId)
             {
                 throw new NetKitChatAccessForbiddenException($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
@@ -210,6 +227,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to delete message attachment. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
+
             if (member.Id != message.OwnerId)
             {
                 throw new NetKitChatAccessForbiddenException($"Unable to delete message attachment. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
@@ -242,7 +264,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
+
             var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesAsync(request.ChannelId);
+
             return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, x => x.ToMessageResponse(lastReadMessage, _cloudStorageConfiguration));
         }
 

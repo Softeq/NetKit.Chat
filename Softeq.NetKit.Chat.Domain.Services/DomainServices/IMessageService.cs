@@ -15,7 +15,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     public interface IMessageService
     {
         Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request);
-        Task DeleteMessageAsync(DeleteMessageRequest request);
+        Task DeleteMessageAsync(string saasUserId, Guid messageId);
         Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request);
         Task<MessageResponse> GetMessageByIdAsync(Guid messageId);
         Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request);
