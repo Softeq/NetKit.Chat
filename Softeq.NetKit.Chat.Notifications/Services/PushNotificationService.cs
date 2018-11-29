@@ -9,7 +9,7 @@ using Softeq.NetKit.Chat.Notifications.TransportModels.Shared.Request;
 
 namespace Softeq.NetKit.Chat.Notifications.Services
 {
-    public class PushNotificationService
+    public class PushNotificationService : IPushNotificationService
     {
         private readonly INotificationHub _notificationHub;
 
