@@ -6,6 +6,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
     public enum MessageType
     {
         Default,
-        Notification
+        Notification,
+        Forward
     }
 }

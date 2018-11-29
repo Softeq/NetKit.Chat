@@ -50,6 +50,7 @@ namespace Softeq.NetKit.Chat.Tests.Abstract
                     DELETE FROM Clients;
                     DELETE FROM Notifications;
                     DELETE FROM Settings;
+                    DELETE FROM ForwardMessages;
                     DELETE FROM Messages;
                     DELETE FROM Channels;
                     DELETE FROM Members;";
