@@ -8,7 +8,6 @@ using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
@@ -22,8 +21,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     {
         private readonly IMemberService _memberService;
 
-        public MemberController(ILogger logger, IMemberService memberService) 
-            : base(logger)
+        public MemberController(IMemberService memberService)
         {
             _memberService = memberService;
         }

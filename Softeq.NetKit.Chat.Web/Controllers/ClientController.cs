@@ -8,7 +8,6 @@ using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
@@ -23,8 +22,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     {
         private readonly IClientService _clientService;
 
-        public ClientController(ILogger logger, IClientService clientService)
-            : base(logger)
+        public ClientController(IClientService clientService)
         {
             Ensure.That(clientService).IsNotNull();
 

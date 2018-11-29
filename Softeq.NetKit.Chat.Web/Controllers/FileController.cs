@@ -6,7 +6,6 @@ using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
@@ -21,8 +20,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         private readonly ICloudTokenProvider _cloudTokenProvider;
 
-        public FileController(ILogger logger, ICloudTokenProvider cloudTokenProvider)
-            : base(logger)
+        public FileController(ICloudTokenProvider cloudTokenProvider)
         {
             Ensure.That(cloudTokenProvider).IsNotNull();
 
