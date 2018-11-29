@@ -54,7 +54,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateChannelAsync([FromBody] CreateChannelRequest request)
         {
-            var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.ClientConnectionId, request.Name, request.Type)
+            var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.Name, request.Type)
             {
                 AllowedMembers = request.AllowedMembers,
                 Description = request.Description,
@@ -70,9 +70,13 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}")]
         public async Task<IActionResult> UpdateChannelAsync(Guid channelId, [FromBody] UpdateChannelRequest request)
         {
-            request.ChannelId = channelId;
-            request.SaasUserId = GetCurrentSaasUserId();
-            var channel = await _channelSocketService.UpdateChannelAsync(request);
+            var updateChannelRequest = new UpdateChannelRequest(GetCurrentSaasUserId(), channelId, request.Name)
+            {
+                PhotoUrl = request.PhotoUrl,
+                Topic = request.Topic,
+                WelcomeMessage = request.WelcomeMessage
+            };
+            var channel = await _channelSocketService.UpdateChannelAsync(updateChannelRequest);
             return Ok(channel);
         }
 
@@ -154,7 +158,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/join")]
         public async Task<IActionResult> JoinToChannelAsync(Guid channelId)
         {
-            await _channelSocketService.JoinToChannelAsync(new JoinToChannelRequest(GetCurrentSaasUserId(), channelId));
+            await _channelSocketService.JoinToChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
             return Ok();
         }
 

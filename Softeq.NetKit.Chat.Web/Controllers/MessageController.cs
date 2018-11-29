@@ -42,18 +42,21 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("")]
-        public async Task<IActionResult> AddMessageAsync(Guid channelId, [FromBody] CreateMessageRequest request)
+        public async Task<IActionResult> AddMessageAsync(Guid channelId, [FromBody] CreateMessageRequest request, [FromBody] string clientConnectionId)
         {
-            request.ChannelId = channelId;
-            request.SaasUserId = GetCurrentSaasUserId();
-            var result = await _messageSocketService.AddMessageAsync(request);
+            var createMessageRequest = new CreateMessageRequest(GetCurrentSaasUserId(), channelId, request.Type, request.Body)
+            {
+                ForwardedMessageId = request.ForwardedMessageId,
+                ImageUrl = request.ImageUrl
+            };
+            var result = await _messageSocketService.AddMessageAsync(createMessageRequest, clientConnectionId);
             return Ok(result);
         }
 
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
-        public async Task<IActionResult> DeleteMessageAsync(Guid channelId, Guid messageId)
+        public async Task<IActionResult> DeleteMessageAsync(Guid channelId, Guid messageId, [FromBody] string clientConnectionId)
         {
             await _messageSocketService.DeleteMessageAsync(new DeleteMessageRequest(GetCurrentSaasUserId(), messageId));
             return Ok();

@@ -5,15 +5,13 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
-    public class DeleteMessageRequest
+    public class DeleteMessageRequest : UserRequest
     {
         public DeleteMessageRequest(string saasUserId, Guid messageId)
+            : base(saasUserId)
         {
-            SaasUserId = saasUserId;
             MessageId = messageId;
         }
-
-        public string SaasUserId { get; }
 
         public Guid MessageId { get; }
     }

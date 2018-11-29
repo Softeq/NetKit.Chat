@@ -15,13 +15,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request);
         Task<IReadOnlyCollection<ChannelResponse>> GetMemberChannelsAsync(string saasUserId);
         Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest request);
-        Task<ChannelSummaryResponse> GetChannelSummaryAsync(ChannelRequest request);
+        Task<ChannelSummaryResponse> GetChannelSummaryAsync(string saasUserId, Guid channelId);
         Task<ChannelResponse> GetChannelByIdAsync(Guid channelId);
-        Task<ChannelResponse> CloseChannelAsync(ChannelRequest request);
+        Task<ChannelResponse> CloseChannelAsync(string saasUserId, Guid channelId);
         Task<IReadOnlyCollection<ChannelSummaryResponse>> GetAllowedChannelsAsync(string saasUserId);
         Task<IReadOnlyCollection<ChannelResponse>> GetAllChannelsAsync();
         Task<SettingsResponse> GetChannelSettingsAsync(Guid channelId);
-        Task JoinToChannelAsync(JoinToChannelRequest request);
+        Task JoinToChannelAsync(string saasUserId, Guid channelId);
         Task LeaveFromChannelAsync(string saasUserId, Guid channelId);
         Task DeleteMemberFromChannelAsync(string saasUserId, Guid channelId, Guid memberToDeleteId);
         Task MuteChannelAsync(string saasUserId, Guid channelId, bool isMuted);

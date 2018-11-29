@@ -6,17 +6,21 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
-    public class CreateMessageRequest
+    public class CreateMessageRequest : UserRequest
     {
-        public Guid ChannelId { get; set; }
+        public CreateMessageRequest(string saasUserId, Guid channelId, MessageType type, string body)
+            : base(saasUserId)
+        {
+            ChannelId = channelId;
+            Type = type;
+            Body = body;
+        }
 
-        public string SaasUserId { get; set; }
+        public Guid ChannelId { get; }
 
-        public string ClientConnectionId { get; set; }
+        public MessageType Type { get; }
 
-        public string Body { get; set; }
-
-        public MessageType Type { get; set; }
+        public string Body { get; }
 
         // If Message type is Notification
         public string ImageUrl { get; set; }

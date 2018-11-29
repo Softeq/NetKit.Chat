@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnsureThat;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
@@ -20,26 +19,29 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
     {
         private readonly IMemberService _memberService;
         private readonly IMessageService _messageService;
+        private readonly IChannelService _channelService;
         private readonly IMessageNotificationService _messageNotificationService;
 
-        public MessageSocketService(IMemberService memberService, IMessageService messageService, IMessageNotificationService messageNotificationService)
+        public MessageSocketService(IMemberService memberService, IMessageService messageService, IChannelService channelService, IMessageNotificationService messageNotificationService)
         {
             Ensure.That(memberService).IsNotNull();
             Ensure.That(messageService).IsNotNull();
+            Ensure.That(channelService).IsNotNull();
             Ensure.That(messageNotificationService).IsNotNull();
 
             _memberService = memberService;
             _messageService = messageService;
+            _channelService = channelService;
             _messageNotificationService = messageNotificationService;
         }
 
-        public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest request)
+        public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest request, string clientConnectionId)
         {
             var message = await _messageService.CreateMessageAsync(request);
 
-            await _messageNotificationService.OnAddMessage(request.SaasUserId, message, request.ClientConnectionId);
+            await _messageNotificationService.OnAddMessage(message);
 
-            await _memberService.UpdateActivityAsync(new UpdateMemberActivityRequest(request.SaasUserId, request.ClientConnectionId, null));
+            await _memberService.UpdateActivityAsync(new UpdateMemberActivityRequest(request.SaasUserId, clientConnectionId, null));
 
             return message;
         }
@@ -50,14 +52,16 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _messageService.DeleteMessageAsync(request);
 
-            await _messageNotificationService.OnDeleteMessage(request.SaasUserId, message);
+            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, message.ChannelId);
+
+            await _messageNotificationService.OnDeleteMessage(channelSummary, message);
         }
 
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
         {
             var updatedMessage = await _messageService.UpdateMessageAsync(request);
 
-            await _messageNotificationService.OnUpdateMessage(request.SaasUserId, updatedMessage);
+            await _messageNotificationService.OnUpdateMessage(updatedMessage);
 
             return updatedMessage;
         }
@@ -68,7 +72,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
-            await _messageNotificationService.OnAddMessageAttachment(request.SaasUserId, message.ChannelId);
+            await _messageNotificationService.OnAddMessageAttachment(message.ChannelId);
 
             return attachmentResponse;
         }
@@ -79,7 +83,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _messageService.DeleteMessageAttachmentAsync(request);
 
-            await _messageNotificationService.OnDeleteMessageAttachment(request.SaasUserId, message);
+            await _messageNotificationService.OnDeleteMessageAttachment(message);
         }
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)

@@ -5,16 +5,14 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment
 {
-    public class DeleteMessageAttachmentRequest
+    public class DeleteMessageAttachmentRequest : UserRequest
     {
         public DeleteMessageAttachmentRequest(string saasUserId, Guid messageId, Guid attachmentId)
+            : base(saasUserId)
         {
-            SaasUserId = saasUserId;
             MessageId = messageId;
             AttachmentId = attachmentId;
         }
-
-        public string SaasUserId { get; }
 
         public Guid MessageId { get; }
 

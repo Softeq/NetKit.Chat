@@ -6,20 +6,15 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
 {
-    public class CreateChannelRequest
+    public class CreateChannelRequest : UserRequest
     {
-        public CreateChannelRequest(string saasUserId, string clientConnectionId, string name, ChannelType type)
+        public CreateChannelRequest(string saasUserId, string name, ChannelType type)
+            : base(saasUserId)
         {
-            SaasUserId = saasUserId;
-            ClientConnectionId = clientConnectionId;
             Name = name;
             Type = type;
             AllowedMembers = new List<string>();
         }
-
-        public string SaasUserId { get; }
-
-        public string ClientConnectionId { get; }
 
         public string Name { get; }
 

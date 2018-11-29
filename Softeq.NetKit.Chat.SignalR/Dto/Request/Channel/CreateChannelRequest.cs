@@ -8,7 +8,11 @@ namespace Softeq.NetKit.Chat.SignalR.Dto.Request.Channel
 {
     public class CreateChannelRequest : BaseRequest
     {
-        // Required
+        public CreateChannelRequest()
+        {
+            AllowedMembers = new List<string>();
+        }
+
         public string Name { get; set; }
 
         public ChannelType Type { get; set; }

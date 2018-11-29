@@ -5,16 +5,14 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
-    public class UpdateMessageRequest
+    public class UpdateMessageRequest : UserRequest
     {
         public UpdateMessageRequest(string saasUserId, Guid messageId, string body)
+            : base(saasUserId)
         {
-            SaasUserId = saasUserId;
             MessageId = messageId;
             Body = body;
         }
-
-        public string SaasUserId { get; }
 
         public Guid MessageId { get; }
 

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
@@ -19,29 +18,24 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         {
         }
 
-        public async Task OnAddChannel(string saasUserId, ChannelSummaryResponse channel, string clientConnectionId)
+        public async Task OnAddChannel(ChannelSummaryResponse channel)
         {
-            var channelRequest = new ChannelRequest(saasUserId, channel.Id)
-            {
-                ClientConnectionId = clientConnectionId
-            };
-
-            var clientIds = await GetChannelClientsExceptCallerAsync(channelRequest, clientConnectionId);
+            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelCreated, channel);
         }
 
-        public async Task OnUpdateChannel(MemberSummary member, ChannelSummaryResponse channel)
+        public async Task OnUpdateChannel(ChannelSummaryResponse channel)
         {
-            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
+            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelUpdated, channel);
         }
 
-        public async Task OnCloseChannel(MemberSummary member, ChannelSummaryResponse channel)
+        public async Task OnCloseChannel(ChannelSummaryResponse channel)
         {
-            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
+            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelClosed, channel);
@@ -49,7 +43,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel)
         {
-            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channel.Id));
+            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
@@ -57,7 +51,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnLeaveChannel(MemberSummary member, Guid channelId)
         {
-            var clientIds = await GetChannelClientsAsync(new ChannelRequest(member.SaasUserId, channelId));
+            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channelId);
             var senderClients = await MemberService.GetMemberClientsAsync(member.Id);
             clientIds.AddRange(senderClients.Select(x => x.ClientConnectionId));
 
@@ -65,9 +59,9 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channelId);
         }
 
-        public async Task OnDeletedFromChannel(MemberSummary member, Guid channelId, string clientConnectionId)
+        public async Task OnDeletedFromChannel(MemberSummary member, Guid channelId)
         {
-            var channelClients = await GetChannelClientsExceptCallerAsync(new ChannelRequest(member.SaasUserId, channelId), clientConnectionId);
+            var channelClients = await GetNotMutedChannelClientConnectionIdsAsync(channelId);
             var deletingMemberClients = (await MemberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();
 
             await HubContext.Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channelId);

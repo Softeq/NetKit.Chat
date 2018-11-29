@@ -150,17 +150,22 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return channel.ToChannelResponse();
         }
 
-        public async Task<ChannelSummaryResponse> GetChannelSummaryAsync(ChannelRequest request)
+        public async Task<ChannelSummaryResponse> GetChannelSummaryAsync(string saasUserId, Guid channelId)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
+            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
             if (channel == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel summary. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get channel summary. Channel {nameof(channelId)}:{channelId} not found.");
             }
 
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, request.ChannelId);
-            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get channel summary. Member {nameof(saasUserId)}:{saasUserId} not found.");
+            }
+
+            var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channelId);
+            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, channelId);
 
             return channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _cloudImageProvider);
         }
@@ -176,23 +181,28 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return channel.ToChannelResponse();
         }
 
-        public async Task<ChannelResponse> CloseChannelAsync(ChannelRequest request)
+        public async Task<ChannelResponse> CloseChannelAsync(string saasUserId, Guid channelId)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
+            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
             if (channel == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to close channel. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to close channel. Channel {nameof(channelId)}:{channelId} not found.");
             }
 
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (channel.IsClosed)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to close channel. Channel {nameof(channelId)}:{channelId} already closed.");
+            }
+
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to close channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to close channel. Member {nameof(saasUserId)}:{saasUserId} not found.");
             }
 
             if (member.Id != channel.CreatorId)
             {
-                throw new NetKitChatAccessForbiddenException($"Unable to close channel {nameof(request.ChannelId)}:{request.ChannelId}. Channel owner required.");
+                throw new NetKitChatAccessForbiddenException($"Unable to close channel {nameof(channelId)}:{channelId}. Channel owner required.");
             }
 
             channel.IsClosed = true;
@@ -253,18 +263,18 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return settings.ToSettingsResponse();
         }
 
-        public async Task JoinToChannelAsync(JoinToChannelRequest request)
+        public async Task JoinToChannelAsync(string saasUserId, Guid channelId)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
+            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
             if (channel == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to join channel. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to join channel. Channel {nameof(channelId)}:{channelId} not found.");
             }
 
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to join channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to join channel. Member {nameof(saasUserId)}:{saasUserId} not found.");
             }
 
             if (channel.Type == ChannelType.Private && channel.CreatorId != member.Id)
@@ -275,7 +285,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, channel.Id);
             if (isMemberExistsInChannel)
             {
-                throw new NetKitChatInvalidOperationException($"Unable to join channel. Member {nameof(member.Id)}:{member.Id} already joined channel {nameof(request.ChannelId)}:{request.ChannelId}.");
+                throw new NetKitChatInvalidOperationException($"Unable to join channel. Member {nameof(member.Id)}:{member.Id} already joined channel {nameof(channelId)}:{channelId}.");
             }
 
             var channelMember = new ChannelMembers

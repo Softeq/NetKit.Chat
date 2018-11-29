@@ -5,7 +5,7 @@ using System;
 
 namespace Softeq.NetKit.Chat.SignalR.Dto.Request.Channel
 {
-    public class JoinToChannelRequest : BaseRequest
+    public class ChannelRequest : BaseRequest
     {
         public Guid ChannelId { get; set; }
     }

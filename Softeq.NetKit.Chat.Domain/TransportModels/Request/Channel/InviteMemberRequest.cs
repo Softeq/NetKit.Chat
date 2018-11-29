@@ -5,16 +5,14 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
 {
-    public class InviteMemberRequest
+    public class InviteMemberRequest : UserRequest
     {
         public InviteMemberRequest(string saasUserId, Guid channelId, Guid memberId)
+            : base(saasUserId)
         {
-            SaasUserId = saasUserId;
             ChannelId = channelId;
             MemberId = memberId;
         }
-
-        public string SaasUserId { get; }
 
         public Guid ChannelId { get; }
 

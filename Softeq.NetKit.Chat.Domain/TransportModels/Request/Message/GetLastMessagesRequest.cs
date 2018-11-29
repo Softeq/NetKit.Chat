@@ -2,17 +2,17 @@
 // http://www.softeq.com
 
 using System;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
     public class GetLastMessagesRequest : UserRequest
     {
-        public GetLastMessagesRequest(string userId, Guid channelId) : base(userId)
+        public GetLastMessagesRequest(string saasUserId, Guid channelId)
+            : base(saasUserId)
         {
             ChannelId = channelId;
         }
 
-        public Guid ChannelId { get; set; }
+        public Guid ChannelId { get; }
     }
 }

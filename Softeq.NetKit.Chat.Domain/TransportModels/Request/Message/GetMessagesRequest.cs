@@ -2,13 +2,13 @@
 // http://www.softeq.com
 
 using System;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
     public class GetMessagesRequest : UserRequest
     {
-        public GetMessagesRequest(string userId, Guid channelId, Guid messageId, DateTimeOffset messageCreatedDate, int? pageSize) : base(userId)
+        public GetMessagesRequest(string saasUserId, Guid channelId, Guid messageId, DateTimeOffset messageCreatedDate, int? pageSize)
+            : base(saasUserId)
         {
             ChannelId = channelId;
             MessageId = messageId;
@@ -16,9 +16,12 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
             PageSize = pageSize;
         }
 
-        public Guid ChannelId { get; set; }
-        public Guid MessageId { get; set; }
-        public DateTimeOffset MessageCreatedDate { get; set; }
-        public int? PageSize { get; set; }
+        public Guid ChannelId { get; }
+
+        public Guid MessageId { get; }
+
+        public DateTimeOffset MessageCreatedDate { get; }
+
+        public int? PageSize { get; }
     }
 }

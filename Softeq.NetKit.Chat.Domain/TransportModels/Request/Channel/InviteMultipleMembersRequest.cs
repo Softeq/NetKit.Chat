@@ -6,16 +6,14 @@ using System.Collections.Generic;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
 {
-    public class InviteMultipleMembersRequest
+    public class InviteMultipleMembersRequest : UserRequest
     {
         public InviteMultipleMembersRequest(string saasUserId, Guid channelId, List<Guid> invitedMembersIds)
+            : base(saasUserId)
         {
-            SaasUserId = saasUserId;
             ChannelId = channelId;
             InvitedMembersIds = invitedMembersIds;
         }
-
-        public string SaasUserId { get; }
 
         public Guid ChannelId { get; }
 

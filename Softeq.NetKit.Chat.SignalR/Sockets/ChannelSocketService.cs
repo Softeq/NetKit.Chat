@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using EnsureThat;
 using Resources;
-using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
@@ -31,12 +30,12 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             _memberService = memberService;
         }
 
-        public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest createChannelRequest)
+        public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
         {
-            var channel = await _channelService.CreateChannelAsync(createChannelRequest);
-            var member = await _memberService.GetMemberBySaasUserIdAsync(createChannelRequest.SaasUserId);
+            var channel = await _channelService.CreateChannelAsync(request);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
-            await _channelNotificationService.OnAddChannel(createChannelRequest.SaasUserId, channel, createChannelRequest.ClientConnectionId);
+            await _channelNotificationService.OnAddChannel(channel);
             //todo filter creator connection id on join channel
             await _channelNotificationService.OnJoinChannel(member, channel);
 
@@ -45,55 +44,33 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request)
         {
-            if (string.IsNullOrEmpty(request.Name))
-            {
-                throw new Exception(LanguageResources.RoomRequired);
-            }
-
-            if (request.Name.Contains(' '))
-            {
-                throw new Exception(LanguageResources.RoomInvalidNameSpaces);
-            }
-
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
             await _channelService.UpdateChannelAsync(request);
 
-            var channelSummary = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
 
-            await _channelNotificationService.OnUpdateChannel(member, channelSummary);
+            await _channelNotificationService.OnUpdateChannel(channelSummary);
 
             return channelSummary;
         }
 
         public async Task CloseChannelAsync(ChannelRequest request)
         {
-            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            await _channelService.CloseChannelAsync(request.SaasUserId, request.ChannelId);
 
-            if (channel.CreatorId != member.Id && member.Role != UserRole.Admin)
-            {
-                throw new Exception(string.Format(LanguageResources.RoomOwnerRequired, channel.Name));
-            }
-            if (channel.IsClosed)
-            {
-                throw new Exception(string.Format(LanguageResources.RoomAlreadyClosed, channel.Name));
-            }
+            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
 
-            await _channelService.CloseChannelAsync(request);
+            await _channelNotificationService.OnCloseChannel(channelSummary);
 
-            var channelSummary = await _channelService.GetChannelSummaryAsync(request);
-
-            await _channelNotificationService.OnCloseChannel(member, channelSummary);
-            await _channelNotificationService.OnUpdateChannel(member, channelSummary);
+            // TODO [az]: do we need this notification?
+            await _channelNotificationService.OnUpdateChannel(channelSummary);
         }
 
-        public async Task JoinToChannelAsync(JoinToChannelRequest request)
+        public async Task JoinToChannelAsync(ChannelRequest request)
         {
             // Locate the room, does NOT have to be open
-            await _channelService.JoinToChannelAsync(request);
+            await _channelService.JoinToChannelAsync(request.SaasUserId, request.ChannelId);
 
-            var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            var channel = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
 
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
@@ -106,7 +83,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             var invitedMember = await _memberService.GetMemberByIdAsync(request.MemberId);
 
-            var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            var channel = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
 
             await _channelNotificationService.OnJoinChannel(invitedMember, channel);
 
@@ -136,15 +113,10 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task DeleteMemberFromChannelAsync(DeleteMemberRequest request)
         {
-            if (request.MemberId == Guid.Empty)
-            {
-                throw new Exception(LanguageResources.RemoveAdmin_UserRequired);
-            }
-
             var memberToDelete = await _memberService.GetMemberByIdAsync(request.MemberId);
 
             await _channelService.DeleteMemberFromChannelAsync(request.SaasUserId, request.ChannelId, memberToDelete.Id);
-            await _channelNotificationService.OnDeletedFromChannel(memberToDelete, request.ChannelId, request.ClientConnectionId);
+            await _channelNotificationService.OnDeletedFromChannel(memberToDelete, request.ChannelId);
         }
     }
 }

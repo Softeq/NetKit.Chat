@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.AspNetCore.SignalR;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
@@ -32,45 +30,11 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         protected IMemberService MemberService { get; }
 
-        protected async Task<List<string>> GetChannelClientsAsync(ChannelRequest request)
+        protected async Task<List<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
         {
             // TODO: Change this code. Recommended to use Clients.Group()
-            var members = await ChannelMemberService.GetChannelMembersAsync(request.ChannelId);
-
-            return await FilterClients(members, request.ClientConnectionId);
-        }
-
-        protected async Task<List<string>> GetChannelClientsExceptCallerAsync(ChannelRequest request, string callerConnectionId)
-        {
-            // TODO: Change this code. Recommended to use Clients.Group()
-            var members = await ChannelMemberService.GetChannelMembersAsync(request.ChannelId);
-
-            var mutedMemberIds = members.Where(x => x.IsMuted)
-                .Select(x => x.MemberId)
-                .ToList();
-
-            var mutedConnectionClientIds = (await MemberService.GetClientsByMemberIds(mutedMemberIds))
-                .Select(x => x.ConnectionClientId)
-                .ToList();
-            mutedConnectionClientIds.Add(callerConnectionId);
-
-            var clients = new List<string>();
-            foreach (var item in members)
-            {
-                var memberClients = (await MemberService.GetMemberClientsAsync(item.MemberId))
-                    .Select(x => x.ClientConnectionId)
-                    .Except(mutedConnectionClientIds)
-                    .ToList();
-
-                clients.AddRange(memberClients);
-            }
-
-            // TODO: clear connectionIds in database. There are about 4000 connections for only 3 users at the moment
-            return clients;
-        }
-
-        protected async Task<List<string>> FilterClients(IReadOnlyCollection<ChannelMemberResponse> members, string clientConnectionId)
-        {
+            var members = await ChannelMemberService.GetChannelMembersAsync(channelId);
+            
             var mutedMemberIds = members.Where(x => x.IsMuted)
                 .Select(x => x.MemberId)
                 .ToList();
@@ -83,7 +47,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             foreach (var item in members)
             {
                 var memberClients = (await MemberService.GetMemberClientsAsync(item.MemberId))
-                    .Where(x => x.ClientConnectionId != clientConnectionId)
                     .Select(x => x.ClientConnectionId)
                     .Except(mutedConnectionClientIds)
                     .ToList();
