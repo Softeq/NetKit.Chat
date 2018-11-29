@@ -15,20 +15,4 @@
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Resources\LanguageResources.Designer.cs">
-      <DependentUpon>LanguageResources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\LanguageResources.resx">
-      <CustomToolNamespace>Resources</CustomToolNamespace>
-      <LastGenOutput>LanguageResources.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
