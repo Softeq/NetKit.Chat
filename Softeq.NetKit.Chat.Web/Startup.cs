@@ -5,6 +5,7 @@ using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CorrelationId;
+using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,7 @@ using Softeq.NetKit.Chat.SignalR.Hubs;
 using Softeq.NetKit.Chat.Web.Configuration;
 using Softeq.NetKit.Chat.Web.ExceptionHandling;
 using Softeq.NetKit.Chat.Web.Extensions;
+using Softeq.NetKit.Chat.Web.Filters;
 using Softeq.Serilog.Extension;
 using Swashbuckle.AspNetCore.Swagger;
 using ILogger = Serilog.ILogger;
@@ -36,7 +38,11 @@ namespace Softeq.NetKit.Chat.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcCore()
+            services.AddMvcCore(options =>
+                {
+                    options.Filters.Add<ValidateModelStateFilter>();
+                })
+                .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonFormatters();

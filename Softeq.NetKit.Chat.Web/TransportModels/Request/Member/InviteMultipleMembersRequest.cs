@@ -8,6 +8,11 @@ namespace Softeq.NetKit.Chat.Web.TransportModels.Request.Member
 {
     public class InviteMultipleMembersRequest
     {
+        public InviteMultipleMembersRequest()
+        {
+            InvitedMembersIds = new List<Guid>();
+        }
+
         public List<Guid> InvitedMembersIds { get; set; }
     }
 }

@@ -6,13 +6,13 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Web.TransportModels.Request.Message
 {
-    public abstract class AddMessageRequest
+    public class AddMessageRequest
     {
         public string ClientConnectionId { get; set; }
 
         public string Body { get; set; }
 
-        public MessageType Type { get; }
+        public MessageType Type { get; set; }
 
         // If Message type is Notification
         public string ImageUrl { get; set; }

@@ -8,6 +8,11 @@ namespace Softeq.NetKit.Chat.SignalR.TransportModels.Request.Member
 {
     public class InviteMultipleMembersRequest : BaseRequest
     {
+        public InviteMultipleMembersRequest()
+        {
+            InvitedMembersIds = new List<Guid>();
+        }
+
         public Guid ChannelId { get; set; }
 
         public List<Guid> InvitedMembersIds { get; set; }
