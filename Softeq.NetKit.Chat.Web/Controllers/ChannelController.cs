@@ -116,11 +116,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(PagedMembersResponse), 200)]
+        [ProducesResponseType(typeof(PagedMembersResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/user")]
         public async Task<IActionResult> GetPotentialChannelMembersAsync(Guid channelId, int pageNumber, int pageSize, string nameFilter)
         {
-            var result = await _memberService.GetPotentialChannelMembersAsync(channelId, new GetPotentialChannelMembers
+            var result = await _memberService.GetPotentialChannelMembersAsync(channelId, new GetPotentialChannelMembersRequest
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,

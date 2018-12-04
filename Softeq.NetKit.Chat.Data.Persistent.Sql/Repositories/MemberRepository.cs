@@ -27,18 +27,20 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 await connection.OpenAsync();
 
+                var whereCondition = !string.IsNullOrEmpty(nameFilter) ? " WHERE LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')": "";
+
                 var sqlQuery = @"SELECT Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status
-                                 FROM Members" +
-                               (!string.IsNullOrEmpty(nameFilter) ? " WHERE LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')" : "") +
+                                 FROM Members " +
+                                 whereCondition +
                                @" ORDER BY Name
                                  OFFSET @pageSize * (@pageNumber - 1) ROWS
                                  FETCH NEXT @pageSize ROWS ONLY
 
                                  SELECT COUNT(*)
                                  FROM Members" +
-                               (!string.IsNullOrEmpty(nameFilter) ? " WHERE LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')" : "");
+                                 whereCondition;
 
-                var data = (await connection.QueryMultipleAsync(sqlQuery, new { pageNumber, pageSize }));
+                var data = await connection.QueryMultipleAsync(sqlQuery, new { pageNumber, pageSize, nameFilter });
 
                 var members = await data.ReadAsync<Member>();
                 var totalRows = await data.ReadSingleAsync<int>();
@@ -59,30 +61,26 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 await connection.OpenAsync();
 
+                var whereCondition = @"WHERE Id NOT IN (
+                                        SELECT ChannelMembers.MemberId
+                                        FROM Members
+                                        INNER JOIN ChannelMembers
+                                        ON Members.Id = ChannelMembers.MemberId
+                                        WHERE ChannelMembers.ChannelId = @channelId)" +
+                                        (!string.IsNullOrEmpty(nameFilter) ? " AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')" : "");
+
                 var sqlQuery = @"SELECT Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status  
-                                 FROM Members
-                                 WHERE Id NOT IN (
-                                    SELECT ChannelMembers.MemberId
-                                    FROM Members
-                                    INNER JOIN ChannelMembers
-                                    ON Members.Id = ChannelMembers.MemberId
-                                    WHERE ChannelMembers.ChannelId = @channelId)" +
-                               (!string.IsNullOrEmpty(nameFilter) ? " AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')" : "") +
+                                 FROM Members " + 
+                                 whereCondition +
                                @" ORDER BY Name
-                                OFFSET @pageSize * (@pageNumber - 1) ROWS
-                                FETCH NEXT @pageSize ROWS ONLY
+                                 OFFSET @pageSize * (@pageNumber - 1) ROWS
+                                 FETCH NEXT @pageSize ROWS ONLY
 
-                                SELECT COUNT(*)  
-                                 FROM Members
-                                 WHERE Id NOT IN (
-                                    SELECT ChannelMembers.MemberId
-                                    FROM Members
-                                    INNER JOIN ChannelMembers
-                                    ON Members.Id = ChannelMembers.MemberId
-                                    WHERE ChannelMembers.ChannelId = @channelId)" +
-                               (!string.IsNullOrEmpty(nameFilter) ? " AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')" : "");
+                                 SELECT COUNT(*) 
+                                 FROM Members " + 
+                                 whereCondition;
 
-                var data = (await connection.QueryMultipleAsync(sqlQuery, new { channelId, pageNumber, pageSize, nameFilter }));
+                var data = await connection.QueryMultipleAsync(sqlQuery, new { channelId, pageNumber, pageSize, nameFilter });
 
                 var members = await data.ReadAsync<Member>();
                 var totalRows = await data.ReadSingleAsync<int>();

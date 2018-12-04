@@ -232,7 +232,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return response;
         }
 
-        public async Task<PagedMembersResponse> GetPotentialChannelMembersAsync(Guid channelId, GetPotentialChannelMembers request)
+        public async Task<PagedMembersResponse> GetPotentialChannelMembersAsync(Guid channelId, GetPotentialChannelMembersRequest request)
         {
             var members = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(channelId, request.PageNumber, request.PageSize, request.NameFilter);
 
