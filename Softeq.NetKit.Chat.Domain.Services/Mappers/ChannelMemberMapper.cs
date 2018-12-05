@@ -8,7 +8,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
 {
     internal static class ChannelMemberMapper
     {
-        public static ChannelMemberResponse ToChannelMemberResponse(this ChannelMembers channelMember)
+        public static ChannelMemberResponse ToChannelMemberResponse(this ChannelMember channelMember)
         {
             var channelMemberResponse = new ChannelMemberResponse();
             if (channelMember != null)

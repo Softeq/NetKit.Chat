@@ -13,8 +13,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
     public class ChannelNotificationService : BaseNotificationService, IChannelNotificationService
     {
-        public ChannelNotificationService(IChannelMemberService channelMemberService, IMemberService memberService, IHubContext<ChatHub> hubContext)
-            : base(channelMemberService, memberService, hubContext)
+        public ChannelNotificationService(IChannelMemberService channelMemberService, IMemberService memberService, IClientService clientService, IHubContext<ChatHub> hubContext)
+            : base(channelMemberService, memberService, clientService, hubContext)
         {
         }
 

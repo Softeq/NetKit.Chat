@@ -11,6 +11,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
     {
         Task AddForwardMessageAsync(ForwardMessage message);
         Task DeleteForwardMessageAsync(Guid messageId);
-        Task<ForwardMessage> GetForwardMessageByIdAsync(Guid messageId);
+        Task<ForwardMessage> GetForwardMessageAsync(Guid forwardMessageId);
     }
 }

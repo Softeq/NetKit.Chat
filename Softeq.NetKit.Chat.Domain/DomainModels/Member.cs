@@ -15,6 +15,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public DateTimeOffset? LastNudged { get; set; }
         public UserStatus Status { get; set; }
 
+        // TODO [az]: do we need both Status and IsAfk?
         public bool IsAfk { get; set; }
 
         [StringLength(255)]
@@ -32,7 +33,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 
         // List of clients that are currently connected for this user
         public List<Client> ConnectedClients { get; set; }
-        public List<ChannelMembers> Channels { get; set; }
+        public List<ChannelMember> Channels { get; set; }
 
         public List<Notification> Notifications { get; set; }
     }

@@ -4,7 +4,6 @@
 using System.Linq;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappers
@@ -32,7 +31,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappers
             return channelResponse;
         }
 
-        public static ChannelSummaryResponse ToChannelSummaryResponse(this Channel channel, ChannelMembers channelMember, Message lastReadMessage, ICloudImageProvider cloudImageProvider)
+        public static ChannelSummaryResponse ToChannelSummaryResponse(this Channel channel, ChannelMember channelMember, Message lastReadMessage, ICloudImageProvider cloudImageProvider)
         {
             var channelListResponse = new ChannelSummaryResponse();
             if (channel != null)

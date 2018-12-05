@@ -5,7 +5,7 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
-    public class ChannelMembers
+    public class ChannelMember
     {
         public Guid MemberId { get; set; }
         public Member Member { get; set; }

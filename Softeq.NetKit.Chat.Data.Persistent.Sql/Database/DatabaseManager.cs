@@ -4,6 +4,7 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using EnsureThat;
 using SimpleMigrations;
 using SimpleMigrations.DatabaseProvider;
 using Softeq.NetKit.Chat.Data.Persistent.Database;
@@ -20,6 +21,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Database
 
         public DatabaseManager(DatabaseConfig connectionSettings)
         {
+            Ensure.That(connectionSettings).IsNotNull();
+
             _sqlConnectionString = connectionSettings.ConnectionString;
             var masterSqlConnectionStringBuilder = new SqlConnectionStringBuilder(connectionSettings.ConnectionString);
             _databaseName = masterSqlConnectionStringBuilder.InitialCatalog;

@@ -57,8 +57,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
-            if (channel == null)
+            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
+            if (!isChannelExists)
             {
                 throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} not found.");
             }
@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<ChannelResponse> InviteMemberAsync(Guid memberId, Guid channelId)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
+            var channel = await UnitOfWork.ChannelRepository.GetChannelAsync(channelId);
             if (channel == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} not found.");
@@ -96,7 +96,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatInvalidOperationException($"Unable to invite member. Member {nameof(memberId)}:{memberId} already joined channel {nameof(channelId)}:{channelId}.");
             }
 
-            var channelMember = new ChannelMembers
+            var channelMember = new ChannelMember
             {
                 ChannelId = channel.Id,
                 MemberId = member.Id,
@@ -111,7 +111,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 transactionScope.Complete();
             }
 
-            channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channel.Id);
+            channel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
 
             return channel.ToChannelResponse();
         }
@@ -144,7 +144,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
         {
-            var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);
+            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get member clients. Member {nameof(memberId)}:{memberId} not found.");
+            }
+
+            var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(member.Id);
             return clients.ToList().AsReadOnly();
         }
 
@@ -163,7 +169,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<IReadOnlyCollection<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds)
         {
-            var clients = await UnitOfWork.ClientRepository.GetClientsByMemberIdsAsync(memberIds);
+            var clients = await UnitOfWork.ClientRepository.GetClientsWithMembersAsync(memberIds);
             return clients.Select(x => x.ToClientResponse()).ToList().AsReadOnly();
         }
 
@@ -208,21 +214,23 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task UpdateActivityAsync(UpdateMemberActivityRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+            }
             member.Status = UserStatus.Active;
             member.LastActivity = DateTimeOffset.UtcNow;
+            member.IsAfk = false;
+            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
 
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ConnectionId);
+            var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ConnectionId);
+            if (client == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to update activity. Client {nameof(request.ConnectionId)}:{request.ConnectionId} not found.");
+            }
             client.UserAgent = request.UserAgent;
             client.LastActivity = member.LastActivity;
             client.LastClientActivity = DateTimeOffset.UtcNow;
-
-            // Remove any Afk notes.
-            if (member.IsAfk)
-            {
-                member.IsAfk = false;
-            }
-
-            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
             await UnitOfWork.ClientRepository.UpdateClientAsync(client);
         }
     }

@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
@@ -36,7 +37,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             await _memberService.UpdateMemberStatusAsync(member.SaasUserId, UserStatus.Active);
 
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
+            var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ClientConnectionId);
             if (client == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
@@ -79,7 +80,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task DeleteClientAsync(DeleteClientRequest request)
         {
-            var client = await UnitOfWork.ClientRepository.GetClientByConnectionIdAsync(request.ClientConnectionId);
+            var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ClientConnectionId);
             if (client == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
@@ -92,6 +93,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 await _memberService.UpdateMemberStatusAsync(client.Member.SaasUserId, UserStatus.Offline);
             }
+        }
+
+        public async Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
+        {
+            return await UnitOfWork.ClientRepository.GetNotMutedChannelClientConnectionIdsAsync(channelId);
         }
     }
 }

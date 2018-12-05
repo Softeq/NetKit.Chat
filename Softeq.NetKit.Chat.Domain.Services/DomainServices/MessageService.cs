@@ -41,8 +41,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(request.ChannelId);
-            if (channel == null)
+            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
+            if (!isChannelExists)
             {
                 throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
             }
@@ -234,7 +234,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatAccessForbiddenException($"Unable to delete message attachment. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
-            var attachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(request.AttachmentId);
+            var attachment = await UnitOfWork.AttachmentRepository.GetAttachmentAsync(request.AttachmentId);
             if (attachment == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to delete message attachment. Attachment {nameof(request.AttachmentId)}:{request.AttachmentId} not found.");

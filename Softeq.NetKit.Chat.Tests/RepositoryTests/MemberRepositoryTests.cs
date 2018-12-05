@@ -303,7 +303,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 Status = UserStatus.Active
             };
 
-            var channelMember = new ChannelMembers
+            var channelMember = new ChannelMember
             {
                 MemberId = member.Id,
                 ChannelId = _channelId,

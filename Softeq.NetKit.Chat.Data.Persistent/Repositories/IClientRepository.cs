@@ -10,14 +10,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
 {
     public interface IClientRepository
     {
-        Task<List<Client>> GetAllClientsAsync();
-        Task<Client> GetClientByIdAsync(Guid clientId);
-        Task<Client> GetClientByConnectionIdAsync(string clientConnectionId);
+        Task<Client> GetClientWithMemberAsync(string clientConnectionId);
         Task AddClientAsync(Client client);
         Task UpdateClientAsync(Client client);
         Task DeleteClientAsync(Guid clientId);
-        Task<List<Client>> GetMemberClientsAsync(Guid memberId);
-        Task<List<Client>> GetClientsByMemberIdsAsync(List<Guid> memberIds);
+        Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId);
+        Task<IReadOnlyCollection<Client>> GetClientsWithMembersAsync(List<Guid> memberIds);
         Task<bool> IsClientExistsAsync(string clientConnectionId);
+        Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId);
     }
 }

@@ -37,7 +37,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 
         public Settings Settings { get; set; }
         public List<Message> Messages { get; set; }
-        public List<ChannelMembers> Members { get; set; }
+        public List<ChannelMember> Members { get; set; }
         public List<Notification> Notifications { get; set; }
     }
 }

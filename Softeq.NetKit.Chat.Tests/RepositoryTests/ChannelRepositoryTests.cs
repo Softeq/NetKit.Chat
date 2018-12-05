@@ -2,7 +2,9 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
@@ -12,7 +14,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
     public class ChannelRepositoryTests : BaseTest
     {
         private readonly Guid _memberId = new Guid("c4d7e362-d49c-4b19-95e9-70cb169467bd");
-        private readonly Guid _memberId2 = new Guid("e173bacf-e17f-46fb-9a83-012c95776eb9");
+        private readonly Guid _member2Id = new Guid("e173bacf-e17f-46fb-9a83-012c95776eb9");
         
         public ChannelRepositoryTests()
         {
@@ -26,7 +28,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 
             var member2 = new Member
             {
-                Id = _memberId2,
+                Id = _member2Id,
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Active
             };
@@ -34,7 +36,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task AddChannelAsyncTest()
+        public async Task AddChannelAsync_ShouldAddChannel()
         {
             var channel = new Channel
             {
@@ -42,227 +44,421 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 IsClosed = true,
                 CreatorId = _memberId,
                 Created = DateTimeOffset.UtcNow,
-                Name = "test",
+                Name = "Name",
                 Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
+                Description = "Description",
+                WelcomeMessage = "WelcomeMessage",
+                MembersCount = 10,
+                Updated = DateTimeOffset.Now,
+                PhotoUrl = "PhotoUrl"
             };
 
-            // Act
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-            var channelByName = await UnitOfWork.ChannelRepository.GetChannelByNameAsync(channel.Name);
-            var channelById = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channel.Id);
 
-            // Assert
-            Assert.NotNull(channelByName);
-            AssertChannelEqualforAddChanelAsyncTest(channel, channelByName);
-            AssertChannelEqualforAddChanelAsyncTest(channel, channelById);
+            var newChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
+
+            newChannel.Should().BeEquivalentTo(channel);
         }
 
         [Fact]
-        public async Task DeleteChannelAsyncTest()
+        public async Task UpdateChannelAsync_ShouldUpdateChannel()
         {
-            // Arrange
             var channel = new Channel
             {
-                Id = Guid.NewGuid(),
-                IsClosed = true,
+                Id = new Guid("CF2EA610-91F7-45C7-8700-9626216120A0"),
+                IsClosed = false,
                 CreatorId = _memberId,
                 Created = DateTimeOffset.UtcNow,
-                Name = "test",
+                Name = "Name",
                 Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
+                Description = "Description",
+                WelcomeMessage = "WelcomeMessage",
+                MembersCount = 10,
+                Updated = DateTimeOffset.Now,
+                PhotoUrl = "PhotoUrl"
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            var channelToUpdate = new Channel
+            {
+                Id = channel.Id,
+                IsClosed = true,
+                CreatorId = channel.CreatorId,
+                Created = channel.Created,
+                Name = "Name2",
+                Type = ChannelType.Private,
+                Description = "Description2",
+                WelcomeMessage = "WelcomeMessage2",
+                MembersCount = 20,
+                Updated = channel.Updated + TimeSpan.FromMinutes(1),
+                PhotoUrl = "PhotoUrl2"
             };
 
-            // Act
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-            await UnitOfWork.ChannelRepository.DeleteChannelAsync(channel.Id);
-            var newChannel = await UnitOfWork.ChannelRepository.GetChannelByNameAsync(channel.Name);
+            await UnitOfWork.ChannelRepository.UpdateChannelAsync(channelToUpdate);
 
-            // Assert
-            Assert.Null(newChannel);
+            var updatedChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channelToUpdate.Id);
+
+            updatedChannel.Should().BeEquivalentTo(channelToUpdate);
         }
 
         [Fact]
-        public async Task GetChannelByNameAsyncTest()
+        public async Task GetAllChannelsAsync_ShouldReturnAllExistingChannels()
         {
-            // Arrange
-            var channel = new Channel
+            var channels = new List<Channel>
             {
-                Id = Guid.NewGuid(),
-                IsClosed = true,
-                CreatorId = _memberId,
-                Created = DateTimeOffset.UtcNow,
-                Name = "test",
-                Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
+                new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    IsClosed = true,
+                    CreatorId = _memberId,
+                    Created = DateTimeOffset.UtcNow,
+                    Type = ChannelType.Public,
+                    MembersCount = 1
+                },
+                new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    IsClosed = true,
+                    CreatorId = _member2Id,
+                    Created = DateTimeOffset.UtcNow,
+                    Type = ChannelType.Private,
+                    MembersCount = 2
+                }
             };
 
-            // Act
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-            var newChannel = await UnitOfWork.ChannelRepository.GetChannelByNameAsync(channel.Name);
-
-            // Assert
-            Assert.NotNull(newChannel);
-            Assert.Equal(channel.Id, newChannel.Id);
-            Assert.Equal(channel.IsClosed, newChannel.IsClosed);
-            Assert.Equal(channel.CreatorId, newChannel.CreatorId);
-            Assert.Equal(channel.Name, newChannel.Name);
-            Assert.Equal(channel.Type, newChannel.Type);
-            Assert.Equal(channel.Description, newChannel.Description);
-            Assert.Equal(channel.WelcomeMessage, newChannel.WelcomeMessage);
-        }
-
-        [Fact]
-        public async Task GetAllChannelsAsyncTest()
-        {
-            // Arrange
-            var channel = new Channel
+            foreach (var channel in channels)
             {
-                Id = Guid.NewGuid(),
-                IsClosed = true,
-                CreatorId = _memberId,
-                Created = DateTimeOffset.UtcNow,
-                Name = "test",
-                Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
-            };
+                await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+            }
 
-            // Act
-            var channels = await UnitOfWork.ChannelRepository.GetAllChannelsAsync();
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
             var newChannels = await UnitOfWork.ChannelRepository.GetAllChannelsAsync();
 
-            // Assert
-            Assert.NotNull(channels);
-            Assert.Empty(channels);
-            Assert.NotNull(newChannels);
-            Assert.NotEmpty(newChannels);
-            Assert.True(newChannels.Count > channels.Count);
+            newChannels.Should().BeEquivalentTo(channels);
         }
 
         [Fact]
-        public async Task GetAllowedChannelsAsyncTest()
+        public async Task GetAllowedChannelsWithMessagesAsync_ShouldReturnAllOpenChannelsWhereMemberParticipateWithMessages()
         {
             // Arrange
+            var member = new Member
+            {
+                Id = new Guid("78D80247-DD60-49AB-821C-069D47130DF9"),
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Active
+            };
+            UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
+
+            var participatedChannels = new List<Channel>
+            {
+                new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    IsClosed = false,
+                    CreatorId = member.Id,
+                    Created = DateTimeOffset.UtcNow,
+                    Type = ChannelType.Public,
+                    MembersCount = 10
+                },
+                new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    IsClosed = false,
+                    CreatorId = _member2Id,
+                    Created = DateTimeOffset.UtcNow,
+                    Type = ChannelType.Private,
+                    MembersCount = 10
+                }
+            };
+            foreach (var channel in participatedChannels)
+            {
+                await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+                await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = member.Id, ChannelId = channel.Id });
+
+                var message = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = "Body",
+                    Created = DateTimeOffset.Now,
+                    ImageUrl = "ImageUrl",
+                    Type = MessageType.Default,
+                    ChannelId = channel.Id,
+                    OwnerId = member.Id,
+                    Owner = member
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(message);
+                channel.Messages = new List<Message> { message };
+            }
+
+            var closedChannel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = member.Id,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 10
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(closedChannel);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = member.Id, ChannelId = closedChannel.Id });
+
+            var notParticipatedChannel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = false,
+                CreatorId = _member2Id,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Private,
+                MembersCount = 10
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(notParticipatedChannel);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = _member2Id, ChannelId = notParticipatedChannel.Id });
+
+            // Act
+            var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAsync(member.Id);
+
+            // Assert
+            allowedChannels.Should().BeEquivalentTo(participatedChannels);
+        }
+
+        [Fact]
+        public async Task GetAllowedChannelsAsync_ShouldReturnAllOpenChannelsWhereMemberParticipate()
+        {
+            // Arrange
+            var participatedChannels = new List<Channel>
+            {
+                new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    IsClosed = false,
+                    CreatorId = _memberId,
+                    Created = DateTimeOffset.UtcNow,
+                    Type = ChannelType.Public,
+                    MembersCount = 10
+                },
+                new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    IsClosed = false,
+                    CreatorId = _member2Id,
+                    Created = DateTimeOffset.UtcNow,
+                    Type = ChannelType.Private,
+                    MembersCount = 10
+                }
+            };
+            foreach (var channel in participatedChannels)
+            {
+                await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+                await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = _memberId, ChannelId = channel.Id });
+            }
+
+            var closedChannel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 10
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(closedChannel);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = _memberId, ChannelId = closedChannel.Id });
+
+            var notParticipatedChannel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = false,
+                CreatorId = _member2Id,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Private,
+                MembersCount = 10
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(notParticipatedChannel);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = _member2Id, ChannelId = notParticipatedChannel.Id });
+
+            // Act
+            var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(_memberId);
+
+            // Assert
+            allowedChannels.Should().BeEquivalentTo(participatedChannels);
+        }
+
+        [Fact]
+        public async Task IsChannelExistsAsync_ShouldReturnTrueIfChannelExists()
+        {
             var channel = new Channel
             {
                 Id = Guid.NewGuid(),
                 IsClosed = false,
-                CreatorId = _memberId2,
+                CreatorId = _memberId,
                 Created = DateTimeOffset.UtcNow,
-                Name = "test",
                 Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
                 MembersCount = 10
             };
 
-            var channel2 = new Channel
-            {
-                Id = Guid.NewGuid(),
-                IsClosed = false,
-                CreatorId = _memberId2,
-                Created = DateTimeOffset.UtcNow,
-                Name = "test2",
-                Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
-            };
-            
-            var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(_memberId2);
+            var exists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channel.Id);
+            exists.Should().BeFalse();
+
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMembers
-                {MemberId = _memberId, ChannelId = channel.Id});
 
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel2);
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMembers
-                { MemberId = _memberId2, ChannelId = channel2.Id });
-
-            // Act
-            var newAllowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(_memberId2);
-
-            // Assert
-            Assert.NotNull(allowedChannels);
-            Assert.Empty(allowedChannels);
-            Assert.NotNull(newAllowedChannels);
-            Assert.NotEmpty(newAllowedChannels);
-            Assert.True(newAllowedChannels.Count > allowedChannels.Count);
-            Assert.True(newAllowedChannels.Count == 1);
+            exists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channel.Id);
+            exists.Should().BeTrue();
         }
-
+        
         [Fact]
-        public async Task CheckIfUserExistInChannelAsyncTest()
+        public async Task GetChannelAsync_ShouldReturnExistingChannel()
         {
-            // Arrange
             var channel = new Channel
             {
                 Id = Guid.NewGuid(),
                 IsClosed = true,
                 CreatorId = _memberId,
                 Created = DateTimeOffset.UtcNow,
-                Name = "test",
+                Name = "Name",
                 Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
-                MembersCount = 10
+                Description = "Description",
+                WelcomeMessage = "WelcomeMessage",
+                MembersCount = 10,
+                PhotoUrl = "PhotoUrl",
+                Updated = DateTimeOffset.Now
             };
 
-            var channel2 = new Channel
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            var newChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
+
+            newChannel.Should().BeEquivalentTo(channel);
+        }
+
+        [Fact]
+        public async Task GetChannelWithCreatorAsync_ShouldReturnExistingChannelWithCreatorInformation()
+        {
+            var creator = new Member
+            {
+                Id = new Guid("9B6C7A69-85B2-4F43-A08B-ABC4879C00E4"),
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Offline,
+                SaasUserId = "SaasUserId",
+                Name = "Name",
+                Role = UserRole.User,
+                IsAfk = true,
+                Email = "Email"
+            };
+
+            await UnitOfWork.MemberRepository.AddMemberAsync(creator);
+
+            var channel = new Channel
             {
                 Id = Guid.NewGuid(),
                 IsClosed = true,
-                CreatorId = _memberId2,
+                CreatorId = creator.Id,
                 Created = DateTimeOffset.UtcNow,
-                Name = "test2",
+                Name = "Name",
                 Type = ChannelType.Public,
-                Description = "test",
-                WelcomeMessage = "test",
+                Description = "Description",
+                WelcomeMessage = "WelcomeMessage",
+                MembersCount = 10,
+                PhotoUrl = "PhotoUrl",
+                Updated = DateTimeOffset.Now,
+                Creator = creator
+            };
+
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            var newChannel = await UnitOfWork.ChannelRepository.GetChannelWithCreatorAsync(channel.Id);
+
+            newChannel.Should().BeEquivalentTo(channel);
+        }
+
+        [Fact]
+        public async Task IsMemberExistsInChannelAsync_ShouldReturnTrueIfExistsAndFalseIfNot()
+        {
+            // Arrange
+            var creatorAndParticipate = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
                 MembersCount = 10
             };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(creatorAndParticipate);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = _memberId, ChannelId = creatorAndParticipate.Id });
 
-            var channelMember = new ChannelMembers
+            var notCreatorAndParticipate = new Channel
             {
-                ChannelId = channel.Id,
-                MemberId = _memberId,
-                LastReadMessageId = null
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _member2Id,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 10
             };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(notCreatorAndParticipate);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = _memberId, ChannelId = notCreatorAndParticipate.Id });
 
+            var creatorAndNotParticipate = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 10
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(creatorAndNotParticipate);
 
-            // Act           
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-            await UnitOfWork.ChannelRepository.AddChannelAsync(channel2);
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-
-            var ensureExist = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(_memberId, channel.Id);
-            var ensureNonExist = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(_memberId, channel2.Id);
+            // Act
+            var whenCreatorAndParticipate = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(_memberId, creatorAndParticipate.Id);
+            var whenNotCreatorAndParticipate = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(_memberId, notCreatorAndParticipate.Id);
+            var whenCreatorAndNotParticipate = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(_memberId, creatorAndNotParticipate.Id);
 
             // Assert
-            Assert.True(ensureExist);
-            Assert.False(ensureNonExist);
+            whenCreatorAndParticipate.Should().BeTrue();
+            whenNotCreatorAndParticipate.Should().BeTrue();
+            whenCreatorAndNotParticipate.Should().BeFalse();
         }
 
-        #region Private methods
-        
-        private void AssertChannelEqualforAddChanelAsyncTest(Channel expectedChannel, Channel actualChannel)
+        [Fact]
+        public async Task IncrementChannelMembersCount_ShouldIncrementMembersCount()
         {
-            Assert.Equal(expectedChannel.Id, actualChannel.Id);
-            Assert.Equal(expectedChannel.IsClosed, actualChannel.IsClosed);
-            Assert.Equal(expectedChannel.CreatorId, actualChannel.CreatorId);
-            Assert.Equal(expectedChannel.Name, actualChannel.Name);
-            Assert.Equal(expectedChannel.Type, actualChannel.Type);
-            Assert.Equal(expectedChannel.Description, actualChannel.Description);
-            Assert.Equal(expectedChannel.WelcomeMessage, actualChannel.WelcomeMessage);
+            var channel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 0
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            await UnitOfWork.ChannelRepository.IncrementChannelMembersCount(channel.Id);
+
+            var incrementedChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
+
+            incrementedChannel.MembersCount.Should().Be(channel.MembersCount + 1);
         }
 
-        #endregion
+        [Fact]
+        public async Task DecrementChannelMembersCount_ShouldDecrementMembersCount()
+        {
+            var channel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 1
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            await UnitOfWork.ChannelRepository.DecrementChannelMembersCount(channel.Id);
+
+            var incrementedChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
+
+            incrementedChannel.MembersCount.Should().Be(channel.MembersCount - 1);
+        }
     }
 }

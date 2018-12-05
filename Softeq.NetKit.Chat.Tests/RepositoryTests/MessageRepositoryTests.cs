@@ -223,7 +223,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             Assert.Null(actualMessage);
 
             // Arrange 2
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMembers
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
             {
                 ChannelId = _channelId,
                 MemberId = _memberId,

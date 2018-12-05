@@ -2,7 +2,9 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
@@ -45,9 +47,8 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task AddAttachmentAsyncTest()
+        public async Task AddAttachmentAsync_ShouldAddAttachment()
         {
-            // Arrange
             var attachment = new Attachment
             {
                 Id = Guid.NewGuid(),
@@ -57,24 +58,17 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MessageId = _messageId,
                 Size = 100
             };
-            
-            // Act
-            await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
-            var newAttachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(attachment.Id);
 
-            // Assert
-            Assert.NotNull(newAttachment);
-            Assert.Equal(attachment.Id, newAttachment.Id);
-            Assert.Equal(attachment.ContentType, newAttachment.ContentType);
-            Assert.Equal(attachment.FileName, newAttachment.FileName);
-            Assert.Equal(attachment.MessageId, newAttachment.MessageId);
-            Assert.Equal(attachment.Size, newAttachment.Size);
+            await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
+
+            var newAttachment = await UnitOfWork.AttachmentRepository.GetAttachmentAsync(attachment.Id);
+
+            newAttachment.Should().BeEquivalentTo(attachment);
         }
 
         [Fact]
-        public async Task DeleteAttachmentAsyncTest()
+        public async Task DeleteAttachmentAsync_ShouldDeleteAttachment()
         {
-            // Arrange
             var attachment = new Attachment
             {
                 Id = Guid.NewGuid(),
@@ -84,20 +78,19 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MessageId = _messageId,
                 Size = 100
             };
-            
-            // Act
+
             await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
+
             await UnitOfWork.AttachmentRepository.DeleteAttachmentAsync(attachment.Id);
-            var newAttachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(attachment.Id);
 
-            // Assert
-            Assert.Null(newAttachment);
+            var newAttachment = await UnitOfWork.AttachmentRepository.GetAttachmentAsync(attachment.Id);
+
+            newAttachment.Should().BeNull();
         }
 
         [Fact]
-        public async Task GetAttachmentByIdAsyncTest()
+        public async Task GetAttachmentByIdAsync_ShouldReturnExistingAttachment()
         {
-            // Arrange
             var attachment = new Attachment
             {
                 Id = Guid.NewGuid(),
@@ -108,17 +101,45 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 Size = 100
             };
 
-            // Act
             await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
-            var newAttachment = await UnitOfWork.AttachmentRepository.GetAttachmentByIdAsync(attachment.Id);
 
-            // Assert
-            Assert.NotNull(newAttachment);
-            Assert.Equal(attachment.Id, newAttachment.Id);
-            Assert.Equal(attachment.ContentType, newAttachment.ContentType);
-            Assert.Equal(attachment.FileName, newAttachment.FileName);
-            Assert.Equal(attachment.MessageId, newAttachment.MessageId);
-            Assert.Equal(attachment.Size, newAttachment.Size);
+            var newAttachment = await UnitOfWork.AttachmentRepository.GetAttachmentAsync(attachment.Id);
+
+            newAttachment.Should().BeEquivalentTo(attachment);
+        }
+
+        [Fact]
+        public async Task GetMessageAttachmentsAsync_ShouldReturnAllMessageAttachments()
+        {
+            var attachments = new List<Attachment> {
+                new Attachment
+                {
+                    Id = new Guid("14D00154-F363-4E83-8F4B-4B9EE303D7D2"),
+                    ContentType = "jpg",
+                    Created = DateTime.UtcNow,
+                    FileName = "a1.jpg",
+                    MessageId = _messageId,
+                    Size = 100
+                },
+                new Attachment
+                {
+                    Id = new Guid("BB3E9697-904D-4821-914E-CCE1BD14EF5C"),
+                    ContentType = "jpg",
+                    Created = DateTime.UtcNow,
+                    FileName = "a2.jpg",
+                    MessageId = _messageId,
+                    Size = 222
+                }
+            };
+
+            foreach (var attachment in attachments)
+            {
+                await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
+            }
+
+            var newAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(_messageId);
+
+            newAttachments.Should().BeEquivalentTo(attachments);
         }
 
         [Fact]
@@ -151,9 +172,46 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
             }
 
-            var count = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_messageId);
+            var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_messageId);
 
-            Assert.Equal(attachments.Length, count);
+            attachmentsCount.Should().Be(attachments.Length);
+        }
+
+        [Fact]
+        public async Task DeleteMessageAttachmentsAsync_ShouldDeleteAllMessageAttachments()
+        {
+            var attachments = new[]
+            {
+                new Attachment
+                {
+                    Id = Guid.NewGuid(),
+                    ContentType = "jpg",
+                    Created = DateTime.UtcNow,
+                    FileName = "pic",
+                    MessageId = _messageId,
+                    Size = 100
+                },
+                new Attachment
+                {
+                    Id = Guid.NewGuid(),
+                    ContentType = "png",
+                    Created = DateTime.UtcNow,
+                    FileName = "image",
+                    MessageId = _messageId,
+                    Size = 100
+                }
+            };
+
+            foreach (var attachment in attachments)
+            {
+                await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
+            }
+
+            await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(_messageId);
+
+            var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_messageId);
+
+            attachmentsCount.Should().Be(0);
         }
     }
 }

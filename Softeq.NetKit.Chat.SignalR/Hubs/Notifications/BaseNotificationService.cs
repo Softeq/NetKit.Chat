@@ -13,53 +13,34 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
     public abstract class BaseNotificationService
     {
-        protected BaseNotificationService(IChannelMemberService channelMemberService, IMemberService memberService, IHubContext<ChatHub> hubContext)
+        private readonly IClientService _clientService;
+        private readonly IChannelMemberService _channelMemberService;
+
+        protected BaseNotificationService(IChannelMemberService channelMemberService, IMemberService memberService, IClientService clientService, IHubContext<ChatHub> hubContext)
         {
             Ensure.That(channelMemberService).IsNotNull();
             Ensure.That(memberService).IsNotNull();
             Ensure.That(hubContext).IsNotNull();
-
-            ChannelMemberService = channelMemberService;
+            Ensure.That(clientService).IsNotNull();
+            
             MemberService = memberService;
             HubContext = hubContext;
+            _channelMemberService = channelMemberService;
+            _clientService = clientService;
         }
 
         protected IHubContext<ChatHub> HubContext { get; }
-
-        protected IChannelMemberService ChannelMemberService { get; }
 
         protected IMemberService MemberService { get; }
 
         protected async Task<List<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
         {
-            // TODO: Change this code. Recommended to use Clients.Group()
-            var members = await ChannelMemberService.GetChannelMembersAsync(channelId);
-            
-            var mutedMemberIds = members.Where(x => x.IsMuted)
-                .Select(x => x.MemberId)
-                .ToList();
-
-            var mutedConnectionClientIds = (await MemberService.GetClientsByMemberIds(mutedMemberIds))
-                .Select(x => x.ConnectionClientId)
-                .ToList();
-
-            var clients = new List<string>();
-            foreach (var item in members)
-            {
-                var memberClients = (await MemberService.GetMemberClientsAsync(item.MemberId))
-                    .Select(x => x.ClientConnectionId)
-                    .Except(mutedConnectionClientIds)
-                    .ToList();
-
-                clients.AddRange(memberClients);
-            }
-
-            return clients;
+            return (await _clientService.GetNotMutedChannelClientConnectionIdsAsync(channelId)).ToList();
         }
 
         protected async Task<List<string>> GetNotMutedChannelMembersConnectionsAsync(Guid channelId, IReadOnlyCollection<Guid> notifyMemberIds)
         {
-            var channelMembers = await ChannelMemberService.GetChannelMembersAsync(channelId);
+            var channelMembers = await _channelMemberService.GetChannelMembersAsync(channelId);
 
             var notMutedMemberIds = channelMembers.Where(x => !x.IsMuted && notifyMemberIds.Contains(x.MemberId))
                 .Select(x => x.MemberId)

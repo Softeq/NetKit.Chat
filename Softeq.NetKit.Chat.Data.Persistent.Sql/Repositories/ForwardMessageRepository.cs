@@ -5,18 +5,21 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    internal class ForwardMessageRepository : IForwardMessageRepository 
+    internal class ForwardMessageRepository : IForwardMessageRepository
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
         public ForwardMessageRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
+            Ensure.That(sqlConnectionFactory).IsNotNull();
+
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
@@ -24,9 +27,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"
-                    INSERT INTO ForwardMessages(Id, Body, Created, ChannelId, OwnerId) 
-                    VALUES (@Id, @Body, @Created, @ChannelId, @OwnerId)";
+                var sqlQuery = @"INSERT INTO ForwardMessages(Id, Body, Created, ChannelId, OwnerId) 
+                                 VALUES (@Id, @Body, @Created, @ChannelId, @OwnerId)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, message);
             }
@@ -43,27 +45,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<ForwardMessage> GetForwardMessageByIdAsync(Guid messageId)
+        public async Task<ForwardMessage> GetForwardMessageAsync(Guid forwardMessageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"
-                    SELECT *
-                    FROM ForwardMessages m INNER JOIN Members mem ON m.OwnerId = mem.Id
-                    WHERE m.Id = @messageId";
+                var sqlQuery = @"SELECT *
+                                 FROM ForwardMessages
+                                 WHERE Id = @forwardMessageId";
 
-                var data = (await connection.QueryAsync<ForwardMessage, Member, ForwardMessage>(
-                        sqlQuery,
-                        (message, member) =>
-                        {
-                            message.Owner = member;
-                            message.OwnerId = member.Id;
-                            return message;
-                        },
-                        new { messageId }))
-                    .FirstOrDefault();
-
-                return data;
+                return (await connection.QueryAsync<ForwardMessage>(sqlQuery, new { forwardMessageId })).FirstOrDefault();
             }
         }
     }

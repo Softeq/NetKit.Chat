@@ -21,8 +21,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<IReadOnlyCollection<ChannelMemberResponse>> GetChannelMembersAsync(Guid channelId)
         {
-            var channel = await UnitOfWork.ChannelRepository.GetChannelByIdAsync(channelId);
-            if (channel == null)
+            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
+            if (!isChannelExists)
             {
                 throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} not found.");
             }

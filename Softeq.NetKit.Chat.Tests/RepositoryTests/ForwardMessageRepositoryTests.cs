@@ -14,7 +14,6 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
     {
         private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BD9B-55C3862262AA");
         private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BD9B-11C3862262EE");
-        private readonly ForwardMessage _forwardMessage;
 
         public ForwardMessageRepositoryTests()
         {
@@ -36,45 +35,61 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MembersCount = 0
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
+        }
 
-            _forwardMessage = new ForwardMessage()
+        [Fact]
+        public async Task AddForwardMessageAsync_ShouldCreateForwardMessage()
+        {
+            var forwardMessage = new ForwardMessage
             {
                 Id = Guid.NewGuid(),
-                Body = "test forward message body",
+                Body = "Body",
                 ChannelId = _channelId,
                 OwnerId = _memberId,
                 Created = DateTimeOffset.UtcNow
             };
-        }
 
-        [Fact]
-        public async Task AddForwardMessageAsync_ShouldCreateNewRecord()
-        {
-            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(_forwardMessage);
-            var createdForwardMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageByIdAsync(_forwardMessage.Id);
+            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
 
+            var createdForwardMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageAsync(forwardMessage.Id);
             createdForwardMessage.Should().BeEquivalentTo(createdForwardMessage, options => options.Excluding(message => message.Owner));
         }
 
         [Fact]
-        public async Task DeleteForwardMessageAsync_ShouldDeleteCreatedRecord()
+        public async Task DeleteForwardMessageAsync_ShouldDeleteForwardMessage()
         {
-            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(_forwardMessage);
-            await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(_forwardMessage.Id);
-            var nullForwardMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageByIdAsync(_forwardMessage.Id);
+            var forwardMessage = new ForwardMessage
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                ChannelId = _channelId,
+                OwnerId = _memberId,
+                Created = DateTimeOffset.UtcNow
+            };
+            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
 
-            nullForwardMessage.Should().BeNull("Created message was deleted");
+            await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(forwardMessage.Id);
+
+            var nullForwardMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageAsync(forwardMessage.Id);
+            nullForwardMessage.Should().BeNull();
         }
 
         [Fact]
-        public async Task GetForwardMessageByIdAsync_ShouldFindRecordById()
+        public async Task GetForwardMessageByIdAsync_ShouldReturnForwardMessage()
         {
-            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(_forwardMessage);
-            var findedMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageByIdAsync(_forwardMessage.Id);
+            var forwardMessage = new ForwardMessage
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                ChannelId = _channelId,
+                OwnerId = _memberId,
+                Created = DateTimeOffset.UtcNow
+            };
+            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
 
-            findedMessage.Should().BeEquivalentTo(_forwardMessage, options => options
-                .Excluding(message => message.Channel)
-                .Excluding(message => message.Owner));
+            var foundMessage = await UnitOfWork.ForwardMessageRepository.GetForwardMessageAsync(forwardMessage.Id);
+
+            foundMessage.Should().BeEquivalentTo(forwardMessage);
         }
     }
 }
