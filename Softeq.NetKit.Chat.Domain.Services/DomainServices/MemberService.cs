@@ -217,10 +217,34 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return clients.Select(x => x.ToClientResponse(x.Member.SaasUserId)).ToList().AsReadOnly();
         }
 
-        public async Task<IReadOnlyCollection<MemberSummary>> GetAllMembersAsync()
+        public async Task<PagedMembersResponse> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter)
         {
-            var members = await UnitOfWork.MemberRepository.GetAllMembersAsync();
-            return members.Select(x => x.ToMemberSummary(_configuration)).ToList().AsReadOnly();
+            var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(pageNumber, pageSize, nameFilter);
+
+            var response = new PagedMembersResponse
+            {
+                Entities = members.Entities.Select(x => x.ToMemberSummary(_configuration)),
+                TotalRows = members.TotalRows,
+                PageNumber = members.PageNumber,
+                PageSize = members.PageSize
+            };
+
+            return response;
+        }
+
+        public async Task<PagedMembersResponse> GetPotentialChannelMembersAsync(Guid channelId, GetPotentialChannelMembersRequest request)
+        {
+            var members = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(channelId, request.PageNumber, request.PageSize, request.NameFilter);
+
+            var response = new PagedMembersResponse
+            {
+                Entities = members.Entities.Select(x => x.ToMemberSummary(_configuration)),
+                TotalRows = members.TotalRows,
+                PageNumber = members.PageNumber,
+                PageSize = members.PageSize
+            };
+
+            return response;
         }
 
         public async Task UpdateActivityAsync(AddClientRequest request)

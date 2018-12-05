@@ -27,6 +27,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<MemberSummary> AddMemberAsync(string saasUserId, string email);
         Task UpdateMemberStatusAsync(UpdateMemberStatusRequest request);
         Task<IReadOnlyCollection<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds);
-        Task<IReadOnlyCollection<MemberSummary>> GetAllMembersAsync();
+        Task<PagedMembersResponse> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter);
+        Task<PagedMembersResponse> GetPotentialChannelMembersAsync(Guid channelId, GetPotentialChannelMembersRequest request);
     }
 }
