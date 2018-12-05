@@ -2,6 +2,8 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CorrelationId;
@@ -9,12 +11,15 @@ using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Softeq.NetKit.Chat.Data.Persistent.Database;
 using Softeq.NetKit.Chat.SignalR.Hubs;
+using Softeq.NetKit.Chat.Web.App.Versioning;
 using Softeq.NetKit.Chat.Web.Configuration;
 using Softeq.NetKit.Chat.Web.ExceptionHandling;
 using Softeq.NetKit.Chat.Web.Extensions;
@@ -63,6 +68,9 @@ namespace Softeq.NetKit.Chat.Web
             services.AddApiVersioning(options =>
             {
                 options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new HeaderApiVersionReader("api-version");
             });
 
             services.AddCors();
@@ -71,7 +79,33 @@ namespace Softeq.NetKit.Chat.Web
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "API doc", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Please enter JWT with Bearer into field", Name = "Authorization", Type = "apiKey" });
+
+                c.SwaggerDoc("v1.0", new Info { Title = "API doc v1.0", Version = "v1.0" });
+
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
+                    { "Bearer", new string[0] }
+                });
+
+                c.DocInclusionPredicate((docName, apiDesc) =>
+                {
+                    var actionApiVersionModel = apiDesc.ActionDescriptor?.GetApiVersion();
+
+                    // would mean this action is unversioned and should be included everywhere
+                    if (actionApiVersionModel == null)
+                    {
+                        return true;
+                    }
+
+                    if (actionApiVersionModel.DeclaredApiVersions.Any())
+                    {
+                        return actionApiVersionModel.DeclaredApiVersions.Any(v => $"v{v.ToString()}" == docName);
+                    }
+
+                    return actionApiVersionModel.ImplementedApiVersions.Any(v => $"v{v.ToString()}" == docName);
+                });
+
+                c.OperationFilter<ApiVersionOperationFilter>();
             });
 
             var builder = new ContainerBuilder();
@@ -116,7 +150,7 @@ namespace Softeq.NetKit.Chat.Web
                 // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+                    c.SwaggerEndpoint($"/swagger/v1/swagger.json", "Versioned Api v1.0");
                 });
             }
 
