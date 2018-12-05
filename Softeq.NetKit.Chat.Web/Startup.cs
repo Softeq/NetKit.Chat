@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -75,6 +76,10 @@ namespace Softeq.NetKit.Chat.Web
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Please enter JWT with Bearer into field", Name = "Authorization", Type = "apiKey" });
 
                 c.SwaggerDoc("v1.0", new Info { Title = "API doc v1.0", Version = "v1.0" });
+
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
+                    { "Bearer", new string[0] }
+                });
 
                 c.DocInclusionPredicate((docName, apiDesc) =>
                 {
