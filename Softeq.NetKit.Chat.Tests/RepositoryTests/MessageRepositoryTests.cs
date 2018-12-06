@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,310 +14,543 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class MessageRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BD9B-55C3862262AA");
-        private const string _memberName = "testMember";
+        private readonly Member _member;
         private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BD9B-11C3862262EE");
 
         public MessageRepositoryTests()
         {
-            var member = new Member
+            _member = new Member
             {
-                Id = _memberId,
+                Id = new Guid("FE728AF3-DDE7-4B11-BD9B-55C3862262AA"),
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Active,
-                Name = _memberName
+                Name = "testMember"
             };
-            UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
+            UnitOfWork.MemberRepository.AddMemberAsync(_member).GetAwaiter().GetResult();
 
             var channel = new Channel
             {
                 Id = _channelId,
-                CreatorId = member.Id,
-                Name = "testMessageChannel",
-                Type = ChannelType.Public,
-                MembersCount = 0
+                CreatorId = _member.Id
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
 
         [Fact]
-        public async Task GetAllChannelMessagesAsyncTest()
+        public async Task GetAllChannelMessagesWithOwnersAsync_ShouldReturnAllChannelMessages()
         {
             // Arrange
-            var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesAsync(_channelId);
-            var expectedMessage = await GenerateAndAddMessage();
+            var expectedChannelMessages = new List<Message>();
+            for (var i = 0; i < 5; i++)
+            {
+                var message = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = "Body",
+                    Created = DateTimeOffset.Now,
+                    ImageUrl = "ImageUrl",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    OwnerId = _member.Id,
+                    Owner = _member,
+                    Updated = DateTimeOffset.Now
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(message);
+                expectedChannelMessages.Add(message);
+            }
+
+            // Add second channel with message
+            var channel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                CreatorId = _member.Id
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            var messageInSecondChannel = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.Now,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = channel.Id,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(messageInSecondChannel);
 
             // Act
-            var messagesAfterAddingNew = await UnitOfWork.MessageRepository.GetAllChannelMessagesAsync(_channelId);
+            var channelMessages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(_channelId);
 
             // Assert
-            Assert.NotNull(messages);
-            Assert.Empty(messages);
-            Assert.NotNull(messagesAfterAddingNew);
-            Assert.NotEmpty(messagesAfterAddingNew);
-            Assert.Single(messagesAfterAddingNew);
-            AssertMessagesEqual(expectedMessage, messagesAfterAddingNew.First());
+            channelMessages.Should().BeEquivalentTo(expectedChannelMessages);
         }
-        
+
         [Fact]
-        public async Task GetOlderMessagesAsyncTest()
+        public async Task GetOlderMessagesWithOwnersAsync_ShouldReturnOlderMessagesWithOwner_which_Created_field_less_than_LastReadMessageCreated()
         {
             // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
+            var lastReadMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.Now,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                OwnerId = _member.Id,
+                Owner = _member,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
-            var createdDate = expectedMessage.Created;
+            // Add unread messages
+            for (var i = 1; i < 5; i++)
+            {
+                var unreadMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = "Body",
+                    Created = lastReadMessage.Created + TimeSpan.FromSeconds(i),
+                    ImageUrl = "ImageUrl",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    OwnerId = _member.Id,
+                    Owner = _member,
+                    Updated = DateTimeOffset.Now
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
+            }
 
-            // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(
-                _channelId, createdDate.Add(-TimeSpan.FromSeconds(1)), null);
-            
-            // Assert 1
-            Assert.NotNull(actualMessages);
-            Assert.Empty(actualMessages);
+            // Add already read messages
+            var readMessages = new List<Message>();
+            for (var i = 1; i < 5; i++)
+            {
+                var readMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = $"Body{i}",
+                    Created = lastReadMessage.Created - TimeSpan.FromSeconds(i),
+                    ImageUrl = $"ImageUrl{i}",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    OwnerId = _member.Id,
+                    Owner = _member,
+                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i)
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
+                readMessages.Add(readMessage);
+            }
+            readMessages = readMessages.OrderBy(o => o.Created).ToList();
 
-            // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetOlderMessagesAsync(
-                _channelId, createdDate.Add(TimeSpan.FromSeconds(1)), null);
-
-            // Assert 2
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(expectedMessage, actualMessages.First());
-        }
-
-        [Fact]
-        public async Task GetMessagesAsyncTest()
-        {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
-
-            var createdDate = expectedMessage.Created;
-
-            // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetMessagesAsync(
-                _channelId, createdDate.Add(TimeSpan.FromSeconds(1)), null);
-
-            // Assert 1
-            Assert.NotNull(actualMessages);
-            Assert.Empty(actualMessages);
-
-            // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetMessagesAsync(
-                _channelId, createdDate.Add(-TimeSpan.FromSeconds(1)), null);
-
-            // Assert 2
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(expectedMessage, actualMessages.First());
-        }
-
-        [Fact]
-        public async Task GetLastMessagesAsyncTest()
-        {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
-
-            var createdDate = expectedMessage.Created;
-
-            var pageSize = 0;
-            var lastReadMessageCreated = createdDate.Add(TimeSpan.FromSeconds(1));
-
-            // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetLastMessagesAsync(
-                _channelId, lastReadMessageCreated, pageSize);
-
-            // Assert 1
-            Assert.NotNull(actualMessages);
-            Assert.Empty(actualMessages);
-
-            // Arrange 2
-            pageSize = 1;
-
-            // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetLastMessagesAsync(
-                _channelId, lastReadMessageCreated, pageSize);
-
-            // Assert 2
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(expectedMessage, actualMessages.First());
-
-            // Arrange 3
-            pageSize = 0;
-            lastReadMessageCreated = createdDate.Add(-TimeSpan.FromSeconds(1));
-
-            // Act 3
-            actualMessages = await UnitOfWork.MessageRepository.GetLastMessagesAsync(
-                _channelId, lastReadMessageCreated, pageSize);
-
-            // Assert 3
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(expectedMessage, actualMessages.First());
-        }
-
-        [Fact]
-        public async Task GetPreviousMessageAsync_ShouldReturnPreviousMessageIfExists()
-        {
-            var firstMessage = await GenerateAndAddMessage();
-            var previousForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage);
-            Assert.Null(previousForFirstMessage);
-
-            var secondMessage = await GenerateAndAddMessage(DateTimeOffset.UtcNow.AddHours(1));
-            var previousForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage);
-            previousForSecondMessage.Should().BeEquivalentTo(firstMessage, compareOptions => compareOptions.Excluding(message => message.Owner));
-        }
-
-        [Fact]
-        public async Task GetPreviousMessagesAsyncTest()
-        {
-            // Arrange
-            var firstMessage = await GenerateAndAddMessage();
-            var secondMessage = await GenerateAndAddMessage(firstMessage.Created.AddMinutes(1));
-            
-            // Act 1
-            var actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(_channelId, firstMessage.Id);
-
-            // Assert 1
-            Assert.NotNull(actualMessages);
-            Assert.Empty(actualMessages);
-
-            // Act 2
-            actualMessages = await UnitOfWork.MessageRepository.GetPreviousMessagesAsync(_channelId, secondMessage.Id);
-
-            // Assert 2
-            Assert.NotNull(actualMessages);
-            Assert.NotEmpty(actualMessages);
-            Assert.Single(actualMessages);
-            AssertMessagesEqual(firstMessage, actualMessages.First());
-        }
-
-        [Fact]
-        public async Task GetMessageByIdAsyncTest()
-        {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
 
             // Act
-            var actualMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
+            var allOlderMessages = await UnitOfWork.MessageRepository.GetOlderMessagesWithOwnersAsync(_channelId, lastReadMessage.Created, null);
+            var firstTwoOlderMessages = await UnitOfWork.MessageRepository.GetOlderMessagesWithOwnersAsync(_channelId, lastReadMessage.Created, 2);
 
             // Assert
-            Assert.NotNull(actualMessage);
-            AssertMessagesEqual(expectedMessage, actualMessage);
+            allOlderMessages.Should().BeEquivalentTo(readMessages);
+            firstTwoOlderMessages.Should().BeEquivalentTo(readMessages.Skip(2));
         }
 
         [Fact]
-        public async Task GetLastReadMessageAsyncTest()
+        public async Task GetMessagesWithOwnersAsync_ShouldReturnMessages()
         {
             // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
-            var anotherMessage = await GenerateAndAddMessage();
+            var lastReadMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.Now,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
-            // Act 1
-            var actualMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(_memberId, _channelId);
+            // Add unread messages
+            var unreadMessages = new List<Message>
+            {
+                lastReadMessage
+            };
 
-            // Assert 1
-            Assert.Null(actualMessage);
+            for (var i = 1; i < 5; i++)
+            {
+                var unreadMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = $"Body{i}",
+                    Created = lastReadMessage.Created + TimeSpan.FromSeconds(i),
+                    ImageUrl = $"ImageUrl{i}",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    Owner = _member,
+                    OwnerId = _member.Id,
+                    Updated = DateTimeOffset.Now
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
+                unreadMessages.Add(unreadMessage);
+            }
+            unreadMessages = unreadMessages.OrderBy(o => o.Created).ToList();
 
-            // Arrange 2
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
+
+            // Add already read messages
+            for (var i = 1; i < 5; i++)
+            {
+                var readMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = $"Body{i}",
+                    Created = lastReadMessage.Created - TimeSpan.FromSeconds(i),
+                    ImageUrl = $"ImageUrl{i}",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    OwnerId = _member.Id,
+                    Owner = _member,
+                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i)
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
+            }
+
+
+            // Act
+            var allNewMessages = await UnitOfWork.MessageRepository.GetMessagesWithOwnersAsync(_channelId, lastReadMessage.Created, null);
+            var firstTwoOlderMessages = await UnitOfWork.MessageRepository.GetMessagesWithOwnersAsync(_channelId, lastReadMessage.Created, 2);
+
+            // Assert
+            allNewMessages.Should().BeEquivalentTo(unreadMessages);
+            firstTwoOlderMessages.Should().BeEquivalentTo(unreadMessages.Take(2));
+        }
+
+        [Fact]
+        public async Task GetLastMessagesWithOwnersAsync_ShouldReturnLastMessagesWithOwner()
+        {
+            // Arrange
+            var lastReadMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.Now,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
+
+            // Add unread messages
+            var unreadMessages = new List<Message>();
+
+            for (var i = 1; i < 5; i++)
+            {
+                var unreadMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = $"Body{i}",
+                    Created = lastReadMessage.Created + TimeSpan.FromSeconds(i),
+                    ImageUrl = $"ImageUrl{i}",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    Owner = _member,
+                    OwnerId = _member.Id,
+                    Updated = DateTimeOffset.Now
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
+                unreadMessages.Add(unreadMessage);
+            }
+            unreadMessages = unreadMessages.OrderBy(o => o.Created).ToList();
+
+
+            // Add already read messages
+            var readMessages = new List<Message>
+            {
+                lastReadMessage
+            };
+            for (var i = 1; i < 5; i++)
+            {
+                var readMessage = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = $"Body{i}",
+                    Created = lastReadMessage.Created - TimeSpan.FromSeconds(i),
+                    ImageUrl = $"ImageUrl{i}",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    OwnerId = _member.Id,
+                    Owner = _member,
+                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i)
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
+                readMessages.Add(readMessage);
+            }
+
+            // Act
+            var messages = await UnitOfWork.MessageRepository.GetLastMessagesWithOwnersAsync(_channelId, lastReadMessage.Created, 2);
+
+            // Assert
+            var someReadAndAllUnreadMessages = new List<Message>();
+            someReadAndAllUnreadMessages.AddRange(readMessages.Take(2));
+            someReadAndAllUnreadMessages.AddRange(unreadMessages);
+            messages.Should().BeEquivalentTo(someReadAndAllUnreadMessages);
+        }
+
+        [Fact]
+        public async Task GetMessageWithOwnerAndForwardedMessageAsync_ShouldReturnMessageWithOwnerAndForwardMessage()
+        {
+            var messageId = new Guid("D459FCFB-F436-4B80-AD08-670630109C9C");
+            var expectedMessage = new Message
+            {
+                Id = messageId,
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now,
+                ForwardMessageId = messageId
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(expectedMessage);
+
+            var forwardMessage = new ForwardMessage
+            {
+                Id = expectedMessage.Id,
+                Body = "Body",
+                ChannelId = _channelId,
+                OwnerId = _member.Id,
+                Created = DateTimeOffset.UtcNow
+            };
+            await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
+
+            expectedMessage.ForwardMessageId = forwardMessage.Id;
+            expectedMessage.ForwardedMessage = forwardMessage;
+
+
+            var actualMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(expectedMessage.Id);
+
+
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
+        }
+
+        [Fact]
+        public async Task GetPreviousMessageAsync_ShouldReturnPrevMessageIfExists()
+        {
+            var firstMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(firstMessage);
+
+            var secondMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow + TimeSpan.FromMinutes(1),
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
+
+            var prevForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage.ChannelId, firstMessage.OwnerId, firstMessage.Created);
+            var prevForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage.ChannelId, secondMessage.OwnerId, secondMessage.Created);
+
+            prevForFirstMessage.Should().BeNull();
+            prevForSecondMessage.Should().BeEquivalentTo(firstMessage);
+        }
+
+        [Fact]
+        public async Task GetLastReadMessageAsyncTest_ShouldReturnLastReadMessageIfExists()
+        {
+            var firstMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow,
+                ImageUrl = "test",
+                Type = 0,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(firstMessage);
+
+            var channelMember = new ChannelMember
             {
                 ChannelId = _channelId,
-                MemberId = _memberId,
-                LastReadMessageId = expectedMessage.Id
-            });
-            
-            // Act 2
-            actualMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(_memberId, _channelId);
+                MemberId = _member.Id,
+                LastReadMessageId = null
+            };
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
 
-            // Assert
-            Assert.NotNull(actualMessage);
-            AssertMessagesEqual(expectedMessage, actualMessage);
+            // Have no read messages
+            var readMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(_member.Id, _channelId);
+            readMessage.Should().BeNull();
+
+            // Mark as read
+            await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(_member.Id, _channelId, firstMessage.Id);
+            readMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(_member.Id, _channelId);
+            readMessage.Should().BeEquivalentTo(firstMessage);
+
+            // Add second message
+            var secondMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow,
+                ImageUrl = "test",
+                Type = 0,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
+
+            // Mark as read
+            await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(_member.Id, _channelId, secondMessage.Id);
+            readMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(_member.Id, _channelId);
+            readMessage.Should().BeEquivalentTo(secondMessage);
         }
 
         [Fact]
-        public async Task AddMessageAsyncTest()
+        public async Task AddMessageAsyncTest_ShouldAddMessage()
         {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
-            // Act
-            var newMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
+            var addedMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(message.Id);
 
-            // Assert
-            Assert.NotNull(newMessage);
-            AssertMessagesEqual(expectedMessage, newMessage);
+            addedMessage.Should().BeEquivalentTo(message);
         }
 
         [Fact]
-        public async Task DeleteMessageAsyncTest()
+        public async Task DeleteMessageAsyncTest_ShouldDeleteMessage()
         {
-            // Arrange
-            var expectedMessage = await GenerateAndAddMessage();
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
-            // Act
-            await UnitOfWork.MessageRepository.DeleteMessageAsync(expectedMessage.Id);
-            var newMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(expectedMessage.Id);
+            await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);
 
-            // Assert
-            Assert.Null(newMessage);
+            var deletedMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(message.Id);
+            deletedMessage.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task UpdateMessageBodyAsync_ShouldUpdateBodyAndUpdatedFields()
+        {
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.UtcNow,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                Owner = _member,
+                OwnerId = _member.Id,
+                Updated = null
+            };
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+            message.Body = "Updated";
+            message.Updated = DateTimeOffset.Now;
+
+            await UnitOfWork.MessageRepository.UpdateMessageBodyAsync(message.Id, message.Body, message.Updated.Value);
+
+            var updatedMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(message.Id);
+            updatedMessage.Should().BeEquivalentTo(message);
+        }
+
+        [Fact]
+        public async Task GetChannelMessagesCountAsync_ShouldReturnCount()
+        {
+            const int expectedCount = 5;
+            for (var i = 0; i < expectedCount; i++)
+            {
+                var message = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = "Body",
+                    Created = DateTimeOffset.UtcNow,
+                    ImageUrl = "ImageUrl",
+                    Type = MessageType.Default,
+                    ChannelId = _channelId,
+                    Owner = _member,
+                    OwnerId = _member.Id,
+                    Updated = DateTimeOffset.Now
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(message);
+            }
+
+            var count = await UnitOfWork.MessageRepository.GetChannelMessagesCountAsync(_channelId);
+
+            count.Should().Be(expectedCount);
         }
 
         [Theory]
         [InlineData(1, "test1")]
+        [InlineData(1, "TEST1")]
         [InlineData(5, "test")]
-        [InlineData(0, "nonExistingTest")]
+        [InlineData(0, "nonExisting")]
         [InlineData(1, "[]test1")]
         public async Task SearchMessagesInChannelAsync_ShouldReturnFoundMessageIds(int messagesCount, string phrase)
         {
             for (var i = 0; i < 5; i++)
             {
-                await GenerateAndAddMessage(body:$"[]test{i}");
+                var message = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = $"[]test{i}",
+                    Created = DateTimeOffset.UtcNow,
+                    Type = 0,
+                    ChannelId = _channelId
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(message);
             }
+
             var searchMessagesCount = await UnitOfWork.MessageRepository.FindMessageIdsAsync(_channelId, phrase);
 
             searchMessagesCount.Count.Should().Be(messagesCount, $"there is {messagesCount} messages with text: {phrase}");
         }
-
-        #region Private methods
-
-        private async Task<Message> GenerateAndAddMessage(DateTimeOffset? customCreated = null, string body = "test")
-        {
-            var message = new Message
-            {
-                Id = Guid.NewGuid(),
-                Body = body,
-                Created = customCreated ?? DateTimeOffset.UtcNow.AddMinutes(-10),
-                ImageUrl = "test",
-                Type = 0,
-                ChannelId = _channelId,
-                OwnerId = _memberId,
-            };
-
-            await UnitOfWork.MessageRepository.AddMessageAsync(message);
-
-            return message;
-        }
-
-        private void AssertMessagesEqual(Message expectedMessage, Message actualMessage)
-        {
-            Assert.Equal(expectedMessage.Id, actualMessage.Id);
-            Assert.Equal(expectedMessage.Body, actualMessage.Body);
-            Assert.Equal(expectedMessage.Created, actualMessage.Created);
-            Assert.Equal(expectedMessage.ImageUrl, actualMessage.ImageUrl);
-            Assert.Equal(expectedMessage.Type, actualMessage.Type);
-            Assert.Equal(expectedMessage.ChannelId, actualMessage.ChannelId);
-            Assert.Equal(expectedMessage.OwnerId, actualMessage.OwnerId);
-            if (expectedMessage.OwnerId == _memberId)
-            {
-                Assert.Equal(_memberName, actualMessage.Owner.Name);
-            }
-        }
-
-        #endregion
     }
 }

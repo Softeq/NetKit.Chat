@@ -2,8 +2,10 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
@@ -13,8 +15,8 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
     public class MemberRepositoryTests : BaseTest
     {
         private readonly Guid _memberId = new Guid("1a0781d2-f3d8-418a-810c-33e78b457678");
-        private readonly Guid _memberId2 = new Guid("1e5f11cf-58b4-4b6a-b85f-de6188cf623f");
         private readonly Guid _channelId = new Guid("0af706fa-d820-4cde-9ccd-c189ed2561da");
+        private readonly int _initialTestMembersCount;
 
         public MemberRepositoryTests()
         {
@@ -33,300 +35,290 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
+            _initialTestMembersCount = 1;
+
             var channel = new Channel
             {
                 Id = _channelId,
-                CreatorId = member.Id,
-                Name = "testMemberChannel",
-                Type = ChannelType.Public,
-                MembersCount = 0
+                CreatorId = member.Id
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
 
         [Fact]
-        public async Task AddMemberAsyncTest()
+        public async Task GetPagedMembersAsync_ShouldReturnMembersByPages()
         {
-            // Arrange
-            var member = new Member
+            const int membersCount = 21;
+            for (var i = 0; i < membersCount; i++)
             {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
-                IsAfk = true,
-                IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
-                LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
-            };
+                var member = new Member
+                {
+                    Id = Guid.NewGuid(),
+                    Role = UserRole.User,
+                    IsAfk = false,
+                    IsBanned = true,
+                    LastActivity = DateTimeOffset.UtcNow,
+                    Status = UserStatus.Active,
+                    Name = i % 2 == 0 ? $"{i}EVEN{i}" : $"{i}ODD{i}"
+                };
+                await UnitOfWork.MemberRepository.AddMemberAsync(member);
+            }
 
-            // Act
-            await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var newMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
+            const int pageSize = 10;
 
-            // Assert
-            Assert.NotNull(newMember);
-            Assert.Equal(member.Id, newMember.Id);
-            Assert.Equal(member.Email, newMember.Email);
-            Assert.Equal(member.Role, newMember.Role);
-            Assert.Equal(member.IsAfk, newMember.IsAfk);
-            Assert.Equal(member.IsBanned, newMember.IsBanned);
-            Assert.Equal(member.Name, newMember.Name);
-            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
-            Assert.Equal(member.Status, newMember.Status);
+            var evenMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "even");
+            var evenMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "even");
+            var oddMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "odd");
+            var oddMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "odd");
+            var allMembers = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 100, null);
+
+            evenMembersFirstPage.Entities.Count().Should().Be(pageSize);
+            evenMembersSecondPage.Entities.Count().Should().Be(1);
+            oddMembersFirstPage.Entities.Count().Should().Be(pageSize);
+            oddMembersSecondPage.Entities.Count().Should().Be(0);
+            allMembers.Entities.Count().Should().Be(membersCount + _initialTestMembersCount);
         }
 
         [Fact]
-        public async Task DeleteMemberAsyncTest()
+        public async Task GetPotentialChannelMembersAsync_ShouldReturnMembersByPages()
         {
-            // Arrange
-            var member = new Member
-            {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
-                IsAfk = true,
-                IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
-                LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
-            };
-
-            // Act
-            await UnitOfWork.MemberRepository.DeleteMemberAsync(member.Id);
-            var newMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
-
-            // Assert
-            Assert.Null(newMember);
-        }
-
-        [Fact]
-        public async Task GetMemberByIdAsyncTest()
-        {
-            // Arrange
-            var member = new Member
-            {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
-                IsAfk = true,
-                IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
-                LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
-            };
-
-            // Act
-            await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var newMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
-
-            // Assert
-            Assert.NotNull(newMember);
-            Assert.Equal(member.Id, newMember.Id);
-            Assert.Equal(member.Email, newMember.Email);
-            Assert.Equal(member.Role, newMember.Role);
-            Assert.Equal(member.IsAfk, newMember.IsAfk);
-            Assert.Equal(member.IsBanned, newMember.IsBanned);
-            Assert.Equal(member.Name, newMember.Name);
-            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
-            Assert.Equal(member.Status, newMember.Status);
-        }
-
-        [Fact]
-        public async Task GetAllMembersAsyncTest()
-        {
-            // Arrange
-            var member = new Member
-            {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
-                IsAfk = true,
-                IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
-                LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
-            };
-
-            // Act
-            var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 10, string.Empty);
-            await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var newMembers = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 10, string.Empty);
-
-            // Assert
-            Assert.NotNull(newMembers);
-            Assert.NotEmpty(newMembers.Entities);
-            Assert.True(newMembers.Entities.Count() > members.Entities.Count());
-        }
-
-        [Fact]
-        public async Task GetAllOnlineMembersAsyncTest()
-        {
-            // Arrange
-            var member = new Member
-            {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
-                IsAfk = true,
-                IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
-                LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
-            };
-
-            // Act
-            var members = await UnitOfWork.MemberRepository.GetAllOnlineMembersAsync();
-            await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var newMembers = await UnitOfWork.MemberRepository.GetAllOnlineMembersAsync();
-
-            // Assert
-            Assert.NotNull(members);
-            Assert.Empty(members);
-            Assert.NotNull(newMembers);
-            Assert.NotEmpty(newMembers);
-            Assert.True(newMembers.Count > members.Count);
-            Assert.True(newMembers.Count == 1);
-            Assert.Equal(member.Id, newMembers.First().Id);
-            Assert.Equal(member.Email, newMembers.First().Email);
-            Assert.Equal(member.Role, newMembers.First().Role);
-            Assert.Equal(member.IsAfk, newMembers.First().IsAfk);
-            Assert.Equal(member.IsBanned, newMembers.First().IsBanned);
-            Assert.Equal(member.Name, newMembers.First().Name);
-            Assert.Equal(member.SaasUserId, newMembers.First().SaasUserId);
-            Assert.Equal(member.Status, newMembers.First().Status);
-        }
-
-        [Fact]
-        public async Task GetMemberByClientIdAsyncTest()
-        {
-            // Arrange
-            var client = new Client
+            var secondChannel = new Channel
             {
                 Id = Guid.NewGuid(),
-                MemberId = _memberId,
-                LastActivity = DateTimeOffset.UtcNow,
-                LastClientActivity = DateTimeOffset.UtcNow
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 1
             };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(secondChannel);
 
-            // Act
-            await UnitOfWork.ClientRepository.AddClientAsync(client);
-            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(_memberId);
-            var newMember = await UnitOfWork.MemberRepository.GetMemberByClientIdAsync(client.Id);
 
-            // Assert
-            Assert.NotNull(newMember);
-            Assert.Equal(member.Id, newMember.Id);
-            Assert.Equal(member.Email, newMember.Email);
-            Assert.Equal(member.Role, newMember.Role);
-            Assert.Equal(member.IsAfk, newMember.IsAfk);
-            Assert.Equal(member.IsBanned, newMember.IsBanned);
-            Assert.Equal(member.Name, newMember.Name);
-            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
-            Assert.Equal(member.Status, newMember.Status);
+            const int membersCount = 22;
+            for (var i = 0; i < membersCount; i++)
+            {
+                var isEvenCounter = i % 2 == 0;
+
+                var member = new Member
+                {
+                    Id = Guid.NewGuid(),
+                    Role = UserRole.User,
+                    IsAfk = false,
+                    IsBanned = true,
+                    LastActivity = DateTimeOffset.UtcNow,
+                    Status = UserStatus.Active,
+                    Name = isEvenCounter ? $"{i}EVEN{i}" : $"{i}ODD{i}"
+                };
+                await UnitOfWork.MemberRepository.AddMemberAsync(member);
+
+                var channelMember = new ChannelMember
+                {
+                    MemberId = member.Id,
+                    // Odd members will be potential members for the channel '_channelId'
+                    // Even members will be potential members for the second channel
+                    ChannelId = isEvenCounter ? _channelId : secondChannel.Id
+                };
+                await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
+            }
+
+            const int pageSize = 10;
+
+            var potentialEvenMembersForFirstChannel = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(_channelId, 1, pageSize, "even");
+            var potentialOddMembersForFirstChannelFirstPage = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(_channelId, 1, pageSize, "odd");
+            var potentialOddMembersForFirstChannelSecondPage = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(_channelId, 2, pageSize, "odd");
+            var allPotentialMembersForFirstChannel = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(_channelId, 1, 100, null);
+            var allPotentialMembersForSecondChannel = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(secondChannel.Id, 1, 100, null);
+
+            potentialEvenMembersForFirstChannel.Entities.Count().Should().Be(0);
+            potentialOddMembersForFirstChannelFirstPage.Entities.Count().Should().Be(pageSize);
+            potentialOddMembersForFirstChannelSecondPage.Entities.Count().Should().Be(1);
+            allPotentialMembersForFirstChannel.Entities.Count().Should().Be(membersCount / 2 + _initialTestMembersCount);
+            allPotentialMembersForSecondChannel.Entities.Count().Should().Be(membersCount / 2 + _initialTestMembersCount);
         }
 
         [Fact]
-        public async Task GetMemberByNameAsyncTest()
+        public async Task GetMemberByIdAsync_ShouldAddMemberAndReturnMemberById()
         {
-            // Arrange
-            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(_memberId);
-
-            // Act
-            var newMember = await UnitOfWork.MemberRepository.GetMemberByNameAsync(member.Name);
-
-            // Assert
-            Assert.NotNull(newMember);
-            Assert.Equal(member.Id, newMember.Id);
-            Assert.Equal(member.Email, newMember.Email);
-            Assert.Equal(member.Role, newMember.Role);
-            Assert.Equal(member.IsAfk, newMember.IsAfk);
-            Assert.Equal(member.IsBanned, newMember.IsBanned);
-            Assert.Equal(member.Name, newMember.Name);
-            Assert.Equal(member.SaasUserId, newMember.SaasUserId);
-            Assert.Equal(member.Status, newMember.Status);
-        }
-
-        [Fact]
-        public async Task SearchMembersByNameAsyncTest()
-        {
-            // Arrange
             var member = new Member
             {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
                 IsAfk = true,
                 IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
                 LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
+                Status = UserStatus.Active,
+                Email = "Email",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name",
+                PhotoName = "PhotoName",
+                SaasUserId = "SaasUserId"
             };
 
-            // Act
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            var members = await UnitOfWork.MemberRepository.SearchMembersByNameAsync("test");
 
-            // Assert
-            Assert.NotNull(members);
-            Assert.NotEmpty(members);
-            Assert.True(members.Count == 1);
+            var newMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
+
+            newMember.Should().BeEquivalentTo(member);
         }
 
         [Fact]
-        public async Task GetOnlineMembersInChannelAsyncTest()
+        public async Task UpdateMemberAsync_ShouldUpdateMember()
         {
-            // Arrange
             var member = new Member
             {
-                Id = _memberId2,
-                Email = "test",
-                Role = UserRole.Admin,
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
                 IsAfk = true,
                 IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
                 LastActivity = DateTimeOffset.UtcNow,
-                Name = "test2",
-                SaasUserId = "test",
-                Status = UserStatus.Active
+                Status = UserStatus.Active,
+                Email = "Email",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name",
+                PhotoName = "PhotoName",
+                SaasUserId = "SaasUserId"
+            };
+            await UnitOfWork.MemberRepository.AddMemberAsync(member);
+
+            var memberToUpdate = new Member
+            {
+                Id = member.Id,
+                Role = UserRole.Admin,
+                IsAfk = false,
+                IsBanned = false,
+                LastActivity = member.LastActivity + TimeSpan.FromHours(1),
+                Status = UserStatus.Offline,
+                Email = "Email2",
+                LastNudged = member.LastNudged + TimeSpan.FromHours(1),
+                Name = "Name2",
+                PhotoName = "PhotoName2",
+                SaasUserId = "SaasUserId2"
             };
 
-            var channelMember = new ChannelMember
+            await UnitOfWork.MemberRepository.UpdateMemberAsync(memberToUpdate);
+
+            var updatedMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
+
+            updatedMember.Should().BeEquivalentTo(memberToUpdate);
+        }
+
+        [Fact]
+        public async Task GetMemberBySaasUserIdAsync_ShouldReturnMemberBySaasUserId()
+        {
+            var member = new Member
             {
-                MemberId = member.Id,
-                ChannelId = _channelId,
-                LastReadMessageId = null
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Active,
+                Email = "Email",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name",
+                PhotoName = "PhotoName",
+                SaasUserId = "SaasUserId"
             };
+
+            await UnitOfWork.MemberRepository.AddMemberAsync(member);
+
+            var newMember = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(member.SaasUserId);
+
+            newMember.Should().BeEquivalentTo(member);
+        }
+
+        [Fact]
+        public async Task GetAllMembersByChannelIdAsync_ShouldReturnAllMembersInChannel()
+        {
+            // Arrange
+
+            // Add list of members to expected channel
+            var expectedMembers = new List<Member>();
+            for (var i = 0; i < 5; i++)
+            {
+                var member = new Member
+                {
+                    Id = Guid.NewGuid(),
+                    Role = UserRole.User,
+                    IsAfk = true,
+                    IsBanned = true,
+                    LastActivity = DateTimeOffset.UtcNow,
+                    Status = UserStatus.Active,
+                    Email = $"Email{i}",
+                    LastNudged = DateTimeOffset.UtcNow,
+                    Name = $"Name{i}",
+                    PhotoName = $"PhotoName{i}",
+                    SaasUserId = $"SaasUserId{i}"
+                };
+                await UnitOfWork.MemberRepository.AddMemberAsync(member);
+                expectedMembers.Add(member);
+
+                var channelMember = new ChannelMember
+                {
+                    MemberId = member.Id,
+                    ChannelId = _channelId
+                };
+                await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
+            }
+
+            // Add second channel and member for this channel
+            var secondChannel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 1
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(secondChannel);
+
+            var memberInAnotherChannel = new Member
+            {
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Active,
+                Email = "Email",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name",
+                PhotoName = "PhotoName",
+                SaasUserId = "SaasUserId"
+            };
+            await UnitOfWork.MemberRepository.AddMemberAsync(memberInAnotherChannel);
+
+            var anotherChannelMember = new ChannelMember
+            {
+                MemberId = memberInAnotherChannel.Id,
+                ChannelId = secondChannel.Id
+            };
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(anotherChannelMember);
+
+            // Add member without channel
+            var memberWithoutChannel = new Member
+            {
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Active,
+                Email = "Email",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name",
+                PhotoName = "PhotoName",
+                SaasUserId = "SaasUserId"
+            };
+            await UnitOfWork.MemberRepository.AddMemberAsync(memberWithoutChannel);
+
 
             // Act
-            await UnitOfWork.MemberRepository.AddMemberAsync(member);
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-            var members = await UnitOfWork.MemberRepository.GetOnlineMembersInChannelAsync(_channelId);
+            var membersFromChannel = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(_channelId);
 
             // Assert
-            Assert.NotNull(members);
-            Assert.NotEmpty(members);
-            Assert.True(members.Count == 1);
-            Assert.Equal(member.Id, members.First().Id);
-            Assert.Equal(member.Email, members.First().Email);
-            Assert.Equal(member.Role, members.First().Role);
-            Assert.Equal(member.IsAfk, members.First().IsAfk);
-            Assert.Equal(member.IsBanned, members.First().IsBanned);
-            Assert.Equal(member.Name, members.First().Name);
-            Assert.Equal(member.SaasUserId, members.First().SaasUserId);
-            Assert.Equal(member.Status, members.First().Status);
+            membersFromChannel.Should().BeEquivalentTo(expectedMembers);
         }
     }
 }

@@ -227,7 +227,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channel.Id);
                 if (channelMember.LastReadMessageId.HasValue)
                 {
-                    var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageByIdAsync(channelMember.LastReadMessageId.Value);
+                    var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(channelMember.LastReadMessageId.Value);
                     channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _cloudImageProvider));
                 }
                 else
