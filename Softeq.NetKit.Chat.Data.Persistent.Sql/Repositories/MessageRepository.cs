@@ -171,7 +171,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
         
-        // TODO [az]: why message could have just one forward message?
         public async Task<Message> GetMessageWithOwnerAndForwardMessageAsync(Guid messageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

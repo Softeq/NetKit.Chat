@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -18,6 +19,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
         public SettingRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
+            Ensure.That(sqlConnectionFactory).IsNotNull();
+
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
@@ -25,29 +28,21 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"INSERT INTO Settings(Id, RawSettings, ChannelId) 
+                                 VALUES (@Id, @RawSettings, @ChannelId)";
 
-                var sqlQuery = @"
-                    INSERT INTO Settings(Id, RawSettings, ChannelId) 
-                    VALUES (@Id, @RawSettings, @ChannelId);";
-                
                 await connection.ExecuteScalarAsync(sqlQuery, settings);
             }
         }
 
-        public async Task<List<Settings>> GetAllSettingsAsync()
+        public async Task<IReadOnlyCollection<Settings>> GetAllSettingsAsync()
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"SELECT Id, RawSettings, ChannelId 
+                                 FROM Settings";
 
-                var sqlQuery = @"
-                    SELECT Id, RawSettings, ChannelId 
-                    FROM Settings";
-
-                var data = (await connection.QueryAsync<Settings>(sqlQuery)).ToList();
-
-                return data;
+                return (await connection.QueryAsync<Settings>(sqlQuery)).ToList().AsReadOnly();
             }
         }
 
@@ -55,9 +50,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
-                var sqlQuery = @"DELETE FROM Settings WHERE Id = @settingsId";
+                var sqlQuery = @"DELETE FROM Settings 
+                                 WHERE Id = @settingsId";
 
                 await connection.ExecuteAsync(sqlQuery, new { settingsId });
             }
@@ -67,17 +61,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"SELECT Id, RawSettings, ChannelId
+                                 FROM Settings
+                                 WHERE Id = @settingsId";
 
-                var sqlQuery = @"
-                    SELECT Id, RawSettings, ChannelId
-                    FROM Settings
-                    WHERE Id = @settingsId";
-                
-                var data = (await connection.QueryAsync<Settings>(sqlQuery, new { settingsId }))
-                    .FirstOrDefault();
-                
-                return data;
+                return (await connection.QueryAsync<Settings>(sqlQuery, new { settingsId })).FirstOrDefault();
             }
         }
 
@@ -85,17 +73,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"SELECT Id, RawSettings, ChannelId
+                                 FROM Settings
+                                 WHERE ChannelId = @channelId";
 
-                var sqlQuery = @"
-                    SELECT Id, RawSettings, ChannelId
-                    FROM Settings
-                    WHERE ChannelId = @channelId";
-
-                var data = (await connection.QueryAsync<Settings>(sqlQuery, new { channelId }))
-                    .FirstOrDefault();
-
-                return data;
+                return (await connection.QueryAsync<Settings>(sqlQuery, new { channelId })).FirstOrDefault();
             }
         }
     }

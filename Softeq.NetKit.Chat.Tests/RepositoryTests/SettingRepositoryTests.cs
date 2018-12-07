@@ -2,7 +2,9 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
@@ -11,14 +13,13 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
 {
     public class SettingRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("FE711AF3-DDE7-4B11-BB9B-55C3862262AA");
         private readonly Guid _channelId = new Guid("FE711AF3-DDE7-4B11-BB9B-11C3862262EE");
 
         public SettingRepositoryTests()
         {
             var member = new Member
             {
-                Id = _memberId,
+                Id = new Guid("FE711AF3-DDE7-4B11-BB9B-55C3862262AA"),
                 LastActivity = DateTime.UtcNow,
                 Status = UserStatus.Active
             };
@@ -36,88 +37,112 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task AddSettingsAsyncTest()
+        public async Task AddSettingsAsync_ShouldAddSettings()
         {
             var settings = new Settings
             {
                 Id = Guid.NewGuid(),
-                RawSettings = "test",
+                RawSettings = "RawSettings",
                 ChannelId = _channelId
             };
 
-            // Act
             await UnitOfWork.SettingRepository.AddSettingsAsync(settings);
+
             var newSettings = await UnitOfWork.SettingRepository.GetSettingsByIdAsync(settings.Id);
 
-            // Assert
-            Assert.NotNull(newSettings);
-            Assert.Equal(settings.Id, newSettings.Id);
-            Assert.Equal(settings.RawSettings, newSettings.RawSettings);
+            newSettings.Should().BeEquivalentTo(settings);
         }
 
         [Fact]
-        public async Task DeleteSettingsAsyncTest()
+        public async Task DeleteSettingsAsync_ShouldDeleteSettings()
         {
-            // Arrange
             var settings = new Settings
             {
                 Id = Guid.NewGuid(),
-                RawSettings = "test",
+                RawSettings = "RawSettings",
                 ChannelId = _channelId
             };
-
-            // Act
+            
             await UnitOfWork.SettingRepository.AddSettingsAsync(settings);
+
             await UnitOfWork.SettingRepository.DeleteSettingsAsync(settings.Id);
-            var newSettings = await UnitOfWork.SettingRepository.GetSettingsByIdAsync(settings.Id);
 
-            // Assert
-            Assert.Null(newSettings);
+            var deletedSettings = await UnitOfWork.SettingRepository.GetSettingsByIdAsync(settings.Id);
+
+            deletedSettings.Should().BeNull();
         }
 
         [Fact]
-        public async Task GetSettingsByIdAsyncTest()
+        public async Task GetSettingsByIdAsync_ShouldReturnSettings()
         {
-            // Arrange
             var settings = new Settings
             {
                 Id = Guid.NewGuid(),
-                RawSettings = "test",
+                RawSettings = "RawSettings",
                 ChannelId = _channelId
             };
-
-            // Act
+            
             await UnitOfWork.SettingRepository.AddSettingsAsync(settings);
+
             var newSettings = await UnitOfWork.SettingRepository.GetSettingsByIdAsync(settings.Id);
 
-            // Assert
-            Assert.NotNull(newSettings);
-            Assert.Equal(settings.Id, newSettings.Id);
-            Assert.Equal(settings.RawSettings, newSettings.RawSettings);
+            newSettings.Should().BeEquivalentTo(settings);
         }
 
         [Fact]
-        public async Task GetAllSettingsAsyncTest()
+        public async Task GetSettingsByChannelIdAsync_ShouldReturnSettings()
         {
-            // Arrange
-            var setting = new Settings
+            var settings = new Settings
             {
                 Id = Guid.NewGuid(),
-                RawSettings = "test",
+                RawSettings = "RawSettings",
                 ChannelId = _channelId
             };
 
-            // Act
-            var settings = await UnitOfWork.SettingRepository.GetAllSettingsAsync();
-            await UnitOfWork.SettingRepository.AddSettingsAsync(setting);
-            var newSettings = await UnitOfWork.SettingRepository.GetAllSettingsAsync();
+            await UnitOfWork.SettingRepository.AddSettingsAsync(settings);
 
-            // Assert
-            Assert.NotNull(settings);
-            Assert.Empty(settings);
-            Assert.NotNull(newSettings);
-            Assert.NotEmpty(newSettings);
-            Assert.True(newSettings.Count > settings.Count);
+            var newSettings = await UnitOfWork.SettingRepository.GetSettingsByChannelIdAsync(_channelId);
+
+            newSettings.Should().BeEquivalentTo(settings);
+        }
+
+        [Fact]
+        public async Task GetAllSettingsAsync_ShouldReturnAllExistingSettings()
+        {
+            var expectedSettings = new List<Settings>();
+            for (var i = 0; i < 3; i++)
+            {
+                var member = new Member
+                {
+                    Id = Guid.NewGuid(),
+                    LastActivity = DateTime.UtcNow,
+                    Status = UserStatus.Active
+                };
+                await UnitOfWork.MemberRepository.AddMemberAsync(member);
+
+                var channel = new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    CreatorId = member.Id,
+                    Name = "testSettingsChannel",
+                    Type = ChannelType.Public,
+                    MembersCount = 0
+                };
+                await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+                var setting = new Settings
+                {
+                    Id = Guid.NewGuid(),
+                    RawSettings = "RawSettings",
+                    ChannelId = channel.Id
+                };
+                await UnitOfWork.SettingRepository.AddSettingsAsync(setting);
+                expectedSettings.Add(setting);
+            }
+            
+            var settings = await UnitOfWork.SettingRepository.GetAllSettingsAsync();
+
+            settings.Should().BeEquivalentTo(expectedSettings);
         }
     }
 }

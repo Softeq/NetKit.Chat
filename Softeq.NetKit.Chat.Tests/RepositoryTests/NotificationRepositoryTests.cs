@@ -2,7 +2,9 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
@@ -47,9 +49,8 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task AddNotificationAsyncTest()
+        public async Task AddNotificationAsync_ShouldAddNotification()
         {
-            // Arrange
             var notification = new Notification
             {
                 Id = Guid.NewGuid(),
@@ -59,23 +60,16 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MemberId = _memberId
             };
             
-            // Act
             await UnitOfWork.NotificationRepository.AddNotificationAsync(notification);
+
             var newNotification = await UnitOfWork.NotificationRepository.GetNotificationByIdAsync(notification.Id);
 
-            // Assert
-            Assert.NotNull(newNotification);
-            Assert.Equal(notification.Id, newNotification.Id);
-            Assert.Equal(notification.IsRead, newNotification.IsRead);
-            Assert.Equal(notification.MessageId, newNotification.MessageId);
-            Assert.Equal(notification.MemberId, newNotification.MemberId);
-            Assert.Equal(notification.ChannelId, newNotification.ChannelId);
+            newNotification.Should().BeEquivalentTo(notification);
         }
 
         [Fact]
-        public async Task DeleteNotificationAsyncTest()
+        public async Task DeleteNotificationAsync_ShouldDeleteNotification()
         {
-            // Arrange
             var notification = new Notification
             {
                 Id = Guid.NewGuid(),
@@ -84,20 +78,19 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 ChannelId = _channelId,
                 MemberId = _memberId
             };
-
-            // Act
+            
             await UnitOfWork.NotificationRepository.AddNotificationAsync(notification);
+
             await UnitOfWork.NotificationRepository.DeletNotificationAsync(notification.Id);
+
             var newNotification = await UnitOfWork.NotificationRepository.GetNotificationByIdAsync(notification.Id);
 
-            // Assert
-            Assert.Null(newNotification);
+            newNotification.Should().BeNull();
         }
 
         [Fact]
-        public async Task GetNotificationByIdAsync()
+        public async Task GetNotificationByIdAsync_ShouldReturnNotification()
         {
-            // Arrange
             var notification = new Notification
             {
                 Id = Guid.NewGuid(),
@@ -107,43 +100,83 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 MemberId = _memberId
             };
             
-            // Act
             await UnitOfWork.NotificationRepository.AddNotificationAsync(notification);
+
             var newNotification = await UnitOfWork.NotificationRepository.GetNotificationByIdAsync(notification.Id);
 
-            // Assert
-            Assert.NotNull(newNotification);
-            Assert.Equal(notification.Id, newNotification.Id);
-            Assert.Equal(notification.IsRead, newNotification.IsRead);
-            Assert.Equal(notification.MessageId, newNotification.MessageId);
-            Assert.Equal(notification.MemberId, newNotification.MemberId);
-            Assert.Equal(notification.ChannelId, newNotification.ChannelId);
+            newNotification.Should().BeEquivalentTo(notification);
         }
 
         [Fact]
-        public async Task GetMemberNotificaitonsAsyncTest()
+        public async Task GetMemberNotificationsWithMemberMessageAndChannelAsync_ShouldReturnNotificationsWithFilledProperties()
         {
             // Arrange
-            var notification = new Notification
+            var member = new Member
             {
                 Id = Guid.NewGuid(),
-                IsRead = true,
-                MessageId = _messageId,
-                ChannelId = _channelId,
-                MemberId = _memberId
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Active,
+                Email = "Email",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name",
+                PhotoName = "PhotoName",
+                SaasUserId = "SaasUserId"
             };
+            await UnitOfWork.MemberRepository.AddMemberAsync(member);
 
-            // Act
-            var notifications = await UnitOfWork.NotificationRepository.GetMemberNotificationsAsync(notification.MemberId);
-            await UnitOfWork.NotificationRepository.AddNotificationAsync(notification);
-            var newNotifications = await UnitOfWork.NotificationRepository.GetMemberNotificationsAsync(notification.MemberId);
+            var expectedNotifications = new List<Notification>();
+            for (var i = 0; i < 3; i++)
+            {
+                var channel = new Channel
+                {
+                    Id = Guid.NewGuid(),
+                    IsClosed = true,
+                    CreatorId = member.Id,
+                    Created = DateTimeOffset.UtcNow,
+                    Name = "Name",
+                    Type = ChannelType.Public,
+                    Description = "Description",
+                    WelcomeMessage = "WelcomeMessage",
+                    MembersCount = 10,
+                    Updated = DateTimeOffset.Now,
+                    PhotoUrl = "PhotoUrl"
+                };
+                await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
 
-            // Assert
-            Assert.NotNull(notifications);
-            Assert.Empty(notifications);
-            Assert.NotNull(newNotifications);
-            Assert.NotEmpty(newNotifications);
-            Assert.True(newNotifications.Count > notifications.Count);
+                var message = new Message
+                {
+                    Id = Guid.NewGuid(),
+                    Body = "Body",
+                    Created = DateTimeOffset.UtcNow,
+                    ImageUrl = "ImageUrl",
+                    Type = MessageType.Default,
+                    ChannelId = channel.Id,
+                    OwnerId = member.Id,
+                    Updated = DateTimeOffset.Now
+                };
+                await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+                var notification = new Notification
+                {
+                    Id = Guid.NewGuid(),
+                    IsRead = true,
+                    Message = message,
+                    MessageId = message.Id,
+                    Channel = channel,
+                    ChannelId = channel.Id,
+                    Member = member,
+                    MemberId = member.Id
+                };
+                await UnitOfWork.NotificationRepository.AddNotificationAsync(notification);
+                expectedNotifications.Add(notification);
+            }
+
+            var notifications = await UnitOfWork.NotificationRepository.GetMemberNotificationsWithMemberMessageAndChannelAsync(member.Id);
+
+            notifications.Should().BeEquivalentTo(expectedNotifications);
         }
     }
 }

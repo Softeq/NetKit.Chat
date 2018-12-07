@@ -11,7 +11,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
     public interface ISettingRepository
     {
         Task AddSettingsAsync(Settings settings);
-        Task<List<Settings>> GetAllSettingsAsync();
+        Task<IReadOnlyCollection<Settings>> GetAllSettingsAsync();
         Task DeleteSettingsAsync(Guid settingsId);
         Task<Settings> GetSettingsByIdAsync(Guid settingsId);
         Task<Settings> GetSettingsByChannelIdAsync(Guid channelId);
