@@ -27,7 +27,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         private readonly ICloudImageProvider _cloudImageProvider;
         private readonly ICloudAttachmentProvider _cloudAttachmentProvider;
 
-        public MessageService(IUnitOfWork unitOfWork, AttachmentConfiguration attachmentConfiguration, ICloudImageProvider cloudImageProvider, ICloudAttachmentProvider cloudAttachmentProvider)
+        public MessageService(
+            IUnitOfWork unitOfWork, 
+            AttachmentConfiguration attachmentConfiguration, 
+            ICloudImageProvider cloudImageProvider, 
+            ICloudAttachmentProvider cloudAttachmentProvider)
             : base(unitOfWork)
         {
             Ensure.That(attachmentConfiguration).IsNotNull();

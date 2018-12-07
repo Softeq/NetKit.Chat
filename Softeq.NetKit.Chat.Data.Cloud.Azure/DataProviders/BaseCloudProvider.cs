@@ -18,8 +18,8 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure.DataProviders
             Configuration = configuration;
         }
 
-        public IContentStorage Storage { get; }
+        protected IContentStorage Storage { get; }
 
-        public AzureStorageConfiguration Configuration { get; }
+        protected AzureStorageConfiguration Configuration { get; }
     }
 }
