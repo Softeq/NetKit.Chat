@@ -255,5 +255,40 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 newChannelMember.LastReadMessageId.Should().Be(currentLastReadMessage.Id);
             }
         }
+
+        [Fact]
+        public async Task UpdateLastReadMessageAsync_ShouldSetLastReadMessageAsNULLForAllChannelMembers()
+        {
+            var channelMembers = new List<ChannelMember>
+            {
+                new ChannelMember
+                {
+                    MemberId = _memberId,
+                    ChannelId = _channelId,
+                    LastReadMessageId = _lastReadMessageId
+                },
+                new ChannelMember
+                {
+                    MemberId = _secondMemberId,
+                    ChannelId = _channelId,
+                    LastReadMessageId = _lastReadMessageId
+                }
+            };
+
+            foreach (var channelMember in channelMembers)
+            {
+                await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
+            }
+
+            // Act
+            await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(_lastReadMessageId, null);
+
+            // Assert
+            var newChannelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(_channelId);
+            foreach (var newChannelMember in newChannelMembers)
+            {
+                newChannelMember.LastReadMessageId.Should().BeNull();
+            }
+        }
     }
 }

@@ -23,19 +23,19 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
     {
         private readonly IMessageService _messageService;
 
-        private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>();
-        private readonly Mock<IChannelRepository> _channelRepositoryMock = new Mock<IChannelRepository>();
-        private readonly Mock<IMemberRepository> _memberRepositoryMock = new Mock<IMemberRepository>();
-        private readonly Mock<IMessageRepository> _messageRepositoryMock = new Mock<IMessageRepository>();
-        private readonly Mock<IForwardMessageRepository> _forwardMessageRepositoryMock = new Mock<IForwardMessageRepository>();
-        private readonly Mock<IChannelMemberRepository> _channelMemberRepositoryMock = new Mock<IChannelMemberRepository>();
-        private readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>();
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>(MockBehavior.Strict);
+        private readonly Mock<IChannelRepository> _channelRepositoryMock = new Mock<IChannelRepository>(MockBehavior.Strict);
+        private readonly Mock<IMemberRepository> _memberRepositoryMock = new Mock<IMemberRepository>(MockBehavior.Strict);
+        private readonly Mock<IMessageRepository> _messageRepositoryMock = new Mock<IMessageRepository>(MockBehavior.Strict);
+        private readonly Mock<IForwardMessageRepository> _forwardMessageRepositoryMock = new Mock<IForwardMessageRepository>(MockBehavior.Strict);
+        private readonly Mock<IChannelMemberRepository> _channelMemberRepositoryMock = new Mock<IChannelMemberRepository>(MockBehavior.Strict);
+        private readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>(MockBehavior.Strict);
 
-        private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>();
+        private readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>(MockBehavior.Strict);
         private readonly Mock<IConfigurationSection> _configurationSectionMock = new Mock<IConfigurationSection>();
 
-        private readonly Mock<ICloudImageProvider> _cloudImageProviderMock = new Mock<ICloudImageProvider>();
-        private readonly Mock<ICloudAttachmentProvider> _cloudAttachmentProviderMock = new Mock<ICloudAttachmentProvider>();
+        private readonly Mock<ICloudImageProvider> _cloudImageProviderMock = new Mock<ICloudImageProvider>(MockBehavior.Strict);
+        private readonly Mock<ICloudAttachmentProvider> _cloudAttachmentProviderMock = new Mock<ICloudAttachmentProvider>(MockBehavior.Strict);
 
         public MessageServiceTests()
         {
@@ -53,25 +53,29 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
         }
 
         [Fact]
-        public void CreateMessageAsync_ShouldThrowIfMemberDoesNotExists()
+        public void CreateMessageAsync_ShouldThrowIfMemberDoesNotExist()
         {
+            // Arrange
             _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(false)
                 .Verifiable();
 
             var request = new CreateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), MessageType.Default, "body");
 
+            // Act
             Func<Task> act = async () => { await _messageService.CreateMessageAsync(request); };
 
+            // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
                 .And.Message.Should().Be($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} not found.");
 
-            _channelRepositoryMock.VerifyAll();
+            VerifyMocks();
         }
 
         [Fact]
-        public void CreateMessageAsync_ShouldThrowIfChannelDoesNotExists()
+        public void CreateMessageAsync_ShouldThrowIfChannelDoesNotExist()
         {
+            // Arrange
             _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(true)
                 .Verifiable();
@@ -81,18 +85,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
 
             var request = new CreateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), MessageType.Default, "body");
 
+            // Act
             Func<Task> act = async () => { await _messageService.CreateMessageAsync(request); };
 
+            // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
                 .And.Message.Should().Be($"Unable to create message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
 
-            _channelRepositoryMock.VerifyAll();
-            _memberRepositoryMock.VerifyAll();
+            VerifyMocks();
         }
 
         [Fact]
-        public void CreateMessageAsync_ShouldThrowIfForwardMessageDoesNotExists()
+        public void CreateMessageAsync_ShouldThrowIfForwardMessageDoesNotExist()
         {
+            // Arrange
             var request = new CreateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), MessageType.Forward, "body")
             {
                 ForwardedMessageId = new Guid("1325E3C3-7D3E-4502-9CE8-7D7A902C90EE")
@@ -111,19 +117,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .ReturnsAsync((Message)null)
                 .Verifiable();
 
+            // Act
             Func<Task> act = async () => { await _messageService.CreateMessageAsync(request); };
 
+            // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
                 .And.Message.Should().Be($"Unable to create message. Forward message {nameof(request.ForwardedMessageId)}:{request.ForwardedMessageId} not found.");
 
-            _channelRepositoryMock.VerifyAll();
-            _memberRepositoryMock.VerifyAll();
-            _messageRepositoryMock.VerifyAll();
+            VerifyMocks();
         }
 
         [Fact]
         public async Task CreateMessageAsync_ShouldCreateDefaultMessage()
         {
+            // Arrange
             var request = new CreateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), MessageType.Default, "body")
             {
                 ImageUrl = "ImageUrl"
@@ -157,13 +164,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .ReturnsAsync((Message)null)
                 .Verifiable();
 
-            var messageResponse = await _messageService.CreateMessageAsync(request);
+            // Act
+            await _messageService.CreateMessageAsync(request);
 
-            _channelRepositoryMock.VerifyAll();
-            _memberRepositoryMock.VerifyAll();
-            _messageRepositoryMock.VerifyAll();
-            _channelMemberRepositoryMock.VerifyAll();
-            _forwardMessageRepositoryMock.VerifyAll();
+            // Assert
+            VerifyMocks();
 
             message.Id.Should().Be(messageId);
             message.ChannelId.Should().Be(request.ChannelId);
@@ -176,6 +181,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
         [Fact]
         public async Task CreateMessageAsync_ShouldCreateForwardMessage()
         {
+            // Arrange
             var request = new CreateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), MessageType.Forward, "body")
             {
                 ForwardedMessageId = new Guid("D51A3CC1-80F8-41F4-9291-54372B8A7DAE"),
@@ -205,19 +211,17 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .ReturnsAsync((Guid id) => id == request.ForwardedMessageId ? new Message { Id = id } : null)
                 .Verifiable();
 
-            Guid forwardMessageId = Guid.Empty;
+            var forwardMessageId = Guid.Empty;
             _forwardMessageRepositoryMock.Setup(x => x.AddForwardMessageAsync(It.IsAny<ForwardMessage>()))
                 .Callback<ForwardMessage>(x => forwardMessageId = x.Id)
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            var messageResponse = await _messageService.CreateMessageAsync(request);
+            // Act
+            await _messageService.CreateMessageAsync(request);
 
-            _channelRepositoryMock.VerifyAll();
-            _memberRepositoryMock.VerifyAll();
-            _messageRepositoryMock.VerifyAll();
-            _channelMemberRepositoryMock.VerifyAll();
-            _forwardMessageRepositoryMock.VerifyAll();
+            // Assert
+            VerifyMocks();
             _messageRepositoryMock.Verify(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()), Times.Exactly(2));
 
             forwardMessageId.Should().NotBeEmpty();
@@ -225,25 +229,29 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
         }
 
         [Fact]
-        public void DeleteMessageAsync_ShouldThrowIfMessageDoesNotExists()
+        public void DeleteMessageAsync_ShouldThrowIfMessageDoesNotExist()
         {
+            // Arrange
             _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((Message)null)
                 .Verifiable();
 
             var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
+            // Act
             Func<Task> act = async () => { await _messageService.DeleteMessageAsync(request); };
 
+            // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
                 .And.Message.Should().Be($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
 
-            _messageRepositoryMock.VerifyAll();
+            VerifyMocks();
         }
 
         [Fact]
-        public void DeleteMessageAsync_ShouldThrowIfMemberDoesNotExists()
+        public void DeleteMessageAsync_ShouldThrowIfMemberDoesNotExist()
         {
+            // Arrange
             _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(new Message())
                 .Verifiable();
@@ -253,18 +261,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
 
             var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
+            // Act
             Func<Task> act = async () => { await _messageService.DeleteMessageAsync(request); };
 
+            // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
                 .And.Message.Should().Be($"Unable to delete message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
 
-            _messageRepositoryMock.VerifyAll();
-            _memberRepositoryMock.VerifyAll();
+            VerifyMocks();
         }
 
         [Fact]
         public void DeleteMessageAsync_ShouldThrowIfMemberIsNotMessageOwner()
         {
+            // Arrange
             _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(new Message { OwnerId = new Guid("F19AD922-B0DB-4686-8CB4-F51902800CAE") })
                 .Verifiable();
@@ -274,18 +284,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
 
             var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
+            // Act
             Func<Task> act = async () => { await _messageService.DeleteMessageAsync(request); };
 
+            // Assert
             act.Should().Throw<NetKitChatAccessForbiddenException>()
                 .And.Message.Should().Be($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
 
-            _messageRepositoryMock.VerifyAll();
-            _memberRepositoryMock.VerifyAll();
+            VerifyMocks();
         }
 
         [Fact]
-        public async Task DeleteMessageAsync_ShouldDeleteMessageWithAttachmentsAndWithoutPreviousMessage()
+        public async Task DeleteMessageAsync_ShouldDeleteDefaultMessageWithAttachmentsAndWithPreviousMessage()
         {
+            // Arrange
             var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
             var messageOwnerId = new Guid("F19AD922-B0DB-4686-8CB4-F51902800CAE");
@@ -295,12 +307,18 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 OwnerId = messageOwnerId,
                 Type = MessageType.Default
             };
-
             _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
                 .ReturnsAsync(message)
                 .Verifiable();
+
+            var previousMessage = new Message
+            {
+                Id = Guid.NewGuid(),
+                OwnerId = messageOwnerId,
+                Type = MessageType.Default
+            };
             _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<DateTimeOffset>()))
-                .ReturnsAsync((Message)null)
+                .ReturnsAsync(previousMessage)
                 .Verifiable();
             _messageRepositoryMock.Setup(x => x.DeleteMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
                 .Returns(Task.CompletedTask)
@@ -326,13 +344,247 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
+            _channelMemberRepositoryMock.Setup(x => x.UpdateLastReadMessageAsync(
+                    It.Is<Guid>(old => old.Equals(message.Id)),
+                    It.Is<Guid?>(current => current.Equals(previousMessage.Id))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            // Act
             await _messageService.DeleteMessageAsync(request);
 
-            _messageRepositoryMock.VerifyAll();
-            _memberRepositoryMock.VerifyAll();
-            _attachmentRepositoryMock.VerifyAll();
-            _cloudAttachmentProviderMock.VerifyAll();
+            // Assert
+            VerifyMocks();
             _cloudAttachmentProviderMock.Verify(prov => prov.DeleteMessageAttachmentAsync(It.IsAny<string>()), Times.Exactly(attachments.Count));
+        }
+
+        [Fact]
+        public async Task DeleteMessageAsync_ShouldDeleteForwardMessageWithoutAttachmentsAndWithoutPreviousMessage()
+        {
+            // Arrange
+            var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
+
+            var messageOwnerId = new Guid("F19AD922-B0DB-4686-8CB4-F51902800CAE");
+            var message = new Message
+            {
+                Id = request.MessageId,
+                OwnerId = messageOwnerId,
+                Type = MessageType.Forward,
+                ForwardMessageId = new Guid("C7EFF82F-56FF-4966-9040-E79C90F118A7")
+            };
+
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+                .ReturnsAsync(message)
+                .Verifiable();
+            _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<DateTimeOffset>()))
+                .ReturnsAsync((Message)null)
+                .Verifiable();
+            _messageRepositoryMock.Setup(x => x.DeleteMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saasUserId => saasUserId.Equals(request.SaasUserId))))
+                .ReturnsAsync(new Member { Id = messageOwnerId })
+                .Verifiable();
+
+            _forwardMessageRepositoryMock.Setup(x => x.DeleteForwardMessageAsync(It.Is<Guid>(forwardMessageId => forwardMessageId.Equals(message.ForwardMessageId))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _attachmentRepositoryMock.Setup(x => x.GetMessageAttachmentsAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+                .ReturnsAsync(new List<Attachment>())
+                .Verifiable();
+            _attachmentRepositoryMock.Setup(x => x.DeleteMessageAttachmentsAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _channelMemberRepositoryMock.Setup(x => x.UpdateLastReadMessageAsync(
+                    It.Is<Guid>(old => old.Equals(message.Id)),
+                    It.Is<Guid?>(current => current.Equals(null))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            // Act
+            await _messageService.DeleteMessageAsync(request);
+
+            // Assert
+            VerifyMocks();
+        }
+
+        [Fact]
+        public void UpdateMessageAsync_ShouldThrowIfMessageDoesNotExist()
+        {
+            // Arrange
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Message)null)
+                .Verifiable();
+
+            var request = new UpdateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), "body");
+
+            // Act
+            Func<Task> act = async () => { await _messageService.UpdateMessageAsync(request); };
+
+            // Assert
+            act.Should().Throw<NetKitChatNotFoundException>()
+                .And.Message.Should().Be($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public void UpdateMessageAsync_ShouldThrowIfMemberDoesNotExist()
+        {
+            // Arrange
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new Message())
+                .Verifiable();
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync((Member)null)
+                .Verifiable();
+
+            var request = new UpdateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), "body");
+
+            // Act
+            Func<Task> act = async () => { await _messageService.UpdateMessageAsync(request); };
+
+            // Assert
+            act.Should().Throw<NetKitChatNotFoundException>()
+                .And.Message.Should().Be($"Unable to update message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public void UpdateMessageAsync_ShouldThrowIfMemberIsNotMessageOwner()
+        {
+            // Arrange
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new Message { OwnerId = new Guid("F19AD922-B0DB-4686-8CB4-F51902800CAE") })
+                .Verifiable();
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new Member { Id = new Guid("ABF2CA08-5374-4CED-BE87-6EA93A8B90DA") })
+                .Verifiable();
+
+            var request = new UpdateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), "body");
+
+            // Act
+            Func<Task> act = async () => { await _messageService.UpdateMessageAsync(request); };
+
+            // Assert
+            act.Should().Throw<NetKitChatAccessForbiddenException>()
+                .And.Message.Should().Be($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public async Task UpdateMessageAsync_ShouldUpdateMessageBodyAndUpdatedDate()
+        {
+            // Arrange
+            var request = new UpdateMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), "new body");
+
+            var member = new Member
+            {
+                Id = new Guid("ABF2CA08-5374-4CED-BE87-6EA93A8B90DA"),
+                PhotoName = "photo name"
+            };
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saasUserId => saasUserId.Equals(request.SaasUserId))))
+                .ReturnsAsync(member)
+                .Verifiable();
+
+            var message = new Message
+            {
+                Id = request.MessageId,
+                OwnerId = member.Id,
+                Owner = member,
+                Body = "old bobby"
+            };
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+                .ReturnsAsync(message)
+                .Verifiable();
+            _messageRepositoryMock.Setup(x => x.UpdateMessageBodyAsync(
+                    It.Is<Guid>(messageId => messageId.Equals(request.MessageId)),
+                    It.Is<string>(body => body.Equals(request.Body)),
+                    It.IsAny<DateTimeOffset>()
+                    ))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _cloudImageProviderMock.Setup(x => x.GetMemberAvatarUrl(It.Is<string>(photoUrl => photoUrl.Equals(member.PhotoName))))
+                .Returns(It.IsAny<string>())
+                .Verifiable();
+
+            // Act
+            await _messageService.UpdateMessageAsync(request);
+
+            // Assert
+            VerifyMocks();
+        }
+        
+        [Fact]
+        public void GetMessageByIdAsync_ShouldThrowIfMessageDoesNotExist()
+        {
+            // Arrange
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Message)null)
+                .Verifiable();
+
+            var messageId = new Guid("D7CECB2A-076C-41E3-AB4B-9C0D49292CBA");
+
+            // Act
+            Func<Task> act = async () => { await _messageService.GetMessageByIdAsync(messageId); };
+
+            // Assert
+            act.Should().Throw<NetKitChatNotFoundException>()
+                .And.Message.Should().Be($"Unable to get message by {nameof(messageId)}. Message {nameof(messageId)}:{messageId} not found.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public async Task GetMessageByIdAsync_ShouldReturnMessage()
+        {
+            // Arrange
+            var member = new Member
+            {
+                Id = new Guid("0B1837ED-8E84-450E-9BF1-DFC4AB766DFF"),
+                PhotoName = "photo name"
+            };
+            var message = new Message
+            {
+                Id = new Guid("7C1F8365-715D-4135-ADD7-B033760947BF"),
+                OwnerId = member.Id,
+                Owner = member
+            };
+
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(messageId => messageId.Equals(message.Id))))
+                .ReturnsAsync(message)
+                .Verifiable();
+
+            _cloudImageProviderMock.Setup(x => x.GetMemberAvatarUrl(It.Is<string>(photoUrl => photoUrl.Equals(member.PhotoName))))
+                .Returns(It.IsAny<string>())
+                .Verifiable();
+
+            // Act
+            var response = await _messageService.GetMessageByIdAsync(message.Id);
+
+            // TODO: use automapper instead static mappings. Then check mapping calls and returned value
+            // TODO: Get rid of static DateTime calls. Then check in tests.
+            // Assert
+            VerifyMocks();
+        }
+
+        private void VerifyMocks()
+        {
+            _channelRepositoryMock.VerifyAll();
+            _memberRepositoryMock.VerifyAll();
+            _messageRepositoryMock.VerifyAll();
+            _forwardMessageRepositoryMock.VerifyAll();
+            _channelMemberRepositoryMock.VerifyAll();
+            _attachmentRepositoryMock.VerifyAll();
+
+            _cloudImageProviderMock.VerifyAll();
+            _cloudAttachmentProviderMock.VerifyAll();
         }
     }
 }

@@ -121,21 +121,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 {
                     await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(message.ForwardMessageId.Value);
                 }
-
-                // Delete message attachments from database
+                
                 await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(message.Id);
-
-                // Delete message attachments from cloud
                 foreach (var attachment in messageAttachments)
                 {
                     await _cloudAttachmentProvider.DeleteMessageAttachmentAsync(attachment.FileName);
                 }
 
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message.ChannelId, message.OwnerId, message.Created);
-                if (previousMessage != null)
-                {
-                    await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage.Id);
-                }
+                await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage?.Id);
 
                 await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);
 
