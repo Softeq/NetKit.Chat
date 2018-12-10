@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
         }
 
         private IAttachmentRepository _attachmentRepository;
-        public IAttachmentRepository AttachmentRepository => _attachmentRepository ?? (_attachmentRepository =  new AttachmentRepository(_sqlConnectionFactory));
+        public IAttachmentRepository AttachmentRepository => _attachmentRepository ?? (_attachmentRepository = new AttachmentRepository(_sqlConnectionFactory));
 
         private IClientRepository _clientRepository;
         public IClientRepository ClientRepository => _clientRepository ?? (_clientRepository = new ClientRepository(_sqlConnectionFactory));

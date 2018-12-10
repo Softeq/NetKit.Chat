@@ -73,6 +73,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 if (request.Type == MessageType.Forward)
                 {
                     var forwardedMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.ForwardedMessageId);
+                    if (forwardedMessage == null)
+                    {
+                        throw new NetKitChatNotFoundException($"Unable to create message. Forward message {nameof(request.ForwardedMessageId)}:{request.ForwardedMessageId} not found.");
+                    }
+
                     var forwardMessage = forwardedMessage.ToForwardMessage(Guid.NewGuid());
                     await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
                     message.ForwardMessageId = forwardMessage.Id;
