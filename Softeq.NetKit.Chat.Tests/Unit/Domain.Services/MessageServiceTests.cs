@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -17,13 +18,17 @@ using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
 {
     public class MessageServiceTests
     {
+        private const int MaxAttachmentsCount = 10;
+
         private readonly IMessageService _messageService;
 
         private readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new Mock<IDateTimeProvider>(MockBehavior.Strict);
@@ -54,6 +59,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
             _unitOfWorkMock.Setup(x => x.AttachmentRepository).Returns(_attachmentRepositoryMock.Object);
 
             _configurationMock.Setup(x => x.GetSection(It.IsAny<string>())).Returns(_configurationSectionMock.Object);
+            _configurationSectionMock.Setup(x => x.Value).Returns(MaxAttachmentsCount.ToString());
             var attachmentConfiguration = new AttachmentConfiguration(_configurationMock.Object);
 
             _messageService = new MessageService(_unitOfWorkMock.Object, _domainModelsMapperMock.Object, attachmentConfiguration, _cloudAttachmentProviderMock.Object, _dateTimeProviderMock.Object);
@@ -242,11 +248,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
             _dateTimeProviderMock.Setup(x => x.GetUtcNow())
                 .Returns(DateTimeOffset.UtcNow)
                 .Verifiable();
-            
+
             _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.IsAny<Message>(), It.IsAny<DateTimeOffset?>()))
                 .Returns(new MessageResponse())
                 .Verifiable();
-            
+
             _domainModelsMapperMock.Setup(x => x.MapToForwardMessage(It.IsAny<Message>()))
                 .Returns(new ForwardMessage())
                 .Verifiable();
@@ -547,7 +553,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
             _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.IsAny<Message>(), It.IsAny<DateTimeOffset?>()))
                 .Returns(new MessageResponse())
                 .Verifiable();
-            
+
             _dateTimeProviderMock.Setup(x => x.GetUtcNow())
                 .Returns(DateTimeOffset.UtcNow)
                 .Verifiable();
@@ -600,17 +606,170 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .Verifiable();
 
             var messageResponse = new MessageResponse();
-            _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.IsAny<Message>(), It.IsAny<DateTimeOffset?>()))
+            _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.Is<Message>(m => m.Equals(message)), It.IsAny<DateTimeOffset?>()))
                 .Returns(messageResponse)
                 .Verifiable();
 
             // Act
-            var response = await _messageService.GetMessageByIdAsync(message.Id);
+            await _messageService.GetMessageByIdAsync(message.Id);
 
-            // TODO: use automapper instead static mappings. Then check mapping calls and returned value
-            // TODO: Get rid of static DateTime calls. Then check in tests.
             // Assert
             VerifyMocks();
+        }
+
+        [Fact]
+        public void AddMessageAttachmentAsync_ShouldThrowIfMessageDoesNotExist()
+        {
+            // Arrange
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Message)null)
+                .Verifiable();
+
+            var request = new AddMessageAttachmentRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), null, "jpg", "image/jpeg", 0);
+
+            // Act
+            Func<Task> act = async () => { await _messageService.AddMessageAttachmentAsync(request); };
+
+            // Assert
+            act.Should().Throw<NetKitChatNotFoundException>()
+                .And.Message.Should().Be($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public void AddMessageAttachmentAsync_ShouldThrowIfMemberDoesNotExist()
+        {
+            // Arrange
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new Message())
+                .Verifiable();
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync((Member)null)
+                .Verifiable();
+
+            var request = new AddMessageAttachmentRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), null, "jpg", "image/jpeg", 0);
+
+            // Act
+            Func<Task> act = async () => { await _messageService.AddMessageAttachmentAsync(request); };
+
+            // Assert
+            act.Should().Throw<NetKitChatNotFoundException>()
+                .And.Message.Should().Be($"Unable to add message attachment. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public void AddMessageAttachmentAsync_ShouldThrowIfMemberIsNotMessageOwner()
+        {
+            // Arrange
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new Message { OwnerId = new Guid("F19AD922-B0DB-4686-8CB4-F51902800CAE") })
+                .Verifiable();
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new Member { Id = new Guid("ABF2CA08-5374-4CED-BE87-6EA93A8B90DA") })
+                .Verifiable();
+
+            var request = new AddMessageAttachmentRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), null, "jpg", "image/jpeg", 0);
+
+            // Act
+            Func<Task> act = async () => { await _messageService.AddMessageAttachmentAsync(request); };
+
+            // Assert
+            act.Should().Throw<NetKitChatAccessForbiddenException>()
+                .And.Message.Should().Be($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public void AddMessageAttachmentAsync_ShouldThrowIfAttachmentLimitExceeded()
+        {
+            // Arrange
+            var request = new AddMessageAttachmentRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), null, "jpg", "image/jpeg", 0);
+
+            var member = new Member
+            {
+                Id = new Guid("ABF2CA08-5374-4CED-BE87-6EA93A8B90DA")
+            };
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new Message { OwnerId = member.Id })
+                .Verifiable();
+
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(member)
+                .Verifiable();
+
+            _attachmentRepositoryMock.Setup(x => x.GetMessageAttachmentsCountAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(MaxAttachmentsCount)
+                .Verifiable();
+
+            // Act
+            Func<Task> act = async () => { await _messageService.AddMessageAttachmentAsync(request); };
+
+            // Assert
+            act.Should().Throw<NetKitChatInvalidOperationException>()
+                .And.Message.Should().Be($"Unable to add message attachment. Attachment limit {MaxAttachmentsCount} exceeded.");
+
+            VerifyMocks();
+        }
+
+        [Fact]
+        public async Task AddMessageAttachmentAsync_ShouldAddAttachment()
+        {
+            // Arrange
+            var request = new AddMessageAttachmentRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"), null, "jpg", "image/jpeg", 0);
+
+            var member = new Member
+            {
+                Id = new Guid("ABF2CA08-5374-4CED-BE87-6EA93A8B90DA")
+            };
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new Message { Id = request.MessageId, OwnerId = member.Id })
+                .Verifiable();
+
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(member)
+                .Verifiable();
+
+            _attachmentRepositoryMock.Setup(x => x.GetMessageAttachmentsCountAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+                .ReturnsAsync(MaxAttachmentsCount - 1)
+                .Verifiable();
+
+            _attachmentRepositoryMock.Setup(x => x.AddAttachmentAsync(It.IsAny<Attachment>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            string attachmentFileName = null;
+            _cloudAttachmentProviderMock.Setup(x => x.SaveAttachmentAsync(It.IsAny<string>(), It.IsAny<Stream>()))
+                .Callback<string, Stream>((name, stream) => attachmentFileName = name)
+                .ReturnsAsync("path_in_cloud")
+                .Verifiable();
+
+            Attachment attachmentToMap = null;
+            _domainModelsMapperMock.Setup(x => x.MapToAttachmentResponse(It.IsAny<Attachment>()))
+                .Callback<Attachment>(x => attachmentToMap = x)
+                .Returns(new AttachmentResponse())
+                .Verifiable();
+
+            var utcNow = DateTimeOffset.UtcNow;
+            _dateTimeProviderMock.Setup(x => x.GetUtcNow())
+                .Returns(utcNow)
+                .Verifiable();
+
+            // Act
+            await _messageService.AddMessageAttachmentAsync(request);
+
+            // Assert
+            VerifyMocks();
+            
+            attachmentToMap.ContentType.Should().Be(request.ContentType);
+            attachmentToMap.Created.Should().Be(utcNow);
+            attachmentToMap.FileName.Should().Be(attachmentFileName);
+            attachmentToMap.MessageId.Should().Be(request.MessageId);
+            attachmentToMap.Size.Should().Be(request.Size);
+            attachmentFileName.Should().EndWith($".{request.Extension}");
         }
 
         private void VerifyMocks()

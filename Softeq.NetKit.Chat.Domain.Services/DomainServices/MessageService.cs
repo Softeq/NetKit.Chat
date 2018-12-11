@@ -208,7 +208,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Id = Guid.NewGuid(),
                 ContentType = request.ContentType,
                 Created = _dateTimeProvider.GetUtcNow(),
-                FileName = Guid.NewGuid() + "." + request.Extension,
+                FileName = $"{Guid.NewGuid()}.{request.Extension}",
                 MessageId = request.MessageId,
                 Size = request.Size
             };
