@@ -137,6 +137,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
+        [Route("search")]
         [ProducesResponseType(typeof(IReadOnlyCollection<Guid>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchMessagesAsync(Guid channelId, [FromQuery] string searchText)
         {
