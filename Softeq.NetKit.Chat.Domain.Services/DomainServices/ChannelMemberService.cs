@@ -7,15 +7,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services.Mappers;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     internal class ChannelMemberService : BaseService, IChannelMemberService
     {
-        public ChannelMemberService(IUnitOfWork unitOfWork)
-            : base(unitOfWork)
+        public ChannelMemberService(IUnitOfWork unitOfWork, IDomainModelsMapper domainModelsMapper)
+            : base(unitOfWork, domainModelsMapper)
         {
         }
 
@@ -28,7 +28,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var channelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(channelId);
-            return channelMembers.Select(x => x.ToChannelMemberResponse()).ToList().AsReadOnly();
+            return channelMembers.Select(channelMember => DomainModelsMapper.MapToChannelMemberResponse(channelMember)).ToList().AsReadOnly();
         }
     }
 }

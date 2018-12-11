@@ -12,7 +12,8 @@ using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
-using Softeq.NetKit.Chat.Domain.Services.Mappers;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
@@ -24,23 +25,24 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     internal class MessageService : BaseService, IMessageService
     {
         private readonly AttachmentConfiguration _attachmentConfiguration;
-        private readonly ICloudImageProvider _cloudImageProvider;
         private readonly ICloudAttachmentProvider _cloudAttachmentProvider;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public MessageService(
-            IUnitOfWork unitOfWork, 
-            AttachmentConfiguration attachmentConfiguration, 
-            ICloudImageProvider cloudImageProvider, 
-            ICloudAttachmentProvider cloudAttachmentProvider)
-            : base(unitOfWork)
+            IUnitOfWork unitOfWork,
+            IDomainModelsMapper domainModelsMapper,
+            AttachmentConfiguration attachmentConfiguration,
+            ICloudAttachmentProvider cloudAttachmentProvider,
+            IDateTimeProvider dateTimeProvider)
+            : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(attachmentConfiguration).IsNotNull();
-            Ensure.That(cloudImageProvider).IsNotNull();
             Ensure.That(cloudAttachmentProvider).IsNotNull();
+            Ensure.That(dateTimeProvider).IsNotNull();
 
             _attachmentConfiguration = attachmentConfiguration;
-            _cloudImageProvider = cloudImageProvider;
             _cloudAttachmentProvider = cloudAttachmentProvider;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
@@ -63,7 +65,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 ChannelId = request.ChannelId,
                 OwnerId = member.Id,
                 Body = request.Body,
-                Created = DateTimeOffset.UtcNow,
+                Created = _dateTimeProvider.GetUtcNow(),
                 Type = request.Type,
                 ImageUrl = request.ImageUrl
             };
@@ -78,7 +80,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                         throw new NetKitChatNotFoundException($"Unable to create message. Forward message {nameof(request.ForwardedMessageId)}:{request.ForwardedMessageId} not found.");
                     }
 
-                    var forwardMessage = forwardedMessage.ToForwardMessage(Guid.NewGuid());
+                    var forwardMessage = DomainModelsMapper.MapToForwardMessage(forwardedMessage);
+                    forwardMessage.Id = Guid.NewGuid();
                     await UnitOfWork.ForwardMessageRepository.AddForwardMessageAsync(forwardMessage);
                     message.ForwardMessageId = forwardMessage.Id;
                 }
@@ -91,7 +94,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(message.Id);
 
-            return message.ToMessageResponse(null, _cloudImageProvider);
+            return DomainModelsMapper.MapToMessageResponse(message);
         }
 
         public async Task DeleteMessageAsync(DeleteMessageRequest request)
@@ -157,10 +160,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             message.Body = request.Body;
-            message.Updated = DateTimeOffset.UtcNow;
+            message.Updated = _dateTimeProvider.GetUtcNow();
 
             await UnitOfWork.MessageRepository.UpdateMessageBodyAsync(message.Id, message.Body, message.Updated.Value);
-            return message.ToMessageResponse(null, _cloudImageProvider);
+
+            return DomainModelsMapper.MapToMessageResponse(message);
         }
 
         public async Task<MessageResponse> GetMessageByIdAsync(Guid messageId)
@@ -171,7 +175,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get message by {nameof(messageId)}. Message {nameof(messageId)}:{messageId} not found.");
             }
 
-            return message.ToMessageResponse(null, _cloudImageProvider);
+            return DomainModelsMapper.MapToMessageResponse(message);
         }
 
         public async Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
@@ -203,7 +207,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 Id = Guid.NewGuid(),
                 ContentType = request.ContentType,
-                Created = DateTimeOffset.UtcNow,
+                Created = _dateTimeProvider.GetUtcNow(),
                 FileName = Guid.NewGuid() + "." + request.Extension,
                 MessageId = request.MessageId,
                 Size = request.Size
@@ -215,7 +219,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             // Save attachment in cloud
             await _cloudAttachmentProvider.SaveAttachmentAsync(attachment.FileName, request.Content);
 
-            return attachment.ToAttachmentResponse();
+            return DomainModelsMapper.MapToAttachmentResponse(attachment);
         }
 
         public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
@@ -267,7 +271,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(request.ChannelId);
 
-            return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider));
+            return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created));
         }
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)
@@ -294,15 +298,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetOlderMessagesWithOwnersAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider)).ToList();
-
-            var result = new MessagesResult
+            var results = messages.Select(message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created)).ToList();
+            
+            return new MessagesResult
             {
                 PageSize = request.PageSize,
                 Results = results
             };
-
-            return result;
         }
 
         public async Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request)
@@ -318,15 +320,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetMessagesWithOwnersAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider)).ToList();
+            var results = messages.Select(message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created)).ToList();
 
-            var result = new MessagesResult
+            return new MessagesResult
             {
                 PageSize = request.PageSize,
                 Results = results
             };
-
-            return result;
         }
 
         public async Task<MessagesResult> GetLastMessagesAsync(GetLastMessagesRequest request)
@@ -349,14 +349,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(request.ChannelId);
             }
             
-            var results = messages.Select(x => x.ToMessageResponse(lastReadMessage, _cloudImageProvider)).ToList();
+            var results = messages.Select(message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created)).ToList();
 
-            var result = new MessagesResult
+            return new MessagesResult
             {
                 Results = results
             };
-
-            return result;
         }
 
         public async Task<IReadOnlyCollection<Guid>> FindMessageIdsAsync(Guid channelId, string searchText)

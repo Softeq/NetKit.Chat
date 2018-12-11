@@ -14,7 +14,10 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
@@ -22,6 +25,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
     public class MessageServiceTests
     {
         private readonly IMessageService _messageService;
+
+        private readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new Mock<IDateTimeProvider>(MockBehavior.Strict);
+
+        private readonly Mock<IDomainModelsMapper> _domainModelsMapperMock = new Mock<IDomainModelsMapper>(MockBehavior.Strict);
 
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>(MockBehavior.Strict);
         private readonly Mock<IChannelRepository> _channelRepositoryMock = new Mock<IChannelRepository>(MockBehavior.Strict);
@@ -49,7 +56,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
             _configurationMock.Setup(x => x.GetSection(It.IsAny<string>())).Returns(_configurationSectionMock.Object);
             var attachmentConfiguration = new AttachmentConfiguration(_configurationMock.Object);
 
-            _messageService = new MessageService(_unitOfWorkMock.Object, attachmentConfiguration, _cloudImageProviderMock.Object, _cloudAttachmentProviderMock.Object);
+            _messageService = new MessageService(_unitOfWorkMock.Object, _domainModelsMapperMock.Object, attachmentConfiguration, _cloudAttachmentProviderMock.Object, _dateTimeProviderMock.Object);
         }
 
         [Fact]
@@ -117,6 +124,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .ReturnsAsync((Message)null)
                 .Verifiable();
 
+            _dateTimeProviderMock.Setup(x => x.GetUtcNow())
+                .Returns(DateTimeOffset.UtcNow)
+                .Verifiable();
+
             // Act
             Func<Task> act = async () => { await _messageService.CreateMessageAsync(request); };
 
@@ -158,10 +169,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            Guid messageId = Guid.Empty;
+            var messageId = Guid.Empty;
             _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
                 .Callback<Guid>(x => messageId = x)
                 .ReturnsAsync((Message)null)
+                .Verifiable();
+
+            var utcNow = DateTimeOffset.UtcNow;
+            _dateTimeProviderMock.Setup(x => x.GetUtcNow())
+                .Returns(utcNow)
+                .Verifiable();
+
+            var messageResponse = new MessageResponse();
+            _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.IsAny<Message>(), It.IsAny<DateTimeOffset?>()))
+                .Returns(messageResponse)
                 .Verifiable();
 
             // Act
@@ -176,6 +197,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
             message.Body.Should().Be(request.Body);
             message.Type.Should().Be(request.Type);
             message.ImageUrl.Should().Be(request.ImageUrl);
+            message.Created.Should().Be(utcNow);
         }
 
         [Fact]
@@ -215,6 +237,18 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
             _forwardMessageRepositoryMock.Setup(x => x.AddForwardMessageAsync(It.IsAny<ForwardMessage>()))
                 .Callback<ForwardMessage>(x => forwardMessageId = x.Id)
                 .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _dateTimeProviderMock.Setup(x => x.GetUtcNow())
+                .Returns(DateTimeOffset.UtcNow)
+                .Verifiable();
+            
+            _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.IsAny<Message>(), It.IsAny<DateTimeOffset?>()))
+                .Returns(new MessageResponse())
+                .Verifiable();
+            
+            _domainModelsMapperMock.Setup(x => x.MapToForwardMessage(It.IsAny<Message>()))
+                .Returns(new ForwardMessage())
                 .Verifiable();
 
             // Act
@@ -510,8 +544,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            _cloudImageProviderMock.Setup(x => x.GetMemberAvatarUrl(It.Is<string>(photoUrl => photoUrl.Equals(member.PhotoName))))
-                .Returns(It.IsAny<string>())
+            _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.IsAny<Message>(), It.IsAny<DateTimeOffset?>()))
+                .Returns(new MessageResponse())
+                .Verifiable();
+            
+            _dateTimeProviderMock.Setup(x => x.GetUtcNow())
+                .Returns(DateTimeOffset.UtcNow)
                 .Verifiable();
 
             // Act
@@ -520,7 +558,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
             // Assert
             VerifyMocks();
         }
-        
+
         [Fact]
         public void GetMessageByIdAsync_ShouldThrowIfMessageDoesNotExist()
         {
@@ -561,8 +599,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
                 .ReturnsAsync(message)
                 .Verifiable();
 
-            _cloudImageProviderMock.Setup(x => x.GetMemberAvatarUrl(It.Is<string>(photoUrl => photoUrl.Equals(member.PhotoName))))
-                .Returns(It.IsAny<string>())
+            var messageResponse = new MessageResponse();
+            _domainModelsMapperMock.Setup(x => x.MapToMessageResponse(It.IsAny<Message>(), It.IsAny<DateTimeOffset?>()))
+                .Returns(messageResponse)
                 .Verifiable();
 
             // Act
@@ -576,6 +615,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services
 
         private void VerifyMocks()
         {
+            _dateTimeProviderMock.VerifyAll();
+
+            _domainModelsMapperMock.VerifyAll();
+
             _channelRepositoryMock.VerifyAll();
             _memberRepositoryMock.VerifyAll();
             _messageRepositoryMock.VerifyAll();

@@ -7,11 +7,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using EnsureThat;
-using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services.Mappers;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
@@ -21,14 +21,17 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     internal class MemberService : BaseService, IMemberService
     {
-        private readonly ICloudImageProvider _cloudImageProvider;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public MemberService(IUnitOfWork unitOfWork, ICloudImageProvider cloudImageProvider)
-            : base(unitOfWork)
+        public MemberService(
+            IUnitOfWork unitOfWork,
+            IDomainModelsMapper domainModelsMapper,
+            IDateTimeProvider dateTimeProvider)
+            : base(unitOfWork, domainModelsMapper)
         {
-            Ensure.That(cloudImageProvider).IsNotNull();
-
-            _cloudImageProvider = cloudImageProvider;
+            Ensure.That(dateTimeProvider).IsNotNull();
+            
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId)
@@ -39,8 +42,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} not found.");
             }
 
-            var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(member.PhotoName);
-            return member.ToMemberSummary(memberAvatarUrl);
+            return DomainModelsMapper.MapToMemberSummary(member);
         }
 
         public async Task<MemberSummary> GetMemberByIdAsync(Guid memberId)
@@ -51,8 +53,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} not found.");
             }
 
-            var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(member.PhotoName);
-            return member.ToMemberSummary(memberAvatarUrl);
+            return DomainModelsMapper.MapToMemberSummary(member);
         }
 
         public async Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId)
@@ -64,11 +65,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);
-            return members.Select(x =>
-            {
-                var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(x.PhotoName);
-                return x.ToMemberSummary(memberAvatarUrl);
-            }).ToList().AsReadOnly();
+            return members.Select(member => DomainModelsMapper.MapToMemberSummary(member)).ToList().AsReadOnly();
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(Guid memberId, Guid channelId)
@@ -113,7 +110,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             channel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
 
-            return channel.ToChannelResponse();
+            return DomainModelsMapper.MapToChannelResponse(channel);
         }
 
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
@@ -133,13 +130,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Status = UserStatus.Active,
                 SaasUserId = saasUserId,
                 Email = email,
-                LastActivity = DateTimeOffset.UtcNow,
+                LastActivity = _dateTimeProvider.GetUtcNow(),
                 Name = email
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(newMember);
 
-            var newMemberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(newMember.PhotoName);
-            return newMember.ToMemberSummary(newMemberAvatarUrl);
+            return DomainModelsMapper.MapToMemberSummary(newMember);
         }
 
         public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
@@ -163,14 +159,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             member.Status = status;
-            member.LastActivity = DateTimeOffset.Now;
+            member.LastActivity = _dateTimeProvider.GetUtcNow();
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
         }
 
         public async Task<IReadOnlyCollection<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds)
         {
             var clients = await UnitOfWork.ClientRepository.GetClientsWithMembersAsync(memberIds);
-            return clients.Select(x => x.ToClientResponse()).ToList().AsReadOnly();
+            return clients.Select(client => DomainModelsMapper.MapToClientResponse(client)).ToList().AsReadOnly();
         }
 
         public async Task<PagedMembersResponse> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter)
@@ -179,11 +175,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var response = new PagedMembersResponse
             {
-                Entities = members.Entities.Select(x =>
-                {
-                    var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(x.PhotoName);
-                    return x.ToMemberSummary(memberAvatarUrl);
-                }),
+                Entities = members.Entities.Select(member => DomainModelsMapper.MapToMemberSummary(member)),
                 TotalRows = members.TotalRows,
                 PageNumber = members.PageNumber,
                 PageSize = members.PageSize
@@ -198,11 +190,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var response = new PagedMembersResponse
             {
-                Entities = members.Entities.Select(x =>
-                {
-                    var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(x.PhotoName);
-                    return x.ToMemberSummary(memberAvatarUrl);
-                }),
+                Entities = members.Entities.Select(member => DomainModelsMapper.MapToMemberSummary(member)),
                 TotalRows = members.TotalRows,
                 PageNumber = members.PageNumber,
                 PageSize = members.PageSize
@@ -219,7 +207,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
             }
             member.Status = UserStatus.Active;
-            member.LastActivity = DateTimeOffset.UtcNow;
+            member.LastActivity = _dateTimeProvider.GetUtcNow();
             member.IsAfk = false;
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
 
@@ -230,7 +218,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
             client.UserAgent = request.UserAgent;
             client.LastActivity = member.LastActivity;
-            client.LastClientActivity = DateTimeOffset.UtcNow;
+            client.LastClientActivity = _dateTimeProvider.GetUtcNow();
             await UnitOfWork.ClientRepository.UpdateClientAsync(client);
         }
     }

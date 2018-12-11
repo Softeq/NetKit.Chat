@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             var member = new Member
             {
                 Id = _memberId,
-                LastActivity = DateTime.UtcNow,
+                LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Active
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             {
                 Id = Guid.NewGuid(),
                 ContentType = "test",
-                Created = DateTime.UtcNow,
+                Created = DateTimeOffset.UtcNow,
                 FileName = "test",
                 MessageId = _messageId,
                 Size = 100
@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             {
                 Id = Guid.NewGuid(),
                 ContentType = "test",
-                Created = DateTime.UtcNow,
+                Created = DateTimeOffset.UtcNow,
                 FileName = "test",
                 MessageId = _messageId,
                 Size = 100
@@ -95,7 +95,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             {
                 Id = Guid.NewGuid(),
                 ContentType = "test",
-                Created = DateTime.UtcNow,
+                Created = DateTimeOffset.UtcNow,
                 FileName = "test",
                 MessageId = _messageId,
                 Size = 100
@@ -116,7 +116,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 {
                     Id = new Guid("14D00154-F363-4E83-8F4B-4B9EE303D7D2"),
                     ContentType = "jpg",
-                    Created = DateTime.UtcNow,
+                    Created = DateTimeOffset.UtcNow,
                     FileName = "a1.jpg",
                     MessageId = _messageId,
                     Size = 100
@@ -125,7 +125,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 {
                     Id = new Guid("BB3E9697-904D-4821-914E-CCE1BD14EF5C"),
                     ContentType = "jpg",
-                    Created = DateTime.UtcNow,
+                    Created = DateTimeOffset.UtcNow,
                     FileName = "a2.jpg",
                     MessageId = _messageId,
                     Size = 222
@@ -151,7 +151,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 {
                     Id = Guid.NewGuid(),
                     ContentType = "jpg",
-                    Created = DateTime.UtcNow,
+                    Created = DateTimeOffset.UtcNow,
                     FileName = "pic",
                     MessageId = _messageId,
                     Size = 100
@@ -160,7 +160,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 {
                     Id = Guid.NewGuid(),
                     ContentType = "png",
-                    Created = DateTime.UtcNow,
+                    Created = DateTimeOffset.UtcNow,
                     FileName = "image",
                     MessageId = _messageId,
                     Size = 100
@@ -186,7 +186,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 {
                     Id = Guid.NewGuid(),
                     ContentType = "jpg",
-                    Created = DateTime.UtcNow,
+                    Created = DateTimeOffset.UtcNow,
                     FileName = "pic",
                     MessageId = _messageId,
                     Size = 100
@@ -195,7 +195,7 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
                 {
                     Id = Guid.NewGuid(),
                     ContentType = "png",
-                    Created = DateTime.UtcNow,
+                    Created = DateTimeOffset.UtcNow,
                     FileName = "image",
                     MessageId = _messageId,
                     Size = 100

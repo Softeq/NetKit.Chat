@@ -13,6 +13,7 @@ namespace Softeq.NetKit.Chat.Web.Extensions
     {
         public static void RegisterSolutionModules(this ContainerBuilder builder)
         {
+            builder.RegisterModule<WebDiModule>();
             builder.RegisterModule<SignalRDiModule>();
             builder.RegisterModule<DomainServicesDiModule>();
             builder.RegisterModule<DataPersistentSqlDiModule>();

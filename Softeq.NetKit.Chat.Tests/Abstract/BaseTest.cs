@@ -12,6 +12,7 @@ using Softeq.NetKit.Chat.Data.Persistent.Database;
 using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.Services;
+using Softeq.NetKit.Chat.Web;
 
 namespace Softeq.NetKit.Chat.Tests.Abstract
 {
@@ -35,6 +36,7 @@ namespace Softeq.NetKit.Chat.Tests.Abstract
             builder.RegisterModule<DataPersistentSqlDiModule>();
             builder.RegisterModule<DataCloudAzureDiModule>();
             builder.RegisterModule<DomainServicesDiModule>();
+            builder.RegisterModule<WebDiModule>();
 
             LifetimeScope = builder.Build();
             UnitOfWork = LifetimeScope.Resolve<IUnitOfWork>();

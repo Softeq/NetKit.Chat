@@ -9,6 +9,13 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
     public class Channel : IBaseEntity<Guid>, ICreated
     {
+        public Channel()
+        {
+            Messages = new List<Message>();
+            Members = new List<ChannelMember>();
+            Notifications = new List<Notification>();
+        }
+
         public Guid Id { get; set; }
 
         [MaxLength(200)]

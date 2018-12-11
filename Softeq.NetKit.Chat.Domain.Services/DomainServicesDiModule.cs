@@ -4,6 +4,8 @@
 using Autofac;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.Domain.Services.Utility;
 
 namespace Softeq.NetKit.Chat.Domain.Services
 {
@@ -11,6 +13,9 @@ namespace Softeq.NetKit.Chat.Domain.Services
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<AttachmentConfiguration>()
+                .AsSelf();
+
             builder.RegisterType<ChannelService>()
                 .As<IChannelService>();
 
@@ -26,8 +31,19 @@ namespace Softeq.NetKit.Chat.Domain.Services
             builder.RegisterType<ClientService>()
                 .As<IClientService>();
 
-            builder.RegisterType<AttachmentConfiguration>()
+            builder.RegisterType<SystemDateTimeProvider>()
+                .As<IDateTimeProvider>();
+
+            RegisterMappings(builder);
+        }
+
+        private void RegisterMappings(ContainerBuilder builder)
+        {
+            builder.RegisterType<AvatarUrlValueResolver>()
                 .AsSelf();
+
+            builder.RegisterType<DomainModelsMapper>()
+                .As<IDomainModelsMapper>();
         }
     }
 }

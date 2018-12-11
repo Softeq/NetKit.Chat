@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
+using System;
 
 namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
