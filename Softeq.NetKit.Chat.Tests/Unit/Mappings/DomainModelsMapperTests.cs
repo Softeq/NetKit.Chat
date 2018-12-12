@@ -15,7 +15,7 @@ using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Web;
 using Xunit;
 
-namespace Softeq.NetKit.Chat.Tests.Unit
+namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 {
     public class DomainModelsMapperTests
     {

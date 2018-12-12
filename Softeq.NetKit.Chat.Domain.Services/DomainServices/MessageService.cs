@@ -18,7 +18,6 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
-using Softeq.QueryUtils;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -257,21 +256,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             // Delete attachment from cloud
             await _cloudAttachmentProvider.DeleteMessageAttachmentAsync(attachment.FileName);
-        }
-
-        public async Task<PagedResults<MessageResponse>> GetChannelMessagesAsync(MessageRequest request)
-        {
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            if (member == null)
-            {
-                throw new NetKitChatNotFoundException($"Unable to get channel messages. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
-            }
-
-            var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
-
-            var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(request.ChannelId);
-
-            return PageUtil.CreatePagedResults(messages, request.Page, request.PageSize, message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created));
         }
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)

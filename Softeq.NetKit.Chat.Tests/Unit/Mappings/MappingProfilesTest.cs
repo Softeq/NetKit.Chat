@@ -5,7 +5,7 @@ using AutoMapper;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Xunit;
 
-namespace Softeq.NetKit.Chat.Tests.Unit
+namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 {
     public class MappingProfilesTest
     {

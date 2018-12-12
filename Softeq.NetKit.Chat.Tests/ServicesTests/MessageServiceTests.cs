@@ -92,26 +92,6 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
         }
 
         [Fact]
-        public async Task GetChannelMessagesAsyncTest()
-        {
-            // Arrange
-            var request = new CreateMessageRequest(SaasUserId, _channelId, MessageType.Default, "test");
-
-            // Act
-            var messages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
-            var message = await _messageService.CreateMessageAsync(request);
-            var newMessages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
-
-            // Assert
-            Assert.NotNull(newMessages);
-            Assert.NotEmpty(newMessages.Results);
-            Assert.Equal(request.Body, newMessages.Results.First().Body);
-            Assert.Equal(request.Type, newMessages.Results.First().Type);
-            Assert.Equal(request.ImageUrl, newMessages.Results.First().ImageUrl);
-            Assert.True(newMessages.Results.Count() > messages.Results.Count());
-        }
-
-        [Fact]
         public async Task DeleteMessageAsyncTest()
         {
             // Arrange
@@ -120,9 +100,10 @@ namespace Softeq.NetKit.Chat.Tests.ServicesTests
             var message = await _messageService.CreateMessageAsync(request);
 
             // Act
-            var messages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
+            var getMessagesRequest = new GetMessagesRequest(SaasUserId, _channelId, message.Id, message.Created, 10);
+            var messages = await _messageService.GetMessagesAsync(getMessagesRequest);
             await _messageService.DeleteMessageAsync(new DeleteMessageRequest(SaasUserId, message.Id));
-            var newMessages = await _messageService.GetChannelMessagesAsync(new MessageRequest(SaasUserId, _channelId, 1, 10));
+            var newMessages = await _messageService.GetMessagesAsync(getMessagesRequest);
 
             // Assert
             Assert.NotNull(newMessages);
