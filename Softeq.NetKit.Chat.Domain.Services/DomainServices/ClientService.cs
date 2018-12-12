@@ -43,7 +43,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to add client. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+                await _memberService.AddMemberAsync(request.SaasUserId, request.Email);
+                member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             }
 
             await _memberService.UpdateMemberStatusAsync(member.SaasUserId, UserStatus.Active);

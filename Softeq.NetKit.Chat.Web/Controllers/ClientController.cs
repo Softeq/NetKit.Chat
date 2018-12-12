@@ -42,7 +42,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(ClientResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddClientAsync(string connectionId)
         {
-            var addClientRequest = new AddClientRequest(GetCurrentSaasUserId(), GetCurrentUserName(), connectionId, null);
+            var addClientRequest = new AddClientRequest(GetCurrentSaasUserId(), GetCurrentUserName(), connectionId, null, GetCurrentEmail());
             var result = await _clientService.AddClientAsync(addClientRequest);
             return Ok(result);
         }
@@ -58,6 +58,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         private string GetCurrentUserName()
         {
             return User.FindFirstValue(JwtClaimTypes.Name);
+        }
+
+        private string GetCurrentEmail()
+        {
+            return User.FindFirstValue(JwtClaimTypes.Email);
         }
     }
 }

@@ -17,5 +17,10 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             return callerContext.User?.FindFirstValue("name");
         }
+
+        public static string GetEmail(this HubCallerContext callerContext)
+        {
+            return callerContext.User?.FindFirstValue("email");
+        }
     }
 }
