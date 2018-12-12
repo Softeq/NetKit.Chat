@@ -14,7 +14,7 @@ using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Web;
 
-namespace Softeq.NetKit.Chat.Tests.Abstract
+namespace Softeq.NetKit.Chat.Tests.Integration
 {
     public abstract class BaseTest : IDisposable
     {

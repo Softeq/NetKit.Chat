@@ -9,10 +9,9 @@ using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
-using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
 
-namespace Softeq.NetKit.Chat.Tests.ServicesTests
+namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 {
     public class MessageServiceTests : BaseTest
     {

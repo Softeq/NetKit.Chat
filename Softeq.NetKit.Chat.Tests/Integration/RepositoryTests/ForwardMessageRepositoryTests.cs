@@ -5,10 +5,9 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Tests.Abstract;
 using Xunit;
 
-namespace Softeq.NetKit.Chat.Tests.RepositoryTests
+namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 {
     public class ForwardMessageRepositoryTests : BaseTest
     {
