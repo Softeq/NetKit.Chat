@@ -21,6 +21,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         public async Task OnAddChannel(ChannelSummaryResponse channel)
         {
             var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
+
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelCreated, channel);
         }

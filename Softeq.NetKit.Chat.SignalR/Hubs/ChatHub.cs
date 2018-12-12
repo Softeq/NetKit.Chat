@@ -83,7 +83,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
             {
-                var getClientRequest = new GetClientRequest(Context.GetSaasUserId(), Context.ConnectionId);
+            	var getClientRequest = new GetClientRequest(Context.ConnectionId);
                 return await _clientService.GetClientAsync(getClientRequest);
             }));
         }

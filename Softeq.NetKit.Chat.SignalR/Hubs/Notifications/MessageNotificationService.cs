@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.AspNetCore.SignalR;
@@ -29,11 +30,12 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             _channelService = channelService;
         }
 
-        public async Task OnAddMessage(MessageResponse message)
+        public async Task OnAddMessage(MessageResponse message, string callerConnectionId)
         {
             var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(message.ChannelId);
-            
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageAdded, message);
+            var clientIdsExceptCaller = clientIds.Except(new[] { callerConnectionId }).ToList();
+
+            await HubContext.Clients.Clients(clientIdsExceptCaller).SendAsync(HubEvents.MessageAdded, message);
         }
 
         public async Task OnDeleteMessage(ChannelSummaryResponse channelSummary, MessageResponse message)
