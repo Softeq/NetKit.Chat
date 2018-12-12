@@ -39,7 +39,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         {
             var message = await _messageService.CreateMessageAsync(request);
 
-            await _messageNotificationService.OnAddMessage(message);
+            await _messageNotificationService.OnAddMessage(message, clientConnectionId);
 
             await _memberService.UpdateActivityAsync(new UpdateMemberActivityRequest(request.SaasUserId, clientConnectionId, null));
 

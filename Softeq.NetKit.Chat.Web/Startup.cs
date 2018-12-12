@@ -139,20 +139,21 @@ namespace Softeq.NetKit.Chat.Web
                 throw;
             }
 
-            if (!env.IsStaging() && !env.IsProduction())
+            // TODO: add `&& !env.IsStaging()` when testing will be passed
+            if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
                 app.UseDatabaseErrorPage();
-            }
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint($"/swagger/v1.0/swagger.json", "Versioned Api v1.0");
-            });
+                // Enable middleware to serve generated Swagger as a JSON endpoint.
+                app.UseSwagger();
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint($"/swagger/v1.0/swagger.json", "Versioned Api v1.0");
+                });
+            }
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseCorrelationId();
