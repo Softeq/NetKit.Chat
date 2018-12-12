@@ -15,7 +15,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
 {
     public abstract class MessageServiceTestBase
     {
-        protected const int MaxAttachmentsCount = 10;
+        protected const int MessageAttachmentsLimit = 10;
+        protected const int LastMessageReadCount = 20;
 
         protected readonly IMessageService _messageService;
 
@@ -32,7 +33,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         protected readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>(MockBehavior.Strict);
 
         protected readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>(MockBehavior.Strict);
-        protected readonly Mock<IConfigurationSection> _configurationSectionMock = new Mock<IConfigurationSection>();
 
         protected readonly Mock<ICloudImageProvider> _cloudImageProviderMock = new Mock<ICloudImageProvider>(MockBehavior.Strict);
         protected readonly Mock<ICloudAttachmentProvider> _cloudAttachmentProviderMock = new Mock<ICloudAttachmentProvider>(MockBehavior.Strict);
@@ -46,12 +46,22 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _unitOfWorkMock.Setup(x => x.ChannelMemberRepository).Returns(_channelMemberRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.AttachmentRepository).Returns(_attachmentRepositoryMock.Object);
 
-            _configurationMock.Setup(x => x.GetSection(It.IsAny<string>())).Returns(_configurationSectionMock.Object);
-            _configurationSectionMock.Setup(x => x.Value).Returns(MaxAttachmentsCount.ToString());
-            var attachmentConfiguration = new AttachmentConfiguration(_configurationMock.Object);
+            var messageAttachmentsLimitSectionMock = new Mock<IConfigurationSection>();
+            messageAttachmentsLimitSectionMock.Setup(x => x.Value).Returns(MessageAttachmentsLimit.ToString());
+            _configurationMock.Setup(x => x.GetSection("Message:MessageAttachmentsLimit")).Returns(messageAttachmentsLimitSectionMock.Object);
 
-            _messageService = new MessageService(_unitOfWorkMock.Object, _domainModelsMapperMock.Object, attachmentConfiguration,
-                _cloudAttachmentProviderMock.Object, _dateTimeProviderMock.Object);
+            var lastMessageReadCountSectionMock = new Mock<IConfigurationSection>();
+            lastMessageReadCountSectionMock.Setup(x => x.Value).Returns(LastMessageReadCount.ToString());
+            _configurationMock.Setup(x => x.GetSection("Message:LastMessageReadCount")).Returns(lastMessageReadCountSectionMock.Object);
+
+            var attachmentConfiguration = new MessagesConfiguration(_configurationMock.Object);
+
+            _messageService = new MessageService(
+                _unitOfWorkMock.Object, 
+                _domainModelsMapperMock.Object, 
+                attachmentConfiguration, 
+                _cloudAttachmentProviderMock.Object, 
+                _dateTimeProviderMock.Object);
         }
 
         protected void VerifyMocks()

@@ -101,7 +101,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .Verifiable();
 
             _attachmentRepositoryMock.Setup(x => x.GetMessageAttachmentsCountAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(MaxAttachmentsCount)
+                .ReturnsAsync(MessageAttachmentsLimit)
                 .Verifiable();
 
             // Act
@@ -109,7 +109,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatInvalidOperationException>()
-                .And.Message.Should().Be($"Unable to add message attachment. Attachment limit {MaxAttachmentsCount} exceeded.");
+                .And.Message.Should().Be($"Unable to add message attachment. Attachment limit {MessageAttachmentsLimit} exceeded.");
 
             VerifyMocks();
         }
@@ -133,7 +133,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .Verifiable();
 
             _attachmentRepositoryMock.Setup(x => x.GetMessageAttachmentsCountAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
-                .ReturnsAsync(MaxAttachmentsCount - 1)
+                .ReturnsAsync(MessageAttachmentsLimit - 1)
                 .Verifiable();
 
             _attachmentRepositoryMock.Setup(x => x.AddAttachmentAsync(It.IsAny<Attachment>()))

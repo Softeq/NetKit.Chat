@@ -23,23 +23,23 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     internal class MessageService : BaseService, IMessageService
     {
-        private readonly AttachmentConfiguration _attachmentConfiguration;
+        private readonly MessagesConfiguration _messagesConfiguration;
         private readonly ICloudAttachmentProvider _cloudAttachmentProvider;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public MessageService(
             IUnitOfWork unitOfWork,
             IDomainModelsMapper domainModelsMapper,
-            AttachmentConfiguration attachmentConfiguration,
+            MessagesConfiguration messagesConfiguration,
             ICloudAttachmentProvider cloudAttachmentProvider,
             IDateTimeProvider dateTimeProvider)
             : base(unitOfWork, domainModelsMapper)
         {
-            Ensure.That(attachmentConfiguration).IsNotNull();
+            Ensure.That(messagesConfiguration).IsNotNull();
             Ensure.That(cloudAttachmentProvider).IsNotNull();
             Ensure.That(dateTimeProvider).IsNotNull();
 
-            _attachmentConfiguration = attachmentConfiguration;
+            _messagesConfiguration = messagesConfiguration;
             _cloudAttachmentProvider = cloudAttachmentProvider;
             _dateTimeProvider = dateTimeProvider;
         }
@@ -199,7 +199,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isAttachmentLimitExceeded = await IsAttachmentLimitExceededAsync(message.Id);
             if (isAttachmentLimitExceeded)
             {
-                throw new NetKitChatInvalidOperationException($"Unable to add message attachment. Attachment limit {_attachmentConfiguration.MessageAttachmentsLimit} exceeded.");
+                throw new NetKitChatInvalidOperationException($"Unable to add message attachment. Attachment limit {_messagesConfiguration.MessageAttachmentsLimit} exceeded.");
             }
 
             var attachment = new Attachment
@@ -326,7 +326,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             if (lastReadMessage != null)
             {
-                messages = await UnitOfWork.MessageRepository.GetLastMessagesWithOwnersAsync(request.ChannelId, lastReadMessage.Created, 20);
+                messages = await UnitOfWork.MessageRepository.GetLastMessagesWithOwnersAsync(request.ChannelId, lastReadMessage.Created, _messagesConfiguration.LastMessageReadCount);
             }
             else
             {
@@ -349,7 +349,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         private async Task<bool> IsAttachmentLimitExceededAsync(Guid messageId)
         {
             var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(messageId);
-            return attachmentsCount >= _attachmentConfiguration.MessageAttachmentsLimit;
+            return attachmentsCount >= _messagesConfiguration.MessageAttachmentsLimit;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Softeq.NetKit.Chat.Domain.Services
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<AttachmentConfiguration>()
+            builder.RegisterType<MessagesConfiguration>()
                 .AsSelf();
 
             builder.RegisterType<ChannelService>()
