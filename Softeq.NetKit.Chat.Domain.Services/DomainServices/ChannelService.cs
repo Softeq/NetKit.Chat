@@ -12,7 +12,8 @@ using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Extensions;
-using Softeq.NetKit.Chat.Domain.Services.Mappers;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
@@ -23,18 +24,23 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     {
         private readonly IMemberService _memberService;
         private readonly ICloudImageProvider _cloudImageProvider;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public ChannelService(
             IUnitOfWork unitOfWork,
+            IDomainModelsMapper domainModelsMapper,
             IMemberService memberService,
-            ICloudImageProvider cloudImageProvider)
-            : base(unitOfWork)
+            ICloudImageProvider cloudImageProvider,
+            IDateTimeProvider dateTimeProvider)
+            : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(memberService).IsNotNull();
             Ensure.That(cloudImageProvider).IsNotNull();
+            Ensure.That(dateTimeProvider).IsNotNull();
 
             _memberService = memberService;
             _cloudImageProvider = cloudImageProvider;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
@@ -50,7 +56,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var newChannel = new Channel
             {
                 Id = Guid.NewGuid(),
-                Created = DateTimeOffset.UtcNow,
+                Created = _dateTimeProvider.GetUtcNow(),
                 Name = request.Name,
                 Description = request.Description,
                 WelcomeMessage = request.WelcomeMessage,
@@ -109,7 +115,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var channel = await UnitOfWork.ChannelRepository.GetChannelWithCreatorAsync(newChannel.Id);
-            return channel.ToChannelSummaryResponse(creator, null, _cloudImageProvider);
+
+            return DomainModelsMapper.MapToChannelSummaryResponse(channel, creator);
         }
 
         public async Task<IReadOnlyCollection<ChannelResponse>> GetMemberChannelsAsync(string saasUserId)
@@ -121,7 +128,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsAsync(member.Id);
-            return channels.Select(x => x.ToChannelResponse()).ToList().AsReadOnly();
+            return channels.Select(channel => DomainModelsMapper.MapToChannelResponse(channel)).ToList().AsReadOnly();
         }
 
         public async Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest request)
@@ -144,10 +151,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             channel.WelcomeMessage = request.WelcomeMessage;
             channel.Name = request.Name;
             channel.PhotoUrl = permanentChannelImageUrl;
-            channel.Updated = DateTimeOffset.UtcNow;
+            channel.Updated = _dateTimeProvider.GetUtcNow();
 
             await UnitOfWork.ChannelRepository.UpdateChannelAsync(channel);
-            return channel.ToChannelResponse();
+            return DomainModelsMapper.MapToChannelResponse(channel);
         }
 
         public async Task<ChannelSummaryResponse> GetChannelSummaryAsync(string saasUserId, Guid channelId)
@@ -166,8 +173,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channelId);
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, channelId);
-
-            return channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _cloudImageProvider);
+            
+            return DomainModelsMapper.MapToChannelSummaryResponse(channel, channelMember, lastReadMessage);
         }
 
         public async Task<ChannelResponse> GetChannelByIdAsync(Guid channelId)
@@ -178,7 +185,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get channel by {nameof(channelId)}. Channel {nameof(channelId)}:{channelId} not found.");
             }
 
-            return channel.ToChannelResponse();
+            return DomainModelsMapper.MapToChannelResponse(channel);
         }
 
         public async Task<ChannelResponse> CloseChannelAsync(string saasUserId, Guid channelId)
@@ -208,7 +215,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             channel.IsClosed = true;
             await UnitOfWork.ChannelRepository.UpdateChannelAsync(channel);
 
-            return channel.ToChannelResponse();
+            return DomainModelsMapper.MapToChannelResponse(channel);
         }
 
         public async Task<IReadOnlyCollection<ChannelSummaryResponse>> GetAllowedChannelsAsync(string saasUserId)
@@ -221,18 +228,18 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var channelsResponse = new List<ChannelSummaryResponse>();
 
-            var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAsync(member.Id);
+            var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAndCreatorAsync(member.Id);
             foreach (var channel in channels)
             {
                 var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channel.Id);
                 if (channelMember.LastReadMessageId.HasValue)
                 {
                     var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(channelMember.LastReadMessageId.Value);
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, lastReadMessage, _cloudImageProvider));
+                    channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, channelMember, lastReadMessage));
                 }
                 else
                 {
-                    channelsResponse.Add(channel.ToChannelSummaryResponse(channelMember, null, _cloudImageProvider));
+                    channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, channelMember));
                 }
             }
 
@@ -254,13 +261,18 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<IReadOnlyCollection<ChannelResponse>> GetAllChannelsAsync()
         {
             var channels = await UnitOfWork.ChannelRepository.GetAllChannelsAsync();
-            return channels.Select(x => x.ToChannelResponse()).ToList().AsReadOnly();
+            return channels.Select(channel => DomainModelsMapper.MapToChannelResponse(channel)).ToList().AsReadOnly();
         }
 
         public async Task<SettingsResponse> GetChannelSettingsAsync(Guid channelId)
         {
             var settings = await UnitOfWork.SettingRepository.GetSettingsByChannelIdAsync(channelId);
-            return settings.ToSettingsResponse();
+            if (settings == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get channel settings. Settings with {nameof(channelId)}:{channelId} not found.");
+            }
+
+            return DomainModelsMapper.MapToSettingsResponse(settings);
         }
 
         public async Task JoinToChannelAsync(string saasUserId, Guid channelId)

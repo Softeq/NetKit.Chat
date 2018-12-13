@@ -106,7 +106,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task UpdateLastReadMessageAsync(Guid previousLastReadMessageId, Guid currentLastReadMessageId)
+        public async Task UpdateLastReadMessageAsync(Guid previousLastReadMessageId, Guid? currentLastReadMessageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {

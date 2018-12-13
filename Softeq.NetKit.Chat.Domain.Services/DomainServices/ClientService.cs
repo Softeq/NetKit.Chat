@@ -9,7 +9,8 @@ using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.Services.Mappers;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 
@@ -18,13 +19,20 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     internal class ClientService : BaseService, IClientService
     {
         private readonly IMemberService _memberService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public ClientService(IUnitOfWork unitOfWork, IMemberService memberService)
-            : base(unitOfWork)
+        public ClientService(
+            IUnitOfWork unitOfWork,
+            IDomainModelsMapper domainModelsMapper,
+            IMemberService memberService,
+            IDateTimeProvider dateTimeProvider)
+            : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(memberService).IsNotNull();
+            Ensure.That(dateTimeProvider).IsNotNull();
 
             _memberService = memberService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<ClientResponse> GetClientAsync(GetClientRequest request)
@@ -35,7 +43,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
             }
 
-            return client.ToClientResponse();
+            return DomainModelsMapper.MapToClientResponse(client);
         }
 
         public async Task<ClientResponse> AddClientAsync(AddClientRequest request)
@@ -62,13 +70,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Member = member,
                 ClientConnectionId = request.ConnectionId,
                 LastActivity = member.LastActivity,
-                LastClientActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = _dateTimeProvider.GetUtcNow(),
                 Name = request.UserName,
                 UserAgent = request.UserAgent
             };
 
             await UnitOfWork.ClientRepository.AddClientAsync(client);
-            return client.ToClientResponse();
+            return DomainModelsMapper.MapToClientResponse(client);
         }
 
         public async Task DeleteClientAsync(DeleteClientRequest request)
