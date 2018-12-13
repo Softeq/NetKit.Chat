@@ -213,7 +213,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = _member2Id, ChannelId = notParticipatedChannel.Id });
 
             // Act
-            var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAsync(member.Id);
+            var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAndCreatorAsync(member.Id);
 
             // Assert
             allowedChannels.Should().BeEquivalentTo(participatedChannels);

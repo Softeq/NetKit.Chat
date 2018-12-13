@@ -35,15 +35,18 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        // TODO [az]: improve unit tests
         // TODO: Improve performance or split this method
-        public async Task<IReadOnlyCollection<Channel>> GetAllowedChannelsWithMessagesAsync(Guid memberId)
+        public async Task<IReadOnlyCollection<Channel>> GetAllowedChannelsWithMessagesAndCreatorAsync(Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
+                                        creator.Id, creator.SaasUserId, creator.Name, creator.Status, creator.Role, creator.IsAfk, creator.Email, creator.LastActivity,
                                         m.Id, m.ChannelId, m.Created, m.Body, m.ImageUrl, m.Type, m.OwnerId, m.Updated, 
                                         mem.Id, mem.SaasUserId, mem.Name, mem.Status, mem.Role, mem.IsAfk, mem.Email, mem.LastActivity
                                  FROM Channels c 
+                                 LEFT JOIN Members creator ON c.CreatorId = creator.Id
                                  LEFT JOIN Messages m ON c.Id = m.ChannelId
                                  LEFT JOIN Members mem ON m.OwnerId = mem.Id
                                  WHERE (c.Id IN 
@@ -55,9 +58,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
                 var channelDictionary = new Dictionary<Guid, Channel>();
 
-                return (await connection.QueryAsync<Channel, Message, Member, Channel>(
+                return (await connection.QueryAsync<Channel, Member, Message, Member, Channel>(
                         sqlQuery,
-                        (channel, message, member) =>
+                        (channel, creator, message, member) =>
                         {
                             if (!channelDictionary.TryGetValue(channel.Id, out var channelEntry))
                             {
@@ -65,6 +68,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                 channelEntry.Messages = new List<Message>();
                                 channelDictionary.Add(channelEntry.Id, channelEntry);
                             }
+                            
+                            channelEntry.Creator = creator;
 
                             if (message != null)
                             {

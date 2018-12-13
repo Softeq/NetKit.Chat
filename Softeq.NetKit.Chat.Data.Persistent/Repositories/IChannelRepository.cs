@@ -11,7 +11,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
     public interface IChannelRepository
     {
         Task<IReadOnlyCollection<Channel>> GetAllChannelsAsync();
-        Task<IReadOnlyCollection<Channel>> GetAllowedChannelsWithMessagesAsync(Guid memberId);
+        Task<IReadOnlyCollection<Channel>> GetAllowedChannelsWithMessagesAndCreatorAsync(Guid memberId);
         Task<Channel> GetChannelWithCreatorAsync(Guid channelId);
         Task<bool> IsMemberExistsInChannelAsync(Guid memberId, Guid channelId);
         Task AddChannelAsync(Channel channel);
