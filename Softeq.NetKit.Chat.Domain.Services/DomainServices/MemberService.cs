@@ -179,12 +179,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var response = new PagedMembersResponse
             {
-                Entities = members.Entities.Select(x =>
+                Results = members.Results.Select(x =>
                 {
                     var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(x.PhotoName);
                     return x.ToMemberSummary(memberAvatarUrl);
                 }),
-                TotalRows = members.TotalRows,
+                TotalNumberOfItems = members.TotalNumberOfItems,
+                TotalNumberOfPages = members.TotalNumberOfPages,
                 PageNumber = members.PageNumber,
                 PageSize = members.PageSize
             };
@@ -198,12 +199,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var response = new PagedMembersResponse
             {
-                Entities = members.Entities.Select(x =>
+                Results = members.Results.Select(x =>
                 {
                     var memberAvatarUrl = _cloudImageProvider.GetMemberAvatarUrl(x.PhotoName);
                     return x.ToMemberSummary(memberAvatarUrl);
                 }),
-                TotalRows = members.TotalRows,
+                TotalNumberOfItems = members.TotalNumberOfItems,
+                TotalNumberOfPages = members.TotalNumberOfPages,
                 PageNumber = members.PageNumber,
                 PageSize = members.PageSize
             };

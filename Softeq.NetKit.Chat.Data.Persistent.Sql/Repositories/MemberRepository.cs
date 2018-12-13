@@ -48,8 +48,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
                 return new QueryResult<Member>
                 {
-                    Entities = members,
-                    TotalRows = totalRows,
+                    Results = members,
+                    TotalNumberOfItems = totalRows,
+                    TotalNumberOfPages = (totalRows / pageSize) + ((totalRows % pageSize) == 0 ? 0 : 1),
                     PageNumber = pageNumber,
                     PageSize = pageSize
                 };
@@ -86,8 +87,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
                 return new QueryResult<Member>
                 {
-                    Entities = members,
-                    TotalRows = totalRows,
+                    Results = members,
+                    TotalNumberOfItems = totalRows,
+                    TotalNumberOfPages = (totalRows / pageSize) + ((totalRows % pageSize) == 0 ? 0 : 1),
                     PageNumber = pageNumber,
                     PageSize = pageSize
                 };

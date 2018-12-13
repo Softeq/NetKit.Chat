@@ -72,11 +72,11 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             var oddMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "odd");
             var allMembers = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 100, null);
 
-            evenMembersFirstPage.Entities.Count().Should().Be(pageSize);
-            evenMembersSecondPage.Entities.Count().Should().Be(1);
-            oddMembersFirstPage.Entities.Count().Should().Be(pageSize);
-            oddMembersSecondPage.Entities.Count().Should().Be(0);
-            allMembers.Entities.Count().Should().Be(membersCount + _initialTestMembersCount);
+            evenMembersFirstPage.Results.Count().Should().Be(pageSize);
+            evenMembersSecondPage.Results.Count().Should().Be(1);
+            oddMembersFirstPage.Results.Count().Should().Be(pageSize);
+            oddMembersSecondPage.Results.Count().Should().Be(0);
+            allMembers.Results.Count().Should().Be(membersCount + _initialTestMembersCount);
         }
 
         [Fact]
@@ -129,11 +129,11 @@ namespace Softeq.NetKit.Chat.Tests.RepositoryTests
             var allPotentialMembersForFirstChannel = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(_channelId, 1, 100, null);
             var allPotentialMembersForSecondChannel = await UnitOfWork.MemberRepository.GetPotentialChannelMembersAsync(secondChannel.Id, 1, 100, null);
 
-            potentialEvenMembersForFirstChannel.Entities.Count().Should().Be(0);
-            potentialOddMembersForFirstChannelFirstPage.Entities.Count().Should().Be(pageSize);
-            potentialOddMembersForFirstChannelSecondPage.Entities.Count().Should().Be(1);
-            allPotentialMembersForFirstChannel.Entities.Count().Should().Be(membersCount / 2 + _initialTestMembersCount);
-            allPotentialMembersForSecondChannel.Entities.Count().Should().Be(membersCount / 2 + _initialTestMembersCount);
+            potentialEvenMembersForFirstChannel.Results.Count().Should().Be(0);
+            potentialOddMembersForFirstChannelFirstPage.Results.Count().Should().Be(pageSize);
+            potentialOddMembersForFirstChannelSecondPage.Results.Count().Should().Be(1);
+            allPotentialMembersForFirstChannel.Results.Count().Should().Be(membersCount / 2 + _initialTestMembersCount);
+            allPotentialMembersForSecondChannel.Results.Count().Should().Be(membersCount / 2 + _initialTestMembersCount);
         }
 
         [Fact]
