@@ -4,9 +4,10 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
     public class QueryResult<T>
     {
-        public IEnumerable<T> Entities { get; set; }
-        public int TotalRows { get; set; }
+        public int TotalNumberOfPages { get; set; }
+        public int TotalNumberOfItems { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public IEnumerable<T> Results { get; set; }
     }
 }

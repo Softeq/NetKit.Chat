@@ -8,7 +8,6 @@ using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
@@ -16,6 +15,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.SignalR.Sockets;
+using WebRequest = Softeq.NetKit.Chat.Web.TransportModels.Request;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -29,8 +29,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         private readonly IChannelSocketService _channelSocketService;
         private readonly IMemberService _memberService;
 
-        public ChannelController(ILogger logger, IChannelService channelService, IChannelSocketService channelSocketService, IMemberService memberService)
-            : base(logger)
+        public ChannelController(IChannelService channelService, IChannelSocketService channelSocketService, IMemberService memberService)
         {
             Ensure.That(channelService).IsNotNull();
             Ensure.That(channelSocketService).IsNotNull();
@@ -52,21 +51,31 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateChannelAsync([FromBody] CreateChannelRequest request)
+        public async Task<IActionResult> CreateChannelAsync([FromBody] WebRequest.Channel.CreateChannelRequest request)
         {
-            request.SaasUserId = GetCurrentSaasUserId();
-            var channel = await _channelSocketService.CreateChannelAsync(request);
+            var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.Name, request.Type)
+            {
+                AllowedMembers = request.AllowedMembers,
+                Description = request.Description,
+                PhotoUrl = request.PhotoUrl,
+                WelcomeMessage = request.WelcomeMessage
+            };
+            var channel = await _channelSocketService.CreateChannelAsync(createChannelRequest);
             return Ok(channel);
         }
 
         [HttpPut]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}")]
-        public async Task<IActionResult> UpdateChannelAsync(Guid channelId, [FromBody] UpdateChannelRequest request)
+        public async Task<IActionResult> UpdateChannelAsync(Guid channelId, [FromBody] WebRequest.Channel.UpdateChannelRequest request)
         {
-            request.ChannelId = channelId;
-            request.SaasUserId = GetCurrentSaasUserId();
-            var channel = await _channelSocketService.UpdateChannelAsync(request);
+            var updateChannelRequest = new UpdateChannelRequest(GetCurrentSaasUserId(), channelId, request.Name)
+            {
+                PhotoUrl = request.PhotoUrl,
+                Topic = request.Topic,
+                WelcomeMessage = request.WelcomeMessage
+            };
+            var channel = await _channelSocketService.UpdateChannelAsync(updateChannelRequest);
             return Ok(channel);
         }
 
@@ -84,7 +93,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("/api/me/channel")]
         public async Task<IActionResult> GetMyChannelsAsync()
         {
-            var channels = await _channelService.GetMemberChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
+            var channels = await _channelService.GetMemberChannelsAsync(GetCurrentSaasUserId());
             return Ok(channels);
         }
 
@@ -93,7 +102,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("allowed")]
         public async Task<IActionResult> GetAllowedChannelsAsync()
         {
-            var channels = await _channelService.GetAllowedChannelsAsync(new UserRequest(GetCurrentSaasUserId()));
+            var channels = await _channelService.GetAllowedChannelsAsync(GetCurrentSaasUserId());
             return Ok(channels);
         }
 
@@ -142,11 +151,10 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/member")]
-        public async Task<IActionResult> InviteMultipleMembersAsync([FromBody] InviteMembersRequest request, Guid channelId)
+        public async Task<IActionResult> InviteMultipleMembersAsync(Guid channelId, [FromBody] WebRequest.Member.InviteMultipleMembersRequest request)
         {
-            request.SaasUserId = GetCurrentSaasUserId();
-            request.ChannelId = channelId;
-            var channel = await _channelSocketService.InviteMultipleMembersAsync(request);
+            var inviteMultipleMembersRequest = new InviteMultipleMembersRequest(GetCurrentSaasUserId(), channelId, request.InvitedMembersIds);
+            var channel = await _channelSocketService.InviteMultipleMembersAsync(inviteMultipleMembersRequest);
             return Ok(channel);
         }
 
@@ -164,7 +172,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/join")]
         public async Task<IActionResult> JoinToChannelAsync(Guid channelId)
         {
-            await _channelSocketService.JoinToChannelAsync(new JoinToChannelRequest(GetCurrentSaasUserId(), channelId));
+            await _channelSocketService.JoinToChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
             return Ok();
         }
 
@@ -173,16 +181,34 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/leave")]
         public async Task<IActionResult> LeaveChannelAsync(Guid channelId)
         {
-            await _channelService.RemoveMemberFromChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
+            await _channelSocketService.LeaveChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
             return Ok();
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/delete/{memberId:guid}")]
-        public async Task<IActionResult> DeleteMemberAsync(Guid channelId, Guid memberId)
+        public async Task<IActionResult> DeleteMemberFromChannelAsync(Guid channelId, Guid memberId)
         {
-            await _channelSocketService.DeleteMemberAsync(new DeleteMemberRequest(GetCurrentSaasUserId(), channelId, memberId));
+            await _channelSocketService.DeleteMemberFromChannelAsync(new DeleteMemberRequest(GetCurrentSaasUserId(), channelId, memberId));
+            return Ok();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route("{channelId:guid}/pin")]
+        public async Task<IActionResult> PinChannelAsync(Guid channelId)
+        {
+            await _channelService.PinChannelAsync(GetCurrentSaasUserId(), channelId, true);
+            return Ok();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route("{channelId:guid}/unpin")]
+        public async Task<IActionResult> UnpinChannelAsync(Guid channelId)
+        {
+            await _channelService.PinChannelAsync(GetCurrentSaasUserId(), channelId, false);
             return Ok();
         }
 
@@ -191,7 +217,16 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/mute")]
         public async Task<IActionResult> MuteChannelAsync(Guid channelId)
         {
-            await _channelSocketService.MuteChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
+            await _channelService.MuteChannelAsync(GetCurrentSaasUserId(), channelId, true);
+            return Ok();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route("{channelId:guid}/unmute")]
+        public async Task<IActionResult> UnmuteChannelAsync(Guid channelId)
+        {
+            await _channelService.MuteChannelAsync(GetCurrentSaasUserId(), channelId, false);
             return Ok();
         }
 

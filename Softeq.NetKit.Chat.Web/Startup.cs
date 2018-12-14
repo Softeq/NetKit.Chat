@@ -7,6 +7,7 @@ using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CorrelationId;
+using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +23,7 @@ using Softeq.NetKit.Chat.Web.App.Versioning;
 using Softeq.NetKit.Chat.Web.Configuration;
 using Softeq.NetKit.Chat.Web.ExceptionHandling;
 using Softeq.NetKit.Chat.Web.Extensions;
+using Softeq.NetKit.Chat.Web.Filters;
 using Softeq.Serilog.Extension;
 using Swashbuckle.AspNetCore.Swagger;
 using ILogger = Serilog.ILogger;
@@ -41,7 +43,11 @@ namespace Softeq.NetKit.Chat.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcCore()
+            services.AddMvcCore(options =>
+                {
+                    options.Filters.Add<ValidateModelStateFilter>();
+                })
+                .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonFormatters();
@@ -133,7 +139,8 @@ namespace Softeq.NetKit.Chat.Web
                 throw;
             }
 
-            if (!env.IsStaging() && !env.IsProduction())
+            // TODO: add `&& !env.IsStaging()` when testing will be passed
+            if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
@@ -144,7 +151,7 @@ namespace Softeq.NetKit.Chat.Web
                 // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint($"/swagger/v1/swagger.json", "Versioned Api v1.0");
+                    c.SwaggerEndpoint($"/swagger/v1.0/swagger.json", "Versioned Api v1.0");
                 });
             }
 

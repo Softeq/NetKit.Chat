@@ -1,10 +1,8 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using System.Threading.Tasks;
-using Resources;
-using Softeq.NetKit.Chat.Domain.DomainModels;
+using EnsureThat;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
@@ -19,206 +17,104 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         private readonly IMemberService _memberService;
         private readonly IChannelNotificationService _channelNotificationService;
 
-        public ChannelSocketService(
-            IChannelService channelService,
-            IMemberService memberService,
-            IChannelNotificationService channelNotificationService)
+        public ChannelSocketService(IChannelService channelService, IMemberService memberService, IChannelNotificationService channelNotificationService)
         {
+            Ensure.That(channelService).IsNotNull();
+            Ensure.That(memberService).IsNotNull();
+            Ensure.That(channelNotificationService).IsNotNull();
+
             _channelNotificationService = channelNotificationService;
             _channelService = channelService;
             _memberService = memberService;
         }
 
-        public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest createChannelRequest)
+        public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
         {
-            if (string.IsNullOrEmpty(createChannelRequest.Name))
-            {
-                throw new Exception(LanguageResources.RoomRequired);
-            }
+            var channel = await _channelService.CreateChannelAsync(request);
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
-            var channel = await _channelService.CreateChannelAsync(createChannelRequest);
-            var user = await _memberService.GetMemberBySaasUserIdAsync(createChannelRequest.SaasUserId);
-
-            await _channelNotificationService.OnAddChannel(user, channel, createChannelRequest.ClientConnectionId);
+            await _channelNotificationService.OnAddChannel(channel);
             //todo filter creator connection id on join channel
-            await _channelNotificationService.OnJoinChannel(user, channel);
+            await _channelNotificationService.OnJoinChannel(member, channel);
 
             return channel;
         }
 
         public async Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request)
         {
-            if (string.IsNullOrEmpty(request.Name))
-            {
-                throw new Exception(LanguageResources.RoomRequired);
-            }
-
-            if (request.Name.Contains(' '))
-            {
-                throw new Exception(LanguageResources.RoomInvalidNameSpaces);
-            }
-
-            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-            if (channel.CreatorId != member.Id)
-            {
-                throw new Exception(string.Format(LanguageResources.RoomAccessPermission, channel.Name));
-            }
-
             await _channelService.UpdateChannelAsync(request);
 
-            var channelSummary = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
+            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
 
-            await _channelNotificationService.OnUpdateChannel(member, channelSummary);
+            await _channelNotificationService.OnUpdateChannel(channelSummary);
 
             return channelSummary;
         }
 
         public async Task CloseChannelAsync(ChannelRequest request)
         {
-            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+            await _channelService.CloseChannelAsync(request.SaasUserId, request.ChannelId);
 
-            if (channel.CreatorId != member.Id && member.Role != UserRole.Admin)
-            {
-                throw new Exception(string.Format(LanguageResources.RoomOwnerRequired, channel.Name));
-            }
-            if (channel.IsClosed)
-            {
-                throw new Exception(string.Format(LanguageResources.RoomAlreadyClosed, channel.Name));
-            }
+            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
 
-            await _channelService.CloseChannelAsync(request);
+            await _channelNotificationService.OnCloseChannel(channelSummary);
 
-            var channelSummary = await _channelService.GetChannelSummaryAsync(request);
-
-            await _channelNotificationService.OnCloseChannel(member, channelSummary);
-            await _channelNotificationService.OnUpdateChannel(member, channelSummary);
+            // TODO [az]: do we need this notification?
+            await _channelNotificationService.OnUpdateChannel(channelSummary);
         }
 
-        public async Task JoinToChannelAsync(JoinToChannelRequest request)
+        public async Task JoinToChannelAsync(ChannelRequest request)
         {
-            if (request.ChannelId == Guid.Empty)
-            {
-                throw new Exception(LanguageResources.Join_RoomRequired);
-            }
-
             // Locate the room, does NOT have to be open
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
-            if (!isMemberExistInChannel)
-            {
-                await _channelService.JoinToChannelAsync(request);
-                var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-                await _channelNotificationService.OnJoinChannel(member, channel);
-            }
-        }
+            await _channelService.JoinToChannelAsync(request.SaasUserId, request.ChannelId);
 
-        public async Task LeaveChannelAsync(ChannelRequest request)
-        {
+            var channel = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
+
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
-            await _channelService.RemoveMemberFromChannelAsync(request);
-            await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
+            await _channelNotificationService.OnJoinChannel(member, channel);
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
         {
-            if (request.MemberId == Guid.Empty)
-            {
-                throw new Exception(LanguageResources.Invite_UserRequired);
-            }
+            var inviteMemberResponse = await _memberService.InviteMemberAsync(request.MemberId, request.ChannelId);
 
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var invitedMember = await _memberService.GetMemberByIdAsync(request.MemberId);
-            if (member.Id == invitedMember.Id)
-            {
-                throw new Exception(LanguageResources.Invite_CannotInviteSelf);
-            }
 
-            var channel = await _channelService.GetChannelSummaryAsync(new ChannelRequest(request.SaasUserId, request.ChannelId));
-            if (channel.IsClosed)
-            {
-                throw new Exception(string.Format(LanguageResources.RoomClosed, channel.Name));
-            }
-
-            var inviteMemberResponse = await _memberService.InviteMemberAsync(request);
+            var channel = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
 
             await _channelNotificationService.OnJoinChannel(invitedMember, channel);
 
             return inviteMemberResponse;
         }
 
-        public async Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request)
+        public async Task<ChannelResponse> InviteMultipleMembersAsync(InviteMultipleMembersRequest request)
         {
             var response = default(ChannelResponse);
 
-            foreach (var invitedMember in request.InvitedMembers)
+            foreach (var memberId in request.InvitedMembersIds)
             {
-                var member = await _memberService.GetMemberBySaasUserIdAsync(invitedMember);
-                var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id);
+                var inviteMemberRequest = new InviteMemberRequest(request.SaasUserId, request.ChannelId, memberId);
                 response = await InviteMemberAsync(inviteMemberRequest);
             }
 
             return response;
         }
 
-        public async Task DeleteMemberAsync(DeleteMemberRequest request)
+        public async Task LeaveChannelAsync(ChannelRequest request)
         {
-            if (request.MemberId == Guid.Empty)
-            {
-                //TODO apply validation
-                throw new Exception(LanguageResources.RemoveAdmin_UserRequired);
-            }
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
 
+            await _channelService.LeaveFromChannelAsync(request.SaasUserId, request.ChannelId);
+            await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
+        }
+
+        public async Task DeleteMemberFromChannelAsync(DeleteMemberRequest request)
+        {
             var memberToDelete = await _memberService.GetMemberByIdAsync(request.MemberId);
-            if (memberToDelete.SaasUserId == request.SaasUserId)
-            {
-                throw new Exception($"Can not delete yourself. Use {nameof(LeaveChannelAsync)} instead.");
-            }
 
-            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-            var currentMember = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-            if (channel.CreatorId != currentMember.Id && currentMember.Role != UserRole.Admin)
-            {
-                //TODO apply validation
-                throw new Exception(LanguageResources.AdminRequired);
-            }
-
-            await _channelService.RemoveMemberFromChannelAsync(new ChannelRequest(memberToDelete.SaasUserId, request.ChannelId));
-            await _channelNotificationService.OnDeletedFromChannel(memberToDelete, channel.Id, request.ClientConnectionId);
-        }
-
-        public async Task MuteChannelAsync(ChannelRequest request)
-        {
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-
-            var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
-            if (!isMemberExistInChannel)
-            {
-                throw new Exception(string.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
-            }
-
-            await _channelService.MuteChannelAsync(request);
-        }
-
-        public async Task PinChannelAsync(ChannelRequest request)
-        {
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-
-            var isMemberExistInChannel = await _channelService.CheckIfMemberExistInChannelAsync(new InviteMemberRequest(request.SaasUserId, request.ChannelId, member.Id));
-
-            if (!isMemberExistInChannel)
-            {
-                throw new Exception(string.Format(LanguageResources.UserNotInRoom, member.UserName, channel.Name));
-            }
-
-            await _channelService.PinChannelAsync(request);
+            await _channelService.DeleteMemberFromChannelAsync(request.SaasUserId, request.ChannelId, memberToDelete.Id);
+            await _channelNotificationService.OnDeletedFromChannel(memberToDelete, request.ChannelId);
         }
     }
 }

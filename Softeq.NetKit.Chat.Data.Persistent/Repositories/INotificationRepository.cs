@@ -13,6 +13,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task AddNotificationAsync(Notification notification);
         Task DeletNotificationAsync(Guid notificationId);
         Task<Notification> GetNotificationByIdAsync(Guid notificationId);
-        Task<List<Notification>> GetMemberNotificationsAsync(Guid memberId);
+        Task<IReadOnlyCollection<Notification>> GetMemberNotificationsWithMemberMessageAndChannelAsync(Guid memberId);
     }
 }

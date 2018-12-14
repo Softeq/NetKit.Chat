@@ -10,15 +10,13 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
     public interface IChannelSocketService
     {
-        Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest createChannelRequest);
+        Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request);
         Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request);
         Task CloseChannelAsync(ChannelRequest request);
-        Task JoinToChannelAsync(JoinToChannelRequest request);
+        Task JoinToChannelAsync(ChannelRequest request);
         Task LeaveChannelAsync(ChannelRequest request);
         Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request);
-        Task<ChannelResponse> InviteMultipleMembersAsync(InviteMembersRequest request);
-        Task MuteChannelAsync(ChannelRequest request);
-        Task PinChannelAsync(ChannelRequest request);
-        Task DeleteMemberAsync(DeleteMemberRequest request);
+        Task<ChannelResponse> InviteMultipleMembersAsync(InviteMultipleMembersRequest request);
+        Task DeleteMemberFromChannelAsync(DeleteMemberRequest request);
     }
 }

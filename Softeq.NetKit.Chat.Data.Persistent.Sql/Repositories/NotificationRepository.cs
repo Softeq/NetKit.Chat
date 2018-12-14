@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -18,6 +19,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
         public NotificationRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
+            Ensure.That(sqlConnectionFactory).IsNotNull();
+
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
@@ -25,12 +28,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"INSERT INTO Notifications(Id, IsRead, MessageId, ChannelId, MemberId) 
+                                 VALUES (@Id, @IsRead, @MessageId, @ChannelId, @MemberId)";
 
-                var sqlQuery = @"
-                    INSERT INTO Notifications(Id, IsRead, MessageId, ChannelId, MemberId) 
-                    VALUES (@Id, @IsRead, @MessageId, @ChannelId, @MemberId);";
-                
                 await connection.ExecuteScalarAsync(sqlQuery, notification);
             }
         }
@@ -39,11 +39,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"DELETE FROM Notifications 
+                                 WHERE Id = @notificationId";
 
-                var sqlQuery = @"DELETE FROM Notifications WHERE Id = @notificationId";
-                
-                await connection.ExecuteAsync(sqlQuery, new { notificationId }); 
+                await connection.ExecuteAsync(sqlQuery, new { notificationId });
             }
         }
 
@@ -51,48 +50,41 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"SELECT *
+                                 FROM Notifications
+                                 WHERE Id = @notificationId";
 
-                var sqlQuery = @"
-                    SELECT Id, IsRead, MessageId, ChannelId, MemberId 
-                    FROM Notifications
-                    WHERE Id = @notificationId";
-
-                var data = (await connection.QueryAsync<Notification>(sqlQuery, new { notificationId }))
-                    .FirstOrDefault();
-
-                return data;
+                return (await connection.QueryAsync<Notification>(sqlQuery, new { notificationId })).FirstOrDefault();
             }
         }
 
-        public async Task<List<Notification>> GetMemberNotificationsAsync(Guid memberId)
+        public async Task<IReadOnlyCollection<Notification>> GetMemberNotificationsWithMemberMessageAndChannelAsync(Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"SELECT * 
+                                 FROM Notifications n
+                                 INNER JOIN Messages m ON n.MessageId = m.Id
+                                 INNER JOIN Members me ON m.OwnerId = me.Id
+                                 INNER JOIN Channels c ON n.ChannelId = c.Id
+                                 WHERE n.MemberId = @memberId";
 
-                var sqlQuery = @"
-                    SELECT * 
-                    FROM Notifications n
-                    INNER JOIN Messages m ON n.MessageId = m.Id
-                    INNER JOIN Members me ON m.OwnerId = me.Id
-                    INNER JOIN Channels c ON n.ChannelId = c.Id
-                    WHERE n.MemberId = @memberId";
-
-                var data = (await connection.QueryAsync<Notification, Message, Member, Channel, Notification>(
+                return (await connection.QueryAsync<Notification, Message, Member, Channel, Notification>(
                         sqlQuery,
                         (notification, message, member, channel) =>
                         {
                             notification.Channel = channel;
+                            notification.ChannelId = channel.Id;
                             notification.Message = message;
-                            notification.Message.Owner = member;
+                            notification.MessageId = message.Id;
+                            notification.Member = member;
+                            notification.MemberId = member.Id;
                             return notification;
                         },
                         new { memberId }))
                     .Distinct()
-                    .ToList();
-
-                return data;
+                    .ToList()
+                    .AsReadOnly();
             }
         }
     }

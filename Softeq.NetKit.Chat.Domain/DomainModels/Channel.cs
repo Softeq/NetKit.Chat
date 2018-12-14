@@ -9,6 +9,13 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
     public class Channel : IBaseEntity<Guid>, ICreated
     {
+        public Channel()
+        {
+            Messages = new List<Message>();
+            Members = new List<ChannelMember>();
+            Notifications = new List<Notification>();
+        }
+
         public Guid Id { get; set; }
 
         [MaxLength(200)]
@@ -27,7 +34,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public ChannelType Type { get; set; }
 
         // Creator of the channel
-        public Guid? CreatorId { get; set; }
+        public Guid CreatorId { get; set; }
         public Member Creator { get; set; }
 
         public DateTimeOffset Created { get; set; }
@@ -37,7 +44,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 
         public Settings Settings { get; set; }
         public List<Message> Messages { get; set; }
-        public List<ChannelMembers> Members { get; set; }
+        public List<ChannelMember> Members { get; set; }
         public List<Notification> Notifications { get; set; }
     }
 }

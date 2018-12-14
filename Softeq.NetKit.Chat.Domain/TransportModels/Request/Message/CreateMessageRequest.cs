@@ -3,19 +3,24 @@
 
 using System;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
     public class CreateMessageRequest : UserRequest
     {
-        public CreateMessageRequest(string saasUserId) : base(saasUserId)
+        public CreateMessageRequest(string saasUserId, Guid channelId, MessageType type, string body)
+            : base(saasUserId)
         {
+            ChannelId = channelId;
+            Type = type;
+            Body = body;
         }
 
-        public string Body { get; set; }
-        public Guid ChannelId { get; set; }
-        public MessageType Type { get; set; }
+        public Guid ChannelId { get; }
+
+        public MessageType Type { get; }
+
+        public string Body { get; }
 
         // If Message type is Notification
         public string ImageUrl { get; set; }

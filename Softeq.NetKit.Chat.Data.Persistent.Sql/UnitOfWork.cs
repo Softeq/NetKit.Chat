@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories;
@@ -13,11 +14,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 
         public UnitOfWork(ISqlConnectionFactory sqlConnectionFactory)
         {
+            Ensure.That(sqlConnectionFactory).IsNotNull();
+
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
         private IAttachmentRepository _attachmentRepository;
-        public IAttachmentRepository AttachmentRepository => _attachmentRepository ?? (_attachmentRepository =  new AttachmentRepository(_sqlConnectionFactory));
+        public IAttachmentRepository AttachmentRepository => _attachmentRepository ?? (_attachmentRepository = new AttachmentRepository(_sqlConnectionFactory));
 
         private IClientRepository _clientRepository;
         public IClientRepository ClientRepository => _clientRepository ?? (_clientRepository = new ClientRepository(_sqlConnectionFactory));

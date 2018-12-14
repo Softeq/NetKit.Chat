@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment
 {

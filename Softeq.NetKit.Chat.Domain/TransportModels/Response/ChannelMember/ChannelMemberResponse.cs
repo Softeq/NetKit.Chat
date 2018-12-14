@@ -12,6 +12,5 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember
         public bool IsMuted { get; set; }
         public bool IsPinned { get; set; }
         public Guid? LastReadMessageId { get; set; }
-        public bool IsRead { get; set; }
     }
 }

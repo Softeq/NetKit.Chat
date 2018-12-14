@@ -2,10 +2,8 @@
 // http://www.softeq.com
 
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 
@@ -13,7 +11,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
     public interface IMessageSocketService
     {
-        Task<MessageResponse> AddMessageAsync(CreateMessageRequest request);
+        Task<MessageResponse> AddMessageAsync(CreateMessageRequest request, string clientConnectionId);
         Task DeleteMessageAsync(DeleteMessageRequest request);
         Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request);
         Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request);

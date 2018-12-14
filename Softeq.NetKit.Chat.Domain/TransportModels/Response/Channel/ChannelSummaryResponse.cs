@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel
         public bool IsMuted { get; set; }
         public bool IsPinned { get; set; }
         [JsonIgnore]
-        public Guid? CreatorId { get; set; }
+        public Guid CreatorId { get; set; }
 
         public MemberSummary Creator { get; set; }
         public string CreatorSaasUserId { get; set; }

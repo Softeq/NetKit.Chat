@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -18,20 +19,31 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
         public ChannelMemberRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
+            Ensure.That(sqlConnectionFactory).IsNotNull();
+
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task AddChannelMemberAsync(ChannelMembers channelMember)
+        public async Task AddChannelMemberAsync(ChannelMember channelMember)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
-                var sqlQuery = @"
-                    INSERT INTO ChannelMembers(ChannelId, MemberId, LastReadMessageId, IsMuted, IsPinned) 
-                    VALUES (@ChannelId, @MemberId, @LastReadMessageId, @IsMuted, @IsPinned)";
+                var sqlQuery = @"INSERT INTO ChannelMembers(ChannelId, MemberId, LastReadMessageId, IsMuted, IsPinned) 
+                                 VALUES (@ChannelId, @MemberId, @LastReadMessageId, @IsMuted, @IsPinned)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, channelMember);
+            }
+        }
+
+        public async Task<ChannelMember> GetChannelMemberAsync(Guid memberId, Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT *
+                                 FROM ChannelMembers
+                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
+
+                return (await connection.QueryAsync<ChannelMember>(sqlQuery, new { memberId, channelId })).FirstOrDefault();
             }
         }
 
@@ -39,61 +51,34 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
-                var sqlQuery = @"
-                DELETE FROM ChannelMembers WHERE ChannelId = @channelId AND MemberId = @memberId";
+                var sqlQuery = @"DELETE FROM ChannelMembers 
+                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
                 await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
             }
         }
 
-        public async Task UpdateChannelMemberAsync(ChannelMembers channelMember)
+        public async Task<IReadOnlyCollection<ChannelMember>> GetChannelMembersAsync(Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
+                var sqlQuery = @"SELECT *
+                                 FROM ChannelMembers
+                                 WHERE ChannelId = @channelId";
 
-                var sqlQuery = @"UPDATE ChannelMembers 
-                                 SET ChannelId = @ChannelId, 
-                                     MemberId = @MemberId, 
-                                     LastReadMessageId = @LastReadMessageId, 
-                                     IsMuted = @IsMuted,
-                                     IsPinned = @IsPinned
-                                 WHERE ChannelId = @ChannelId AND MemberId = @MemberId";
-                
-                await connection.ExecuteAsync(sqlQuery, channelMember);
+                return (await connection.QueryAsync<ChannelMember>(sqlQuery, new { channelId })).ToList().AsReadOnly();
             }
         }
 
-        public async Task<List<ChannelMembers>> GetChannelMembersAsync(Guid channelId)
+        public async Task MuteChannelAsync(Guid memberId, Guid channelId, bool isMuted)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
-                var sqlQuery = @"
-                    SELECT MemberId, ChannelId, LastReadMessageId, IsMuted, IsPinned
-                    FROM ChannelMembers
-                    WHERE ChannelId = @channelId";
-
-                var data = (await connection.QueryAsync<ChannelMembers>(sqlQuery, new { channelId })).ToList();
-
-                return data;
-            }
-        }
-
-        public async Task MuteChannelAsync(Guid memberId, Guid channelId)
-        {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
-            {
-                await connection.OpenAsync();
-
                 var sqlQuery = @"UPDATE ChannelMembers
-                                SET IsMuted = 1
-                                WHERE ChannelId = @channelId AND MemberId = @memberId";
+                                 SET IsMuted = @isMuted
+                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
-                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId });
+                await connection.ExecuteAsync(sqlQuery, new { channelId, memberId, isMuted });
             }
         }
 
@@ -101,11 +86,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
                 var sqlQuery = @"UPDATE ChannelMembers
-                                SET IsPinned = @isPinned
-                                WHERE ChannelId = @channelId AND MemberId = @memberId";
+                                 SET IsPinned = @isPinned
+                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
+
                 await connection.ExecuteAsync(sqlQuery, new { isPinned, channelId, memberId });
             }
         }
@@ -114,45 +98,23 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
                 var sqlQuery = @"UPDATE ChannelMembers
-                                SET LastReadMessageId = @messageId
-                                WHERE ChannelId = @channelId AND MemberId = @memberId";
+                                 SET LastReadMessageId = @messageId
+                                 WHERE ChannelId = @channelId AND MemberId = @memberId";
 
                 await connection.ExecuteAsync(sqlQuery, new { channelId, memberId, messageId });
             }
         }
 
-        public async Task UpdateLastReadMessageAsync(Guid previousLastReadMessageId, Guid currentLastReadMessageId)
+        public async Task UpdateLastReadMessageAsync(Guid previousLastReadMessageId, Guid? currentLastReadMessageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
-
                 var sqlQuery = @"UPDATE ChannelMembers
-                                SET LastReadMessageId = @currentLastReadMessageId
-                                WHERE LastReadMessageId = @previousLastReadMessageId";
+                                 SET LastReadMessageId = @currentLastReadMessageId
+                                 WHERE LastReadMessageId = @previousLastReadMessageId";
 
                 await connection.ExecuteAsync(sqlQuery, new { previousLastReadMessageId, currentLastReadMessageId });
-            }
-        }
-
-        public async Task<ChannelMembers> GetChannelMemberAsync(Guid memberId, Guid channelId)
-        {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
-            {
-                await connection.OpenAsync();
-
-                var sqlQuery = @"
-                    SELECT ChannelId, MemberId, LastReadMessageId, IsMuted, IsPinned 
-                    FROM ChannelMembers
-                    WHERE ChannelId = @channelId AND MemberId = @memberId";
-
-                var data = (await connection.QueryAsync<ChannelMembers>(sqlQuery, new { memberId, channelId }))
-                    .FirstOrDefault();
-
-                return data;
             }
         }
     }

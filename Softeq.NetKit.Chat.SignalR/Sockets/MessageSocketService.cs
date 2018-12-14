@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Resources;
+using EnsureThat;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
@@ -18,94 +17,73 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
     internal class MessageSocketService : IMessageSocketService
     {
-        private readonly IChannelService _channelService;
         private readonly IMemberService _memberService;
         private readonly IMessageService _messageService;
+        private readonly IChannelService _channelService;
         private readonly IMessageNotificationService _messageNotificationService;
 
-        public MessageSocketService(
-            IChannelService channelService,
-            IMemberService memberService,
-            IMessageService messageService,
-            IMessageNotificationService messageNotificationService)
+        public MessageSocketService(IMemberService memberService, IMessageService messageService, IChannelService channelService, IMessageNotificationService messageNotificationService)
         {
-            _channelService = channelService;
+            Ensure.That(memberService).IsNotNull();
+            Ensure.That(messageService).IsNotNull();
+            Ensure.That(channelService).IsNotNull();
+            Ensure.That(messageNotificationService).IsNotNull();
+
             _memberService = memberService;
             _messageService = messageService;
+            _channelService = channelService;
             _messageNotificationService = messageNotificationService;
         }
 
-        public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest request)
+        public async Task<MessageResponse> AddMessageAsync(CreateMessageRequest request, string clientConnectionId)
         {
-            var channel = await _channelService.GetChannelByIdAsync(request.ChannelId);
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-            if (string.IsNullOrEmpty(request.Body))
-            {
-                throw new Exception(string.Format(LanguageResources.Msg_MessageRequired, channel.Name));
-            }
-
             var message = await _messageService.CreateMessageAsync(request);
 
-            await _messageNotificationService.OnAddMessage(member, message, request.ClientConnectionId);
+            await _messageNotificationService.OnAddMessage(message, clientConnectionId);
 
-            await _memberService.UpdateActivityAsync(new AddClientRequest
-            {
-                SaasUserId = member.SaasUserId,
-                UserName = member.UserName,
-                ConnectionId = request.ClientConnectionId,
-                UserAgent = null
-            });
+            await _memberService.UpdateActivityAsync(new UpdateMemberActivityRequest(request.SaasUserId, clientConnectionId, null));
 
             return message;
         }
 
         public async Task DeleteMessageAsync(DeleteMessageRequest request)
         {
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
             await _messageService.DeleteMessageAsync(request);
 
-            await _messageNotificationService.OnDeleteMessage(member, message);
+            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, message.ChannelId);
+
+            await _messageNotificationService.OnDeleteMessage(channelSummary, message);
         }
 
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
         {
-            if (string.IsNullOrEmpty(request.Body))
-            {
-                throw new Exception(LanguageResources.Msg_MessageRequired);
-            }
-
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
             var updatedMessage = await _messageService.UpdateMessageAsync(request);
 
-            await _messageNotificationService.OnUpdateMessage(member, updatedMessage);
+            await _messageNotificationService.OnUpdateMessage(updatedMessage);
 
             return updatedMessage;
         }
 
         public async Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request)
         {
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var message = await _messageService.GetMessageByIdAsync(request.MessageId);
-
             var attachmentResponse = await _messageService.AddMessageAttachmentAsync(request);
 
-            await _messageNotificationService.OnAddMessageAttachment(member, message);
+            var message = await _messageService.GetMessageByIdAsync(request.MessageId);
+
+            await _messageNotificationService.OnAddMessageAttachment(message.ChannelId);
 
             return attachmentResponse;
         }
 
         public async Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request)
         {
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
             await _messageService.DeleteMessageAttachmentAsync(request);
 
-            await _messageNotificationService.OnDeleteMessageAttachment(member, message);
+            await _messageNotificationService.OnDeleteMessageAttachment(message);
         }
 
         public async Task SetLastReadMessageAsync(SetLastReadMessageRequest request)
@@ -115,9 +93,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _messageService.SetLastReadMessageAsync(request);
 
-            var messageOwner = await _memberService.GetMemberByIdAsync(message.Sender.Id);
-
-            var members = new List<MemberSummary> { member, messageOwner };
+            var members = new List<Guid> { member.Id, message.Sender.Id };
             await _messageNotificationService.OnChangeLastReadMessage(members, message);
         }
     }

@@ -13,9 +13,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Tests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.SignalR", "Softeq.NetKit.Chat.SignalR\Softeq.NetKit.Chat.SignalR.csproj", "{A54D2056-8B81-4427-9FB6-76A43AE7501B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.NetKit.Chat.Data.Persistent", "Softeq.NetKit.Chat.Data.Persistent\Softeq.NetKit.Chat.Data.Persistent.csproj", "{237A38F9-4B6E-4B79-995A-5B8F979A578F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Persistent", "Softeq.NetKit.Chat.Data.Persistent\Softeq.NetKit.Chat.Data.Persistent.csproj", "{237A38F9-4B6E-4B79-995A-5B8F979A578F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.NetKit.Chat.Data.Persistent.Sql", "Softeq.NetKit.Chat.Data.Persistent.Sql\Softeq.NetKit.Chat.Data.Persistent.Sql.csproj", "{2992A718-8F02-4E84-A5D3-95D8D5EE010F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Persistent.Sql", "Softeq.NetKit.Chat.Data.Persistent.Sql\Softeq.NetKit.Chat.Data.Persistent.Sql.csproj", "{2992A718-8F02-4E84-A5D3-95D8D5EE010F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Cloud", "Softeq.NetKit.Chat.Data.Cloud\Softeq.NetKit.Chat.Data.Cloud.csproj", "{521E3BC0-D287-493C-924F-E50B616CCD0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Cloud.Azure", "Softeq.NetKit.Chat.Data.Cloud.Azure\Softeq.NetKit.Chat.Data.Cloud.Azure.csproj", "{3B1C566E-0BC7-484C-B524-163BB025DB77}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{58C74733-7241-4E60-9C3B-90172584C151}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +57,23 @@ Global
 		{2992A718-8F02-4E84-A5D3-95D8D5EE010F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2992A718-8F02-4E84-A5D3-95D8D5EE010F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2992A718-8F02-4E84-A5D3-95D8D5EE010F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{237A38F9-4B6E-4B79-995A-5B8F979A578F} = {58C74733-7241-4E60-9C3B-90172584C151}
+		{2992A718-8F02-4E84-A5D3-95D8D5EE010F} = {58C74733-7241-4E60-9C3B-90172584C151}
+		{521E3BC0-D287-493C-924F-E50B616CCD0C} = {58C74733-7241-4E60-9C3B-90172584C151}
+		{3B1C566E-0BC7-484C-B524-163BB025DB77} = {58C74733-7241-4E60-9C3B-90172584C151}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7ECDD6F-6F42-4C9D-B11E-CD136511A56E}

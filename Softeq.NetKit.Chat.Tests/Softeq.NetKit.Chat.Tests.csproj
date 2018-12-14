@@ -9,10 +9,12 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.0" />
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="FluentAssertions" Version="5.5.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Moq" Version="4.10.1" />
     <PackageReference Include="ServiceStack.OrmLite" Version="5.4.0" />
     <PackageReference Include="ServiceStack.OrmLite.Sqlite.Core" Version="5.4.0" />
     <PackageReference Include="Softeq.QueryUtils" Version="1.0.2" />
@@ -26,8 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Cloud.Azure\Softeq.NetKit.Chat.Data.Cloud.Azure.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Persistent.Sql\Softeq.NetKit.Chat.Data.Persistent.Sql.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Web\Softeq.NetKit.Chat.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

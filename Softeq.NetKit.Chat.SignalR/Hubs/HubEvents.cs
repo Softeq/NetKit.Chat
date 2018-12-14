@@ -27,5 +27,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         public const string AccessTokenExpired = "AccessTokenExpired";
         public const string ExceptionOccurred = "ExceptionOccurred";
         public const string RequestSuccess = "RequestSuccess";
+
+        public const string RequestValidationFailed = "RequestValidationFailed";
     }
 }

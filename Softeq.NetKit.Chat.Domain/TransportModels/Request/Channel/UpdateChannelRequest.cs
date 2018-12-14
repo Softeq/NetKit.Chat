@@ -2,20 +2,26 @@
 // http://www.softeq.com
 
 using System;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
 {
     public class UpdateChannelRequest : UserRequest
     {
-        public UpdateChannelRequest(string saasUserId) : base(saasUserId)
+        public UpdateChannelRequest(string saasUserId, Guid channelId, string name) 
+            : base(saasUserId)
         {
+            ChannelId = channelId;
+            Name = name;
         }
 
-        public Guid ChannelId { get; set; }
-        public string Name { get; set; }
+        public Guid ChannelId { get; }
+
+        public string Name { get; }
+
         public string Topic { get; set; }
+
         public string WelcomeMessage { get; set; }
+
         public string PhotoUrl { get; set; }
     }
 }

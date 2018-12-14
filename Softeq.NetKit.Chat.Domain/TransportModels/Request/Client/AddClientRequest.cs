@@ -3,11 +3,23 @@
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Client
 {
-    public class AddClientRequest
+    public class AddClientRequest : UserRequest
     {
-        public string SaasUserId { get; set; }
-        public string UserName { get; set; }
-        public string ConnectionId { get; set; }
-        public string UserAgent { get; set; }
+        public AddClientRequest(string saasUserId, string userName, string connectionId, string userAgent, string email)
+            : base(saasUserId)
+        {
+            UserName = userName;
+            ConnectionId = connectionId;
+            UserAgent = userAgent;
+            Email = email;
+        }
+
+        public string UserName { get; }
+
+        public string ConnectionId { get; }
+
+        public string UserAgent { get; }
+
+        public string Email { get; }
     }
 }

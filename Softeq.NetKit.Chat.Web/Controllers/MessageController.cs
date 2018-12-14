@@ -9,7 +9,6 @@ using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
@@ -17,6 +16,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using Softeq.NetKit.Chat.Web.Common;
+using WebRequest = Softeq.NetKit.Chat.Web.TransportModels.Request;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -29,8 +29,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         private readonly IMessageService _messageService;
         private readonly IMessageSocketService _messageSocketService;
 
-        public MessageController(ILogger logger, IMessageService messageService, IMessageSocketService messageSocketService) 
-            : base(logger)
+        public MessageController(IMessageService messageService, IMessageSocketService messageSocketService)
         {
             Ensure.That(messageService).IsNotNull();
             Ensure.That(messageSocketService).IsNotNull();
@@ -42,11 +41,14 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("")]
-        public async Task<IActionResult> AddMessageAsync(Guid channelId, [FromBody] CreateMessageRequest request)
+        public async Task<IActionResult> AddMessageAsync(Guid channelId, [FromBody] WebRequest.Message.AddMessageRequest request)
         {
-            request.ChannelId = channelId;
-            request.SaasUserId = GetCurrentSaasUserId();
-            var result = await _messageSocketService.AddMessageAsync(request);
+            var createMessageRequest = new CreateMessageRequest(GetCurrentSaasUserId(), channelId, request.Type, request.Body)
+            {
+                ForwardedMessageId = request.ForwardedMessageId,
+                ImageUrl = request.ImageUrl
+            };
+            var result = await _messageSocketService.AddMessageAsync(createMessageRequest, request.ClientConnectionId);
             return Ok(result);
         }
 
@@ -62,7 +64,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
-        public async Task<IActionResult> UpdateMessageAsync(Guid messageId, [FromBody] UpdateMessageRequest request)
+        public async Task<IActionResult> UpdateMessageAsync(Guid messageId, [FromBody] WebRequest.Message.UpdateMessageRequest request)
         {
             var result = await _messageSocketService.UpdateMessageAsync(new UpdateMessageRequest(GetCurrentSaasUserId(), messageId, request.Body));
             return Ok(result);
@@ -111,7 +113,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}/mark-as-read")]
         public async Task<IActionResult> MarkAsReadMessageAsync(Guid messageId, Guid channelId)
         {
-            await _messageSocketService.SetLastReadMessageAsync(new SetLastReadMessageRequest(channelId, messageId, GetCurrentSaasUserId()));
+            await _messageSocketService.SetLastReadMessageAsync(new SetLastReadMessageRequest(GetCurrentSaasUserId(), channelId, messageId));
             return Ok();
         }
 
@@ -135,6 +137,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
+        [Route("search")]
         [ProducesResponseType(typeof(IReadOnlyCollection<Guid>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchMessagesAsync(Guid channelId, [FromQuery] string searchText)
         {
