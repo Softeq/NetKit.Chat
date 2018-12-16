@@ -43,7 +43,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         }
 
         [Fact]
-        public void ShouldMapMessageToMessageResponse()
+        public void MapToMessageResponse_ShouldMapMessageToMessageResponse()
         {
             var message = new Message
             {
@@ -59,7 +59,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         }
 
         [Fact]
-        public void ShouldMapMemberToMemberSummary()
+        public void MapToMemberSummary_ShouldMapMemberToMemberSummary()
         {
             var member = new Member
             {
@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         }
 
         [Fact]
-        public void ShouldMapChannelAndChannelMemberToChannelSummaryResponse()
+        public void MapToChannelSummaryResponse_ShouldMapChannelAndChannelMember_WithMessages_ToChannelSummaryResponse()
         {
             // Arrange
             var lastReadMessage = new Message
@@ -90,14 +90,14 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
                 {
                     new Message
                     {
-                        Body = "last message body",
-                        Created = lastReadMessage.Created.AddMinutes(1)
+                        Body = "old message body",
+                        Created = lastReadMessage.Created.AddMinutes(-1)
                     },
                     lastReadMessage,
                     new Message
                     {
-                        Body = "message body",
-                        Created = lastReadMessage.Created.AddMinutes(-1)
+                        Body = "last message body",
+                        Created = lastReadMessage.Created.AddMinutes(1)
                     }
                 },
                 Name = "channel name",
@@ -145,7 +145,28 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         }
 
         [Fact]
-        public void ShouldMapClientToClientResponse()
+        public void MapToChannelSummaryResponse_ShouldSetLastMessageNULL_WithoutMessages()
+        {
+            // Arrange
+            var channel = new Channel
+            {
+                Messages = new List<Message>()
+            };
+
+            var channelMember = new ChannelMember();
+
+            var lastReadMessage = new Message { Created = DateTimeOffset.UtcNow };
+
+            // Act
+            var response = _domainModelsMapper.MapToChannelSummaryResponse(channel, channelMember, lastReadMessage);
+
+            // Assert
+            response.UnreadMessagesCount.Should().Be(0);
+            response.LastMessage.Should().Be(null);
+        }
+
+        [Fact]
+        public void MapToClientResponse_ShouldMapClientToClientResponse()
         {
             var client = new Client
             {
