@@ -31,6 +31,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
+                IsActive = false,
                 Status = UserStatus.Online,
                 SaasUserId = SaasUserId
             };
@@ -76,6 +77,20 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.NotNull(channel);
             Assert.True(channel.MembersCount > 0);
             Assert.True(members.Count() < channel.MembersCount);
+        }
+
+        [Fact]
+        public async Task ActivateMemberAsyncTest()
+        {
+            var member = await _memberService.GetMemberByIdAsync(_memberId);
+
+            Assert.False(member.IsActive);
+
+            await _memberService.ActivateMemberAsync(member.SaasUserId);
+
+            var activatedMember = await _memberService.GetMemberByIdAsync(_memberId);
+
+            Assert.True(activatedMember.IsActive);
         }
 
         [Fact]
