@@ -18,7 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
 
         public string Name { get; }
 
-        public string Topic { get; set; }
+        public string Description { get; set; }
 
         public string WelcomeMessage { get; set; }
 

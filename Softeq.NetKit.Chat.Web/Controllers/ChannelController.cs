@@ -72,7 +72,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             var updateChannelRequest = new UpdateChannelRequest(GetCurrentSaasUserId(), channelId, request.Name)
             {
                 PhotoUrl = request.PhotoUrl,
-                Topic = request.Topic,
+                Description = request.Description,
                 WelcomeMessage = request.WelcomeMessage
             };
             var channel = await _channelSocketService.UpdateChannelAsync(updateChannelRequest);
