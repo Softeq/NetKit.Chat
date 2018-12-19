@@ -33,7 +33,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 SaasUserId = SaasUserId
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
@@ -243,7 +243,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             {
                 Id = _memberId2,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 SaasUserId = SaasUserId2
             };
 
@@ -279,7 +279,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             {
                 Id = _memberId2,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 SaasUserId = SaasUserId2
             };
 

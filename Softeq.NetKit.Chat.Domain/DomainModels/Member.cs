@@ -18,6 +18,8 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         // TODO [az]: do we need both Status and IsAfk?
         public bool IsAfk { get; set; }
 
+        public bool IsActive { get; set; }
+
         [StringLength(255)]
         public string SaasUserId { get; set; }
 

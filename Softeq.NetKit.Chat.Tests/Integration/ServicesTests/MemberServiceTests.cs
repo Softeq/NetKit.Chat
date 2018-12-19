@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 SaasUserId = SaasUserId
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
@@ -61,7 +61,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.NotEmpty(members);
             Assert.Equal(_memberId, members.First().Id);
             Assert.Equal(SaasUserId, members.First().SaasUserId);
-            Assert.Equal(UserStatus.Active, members.First().Status);
+            Assert.Equal(UserStatus.Online, members.First().Status);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             var addedClient = await _clientService.AddClientAsync(addClientRequest);
             var createdMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
 
-            Assert.Equal(UserStatus.Active, createdMember.Status);
+            Assert.Equal(UserStatus.Online, createdMember.Status);
 
             await _memberService.UpdateMemberStatusAsync(createdMember.SaasUserId, UserStatus.Offline);
             var changedMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
@@ -113,7 +113,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             var addedClient = await _clientService.AddClientAsync(addClientRequest);
             var member = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
 
-            Assert.Equal(UserStatus.Active, member.Status);
+            Assert.Equal(UserStatus.Online, member.Status);
 
             var clients = await _memberService.GetMemberClientsAsync(member.Id);
             foreach (var client in clients)

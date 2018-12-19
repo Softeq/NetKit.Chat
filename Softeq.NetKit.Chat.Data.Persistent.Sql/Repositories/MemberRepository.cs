@@ -140,6 +140,18 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task ActivateMemberAsync(Member member)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"UPDATE Members 
+                                 SET IsActive = @IsActive
+                                 WHERE Id = @Id";
+
+                await connection.ExecuteScalarAsync(sqlQuery, member);
+            }
+        }
+
         public async Task<Member> GetMemberBySaasUserIdAsync(string saasUserId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

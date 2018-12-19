@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("FE728AF3-DDE7-4B11-BD9B-55C3862262AA"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Name = "testMember"
             };
             UnitOfWork.MemberRepository.AddMemberAsync(_member).GetAwaiter().GetResult();
