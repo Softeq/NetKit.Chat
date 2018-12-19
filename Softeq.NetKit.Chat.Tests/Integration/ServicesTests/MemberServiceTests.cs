@@ -49,7 +49,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Fact]
-        public async Task GetChannelMembersAsyncTest()
+        public async Task GetChannelMembersAsync_ShouldGetChannelMembers()
         {
             // Arrange
             await _memberService.InviteMemberAsync(_memberId, _channelId);
@@ -66,7 +66,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Fact]
-        public async Task InviteMemberAsyncTest()
+        public async Task InviteMemberAsync_ShouldInviteMember()
         {
             // Act
             var members = await _memberService.GetChannelMembersAsync(_channelId);
@@ -80,7 +80,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Fact]
-        public async Task ActivateMemberAsyncTest()
+        public async Task ActivateMemberAsync_ShouldActivateMember()
         {
             var member = await _memberService.GetMemberByIdAsync(_memberId);
 
