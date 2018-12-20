@@ -6,9 +6,9 @@ using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using System;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -16,7 +16,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
     public class UpdateChannelAsyncTest : ChannelServiceTestBase
     {
         [Fact]
-        public void InvalidChannelId_ShouldThrowIfChannelDoesNotExist()
+        public void NoChannel_ShouldThrowIfChannelDoesNotExist()
         {
             // Arrange
             var request = new UpdateChannelRequest("F9253C29-F09C-4B67-AF7F-E600BC153FD3", new Guid("60621580-7C10-48F0-B7F2-734735AD4A7C"), "name");
@@ -35,26 +35,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public void NotEqualsMemberIdAndChannelCreatorId_ShouldThrowIfUnableToUpdateChannel()
+        public void NotEqualsMemberIdAndChannelCreatorId_ShouldThrowIfMemberIsNotChannelCreator()
         {
             // Arrange
-            var channelId = new Guid("60621580-7C10-48F0-B7F2-734735AD4A7C");
-            var request = new UpdateChannelRequest("F9253C29-F09C-4B67-AF7F-E600BC153FD3", channelId, "name");
+            var request = new UpdateChannelRequest("F9253C29-F09C-4B67-AF7F-E600BC153FD3", new Guid("60621580-7C10-48F0-B7F2-734735AD4A7C"), "name");
 
-            var channel = new Channel
-            {
-                CreatorId = channelId
-            };
+            var channel = new Channel { CreatorId = request.ChannelId };
 
             _channelRepositoryMock.Setup(x => x.GetChannelAsync(It.Is<Guid>(id => id.Equals(request.ChannelId))))
-                .ReturnsAsync(channel);
+                .ReturnsAsync(channel)
+                .Verifiable();
 
-            var member = new Member()
-            {
-                Id = new Guid("14C8640C-9D55-47D9-8D0B-D726703CFBE9")
-            };
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(member);
+                .ReturnsAsync(new Member())
+                .Verifiable();
 
             // Act
             Func<Task> act = async () => await _channelService.UpdateChannelAsync(request);
@@ -70,26 +64,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         public async Task ShouldUpdateChannel()
         {
             // Arrange
-            var request = new UpdateChannelRequest("F9253C29-F09C-4B67-AF7F-E600BC153FD3",
-                new Guid("A2BE089F-696C-4097-80EA-ABDAF31D098D"), "name")
+            var request = new UpdateChannelRequest("F9253C29-F09C-4B67-AF7F-E600BC153FD3", new Guid("A2BE089F-696C-4097-80EA-ABDAF31D098D"), "name")
             {
                 Description = "Description",
                 WelcomeMessage = "Welcome Message",
                 PhotoUrl = "PhotoUrl"
             };
 
-            var channelCreator = new Member
-            {
-                Id = new Guid("137FE248-7BE7-46A1-8D4D-258AD4A1418D")
-            };
+            var channelCreator = new Member { Id = new Guid("137FE248-7BE7-46A1-8D4D-258AD4A1418D") };
 
-            var channel = new Channel
-            {
-                CreatorId = channelCreator.Id
-            };
+            var channel = new Channel { CreatorId = channelCreator.Id };
 
             _channelRepositoryMock.Setup(x => x.GetChannelAsync(It.Is<Guid>(id => id.Equals(request.ChannelId))))
-                .ReturnsAsync(channel).Verifiable();
+                .ReturnsAsync(channel)
+                .Verifiable();
 
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saasUserId => saasUserId.Equals(request.SaasUserId))))
                 .ReturnsAsync(channelCreator)
@@ -109,7 +97,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             _channelRepositoryMock.Setup(x => x.UpdateChannelAsync(It.Is<Channel>(c => c.Equals(channel))))
                 .Callback<Channel>(x => channelToUpdate = x)
                 .Returns(Task.CompletedTask)
-                            .Verifiable();
+                .Verifiable();
 
             var mappedChannel = new ChannelResponse();
             _domainModelsMapperMock.Setup(x => x.MapToChannelResponse(It.Is<Channel>(c => c.Equals(channel))))
@@ -121,6 +109,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             VerifyMocks();
+
             channelToUpdate.Description.Should().BeEquivalentTo(request.Description);
             channelToUpdate.WelcomeMessage.Should().BeEquivalentTo(request.WelcomeMessage);
             channelToUpdate.Name.Should().BeEquivalentTo(request.Name);

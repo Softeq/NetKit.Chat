@@ -15,10 +15,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
     public class GetMemberChannelsAsyncTests : ChannelServiceTestBase
     {
         [Fact]
-        public void InvalidSaasUserId_ShouldThrowIfMemberDoesNotExist()
+        public void ShouldThrowIfMemberDoesNotExist()
         {
-            // Arrange
-
+            //Arrange
             var saasUserId = "33C51F54-8666-417B-AF29-C22ED3E6896E";
 
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
@@ -30,35 +29,30 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             //Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                            .Be($"Unable to get member channels. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                .Be($"Unable to get member channels. Member {nameof(saasUserId)}:{saasUserId} not found.");
 
             VerifyMocks();
         }
 
         [Fact]
-        public async Task ValidSaasUserId_GetChannels()
+        public async Task ShouldReturnMemberChannels()
         {
-            // Arrange
-            var allowedMember = new Member
-            {
-                SaasUserId = "F2443301-985E-4F91-8DA2-48C27EF5F10E"
-            };
+            //Arrange
+            var saasId = "F2443301-985E-4F91-8DA2-48C27EF5F10E";
 
-            var member = new Member
-            {
-                Id = new Guid("A1538EB3-4E4C-4E39-BDCB-F617003E4BBF")
-            };
+            var member = new Member { Id = new Guid("A1538EB3-4E4C-4E39-BDCB-F617003E4BBF") };
 
-            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saasUserId =>saasUserId.Equals(allowedMember.SaasUserId))))
-                .ReturnsAsync(member).Verifiable(); ;
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saasUserId => saasUserId.Equals(saasId))))
+                .ReturnsAsync(member)
+                .Verifiable();
 
-          var channels = new List<Channel>();
-
+            var channels = new List<Channel>();
             _channelRepositoryMock.Setup(x => x.GetAllowedChannelsAsync(It.Is<Guid>(memberId => memberId.Equals(member.Id))))
-                .ReturnsAsync(channels).Verifiable();
+                .ReturnsAsync(channels)
+                .Verifiable();
 
-            // Act
-            var result = await _channelService.GetMemberChannelsAsync(allowedMember.SaasUserId);
+            //Act
+            var result = await _channelService.GetMemberChannelsAsync(saasId);
 
             //Assert
             result.Should().BeEquivalentTo(channels);
