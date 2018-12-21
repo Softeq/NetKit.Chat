@@ -248,7 +248,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                 var updateChannelRequest = new DomainRequest.Channel.UpdateChannelRequest(Context.GetSaasUserId(), request.ChannelId, request.Name)
                 {
                     PhotoUrl = request.PhotoUrl,
-                    Topic = request.Topic,
+                    Description = request.Description,
                     WelcomeMessage = request.WelcomeMessage
                 };
                 return await _channelSocketService.UpdateChannelAsync(updateChannelRequest);

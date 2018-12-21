@@ -1,11 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
@@ -17,6 +12,11 @@ using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -147,7 +147,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var permanentChannelImageUrl = await _cloudImageProvider.CopyImageToDestinationContainerAsync(request.PhotoUrl);
 
-            channel.Description = request.Topic;
+            channel.Description = request.Description;
             channel.WelcomeMessage = request.WelcomeMessage;
             channel.Name = request.Name;
             channel.PhotoUrl = permanentChannelImageUrl;
@@ -173,7 +173,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channelId);
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, channelId);
-            
+
             return DomainModelsMapper.MapToChannelSummaryResponse(channel, channelMember, lastReadMessage);
         }
 

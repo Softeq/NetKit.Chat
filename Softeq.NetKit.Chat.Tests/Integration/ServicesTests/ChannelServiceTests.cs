@@ -100,7 +100,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var updatedRequest = new UpdateChannelRequest(SaasUserId, channel.Id, "test2")
             {
-                Topic = "test2",
+                Description = "test2",
                 WelcomeMessage = "test2"
             };
 
@@ -113,7 +113,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.NotNull(updatedChannel);
             Assert.NotNull(updatedChannel.Updated);
             Assert.Equal(updatedRequest.Name, updatedChannel.Name);
-            Assert.Equal(updatedRequest.Topic, updatedChannel.Description);
+            Assert.Equal(updatedRequest.Description, updatedChannel.Description);
             Assert.Equal(updatedRequest.WelcomeMessage, updatedChannel.WelcomeMessage);
             Assert.Equal(_memberId, updatedChannel.CreatorId);
             Assert.True(channelMessagesCount == 0);
