@@ -46,8 +46,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(channel)
                 .Verifiable();
 
+            var member = new Member { Id = new Guid("14C8640C-9D55-47D9-8D0B-D726703CFBE9") };
+
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new Member())
+                .ReturnsAsync(member)
                 .Verifiable();
 
             // Act
