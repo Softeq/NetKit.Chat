@@ -78,7 +78,18 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             // Arrange
             var lastReadMessage = new Message
             {
+                Body = "last read message",
                 Created = DateTimeOffset.UtcNow
+            };
+            var oldMessage = new Message
+            {
+                Body = "old message",
+                Created = lastReadMessage.Created.AddMinutes(-1)
+            };
+            var lastChannelMessage = new Message
+            {
+                Body = "last channel message",
+                Created = lastReadMessage.Created.AddMinutes(1)
             };
 
             var channel = new Channel
@@ -88,17 +99,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
                 Updated = DateTimeOffset.UtcNow.AddMinutes(-5),
                 Messages = new List<Message>
                 {
-                    new Message
-                    {
-                        Body = "old message body",
-                        Created = lastReadMessage.Created.AddMinutes(-1)
-                    },
+                    oldMessage,
                     lastReadMessage,
-                    new Message
-                    {
-                        Body = "last message body",
-                        Created = lastReadMessage.Created.AddMinutes(1)
-                    }
+                    lastChannelMessage
                 },
                 Name = "channel name",
                 IsClosed = true,
@@ -140,7 +143,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.PhotoUrl.Should().Be(channel.PhotoUrl);
 
             response.UnreadMessagesCount.Should().Be(1);
-            response.LastMessage.Body.Should().Be(channel.Messages.First().Body);
+            response.LastMessage.Body.Should().Be(lastChannelMessage.Body);
             response.Creator.Id.Should().Be(channel.Creator.Id);
         }
 
