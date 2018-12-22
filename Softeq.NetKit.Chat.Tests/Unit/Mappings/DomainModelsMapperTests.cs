@@ -144,6 +144,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 
             response.UnreadMessagesCount.Should().Be(1);
             response.LastMessage.Body.Should().Be(lastChannelMessage.Body);
+            response.LastMessage.IsRead.Should().Be(false);
             response.Creator.Id.Should().Be(channel.Creator.Id);
         }
 
