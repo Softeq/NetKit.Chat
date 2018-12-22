@@ -2,9 +2,12 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
@@ -302,7 +305,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             {
                 if (request == null)
                 {
-                    await Clients.Caller.SendAsync(HubEvents.RequestValidationFailed, $"{nameof(request)} can not be null.", requestId);
+                    var failures = new List<ValidationFailure> { new ValidationFailure(nameof(request), "can not be null") };
+                    await Clients.Caller.SendAsync(HubEvents.RequestValidationFailed, failures, requestId);
                     return;
                 }
 
@@ -348,7 +352,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             {
                 if (request == null)
                 {
-                    await Clients.Caller.SendAsync(HubEvents.RequestValidationFailed, $"{nameof(request)} can not be null.", requestId);
+                    var failures = new List<ValidationFailure> { new ValidationFailure(nameof(request), "can not be null") };
+                    await Clients.Caller.SendAsync(HubEvents.RequestValidationFailed, failures, requestId);
                     return default(TResponse);
                 }
 
