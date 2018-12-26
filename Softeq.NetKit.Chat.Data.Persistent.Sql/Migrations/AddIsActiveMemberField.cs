@@ -3,7 +3,7 @@
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
 {
     [Migration(20181219154700, "Add IsActive user filed")]
-    public class AddIsActiveUserFiled : Migration
+    public class AddIsActiveMemberField : Migration
     {
         protected override void Up()
         {
@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
 
         protected override void Down()
         {
-            Execute(@"ALTER TABLE [dbo].[ChannelMembers] DROP COLUMN IsActive");
+            Execute(@"ALTER TABLE [dbo].[Members] DROP COLUMN IsActive");
         }
     }
 }
