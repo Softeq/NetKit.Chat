@@ -82,10 +82,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 _channelMemberRepositoryMock.Setup(x => x.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                    .Returns(Task.CompletedTask);
+                    .Returns(Task.CompletedTask)
+                    .Verifiable();
 
-                _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channelId))))
-                    .Returns(Task.CompletedTask);
+                _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channelId))))
+                    .Returns(Task.CompletedTask)
+                    .Verifiable();
 
                 transactionScope.Complete();
             }
@@ -94,6 +96,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             var result =  _channelService.LeaveFromChannelAsync(saasUserId, channelId); 
             
             // Assert
+
+            VerifyMocks();
+
             await result.Should().AsTaskResult();
         }
     }
