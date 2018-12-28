@@ -49,7 +49,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Fact]
-        public async Task GetChannelMembersAsync_ShouldGetChannelMembers()
+        public async Task GetChannelMembersAsyncTest()
         {
             // Arrange
             await _memberService.InviteMemberAsync(_memberId, _channelId);

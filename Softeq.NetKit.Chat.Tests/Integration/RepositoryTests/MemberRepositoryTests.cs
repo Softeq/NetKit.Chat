@@ -180,27 +180,13 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
 
-            var memberToActivate = new Member
-            {
-                Id = member.Id,
-                Role = UserRole.User,
-                IsAfk = true,
-                IsBanned = true,
-                LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Online,
-                IsActive = true,
-                Email = "Email",
-                LastNudged = DateTimeOffset.UtcNow,
-                Name = "Name",
-                PhotoName = "PhotoName",
-                SaasUserId = "SaasUserId"
-            };
+            member.IsActive = true;
 
-            await UnitOfWork.MemberRepository.ActivateMemberAsync(memberToActivate);
+            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
 
             var activatedMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
 
-            activatedMember.IsActive.Should().Be(memberToActivate.IsActive);
+            activatedMember.IsActive.Should().Be(member.IsActive);
         }
 
         [Fact]

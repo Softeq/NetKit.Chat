@@ -123,7 +123,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             member.IsActive = true;
 
-            await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
+            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
         }
 
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)

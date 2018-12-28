@@ -112,8 +112,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Members(Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status) 
-                                 VALUES (@Id, @Email, @IsAfk, @IsBanned, @LastActivity, @LastNudged, @Name, @PhotoName, @Role, @SaasUserId, @Status)";
+                var sqlQuery = @"INSERT INTO Members(Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status, IsActive) 
+                                 VALUES (@Id, @Email, @IsAfk, @IsBanned, @LastActivity, @LastNudged, @Name, @PhotoName, @Role, @SaasUserId, @Status, @IsActive)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, member);
             }
@@ -133,19 +133,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                      PhotoName = @PhotoName,
                                      Role = @Role, 
                                      SaasUserId = @SaasUserId, 
+                                     IsActive = @IsActive,
                                      Status = @Status
-                                 WHERE Id = @Id";
-
-                await connection.ExecuteScalarAsync(sqlQuery, member);
-            }
-        }
-
-        public async Task ActivateMemberAsync(Member member)
-        {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
-            {
-                var sqlQuery = @"UPDATE Members 
-                                 SET IsActive = @IsActive
                                  WHERE Id = @Id";
 
                 await connection.ExecuteScalarAsync(sqlQuery, member);
