@@ -111,7 +111,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         {
             // Arrange
             var saasUserId = "BAFDCFAA-267D-4D16-98B0-6D516D9193ED";
-
             var channel = new Channel
             {
                 Id = new Guid("7A5006DC-B5DC-4D98-AE4B-D4518D149A5A"),
