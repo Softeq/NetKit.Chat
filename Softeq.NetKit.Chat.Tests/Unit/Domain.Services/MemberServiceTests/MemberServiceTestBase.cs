@@ -26,7 +26,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService
         protected readonly Mock<IForwardMessageRepository> _forwardMessageRepositoryMock = new Mock<IForwardMessageRepository>(MockBehavior.Strict);
         protected readonly Mock<IChannelMemberRepository> _channelMemberRepositoryMock = new Mock<IChannelMemberRepository>(MockBehavior.Strict);
         protected readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>(MockBehavior.Strict);
-        protected readonly Mock<IClientRepository> _clientRepository = new Mock<IClientRepository>(MockBehavior.Strict);
+        protected readonly Mock<IClientRepository> _clientRepositoryMock = new Mock<IClientRepository>(MockBehavior.Strict);
 
         protected MemberServiceTestBase()
         {
@@ -36,7 +36,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService
             _unitOfWorkMock.Setup(x => x.ForwardMessageRepository).Returns(_forwardMessageRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.ChannelMemberRepository).Returns(_channelMemberRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.AttachmentRepository).Returns(_attachmentRepositoryMock.Object);
-            _unitOfWorkMock.Setup(x => x.ClientRepository).Returns(_clientRepository.Object);
+            _unitOfWorkMock.Setup(x => x.ClientRepository).Returns(_clientRepositoryMock.Object);
 
             _memberService = new Chat.Domain.Services.DomainServices.MemberService(
                 _unitOfWorkMock.Object,
@@ -54,7 +54,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService
             _forwardMessageRepositoryMock.VerifyAll();
             _channelMemberRepositoryMock.VerifyAll();
             _attachmentRepositoryMock.VerifyAll();
-            _clientRepository.VerifyAll();
+            _clientRepositoryMock.VerifyAll();
         }
     }
 }

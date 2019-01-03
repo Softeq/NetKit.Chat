@@ -69,7 +69,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            _clientRepository.Setup(x => x.GetClientWithMemberAsync(It.IsAny<string>()))
+            _clientRepositoryMock.Setup(x => x.GetClientWithMemberAsync(It.IsAny<string>()))
                 .ReturnsAsync((Client)null)
                 .Verifiable();
 
