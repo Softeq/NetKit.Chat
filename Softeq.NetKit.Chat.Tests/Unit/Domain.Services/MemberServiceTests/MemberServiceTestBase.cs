@@ -10,7 +10,7 @@ using Softeq.NetKit.Chat.Domain.Services.Utility;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService
 {
-    public class MemberServiceTestBase
+    public abstract class MemberServiceTestBase
     {
         protected readonly IMemberService _memberService;
 
