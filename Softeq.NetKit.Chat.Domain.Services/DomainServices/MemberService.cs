@@ -173,14 +173,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         {
             var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(pageNumber, pageSize, nameFilter);
 
-            var response = new PagedMembersResponse
+            var response = new PagedMembersResponse();
+
+            if (members.Results != null)
             {
-                Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummary(member)),
-                TotalNumberOfItems = members.TotalNumberOfItems,
-                TotalNumberOfPages = members.TotalNumberOfPages,
-                PageNumber = members.PageNumber,
-                PageSize = members.PageSize
-            };
+                response.Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummary(member));
+                response.TotalNumberOfItems = members.TotalNumberOfItems;
+                response.TotalNumberOfPages = members.TotalNumberOfPages;
+                response.PageNumber = members.PageNumber;
+                response.PageSize = members.PageSize;
+            }
 
             return response;
         }
