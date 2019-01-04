@@ -14,7 +14,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService
     {
         protected readonly IMemberService _memberService;
 
-
         protected readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new Mock<IDateTimeProvider>(MockBehavior.Strict);
 
         protected readonly Mock<IDomainModelsMapper> _domainModelsMapperMock = new Mock<IDomainModelsMapper>(MockBehavior.Strict);
