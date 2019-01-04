@@ -1,13 +1,13 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -21,7 +21,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             var channelId = new Guid("BAFDCFAA-267D-4D16-98B0-6D516D9193ED");
 
             _settingRepositoryMock.Setup(x => x.GetSettingsByChannelIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync((Settings) null)
+                .ReturnsAsync((Settings)null)
                 .Verifiable();
 
             // Act
@@ -35,7 +35,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public async  Task ShouldReturnSettingsResponse()
+        public async Task ShouldReturnSettingsResponse()
         {
             // Arrange
             var channelId = new Guid("5537AB43-B861-40F4-A446-B74174489B23");
@@ -46,13 +46,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .Verifiable();
 
             var settingsResponse = new SettingsResponse();
-
-            _domainModelsMapperMock.Setup(x =>x.MapToSettingsResponse(setting))
+            _domainModelsMapperMock.Setup(x => x.MapToSettingsResponse(setting))
                 .Returns(settingsResponse)
                 .Verifiable();
 
             // Act
-            var act = await _channelService.GetChannelSettingsAsync(channelId); ;
+            var act = await _channelService.GetChannelSettingsAsync(channelId);
 
             // Assert
             act.Should().BeEquivalentTo(settingsResponse);
