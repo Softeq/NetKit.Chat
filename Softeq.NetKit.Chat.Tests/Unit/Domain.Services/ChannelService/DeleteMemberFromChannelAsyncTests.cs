@@ -3,12 +3,10 @@
 
 using FluentAssertions;
 using Moq;
-using ServiceStack;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
 using System.Threading.Tasks;
-using System.Transactions;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -203,18 +201,13 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(true)
                 .Verifiable();
 
-            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                _channelMemberRepositoryMock.Setup(x => x.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                    .Returns(Task.CompletedTask)
-                    .Verifiable();
+            _channelMemberRepositoryMock.Setup(x => x.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
-                _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCount(It.IsAny<Guid>()))
-                    .Returns(Task.CompletedTask)
-                    .Verifiable();
-
-                transactionScope.Complete();
-            }
+            _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCount(It.IsAny<Guid>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
             // Act
             await _channelService.DeleteMemberFromChannelAsync(member.SaasUserId, channel.Id, memberToDeleteId);
