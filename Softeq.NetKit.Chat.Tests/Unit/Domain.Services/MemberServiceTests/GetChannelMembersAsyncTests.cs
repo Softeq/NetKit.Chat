@@ -17,7 +17,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
     public class GetChannelMembersAsyncTests : MemberServiceTestBase
     {
         [Fact]
-        public void ShouldThrowIfChannelDoesNotExist()
+        public void ShouldThrowIfChannelIsNotExist()
         {
             // Arrange
             var channelId = new Guid("BE5C68F1-5983-4C08-B57B-FD4EFD7295B8");

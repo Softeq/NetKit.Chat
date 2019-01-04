@@ -1,11 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -16,6 +11,11 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(dateTimeProvider).IsNotNull();
-            
+
             _dateTimeProvider = dateTimeProvider;
         }
 
@@ -173,16 +173,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         {
             var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(pageNumber, pageSize, nameFilter);
 
-            var response = new PagedMembersResponse();
-
-            if (members.Results != null)
+            var response = new PagedMembersResponse
             {
-                response.Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummary(member));
-                response.TotalNumberOfItems = members.TotalNumberOfItems;
-                response.TotalNumberOfPages = members.TotalNumberOfPages;
-                response.PageNumber = members.PageNumber;
-                response.PageSize = members.PageSize;
-            }
+                Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummary(member)),
+                TotalNumberOfItems = members.TotalNumberOfItems,
+                TotalNumberOfPages = members.TotalNumberOfPages,
+                PageNumber = members.PageNumber,
+                PageSize = members.PageSize
+            };
 
             return response;
         }

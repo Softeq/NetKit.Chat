@@ -35,7 +35,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             Func<Task> act = async () => await _memberService.AddMemberAsync(member.SaasUserId, member.Email);
 
             // Assert
-
             act.Should().Throw<NetKitChatInvalidOperationException>().And.Message.Should()
                 .Be($"Unable to add member. Member saasUserId:{member.SaasUserId} already exists.");
 
@@ -46,7 +45,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
         public async Task ShouldReturnMemberSummary()
         {
             // Arrange
-
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((Member)null)
                 .Verifiable();
@@ -82,7 +80,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-
             var memberSummary = new MemberSummary
             {
                 SaasUserId = newMember.SaasUserId,
@@ -99,7 +96,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             // Assert
             VerifyMocks();
 
-            act.SaasUserId.Should().BeEquivalentTo(memberSummary.SaasUserId);
+            act.Should().BeEquivalentTo(memberSummary);
         }
     }
 }

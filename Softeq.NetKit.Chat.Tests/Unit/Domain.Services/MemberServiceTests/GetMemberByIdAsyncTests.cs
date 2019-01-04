@@ -16,7 +16,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
     public class GetMemberByIdAsyncTests : MemberServiceTestBase
     {
         [Fact]
-        public void ShouldThrowIfMemberDoesNotExist()
+        public void ShouldThrowIfMemberIsNotExist()
         {
             // Arrange
             var memberId = new Guid("BE5C68F1-5983-4C08-B57B-FD4EFD7295B8");
@@ -55,7 +55,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             var act = await _memberService.GetMemberByIdAsync(memberId);
 
             // Assert
-
             act.Should().BeEquivalentTo(memberSummary);
 
             VerifyMocks();
