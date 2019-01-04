@@ -15,7 +15,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
     public class MuteChannelAsyncTests : ChannelServiceTestBase
     {
         [Fact]
-        public void ShouldThrowIfMemberDoesNotExist()
+        public void ShouldThrowIfMemberIsNotExist()
         {
             // Arrange
             var saasUserId = "7E1FC899-630D-4A00-B0A3-388098AB6CFC";
@@ -68,7 +68,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public async Task ShouldReturnTask()
+        public async Task ShouldChannelIsMuted()
         {
             // Arrange
             var channelId = new Guid("EAD59DEC-5ED7-460A-805C-71AAF83AE3B3");
@@ -88,18 +88,23 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(true)
                 .Verifiable();
 
-            _channelMemberRepositoryMock.Setup(x => x.MuteChannelAsync(It.Is<Guid>(m => m.Equals(member.Id)),
-                    It.Is<Guid>(c => c.Equals(channelId)), It.Is<bool>(m => m.Equals(isMuted))))
+            _channelMemberRepositoryMock.Setup(x => x.MuteChannelAsync(
+                    It.Is<Guid>(m => m.Equals(member.Id)),
+                    It.Is<Guid>(c => c.Equals(channelId)), 
+                    It.Is<bool>(m => m.Equals(isMuted))))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
             // Act
-            var result = _channelService.MuteChannelAsync(member.SaasUserId, channelId, isMuted);
+            await _channelService.MuteChannelAsync(member.SaasUserId, channelId, isMuted);
 
             // Assert
             VerifyMocks();
 
-            await result.Should().AsTaskResult();
+            _channelMemberRepositoryMock.Verify(prov => prov.MuteChannelAsync(
+                It.Is<Guid>(m => m.Equals(member.Id)),
+                It.Is<Guid>(c => c.Equals(channelId)), 
+                It.Is<bool>(m => m.Equals(isMuted))));
         }
     }
 }
