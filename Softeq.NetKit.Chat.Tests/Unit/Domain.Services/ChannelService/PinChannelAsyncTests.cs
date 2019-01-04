@@ -1,13 +1,13 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using ServiceStack;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -36,7 +36,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public void ShouldThrowIfMemberDoesNotInChannel()
+        public void ShouldThrowIfMemberIsNotInChannel()
         {
             // Arrange
             var channelId = new Guid("D006767E-C089-4441-B674-F55F6D301ED9");
@@ -68,7 +68,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public async Task ShouldReturnTask()
+        public async Task ShouldPinChannel()
         {
             // Arrange
             var channelId = new Guid("D006767E-C089-4441-B674-F55F6D301ED9");
@@ -94,12 +94,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .Verifiable();
 
             // Act
-            var result =  _channelService.PinChannelAsync(member.SaasUserId, channelId, true);
+            await _channelService.PinChannelAsync(member.SaasUserId, channelId, true);
 
             // Assert
             VerifyMocks();
 
-            await result.Should().AsTaskResult();
+            _channelMemberRepositoryMock.Verify(prov => prov.PinChannelAsync(It.Is<Guid>(memberId => memberId.Equals(member.Id)), It.Is<Guid>(c => c.Equals(channelId)), true));
         }
     }
 }
