@@ -7,8 +7,6 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
 using System.Threading.Tasks;
-using System.Transactions;
-using ServiceStack;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -48,7 +46,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(member)
                 .Verifiable();
 
-            _channelRepositoryMock.Setup(x =>x.IsMemberExistsInChannelAsync(It.Is<Guid>(m => m.Equals(member.Id)), It.Is<Guid>(c =>c.Equals(channelId))))
+            _channelRepositoryMock.Setup(x => x.IsMemberExistsInChannelAsync(It.Is<Guid>(m => m.Equals(member.Id)), It.Is<Guid>(c => c.Equals(channelId))))
                 .ReturnsAsync(false)
                 .Verifiable();
 
@@ -64,7 +62,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public async void ShouldReturnTaskCompleted()
+        public async void ShouldLeaveChannel()
         {
             // Arrange
             var saasUserId = "A3F16B2A-EEF1-4DAE-8025-D801ED1532A3";
@@ -79,27 +77,21 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(true)
                 .Verifiable();
 
-            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                _channelMemberRepositoryMock.Setup(x => x.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
-                    .Returns(Task.CompletedTask)
-                    .Verifiable();
+            _channelMemberRepositoryMock.Setup(x => x.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
-                _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channelId))))
-                    .Returns(Task.CompletedTask)
-                    .Verifiable();
-
-                transactionScope.Complete();
-            }
+            _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channelId))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
             // Act
-            var result =  _channelService.LeaveFromChannelAsync(saasUserId, channelId); 
-            
-            // Assert
+            await _channelService.LeaveFromChannelAsync(saasUserId, channelId);
 
+            // Assert
             VerifyMocks();
 
-            await result.Should().AsTaskResult();
+            _channelMemberRepositoryMock.Verify(prov => prov.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()));
         }
     }
 }
