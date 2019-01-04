@@ -3,12 +3,12 @@
 
 using FluentAssertions;
 using Moq;
+using ServiceStack;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
 using System.Threading.Tasks;
 using System.Transactions;
-using ServiceStack;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -16,7 +16,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
     public class DeleteMemberFromChannelAsyncTests : ChannelServiceTestBase
     {
         [Fact]
-        public void ShouldThrowIfMemberDoesNotExist()
+        public void ShouldThrowIfMemberIsNotExist()
         {
             // Arrange
             var saasUserId = "7E1FC899-630D-4A00-B0A3-388098AB6CFC";
@@ -38,7 +38,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public void ShouldThrowIfMembeкIdEqualsMemberToDeleteId()
+        public void ShouldThrowIfMemberIdEqualsMemberToDeleteId()
         {
             // Arrange
             var channelId = new Guid("EAD59DEC-5ED7-460A-805C-71AAF83AE3B3");
@@ -96,7 +96,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public void ShouldThrowIfMembeкIdEqualChannelCreatorId()
+        public void ShouldThrowIfMemberIdIsNotEqualToChannelCreatorId()
         {
             // Arrange
             var member = new Member
@@ -173,7 +173,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public async Task ShouldReturnTaskCompleted()
+        public async Task ShouldDeleteMemberFromChannel()
         {
             // Arrange
             var member = new Member
@@ -217,12 +217,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             }
 
             // Act
-            var result = _channelService.DeleteMemberFromChannelAsync(member.SaasUserId, channel.Id, memberToDeleteId);
+            await _channelService.DeleteMemberFromChannelAsync(member.SaasUserId, channel.Id, memberToDeleteId);
 
             // Assert
             VerifyMocks();
 
-            await result.Should().AsTaskResult();
+            _channelMemberRepositoryMock.Verify(prov => prov.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()));
         }
     }
 }
