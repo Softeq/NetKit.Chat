@@ -3,12 +3,10 @@
 
 using FluentAssertions;
 using Moq;
-using ServiceStack;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
 using System.Threading.Tasks;
-using System.Transactions;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -132,7 +130,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public async Task ShouldReturnTask()
+        public async Task ShouldAddChannelMember()
         {
             // Arrange
             var saasUserId = "F8C90628-2DC2-4655-94E3-23B70E67A5DA";
@@ -160,26 +158,21 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(false)
                 .Verifiable();
 
-            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                _channelMemberRepositoryMock.Setup(x => x.AddChannelMemberAsync(It.IsAny<ChannelMember>()))
-                    .Returns(Task.CompletedTask)
-                    .Verifiable();
+            _channelMemberRepositoryMock.Setup(x => x.AddChannelMemberAsync(It.IsAny<ChannelMember>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
-                _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channel.Id))))
-                    .Returns(Task.CompletedTask)
-                    .Verifiable();
-
-                transactionScope.Complete();
-            }
+            _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channel.Id))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
             // Act
-            var result = _channelService.JoinToChannelAsync(saasUserId, channel.Id);
+            await _channelService.JoinToChannelAsync(saasUserId, channel.Id);
 
             // Assert
             VerifyMocks();
 
-            await result.Should().AsTaskResult();
+            _channelMemberRepositoryMock.Verify(prov => prov.AddChannelMemberAsync(It.IsAny<ChannelMember>()));
         }
     }
 }
