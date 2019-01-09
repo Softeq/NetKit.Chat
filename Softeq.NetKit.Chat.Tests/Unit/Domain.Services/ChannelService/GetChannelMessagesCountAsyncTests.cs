@@ -12,7 +12,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
     public class GetChannelMessagesCountAsyncTests : ChannelServiceTestBase
     {
         [Fact]
-
         public async Task ShouldReturnInt()
         {
             //Arrange
@@ -20,7 +19,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             var counter = 0;
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 _messageRepositoryMock.Setup(x => x.GetChannelMessagesCountAsync(It.IsAny<Guid>()))
                     .Callback(() => { counter += 1; })
