@@ -3,7 +3,6 @@
 
 using FluentAssertions;
 using Moq;
-using ServiceStack;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
@@ -37,7 +36,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public void ShouldThrowIfMemberDoesNotInChannel()
+        public void ShouldThrowIfMemberIsNotInChannel()
         {
             // Arrange
             var channelId = new Guid("EAD59DEC-5ED7-460A-805C-71AAF83AE3B3");
@@ -90,7 +89,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             _channelMemberRepositoryMock.Setup(x => x.MuteChannelAsync(
                     It.Is<Guid>(m => m.Equals(member.Id)),
-                    It.Is<Guid>(c => c.Equals(channelId)), 
+                    It.Is<Guid>(c => c.Equals(channelId)),
                     It.Is<bool>(m => m.Equals(isMuted))))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
@@ -103,7 +102,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             _channelMemberRepositoryMock.Verify(prov => prov.MuteChannelAsync(
                 It.Is<Guid>(m => m.Equals(member.Id)),
-                It.Is<Guid>(c => c.Equals(channelId)), 
+                It.Is<Guid>(c => c.Equals(channelId)),
                 It.Is<bool>(m => m.Equals(isMuted))));
         }
     }
