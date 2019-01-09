@@ -29,13 +29,13 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to leave from channel. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                .And.Message.Should().Be($"Unable to leave from channel. Member {nameof(saasUserId)}:{saasUserId} is not found.");
 
             VerifyMocks();
         }
 
         [Fact]
-        public void ShouldThrowIfMemberExistsInChannel()
+        public void ShouldThrowIfMemberDoesNotExistInChannel()
         {
             // Arrange
             var saasUserId = "A3F16B2A-EEF1-4DAE-8025-D801ED1532A3";
