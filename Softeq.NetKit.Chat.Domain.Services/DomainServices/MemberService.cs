@@ -113,6 +113,19 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToChannelResponse(channel);
         }
 
+        public async Task ActivateMemberAsync(string saasUserId)
+        {
+            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+            if (member == null)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to activate member. Member {nameof(saasUserId)}:{saasUserId} not found.");
+            }
+
+            member.IsActive = true;
+
+            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
+        }
+
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
@@ -127,7 +140,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Role = UserRole.User,
                 IsAfk = false,
                 IsBanned = false,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 SaasUserId = saasUserId,
                 Email = email,
                 LastActivity = _dateTimeProvider.GetUtcNow(),
@@ -208,7 +221,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
             }
-            member.Status = UserStatus.Active;
+            member.Status = UserStatus.Online;
             member.LastActivity = _dateTimeProvider.GetUtcNow();
             member.IsAfk = false;
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);

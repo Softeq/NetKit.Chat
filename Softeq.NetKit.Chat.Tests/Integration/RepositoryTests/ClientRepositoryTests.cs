@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
         }
@@ -69,7 +69,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("15D2571D-9A64-4E3F-A0DB-4CBEF6315BD9"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(firstNotMutedMember);
 
@@ -77,7 +77,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("E5516862-1704-4564-BF47-C1F2DBBE4E5B"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(secondNotMutedMember);
 
@@ -85,7 +85,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("BD1510B1-A88D-4C81-8F08-92F17A1B3C2C"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(mutedMember);
 
@@ -189,7 +189,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("68444A01-F562-4FE3-9714-5341655664B8"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
 
@@ -294,7 +294,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("15D2571D-9A64-4E3F-A0DB-4CBEF6315BD9"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(member1);
 
@@ -302,7 +302,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("E5516862-1704-4564-BF47-C1F2DBBE4E5B"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(member2);
 

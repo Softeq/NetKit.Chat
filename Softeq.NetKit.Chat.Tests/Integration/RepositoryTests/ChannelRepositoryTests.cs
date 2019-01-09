@@ -21,7 +21,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _member2Id,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member2).GetAwaiter().GetResult();
         }
@@ -143,7 +143,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("78D80247-DD60-49AB-821C-069D47130DF9"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
@@ -151,7 +151,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = new Guid("401907DC-802D-4673-BA84-74096369F958"),
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member2).GetAwaiter().GetResult();
 

@@ -23,7 +23,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Role = UserRole.User
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _secondMemberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Role = UserRole.User
             };
             UnitOfWork.MemberRepository.AddMemberAsync(secondMember).GetAwaiter().GetResult();

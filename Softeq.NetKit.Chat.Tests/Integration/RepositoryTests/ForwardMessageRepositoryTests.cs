@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Name = "testMember"
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();

@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Online
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
@@ -117,7 +117,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Email = "Email",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name",

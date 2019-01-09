@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             }
 
-            await _memberService.UpdateMemberStatusAsync(member.SaasUserId, UserStatus.Active);
+            await _memberService.UpdateMemberStatusAsync(member.SaasUserId, UserStatus.Online);
 
             var isClientExists = await UnitOfWork.ClientRepository.IsClientExistsAsync(request.ConnectionId);
             if (isClientExists)

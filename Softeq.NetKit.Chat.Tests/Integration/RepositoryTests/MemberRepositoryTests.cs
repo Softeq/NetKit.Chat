@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     IsAfk = false,
                     IsBanned = true,
                     LastActivity = DateTimeOffset.UtcNow,
-                    Status = UserStatus.Active,
+                    Status = UserStatus.Online,
                     Name = i % 2 == 0 ? $"{i}EVEN{i}" : $"{i}ODD{i}"
                 };
                 await UnitOfWork.MemberRepository.AddMemberAsync(member);
@@ -105,7 +105,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     IsAfk = false,
                     IsBanned = true,
                     LastActivity = DateTimeOffset.UtcNow,
-                    Status = UserStatus.Active,
+                    Status = UserStatus.Online,
                     Name = isEvenCounter ? $"{i}EVEN{i}" : $"{i}ODD{i}"
                 };
                 await UnitOfWork.MemberRepository.AddMemberAsync(member);
@@ -145,7 +145,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Email = "Email",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name",
@@ -161,6 +161,35 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         }
 
         [Fact]
+        public async Task ActivateMemberAsync_ShouldActivateMember()
+        {
+            var member = new Member
+            {
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online,
+                IsActive = false,
+                Email = "Email",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name",
+                PhotoName = "PhotoName",
+                SaasUserId = "SaasUserId"
+            };
+            await UnitOfWork.MemberRepository.AddMemberAsync(member);
+
+            member.IsActive = true;
+
+            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
+
+            var activatedMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(member.Id);
+
+            activatedMember.IsActive.Should().Be(member.IsActive);
+        }
+
+        [Fact]
         public async Task UpdateMemberAsync_ShouldUpdateMember()
         {
             var member = new Member
@@ -170,7 +199,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Email = "Email",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name",
@@ -211,7 +240,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Email = "Email",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name",
@@ -242,7 +271,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     IsAfk = true,
                     IsBanned = true,
                     LastActivity = DateTimeOffset.UtcNow,
-                    Status = UserStatus.Active,
+                    Status = UserStatus.Online,
                     Email = $"Email{i}",
                     LastNudged = DateTimeOffset.UtcNow,
                     Name = $"Name{i}",
@@ -279,7 +308,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Email = "Email",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name",
@@ -303,7 +332,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Email = "Email",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name",
