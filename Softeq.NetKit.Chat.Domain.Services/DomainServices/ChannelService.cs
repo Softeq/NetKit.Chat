@@ -321,7 +321,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to leave from channel. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to leave from channel. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, channelId);
