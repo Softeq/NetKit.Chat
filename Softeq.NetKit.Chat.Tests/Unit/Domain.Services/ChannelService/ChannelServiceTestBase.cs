@@ -28,6 +28,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         protected readonly Mock<IForwardMessageRepository> _forwardMessageRepositoryMock = new Mock<IForwardMessageRepository>(MockBehavior.Strict);
         protected readonly Mock<IChannelMemberRepository> _channelMemberRepositoryMock = new Mock<IChannelMemberRepository>(MockBehavior.Strict);
         protected readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>(MockBehavior.Strict);
+        protected readonly Mock<ISettingRepository> _settingRepositoryMock = new Mock<ISettingRepository>(MockBehavior.Strict);
 
         protected readonly Mock<ICloudImageProvider> _cloudImageProviderMock = new Mock<ICloudImageProvider>(MockBehavior.Strict);
 
@@ -39,6 +40,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             _unitOfWorkMock.Setup(x => x.ForwardMessageRepository).Returns(_forwardMessageRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.ChannelMemberRepository).Returns(_channelMemberRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.AttachmentRepository).Returns(_attachmentRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.SettingRepository).Returns(_settingRepositoryMock.Object);
 
             _channelService = new Chat.Domain.Services.DomainServices.ChannelService(
                 _unitOfWorkMock.Object,
@@ -63,6 +65,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             _attachmentRepositoryMock.VerifyAll();
 
             _cloudImageProviderMock.VerifyAll();
+
+            _settingRepositoryMock.VerifyAll();
         }
     }
 }
