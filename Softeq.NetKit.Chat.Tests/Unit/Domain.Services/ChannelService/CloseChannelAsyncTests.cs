@@ -124,7 +124,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(channel)
                 .Verifiable();
 
-
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saasId => saasId.Equals(saasUserId))))
                 .ReturnsAsync(member)
                 .Verifiable();
