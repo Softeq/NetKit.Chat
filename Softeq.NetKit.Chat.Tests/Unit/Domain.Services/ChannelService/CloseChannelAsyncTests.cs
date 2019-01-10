@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public void ShouldThrowIfMemberNotExists()
+        public void ShouldThrowIfMemberDoesNotExists()
         {
             // Arrange
             var saasUserId = "BC6CDEBF-6D6A-467C-98EF-133DBA26EAD4";
@@ -82,7 +82,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
         }
 
         [Fact]
-        public void ShouldThrowIfMemberIdNotEqualsChannelCreatorId()
+        public void ShouldThrowIfMemberIdNotEqualChannelCreatorId()
         {
             // Arrange
             var saasUserId = "BAFDCFAA-267D-4D16-98B0-6D516D9193ED";
