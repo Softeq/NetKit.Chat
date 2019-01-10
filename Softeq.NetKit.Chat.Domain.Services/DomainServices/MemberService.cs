@@ -1,6 +1,11 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -11,11 +16,6 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -30,7 +30,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(dateTimeProvider).IsNotNull();
-
             _dateTimeProvider = dateTimeProvider;
         }
 
