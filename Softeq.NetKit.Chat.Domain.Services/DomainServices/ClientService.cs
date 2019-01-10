@@ -40,7 +40,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ClientConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} is not found.");
             }
 
             return DomainModelsMapper.MapToClientResponse(client);
@@ -84,7 +84,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ClientConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} is not found.");
             }
 
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);

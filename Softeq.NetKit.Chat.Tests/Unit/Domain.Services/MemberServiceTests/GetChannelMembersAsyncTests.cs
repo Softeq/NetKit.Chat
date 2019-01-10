@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} not found.");
+                .Be($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} is not found.");
 
             VerifyMocks();
         }

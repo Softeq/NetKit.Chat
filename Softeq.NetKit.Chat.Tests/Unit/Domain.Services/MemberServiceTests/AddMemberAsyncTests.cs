@@ -64,7 +64,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 Role = UserRole.User,
                 IsAfk = false,
                 IsBanned = false,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 LastActivity = utcNow,
                 Name = email,
                 LastNudged = utcNow,

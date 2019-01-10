@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to invite member. Channel {nameof(channelId)}:{channelId} not found.");
+                .Be($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is not found.");
 
             VerifyMocks();
         }
@@ -77,7 +77,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to invite member. Member {nameof(memberId)}:{memberId} not found.");
+                .Be($"Unable to invite member. Member {nameof(memberId)}:{memberId} is not found.");
 
             VerifyMocks();
         }

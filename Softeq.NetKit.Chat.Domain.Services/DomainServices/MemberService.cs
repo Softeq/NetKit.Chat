@@ -39,7 +39,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
             return DomainModelsMapper.MapToMemberSummary(member);
@@ -50,7 +50,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} is not found.");
             }
 
             return DomainModelsMapper.MapToMemberSummary(member);
@@ -61,7 +61,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
             if (!isChannelExists)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} is not found.");
             }
 
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);
@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var channel = await UnitOfWork.ChannelRepository.GetChannelAsync(channelId);
             if (channel == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is not found.");
             }
 
             if (channel.IsClosed)
@@ -84,7 +84,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to invite member. Member {nameof(memberId)}:{memberId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to invite member. Member {nameof(memberId)}:{memberId} is not found.");
             }
 
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, channel.Id);
@@ -118,7 +118,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatInvalidOperationException($"Unable to activate member. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                throw new NetKitChatInvalidOperationException($"Unable to activate member. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
             member.IsActive = true;
@@ -156,7 +156,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member clients. Member {nameof(memberId)}:{memberId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get member clients. Member {nameof(memberId)}:{memberId} is not found.");
             }
 
             var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(member.Id);
@@ -168,7 +168,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update member status. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to update member status. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
             member.Status = status;
@@ -219,7 +219,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
             }
             member.Status = UserStatus.Online;
             member.LastActivity = _dateTimeProvider.GetUtcNow();
@@ -229,7 +229,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update activity. Client {nameof(request.ConnectionId)}:{request.ConnectionId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to update activity. Client {nameof(request.ConnectionId)}:{request.ConnectionId} is not found.");
             }
             client.UserAgent = request.UserAgent;
             client.LastActivity = member.LastActivity;
