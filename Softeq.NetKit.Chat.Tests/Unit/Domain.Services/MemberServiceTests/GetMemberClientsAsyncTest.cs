@@ -40,7 +40,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
         {
             // Arrange
             var memberId = new Guid("8DCBF4A0-4490-45A2-B932-CEB71D19E9BD");
-
             var member = new Member { Id = memberId };
 
             _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.Is<Guid>(m => m.Equals(memberId))))
