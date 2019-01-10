@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 PageNumber = pageNumber
             };
 
-            QueryResult<Member> members = new QueryResult<Member>
+            var members = new QueryResult<Member>
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,

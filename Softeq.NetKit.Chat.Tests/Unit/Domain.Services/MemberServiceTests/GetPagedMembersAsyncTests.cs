@@ -21,7 +21,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             var pageSize = 1;
             var nameFilter = "testFilter";
 
-            QueryResult<Member> members = new QueryResult<Member>()
+            var members = new QueryResult<Member>()
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,

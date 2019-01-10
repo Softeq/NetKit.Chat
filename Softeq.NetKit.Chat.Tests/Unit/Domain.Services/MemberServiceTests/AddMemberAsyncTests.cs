@@ -17,7 +17,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
     public class AddMemberAsyncTests : MemberServiceTestBase
     {
         [Fact]
-        public void ShouldThrowIfMemberExist()
+        public void ShouldThrowIfMemberExists()
         {
             // Arrange
             var member = new Member

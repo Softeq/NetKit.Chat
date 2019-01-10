@@ -16,7 +16,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
     public class UpdateActivityAsyncTests : MemberServiceTestBase
     {
         [Fact]
-        public void ShouldThrowIfMemberIsNotExist()
+        public void ShouldThrowIfMemberDoesNotExist()
         {
             // Arrange
             var saasUserId = "5120CC44-C9CE-49B1-9ABA-6B7E5CF29E8B";
@@ -40,7 +40,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
         }
 
         [Fact]
-        public void ShouldThrowIfClientIsNotExist()
+        public void ShouldThrowIfClientDoesNotExist()
         {
             // Arrange
             var saasUserId = "5120CC44-C9CE-49B1-9ABA-6B7E5CF29E8B";

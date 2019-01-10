@@ -15,7 +15,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
     public class UpdateMemberStatusAsyncTests : MemberServiceTestBase
     {
         [Fact]
-        public void ShouldThrowIfMemberIsNotExist()
+        public void ShouldThrowIfMemberDoesNotExist()
         {
             // Arrange
             var saasUserId = "8DCBF4A0-4490-45A2-B932-CEB71D19E9BD";
