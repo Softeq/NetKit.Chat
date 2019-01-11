@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                .Be($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} is not found.");
 
             VerifyMocks();
         }

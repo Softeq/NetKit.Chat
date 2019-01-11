@@ -34,7 +34,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to update activity. Member SaasUserId:{updateMemberActivityRequest.SaasUserId} not found.");
+                .Be($"Unable to update activity. Member SaasUserId:{updateMemberActivityRequest.SaasUserId} is not found.");
 
             VerifyMocks();
         }
@@ -56,7 +56,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
             var member = new Member
             {
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 IsAfk = false,
                 LastActivity = utcNow
             };
@@ -78,7 +78,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to update activity. Client {nameof(updateMemberActivityRequest.ConnectionId)}:{updateMemberActivityRequest.ConnectionId} not found.");
+                .Be($"Unable to update activity. Client {nameof(updateMemberActivityRequest.ConnectionId)}:{updateMemberActivityRequest.ConnectionId} is not found.");
 
             VerifyMocks();
         }

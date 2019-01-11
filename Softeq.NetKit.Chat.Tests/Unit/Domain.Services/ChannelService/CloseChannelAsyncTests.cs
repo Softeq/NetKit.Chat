@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to close channel. Channel {nameof(channelId)}:{channelId} not found.");
+                .Be($"Unable to close channel. Channel {nameof(channelId)}:{channelId} is not found.");
 
             VerifyMocks();
         }
@@ -76,7 +76,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to close channel. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                .Be($"Unable to close channel. Member {nameof(saasUserId)}:{saasUserId} is not found.");
 
             VerifyMocks();
         }

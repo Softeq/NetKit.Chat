@@ -19,7 +19,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
         {
             // Arrange
             var saasUserId = "8DCBF4A0-4490-45A2-B932-CEB71D19E9BD";
-            UserStatus status = UserStatus.Active;
+            UserStatus status = UserStatus.Online;
 
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((Member)null)
@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>().And.Message.Should()
-                .Be($"Unable to update member status. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                .Be($"Unable to update member status. Member {nameof(saasUserId)}:{saasUserId} is not found.");
 
             VerifyMocks();
         }
@@ -40,7 +40,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
         {
             // Arrange
             var saasUserId = "8DCBF4A0-4490-45A2-B932-CEB71D19E9BD";
-            UserStatus status = UserStatus.Active;
+            UserStatus status = UserStatus.Online;
 
             var oldMember = new Member()
             {
