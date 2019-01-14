@@ -32,9 +32,10 @@ namespace Softeq.NetKit.Chat.Notifications.Services
         {
             try
             {
+                var registartionId = await _notificationHub.CreateRegistrationId();
                 var tags = new List<string> { model.UserId };
                 //TODO: Add role tags
-                await _notificationHub.CreateOrUpdateRegistrationAsync(null, new DeviceRegistration()
+                await _notificationHub.CreateOrUpdateRegistrationAsync(registartionId, new DeviceRegistration()
                 {
                     DeviceToken = model.DeviceToken,
                     Platform = (DevicePlatform)model.Platform,
@@ -52,7 +53,7 @@ namespace Softeq.NetKit.Chat.Notifications.Services
             try
             {
                 model.RecipientIds = new[] { userId };
-                return await _notificationHub.SendNotificationAsync(DevicePlatform.iOS, model);
+                return await _notificationHub.SendNotificationAsync(DevicePlatform.Android, model);
             }
             catch (Exception ex)
             {

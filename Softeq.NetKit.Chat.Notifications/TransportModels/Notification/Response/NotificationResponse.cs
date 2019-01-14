@@ -2,9 +2,9 @@
 
 namespace Softeq.NetKit.Chat.Notifications.TransportModels.Notification.Response
 {
-    public abstract class NotificationResponse
+    public class NotificationResponse
     {
-        protected NotificationResponse(NotificationType type)
+        public NotificationResponse(NotificationType type)
         {
             Type = type;
         }
