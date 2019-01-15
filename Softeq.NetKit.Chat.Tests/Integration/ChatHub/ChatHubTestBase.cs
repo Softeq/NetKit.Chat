@@ -1,11 +1,18 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
 {
