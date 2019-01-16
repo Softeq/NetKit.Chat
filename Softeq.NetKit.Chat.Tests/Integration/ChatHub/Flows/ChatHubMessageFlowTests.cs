@@ -110,7 +110,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
         public async Task Step3_ShouldAddUpdateDeleteMessage()
         {
             // Add message
-
             // Arrange
             var addMessageRequest = new AddMessageRequest
             {

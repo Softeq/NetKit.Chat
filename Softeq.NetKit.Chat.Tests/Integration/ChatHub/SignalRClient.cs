@@ -4,6 +4,7 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
@@ -37,6 +38,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
         public event Action<MessageResponse> MessageUpdated;
         public event Action<Guid, ChannelSummaryResponse> MessageDeleted;
         public event Action<ChannelSummaryResponse> ChannelClosed;
+        public event Action<ChannelSummaryResponse> ChannelUpdated;
 
         public async Task ConnectAsync(string accessToken, HttpMessageHandler handler)
         {
@@ -75,6 +77,11 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             return await _connection.InvokeAsync<ChannelResponse>("CloseChannelAsync", model);
         }
 
+        public async Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest model)
+        {
+            return await _connection.InvokeAsync<ChannelResponse>("UpdateChannelAsync", model);
+        }
+
         public async Task<MessageResponse> AddMessageAsync(AddMessageRequest model)
         {
             return await _connection.InvokeAsync<MessageResponse>("AddMessageAsync", model);
@@ -90,6 +97,11 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             return await _connection.InvokeAsync<MessageResponse>("DeleteMessageAsync", model);
         }
 
+        public async Task InviteMultipleMembersAsync(SignalR.TransportModels.Request.Member.InviteMultipleMembersRequest model)
+        {
+            await _connection.InvokeAsync("InviteMultipleMembersAsync", model);
+        }
+
         private void SubscribeToEvents()
         {
             _connection.On<IList<ValidationFailure>, string>(HubEvents.RequestValidationFailed, (errors, requestId) => { Execute(ValidationFailed, action => action(errors, requestId)); });
@@ -98,8 +110,10 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             _connection.On<MessageResponse>(HubEvents.MessageAdded, response => { Execute(MessageAdded, action => action(response)); });
             _connection.On<MessageResponse>(HubEvents.MessageUpdated, response => { Execute(MessageUpdated, action => action(response)); });
             _connection.On<Guid, ChannelSummaryResponse>(HubEvents.MessageDeleted, (id, response) => { Execute(MessageDeleted, action => action(id, response)); });
-
             _connection.On<ChannelSummaryResponse>(HubEvents.ChannelClosed, response => { Execute(ChannelClosed, action => action(response)); });
+            _connection.On<ChannelSummaryResponse>(HubEvents.ChannelUpdated, response => { Execute(ChannelUpdated, action => action(response)); });
+
+
         }
 
         private void Execute<T>(T handlers, Action<T> action) where T : class

@@ -1,18 +1,15 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
@@ -27,7 +24,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
 
         private static ChannelSummaryResponse _testChannel;
 
-        public ChatHubChannelFlowTests(ChatHubFixture chatHubFixture) 
+        public ChatHubChannelFlowTests(ChatHubFixture chatHubFixture)
             : base(chatHubFixture.Configuration)
         {
             _server = chatHubFixture.Server;
@@ -110,9 +107,36 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
         [Fact]
         public async Task Step3_ShouldUpdateChannel()
         {
+            // Arrange
+            var updateChannelRequest = new UpdateChannelRequest
+            {
+                ChannelId = _testChannel.Id,
+                Name = $"new_{_testChannel.Name}",
+                Description = $"new_{_testChannel.Description}",
+                RequestId = "EA701C57-477D-42E3-B660-E510F7F8C72F",
+                WelcomeMessage = $"new_{_testChannel.WelcomeMessage}"
+            };
 
+            // Subscribe event
+            ChannelSummaryResponse channelSummaryResponse = null;
+            void OnChannelUpdated(ChannelSummaryResponse response)
+            {
+                channelSummaryResponse = response;
+            }
+            _userSignalRClient.ChannelUpdated += OnChannelUpdated;
+
+            // Act
+            await _adminSignalRClient.UpdateChannelAsync(updateChannelRequest);
+
+            // Unsubscribe events
+            _userSignalRClient.ChannelUpdated -= OnChannelUpdated;
+
+            // Assert
+            channelSummaryResponse.Id.Should().Be(updateChannelRequest.ChannelId);
+            channelSummaryResponse.Description.Should().BeEquivalentTo(updateChannelRequest.Description);
+            channelSummaryResponse.Name.Should().BeEquivalentTo(updateChannelRequest.Name);
+            channelSummaryResponse.WelcomeMessage.Should().BeEquivalentTo(updateChannelRequest.WelcomeMessage);
         }
-
 
         [Fact]
         public async Task Step4_ShouldCloseChannel()
