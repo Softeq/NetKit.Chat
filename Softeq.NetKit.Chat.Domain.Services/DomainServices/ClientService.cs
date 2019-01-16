@@ -40,7 +40,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ClientConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} is not found.");
             }
 
             return DomainModelsMapper.MapToClientResponse(client);
@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             }
 
-            await _memberService.UpdateMemberStatusAsync(member.SaasUserId, UserStatus.Active);
+            await _memberService.UpdateMemberStatusAsync(member.SaasUserId, UserStatus.Online);
 
             var isClientExists = await UnitOfWork.ClientRepository.IsClientExistsAsync(request.ConnectionId);
             if (isClientExists)
@@ -84,10 +84,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ClientConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to delete client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} is not found.");
             }
 
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
+
+            //TODO made for remove broken or not closed connections
+            await RemoveInactiveConnectionsAsync(client.MemberId);
 
             var clients = await _memberService.GetMemberClientsAsync(client.MemberId);
             if (!clients.Any())
@@ -96,9 +99,29 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
         }
 
+        private async Task RemoveInactiveConnectionsAsync(Guid memberId)
+        {
+            const int inactiveHoursThreshold = 1;
+
+            var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);
+
+            foreach (var client in clients)
+            {
+                if ((DateTime.UtcNow - client.LastClientActivity).TotalHours > inactiveHoursThreshold)
+                {
+                    await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
+                }
+            }
+        }
+
         public async Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
         {
             return await UnitOfWork.ClientRepository.GetNotMutedChannelClientConnectionIdsAsync(channelId);
+        }
+
+        public async Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId)
+        {
+            return await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channelId);
         }
     }
 }

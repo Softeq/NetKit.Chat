@@ -13,6 +13,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
     public class ChannelMemberRepositoryTests : BaseTest
     {
         private readonly Guid _memberId = new Guid("572F5C34-65E7-4139-A16F-2436971031A6");
+        private readonly Guid _memberSaasId = new Guid("362F5B34-35E7-4139-A16F-2436971031A6");
         private readonly Guid _secondMemberId = new Guid("CCAF9EBE-CDDC-41A6-BD3E-A7EB174135FA");
         private readonly Guid _channelId = new Guid("1F9E6797-DCB7-4477-9BDD-6B7F307DC411");
         private readonly Guid _lastReadMessageId = new Guid("15ECBDAE-FFD3-4D2A-95DC-87831A41FA10");
@@ -23,8 +24,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
-                Role = UserRole.User
+                Status = UserStatus.Online,
+                Role = UserRole.User,
+                SaasUserId = _memberSaasId.ToString()
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
@@ -32,7 +34,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = _secondMemberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 Role = UserRole.User
             };
             UnitOfWork.MemberRepository.AddMemberAsync(secondMember).GetAwaiter().GetResult();
@@ -288,6 +290,60 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 newChannelMember.LastReadMessageId.Should().BeNull();
             }
+        }
+
+        [Fact]
+        public async Task GetSaasUserIdsWithDisabledChannelNotificationsAsync_ShouldGetSaasUserIdsWithDisabledChannelNotifications()
+        {
+            var member2Id = Guid.NewGuid();
+            var member3Id = Guid.NewGuid();
+            var saasUser1Id = Guid.NewGuid();
+            var saasUser2Id = Guid.NewGuid();
+
+            var member2 = new Member
+            {
+                Id = member2Id,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online,
+                SaasUserId = saasUser1Id.ToString(),
+            };
+
+            var member3 = new Member
+            {
+                Id = member3Id,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online,
+                SaasUserId = saasUser2Id.ToString()
+            };
+
+            await UnitOfWork.MemberRepository.AddMemberAsync(member2);
+            await UnitOfWork.MemberRepository.AddMemberAsync(member3);
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
+            {
+                ChannelId = _channelId,
+                MemberId = _memberId
+            });
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
+            {
+                ChannelId = _channelId,
+                MemberId = member2Id
+            });
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
+            {
+                ChannelId = _channelId,
+                MemberId = member3Id
+            });
+
+            await UnitOfWork.ChannelMemberRepository.MuteChannelAsync(_memberId, _channelId, true);
+            await UnitOfWork.ChannelMemberRepository.MuteChannelAsync(member2Id, _channelId, true);
+            await UnitOfWork.ChannelMemberRepository.MuteChannelAsync(member3Id, _channelId, false);
+
+            var saasUserIds = await UnitOfWork.ChannelMemberRepository.GetSaasUserIdsWithDisabledChannelNotificationsAsync(_channelId);
+
+            saasUserIds.Count.Should().Be(2);
         }
     }
 }

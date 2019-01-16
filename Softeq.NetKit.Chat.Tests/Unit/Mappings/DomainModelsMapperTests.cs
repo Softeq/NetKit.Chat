@@ -78,7 +78,18 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             // Arrange
             var lastReadMessage = new Message
             {
+                Body = "last read message",
                 Created = DateTimeOffset.UtcNow
+            };
+            var oldMessage = new Message
+            {
+                Body = "old message",
+                Created = lastReadMessage.Created.AddMinutes(-1)
+            };
+            var lastChannelMessage = new Message
+            {
+                Body = "last channel message",
+                Created = lastReadMessage.Created.AddMinutes(1)
             };
 
             var channel = new Channel
@@ -88,17 +99,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
                 Updated = DateTimeOffset.UtcNow.AddMinutes(-5),
                 Messages = new List<Message>
                 {
-                    new Message
-                    {
-                        Body = "old message body",
-                        Created = lastReadMessage.Created.AddMinutes(-1)
-                    },
+                    oldMessage,
                     lastReadMessage,
-                    new Message
-                    {
-                        Body = "last message body",
-                        Created = lastReadMessage.Created.AddMinutes(1)
-                    }
+                    lastChannelMessage
                 },
                 Name = "channel name",
                 IsClosed = true,
@@ -140,7 +143,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.PhotoUrl.Should().Be(channel.PhotoUrl);
 
             response.UnreadMessagesCount.Should().Be(1);
-            response.LastMessage.Body.Should().Be(channel.Messages.First().Body);
+            response.LastMessage.Body.Should().Be(lastChannelMessage.Body);
+            response.LastMessage.IsRead.Should().Be(false);
             response.Creator.Id.Should().Be(channel.Creator.Id);
         }
 
@@ -183,6 +187,22 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.ConnectionClientId.Should().Be(client.ClientConnectionId);
             response.SaasUserId.Should().Be(client.Member.SaasUserId);
             response.UserName.Should().Be(client.Name);
+        }
+
+        [Fact]
+        public void MapToNotificationSettingsResponse_ShouldMapNotificationSettingsResponse()
+        {
+            var notificationSettings = new NotificationSettings
+            {
+                MemberId = Guid.Parse("2A4C5F69-0464-4F6C-97F4-7E6D8FF93CA8"),
+                IsChannelNotificationsDisabled = NotificationSettingValue.Enabled,
+                Id = Guid.Parse("DD507B44-5DFE-4CFD-BD83-34A850150C9D")
+            };
+
+            var response = _domainModelsMapper.MapToNotificationSettingsResponse(notificationSettings);
+
+            response.IsChannelNotificationsDisabled.Should().Be(notificationSettings.IsChannelNotificationsDisabled);
+            response.MemberId.Should().Be(notificationSettings.MemberId);
         }
     }
 }

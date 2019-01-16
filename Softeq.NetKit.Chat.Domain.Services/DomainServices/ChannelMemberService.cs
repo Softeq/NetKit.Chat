@@ -24,11 +24,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
             if (!isChannelExists)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} is not found.");
             }
 
             var channelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(channelId);
             return channelMembers.Select(channelMember => DomainModelsMapper.MapToChannelMemberResponse(channelMember)).ToList().AsReadOnly();
+        }
+
+        public async Task<IList<string>> GetSaasUserIdsWithDisabledChannelNotificationsAsync(Guid channelId)
+        {
+            return await UnitOfWork.ChannelMemberRepository.GetSaasUserIdsWithDisabledChannelNotificationsAsync(channelId);
         }
     }
 }

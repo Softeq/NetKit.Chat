@@ -10,7 +10,6 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member
 {
     public class MemberSummary
     {
-        [JsonIgnore]
         public Guid Id { get; set; }
 
         public string SaasUserId { get; set; }
@@ -21,6 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member
         public UserStatus Status { get; set; }
 
         public bool IsAfk { get; set; }
+        public bool IsActive { get; set; }
         public DateTimeOffset LastActivity { get; set; }
         public string Email { get; set; }
         public string AvatarUrl { get; set; }

@@ -84,7 +84,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return client != null ? _mapper.Map<ClientResponse>(client) : new ClientResponse();
         }
 
-        public MemberSummary MapToMemberSummary(Member member)
+        public MemberSummary MapToMemberSummary(DomainModels.Member member)
         {
             return member != null ? _mapper.Map<MemberSummary>(member) : new MemberSummary();
         }
@@ -97,6 +97,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         public SettingsResponse MapToSettingsResponse(Settings settings)
         {
             return settings != null ? _mapper.Map<SettingsResponse>(settings) : new SettingsResponse();
+        }
+
+        public NotificationSettingResponse MapToNotificationSettingsResponse(NotificationSettings notificationSettings)
+        {
+            return notificationSettings != null ? _mapper.Map<NotificationSettingResponse>(notificationSettings) : new NotificationSettingResponse();
         }
     }
 }

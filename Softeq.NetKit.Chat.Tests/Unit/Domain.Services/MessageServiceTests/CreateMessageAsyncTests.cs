@@ -112,6 +112,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .ReturnsAsync(member)
                 .Verifiable();
 
+            _cloudImageProviderMock.Setup(x => x.CopyImageToDestinationContainerAsync(It.IsAny<string>())).ReturnsAsync(string.Empty).Verifiable();
+
             Message message = null;
             _messageRepositoryMock.Setup(x => x.AddMessageAsync(It.IsAny<Message>()))
                 .Callback<Message>(x => message = x)
@@ -174,6 +176,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(member)
                 .Verifiable();
+
+            _cloudImageProviderMock.Setup(x => x.CopyImageToDestinationContainerAsync(It.IsAny<string>())).ReturnsAsync(string.Empty).Verifiable();
 
             Message message = null;
             _messageRepositoryMock.Setup(x => x.AddMessageAsync(It.IsAny<Message>()))

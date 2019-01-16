@@ -8,8 +8,12 @@ using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Settings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -20,10 +24,12 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     public class MemberController : BaseApiController
     {
         private readonly IMemberService _memberService;
+        private readonly INotificationSettingsService _notificationSettingsService;
 
-        public MemberController(IMemberService memberService)
+        public MemberController(IMemberService memberService, INotificationSettingsService notificationSettingsService)
         {
             _memberService = memberService;
+            _notificationSettingsService = notificationSettingsService;
         }
 
         [HttpGet]
@@ -52,6 +58,35 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             var result = await _memberService.AddMemberAsync(userId, email);
             return Ok(result);
         }
+
+        #region Settings
+
+        [HttpGet]
+        [ProducesResponseType(typeof(NotificationSettingResponse), StatusCodes.Status200OK)]
+        [Route("/api/me/settings/notification")]
+        public async Task<IActionResult> GetUserNotificationSettingsAsync()
+        {
+            var userId = GetCurrentSaasUserId();
+            var res = await _notificationSettingsService.GetUserNotificationSettingsAsync(new UserRequest(userId));
+            return Ok(res);
+        }
+
+        [HttpPost]
+        [HttpPut]
+        [ProducesResponseType(typeof(NotificationSettingResponse), StatusCodes.Status200OK)]
+        [Route("/api/me/settings/notification/{key}")]
+        public async Task<IActionResult> UpdateUserNotificationSettingsAsync(NotificationSettingKey key, [FromBody] NotificationSettingValue value)
+        {
+            var userId = GetCurrentSaasUserId();
+            var res = await _notificationSettingsService.UpdateUserNotificationSettingsAsync(new NotificationSettingRequest(userId)
+            {
+                Key = key,
+                Value = value
+            });
+            return Ok(res);
+        }
+
+        #endregion
 
         private string GetCurrentUserEmail()
         {

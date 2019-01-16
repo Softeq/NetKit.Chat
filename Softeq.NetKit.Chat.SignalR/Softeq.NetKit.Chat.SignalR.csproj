@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />
+    <ProjectReference Include="..\Softeq.NetKit.Chat.Notifications\Softeq.NetKit.Chat.Notifications.csproj" />
   </ItemGroup>
 
 </Project>

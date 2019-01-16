@@ -19,6 +19,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         {
             CreateMap<Settings, SettingsResponse>();
 
+            CreateMap<NotificationSettings, NotificationSettingResponse>();
+
             CreateMap<Message, ForwardMessage>();
 
             CreateMap<Message, MessageResponse>()
@@ -26,7 +28,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 // This option depends on LastReadMessage and could be set by MappingHelper class
                 .ForMember(d => d.IsRead, opt => opt.Ignore());
 
-            CreateMap<Member, MemberSummary>()
+            CreateMap<DomainModels.Member, MemberSummary>()
                 .ForMember(d => d.AvatarUrl, opt => opt.MapFrom<AvatarUrlValueResolver>())
                 .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));
 
@@ -63,6 +65,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             CreateMap<ChannelMember, ChannelMemberResponse>();
 
             CreateMap<Client, ClientResponse>()
+                .ForMember(d => d.MemberId, opt => opt.MapFrom(s => s.MemberId))
                 .ForMember(d => d.ConnectionClientId, opt => opt.MapFrom(s => s.ClientConnectionId))
                 .ForMember(d => d.SaasUserId, opt => opt.MapFrom(s => s.Member.SaasUserId))
                 .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));

@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnAddMessage(MessageResponse message, string callerConnectionId)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(message.ChannelId);
+            var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
             var clientIdsExceptCaller = clientIds.Except(new[] { callerConnectionId }).ToList();
 
             await HubContext.Clients.Clients(clientIdsExceptCaller).SendAsync(HubEvents.MessageAdded, message);
@@ -40,14 +40,14 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnDeleteMessage(ChannelSummaryResponse channelSummary, MessageResponse message)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(message.ChannelId);
+            var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
             
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageDeleted, message.Id, channelSummary);
         }
 
         public async Task OnUpdateMessage(MessageResponse message)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(message.ChannelId);
+            var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
             
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageUpdated, message);
         }
@@ -56,7 +56,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         {
             var channel = await _channelService.GetChannelByIdAsync(channelId);
 
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channelId);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channelId);
             
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.AttachmentAdded, channel.Name);
         }
@@ -65,7 +65,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         {
             var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
 
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
             
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.AttachmentDeleted, channel.Name);
         }

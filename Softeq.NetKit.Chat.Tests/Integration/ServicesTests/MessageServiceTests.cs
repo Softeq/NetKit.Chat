@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             {
                 Id = _memberId,
                 LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Active,
+                Status = UserStatus.Online,
                 SaasUserId = SaasUserId
             };
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
