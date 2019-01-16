@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(dateTimeProvider).IsNotNull();
-
+            
             _dateTimeProvider = dateTimeProvider;
         }
 
@@ -39,7 +39,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} not found.");
             }
 
             return DomainModelsMapper.MapToMemberSummary(member);
@@ -50,7 +50,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} not found.");
             }
 
             return DomainModelsMapper.MapToMemberSummary(member);
@@ -61,7 +61,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
             if (!isChannelExists)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} not found.");
             }
 
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);
@@ -123,7 +123,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             member.IsActive = true;
 
-            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
+            await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
         }
 
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
@@ -134,7 +134,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatInvalidOperationException($"Unable to add member. Member {nameof(saasUserId)}:{saasUserId} already exists.");
             }
 
-            var newMember = new Member
+            var newMember = new DomainModels.Member
             {
                 Id = Guid.NewGuid(),
                 Role = UserRole.User,

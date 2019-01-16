@@ -12,5 +12,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<ClientResponse> GetClientAsync(GetClientRequest request);
         Task DeleteClientAsync(DeleteClientRequest request);
         Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId);
+        Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId);
     }
 }

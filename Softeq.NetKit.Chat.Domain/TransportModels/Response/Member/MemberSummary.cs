@@ -10,7 +10,6 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member
 {
     public class MemberSummary
     {
-        [JsonIgnore]
         public Guid Id { get; set; }
 
         public string SaasUserId { get; set; }

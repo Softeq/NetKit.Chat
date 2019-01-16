@@ -188,5 +188,21 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.SaasUserId.Should().Be(client.Member.SaasUserId);
             response.UserName.Should().Be(client.Name);
         }
+
+        [Fact]
+        public void MapToNotificationSettingsResponse_ShouldMapNotificationSettingsResponse()
+        {
+            var notificationSettings = new NotificationSettings
+            {
+                MemberId = Guid.Parse("2A4C5F69-0464-4F6C-97F4-7E6D8FF93CA8"),
+                IsChannelNotificationsDisabled = NotificationSettingValue.Enabled,
+                Id = Guid.Parse("DD507B44-5DFE-4CFD-BD83-34A850150C9D")
+            };
+
+            var response = _domainModelsMapper.MapToNotificationSettingsResponse(notificationSettings);
+
+            response.IsChannelNotificationsDisabled.Should().Be(notificationSettings.IsChannelNotificationsDisabled);
+            response.MemberId.Should().Be(notificationSettings.MemberId);
+        }
     }
 }

@@ -128,7 +128,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             _memberRepositoryMock.SetupSequence(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(member)
                 .ReturnsAsync(allowedMember);
-            
+
+            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(allowedMember);
+
             var cloudPhotoUrl = "cloudPhotoUrl";
             _cloudImageProviderMock.Setup(x => x.CopyImageToDestinationContainerAsync(It.Is<string>(photoUrl => photoUrl.Equals(request.PhotoUrl))))
                 .ReturnsAsync(cloudPhotoUrl)
@@ -185,7 +188,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             _channelMemberRepositoryMock.Verify(prov => prov.AddChannelMemberAsync(It.IsAny<ChannelMember>()), Times.Exactly(2));
             _channelRepositoryMock.Verify(prov => prov.IncrementChannelMembersCount(It.Is<Guid>(channelId => channelId.Equals(channelToAdd.Id))), Times.Exactly(2));
-            _memberRepositoryMock.Verify(prov => prov.GetMemberBySaasUserIdAsync(It.IsAny<string>()), Times.Exactly(2));
+            _memberRepositoryMock.Verify(prov => prov.GetMemberBySaasUserIdAsync(It.IsAny<string>()), Times.Exactly(1));
 
             result.Should().BeEquivalentTo(channelSummaryResponse);
         }
@@ -196,18 +199,21 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             // Arrange
             var allowedMember = new Member
             {
-                SaasUserId = "1AB5626B-B311-4862-A0F1-AFD21D9F421B"
+                Id = Guid.Parse("1AB5626B-B311-4862-A0F1-AFD21D9F421B")
             };
 
             var request = new CreateChannelRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", "channel name", ChannelType.Private)
             {
-                AllowedMembers = new List<string> { allowedMember.SaasUserId }
+                AllowedMembers = new List<string> { allowedMember.Id.ToString() }
             };
 
             var member = new Member { Id = new Guid("85B1E28A-3E29-48C5-B85B-1563EEB60742") };
             _memberRepositoryMock.SetupSequence(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(member)
                 .ReturnsAsync(null);
+
+            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Member)null);
 
             _cloudImageProviderMock.Setup(x => x.CopyImageToDestinationContainerAsync(It.IsAny<string>()))
                 .ReturnsAsync((string)null)
@@ -222,7 +228,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to add member to channel. Member saasUserId:{allowedMember.SaasUserId} not found.");
+                .And.Message.Should().Be($"Unable to add member to channel. Member memberId:{allowedMember.Id} not found.");
 
             VerifyMocks();
         }

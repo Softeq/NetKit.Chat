@@ -37,6 +37,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
         private IChannelRepository _channelRepository;
         public IChannelRepository ChannelRepository => _channelRepository ?? (_channelRepository = new ChannelRepository(_sqlConnectionFactory));
 
+        private INotificationSettingRepository _notificationSettingsRepository;
+        public INotificationSettingRepository NotificationSettingRepository => _notificationSettingsRepository ?? (_notificationSettingsRepository = new NotificationSettingRepository(_sqlConnectionFactory));
+
         private ISettingRepository _settingRepository;
         public ISettingRepository SettingRepository => _settingRepository ?? (_settingRepository = new SettingRepository(_sqlConnectionFactory));
 

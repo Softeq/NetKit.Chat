@@ -89,6 +89,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
 
+            //TODO made for remove broken or not closed connections
+            await RemoveInactiveConnectionsAsync(client.MemberId);
+
             var clients = await _memberService.GetMemberClientsAsync(client.MemberId);
             if (!clients.Any())
             {
@@ -96,9 +99,29 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
         }
 
+        private async Task RemoveInactiveConnectionsAsync(Guid memberId)
+        {
+            const int inactiveHoursThreshold = 1;
+
+            var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(memberId);
+
+            foreach (var client in clients)
+            {
+                if ((DateTime.UtcNow - client.LastClientActivity).TotalHours > inactiveHoursThreshold)
+                {
+                    await UnitOfWork.ClientRepository.DeleteClientAsync(client.Id);
+                }
+            }
+        }
+
         public async Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
         {
             return await UnitOfWork.ClientRepository.GetNotMutedChannelClientConnectionIdsAsync(channelId);
+        }
+
+        public async Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId)
+        {
+            return await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channelId);
         }
     }
 }
