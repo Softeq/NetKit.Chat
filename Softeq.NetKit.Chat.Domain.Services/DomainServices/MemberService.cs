@@ -39,7 +39,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
             return DomainModelsMapper.MapToMemberSummary(member);
@@ -50,7 +50,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} is not found.");
             }
 
             return DomainModelsMapper.MapToMemberSummary(member);
@@ -61,7 +61,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
             if (!isChannelExists)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} not found.");
+                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} is not found.");
             }
 
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);

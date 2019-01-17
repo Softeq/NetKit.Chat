@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to mute channel. Member {nameof(saasUserId)}:{saasUserId} not found.");
+                .And.Message.Should().Be($"Unable to mute channel. Member {nameof(saasUserId)}:{saasUserId} is not found.");
 
             VerifyMocks();
         }

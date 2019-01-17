@@ -7,7 +7,9 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,7 +23,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
         private readonly TestServer _server;
 
         private static SignalRClient _adminSignalRClient;
-        private static SignalRClient _userSignalRClient;
+
 
         private static ChannelSummaryResponse _testChannel;
 
@@ -39,11 +41,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
             _adminSignalRClient = new SignalRClient(_server.BaseAddress.ToString());
             var adminToken = await GetJwtTokenAsync("admin@test.test", "123QWqw!");
             await _adminSignalRClient.ConnectAsync(adminToken, _server.CreateHandler());
-
-            _userSignalRClient = new SignalRClient(_server.BaseAddress.ToString());
-            var userToken = await GetJwtTokenAsync("user@test.test", "123QWqw!");
-            await _userSignalRClient.ConnectAsync(userToken, _server.CreateHandler());
-            _userSignalRClient.ValidationFailed += (errors, requestId) => throw new Exception($"Errors: {errors}{Environment.NewLine}RequestId: {requestId}");
         }
 
         [Fact]
@@ -79,7 +76,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 RequestId = "3433E3F8-E363-4A07-8CAA-8F759340F769",
                 AllowedMembers = new List<string>
                 {
-                    _admin.SaasUserId,
+                    _admin.MemberId.ToString(),
                 }
             };
 
@@ -101,30 +98,78 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
         }
 
         [Fact]
-        public async Task Step3_AddInviteUpdateMember()
+        public async Task Step3_AddInviteLeaveMember()
         {
-            // Add member
+            // Invite member
             // Arrange
-            var newUser = await _userSignalRClient.AddClientAsync();
+            var newMemberSignalRClient = new SignalRClient(_server.BaseAddress.ToString());
+            var userToken = await GetJwtTokenAsync("user@test.test", "123QWqw!");
+            await newMemberSignalRClient.ConnectAsync(userToken, _server.CreateHandler());
+
+            var newUser = await newMemberSignalRClient.AddClientAsync();
 
             var inviteMultipleMembersRequest = new SignalR.TransportModels.Request.Member.InviteMultipleMembersRequest
             {
                 ChannelId = _testChannel.Id,
                 RequestId = "A372A27B-4860-44AB-9915-27B8CAFB68A3",
-                InvitedMembersIds = new List<Guid> { new Guid(newUser.SaasUserId) }
+                InvitedMembersIds = new List<Guid> { new Guid(newUser.MemberId.ToString()) }
             };
 
-
-
             // Subscribe event
+            MessageResponse userExistsaddedMessageResponse = null;
+            void OnMessageAdded(MessageResponse response)
+            {
+                userExistsaddedMessageResponse = response;
+            }
+            newMemberSignalRClient.MessageAdded += OnMessageAdded;
 
             // Act
             await _adminSignalRClient.InviteMultipleMembersAsync(inviteMultipleMembersRequest);
 
+            var addMessageRequest = new AddMessageRequest
+            {
+                ChannelId = _testChannel.Id,
+                Body = "test_body",
+                ImageUrl = string.Empty,
+                RequestId = "82EEC70D-D808-492C-98E3-6A5B47276990",
+                Type = MessageType.Default
+            };
+
+            await _adminSignalRClient.AddMessageAsync(addMessageRequest);
+
             // Unsubscribe events
+            newMemberSignalRClient.MessageAdded -= OnMessageAdded;
 
             // Assert
+            userExistsaddedMessageResponse.Should().NotBeNull();
+            userExistsaddedMessageResponse.ChannelId.Should().Be(addMessageRequest.ChannelId);
+            userExistsaddedMessageResponse.Body.Should().Be(addMessageRequest.Body);
 
+            // Leave channel
+            // Arrange
+            var channelRequest = new ChannelRequest
+            {
+                ChannelId = _testChannel.Id,
+                RequestId = "48033741-F54F-46A4-8AB4-3BFF5EACDBAC"
+            };
+
+            // Subscribe event
+            MessageResponse userDoesntExistaddedMessageResponse = null;
+            void OnMessageSent(MessageResponse response)
+            {
+                userDoesntExistaddedMessageResponse = response;
+            }
+            newMemberSignalRClient.MessageAdded += OnMessageSent;
+
+            // Act
+            await newMemberSignalRClient.LeaveChannelAsync(channelRequest);
+            await _adminSignalRClient.AddMessageAsync(addMessageRequest);
+
+            // Unsubscribe events
+            newMemberSignalRClient.MessageAdded -= OnMessageSent;
+
+            // Assert
+            userDoesntExistaddedMessageResponse.Should().BeNull();
         }
     }
 }

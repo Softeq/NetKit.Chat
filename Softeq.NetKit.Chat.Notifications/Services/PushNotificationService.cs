@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Softeq.NetKit.Chat.Notifications.PushNotifications;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure.NotificationHubs;
-using Softeq.NetKit.Chat.Notifications.PushNotifications;
 
 namespace Softeq.NetKit.Chat.Notifications.Services
 {
@@ -10,27 +8,31 @@ namespace Softeq.NetKit.Chat.Notifications.Services
     {
         public PushNotificationService()
         {
-            
+
         }
 
+        // TODO implementation.
         public async Task SubscribeUserOnTagAsync(string userId, string tag)
         {
-            throw new NotImplementedException();
+            Task completedTask = Task.CompletedTask;
         }
 
+        // TODO implementation.
         public async Task UnsubscribeUserFromTagAsync(string userId, string tag)
         {
-            throw new NotImplementedException();
+            Task completedTask = Task.CompletedTask;
         }
 
+        // TODO implementation.
         public async Task<bool> SendToSingleAsync(string tag, IPushNotificationModel model)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
+        // TODO implementation.
         public async Task<bool> SendForTagAsync(IPushNotificationModel model, List<string> includedTags, List<string> excludedTags)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

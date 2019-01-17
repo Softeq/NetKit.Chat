@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to create channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+                .And.Message.Should().Be($"Unable to create channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
 
             VerifyMocks();
         }

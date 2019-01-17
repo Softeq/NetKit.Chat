@@ -18,10 +18,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
     public class ChatHubChannelFlowTests : ChatHubTestBase, IClassFixture<ChatHubFixture>
     {
         private readonly TestServer _server;
-
         private static SignalRClient _adminSignalRClient;
         private static SignalRClient _userSignalRClient;
-
         private static ChannelSummaryResponse _testChannel;
 
         public ChatHubChannelFlowTests(ChatHubFixture chatHubFixture)
@@ -82,8 +80,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 RequestId = "3433E3F8-E363-4A07-8CAA-8F759340F769",
                 AllowedMembers = new List<string>
                 {
-                    admin.SaasUserId,
-                    client.SaasUserId
+                    admin.MemberId.ToString(),
+                    client.MemberId.ToString()
                 }
             };
 

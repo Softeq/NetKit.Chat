@@ -20,10 +20,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
     public class ChatHubMessagesFlowTests : ChatHubTestBase, IClassFixture<ChatHubFixture>
     {
         private readonly TestServer _server;
-
         private static SignalRClient _adminSignalRClient;
         private static SignalRClient _userSignalRClient;
-
         private static ChannelSummaryResponse _testChannel;
 
         public ChatHubMessagesFlowTests(ChatHubFixture chatHubFixture)
@@ -47,7 +45,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             _userSignalRClient = new SignalRClient(_server.BaseAddress.ToString());
             var userToken = await GetJwtTokenAsync("user@test.test", "123QWqw!");
             await _userSignalRClient.ConnectAsync(userToken, _server.CreateHandler());
-            //_userSignalRClient.ValidationFailed += (errors, requestId) => throw new Exception($"Errors: {errors}{Environment.NewLine}RequestId: {requestId}");
         }
 
         [Fact]
@@ -57,7 +54,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             var admin = await _adminSignalRClient.AddClientAsync();
             var client = await _userSignalRClient.AddClientAsync();
 
-            // Subscribe ChannelCreated event
+            // Subscribe event
             ChannelSummaryResponse createdChannel = null;
             void OnChannelCreated(ChannelSummaryResponse channelSummaryResponse)
             {
@@ -65,7 +62,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             }
             _adminSignalRClient.ChannelCreated += OnChannelCreated;
 
-            // Subscribe MemberJoined event
+            // Subscribe event
             MemberSummary joinedMember = null;
             ChannelSummaryResponse joinedChannel = null;
             void OnMemberJoined(MemberSummary memberSummary, ChannelSummaryResponse channelSummaryResponse)
@@ -84,8 +81,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
                 RequestId = "3433E3F8-E363-4A07-8CAA-8F759340F769",
                 AllowedMembers = new List<string>
                 {
-                    admin.SaasUserId,
-                    client.SaasUserId
+                    admin.MemberId.ToString(),
+                    client.MemberId.ToString()
                 }
             };
 
@@ -115,7 +112,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             {
                 ChannelId = _testChannel.Id,
                 Body = "test_body",
-                ImageUrl = "http://localhost",
+                ImageUrl = string.Empty,
                 RequestId = "82EEC70D-D808-492C-98E3-6A5B47276990",
                 Type = MessageType.Default
             };
