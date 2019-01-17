@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Autofac;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent;
@@ -71,7 +72,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration
                     DELETE FROM ForwardMessages;
                     DELETE FROM Messages;
                     DELETE FROM Channels;
-                    DELETE FROM Members;";
+                    DELETE FROM Members;
+                    DELETE FROM NotificationSettings";
 
                 await connection.ExecuteScalarAsync(sqlQuery);
             }
