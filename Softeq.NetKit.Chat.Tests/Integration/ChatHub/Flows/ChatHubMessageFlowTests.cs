@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
+namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
 {
     [TestCaseOrderer("Softeq.NetKit.Chat.Tests.Integration.Utility.AlphabeticalOrderer", "Softeq.NetKit.Chat.Tests")]
     public class ChatHubMessagesFlowTests : ChatHubTestBase, IClassFixture<ChatHubFixture>
