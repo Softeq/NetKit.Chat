@@ -45,16 +45,16 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Database
 
         public void MigrateToLatestVersion()
         {
-            using (var connection = new SqlConnection(_sqlConnectionString))
-            {
-                connection.Open();
+            //using (var connection = new SqlConnection(_sqlConnectionString))
+            //{
+            //    connection.Open();
 
-                var migrationsAssembly = typeof(DatabaseManager).Assembly;
-                var databaseProvider = new MssqlDatabaseProvider(connection);
-                var migrator = new SimpleMigrator(migrationsAssembly, databaseProvider);
-                migrator.Load();
-                migrator.MigrateToLatest();
-            }
+            //    var migrationsAssembly = typeof(DatabaseManager).Assembly;
+            //    var databaseProvider = new MssqlDatabaseProvider(connection);
+            //    var migrator = new SimpleMigrator(migrationsAssembly, databaseProvider);
+            //    migrator.Load();
+            //    migrator.MigrateToLatest();
+            //}
         }
 
         private async Task<bool> IsDatabaseExistsAsync(SqlConnection connection)
