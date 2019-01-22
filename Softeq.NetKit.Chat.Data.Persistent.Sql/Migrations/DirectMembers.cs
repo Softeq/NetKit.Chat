@@ -13,13 +13,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
             Execute(@"
                 CREATE TABLE [dbo].DirectMembers(
                 	[Id] [uniqueidentifier] NOT NULL PRIMARY KEY CLUSTERED,
-                    [Member01Id] [uniqueidentifier] NOT NULL,
-                    [Member02Id] [uniqueidentifier] NOT NULL)
+                    [FirstMemberId] [uniqueidentifier] NOT NULL,
+                    [SecondMemberId] [uniqueidentifier] NOT NULL)
 
-				ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_Member01Id] FOREIGN KEY([Member01Id])
+				ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_FirstMemberId] FOREIGN KEY([FirstMemberId])
                 REFERENCES [dbo].[Members] ([Id])
 
-                ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_Member02Id] FOREIGN KEY([Member02Id])
+                ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_SecondMemberId] FOREIGN KEY([SecondMemberId])
                 REFERENCES [dbo].[Members] ([Id])  
             ");
         }
@@ -27,8 +27,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         protected override void Down()
         {
             Execute(@"
-                ALTER TABLE dbo.DirectMembers DROP CONSTRAINT FK_DirectMembers_Members_Member01Id
-                ALTER TABLE dbo.DirectMembers DROP CONSTRAINT FK_DirectMembers_Members_Member02Id
+                ALTER TABLE dbo.DirectMembers DROP CONSTRAINT FK_DirectMembers_Members_FirstMemberId
+                ALTER TABLE dbo.DirectMembers DROP CONSTRAINT FK_DirectMembers_Members_SecondMemberId
 
                 DROP TABLE dbo.DirectMembers
             ");

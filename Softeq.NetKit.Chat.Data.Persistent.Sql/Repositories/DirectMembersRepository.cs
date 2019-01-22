@@ -1,14 +1,14 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Dapper;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
@@ -23,14 +23,27 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public Task CreateDirectMembers(Guid id, Guid member01Id, Guid member02Id)
+        public async Task CreateDirectMembers(DirectMembers directMembers)
         {
-            throw new NotImplementedException();
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"INSERT INTO DirectMembers(Id, FirstMemberId, SecondMemberId) 
+                                 VALUES (@Id, @FirstMemberId, @SecondMemberId)";
+
+                await connection.ExecuteScalarAsync(sqlQuery, directMembers);
+            }
         }
 
-        public Task<DirectMembers> GetDirectMembersById(Guid id)
+        public async Task<DirectMembers> GetDirectMembersById(Guid id)
         {
-            throw new NotImplementedException();
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT *
+                                 FROM DirectMembers
+                                 WHERE Id = @id";
+
+                return (await connection.QueryAsync<DirectMembers>(sqlQuery, new { id })).FirstOrDefault();
+            }
         }
     }
 }
