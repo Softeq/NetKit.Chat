@@ -14,11 +14,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
                 CREATE TABLE [dbo].DirectMembers(
                 	[Id] [uniqueidentifier] NOT NULL PRIMARY KEY CLUSTERED,
                     [Member01Id] [uniqueidentifier] NOT NULL,
-                    [Member02Id] [uniqueidentifier] NOT NULL,
-                    [IsMember01Pinned] [bit] NOT NULL,
-                    [IsMember02Pinned] [bit] NOT NULL,
-                    [IsMember01Muted] [bit] NOT NULL DEFAULT(0),
-                    [IsMember02Muted] [bit] NOT NULL DEFAULT(0))
+                    [Member02Id] [uniqueidentifier] NOT NULL)
 
 				ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_Member01Id] FOREIGN KEY([Member01Id])
                 REFERENCES [dbo].[Members] ([Id])
