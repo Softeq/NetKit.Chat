@@ -9,7 +9,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
 {
     public interface IDirectMemberRepository
     {
-        Task CreateDirectMembers(DirectMembers directMembers);
+        Task CreateDirectMembers(Guid id, Guid firstMemberId, Guid secondMemberId);
         Task<DirectMembers> GetDirectMembersById(Guid id);
     }
 }

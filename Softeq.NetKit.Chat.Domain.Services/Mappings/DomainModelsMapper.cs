@@ -1,18 +1,19 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Linq;
 using AutoMapper;
 using EnsureThat;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
+using System;
+using System.Linq;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
@@ -62,6 +63,19 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             }
 
             return response;
+        }
+
+        public CreateDirectMembersResponse MapToDirectMembersResponse(Guid directMemberId, Member firstDirectMember, Member secondDirectMember)
+        {
+            var firstMember = firstDirectMember != null ? _mapper.Map<MemberSummary>(firstDirectMember) : new MemberSummary();
+            var secondMember = firstDirectMember != null ? _mapper.Map<MemberSummary>(secondDirectMember) : new MemberSummary();
+
+            return new CreateDirectMembersResponse
+            {
+                DirectMemberId = directMemberId,
+                FirstDirectMember = firstMember,
+                SecondDirectMember = secondMember
+            };
         }
 
         public AttachmentResponse MapToAttachmentResponse(Attachment attachment)

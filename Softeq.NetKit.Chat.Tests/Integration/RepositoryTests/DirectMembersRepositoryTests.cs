@@ -1,10 +1,10 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
@@ -45,7 +45,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
 
             UnitOfWork.MemberRepository.AddMemberAsync(firstMember).GetAwaiter().GetResult();
-
             UnitOfWork.MemberRepository.AddMemberAsync(secondMember).GetAwaiter().GetResult();
         }
 
@@ -53,20 +52,16 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         public async Task CreateDirectMembers_ShouldReturnNewDirectMembers()
         {
             // Arrange
-            var direct = new DirectMembers
-            {
-                Id = new Guid("456C30C4-F5CE-4EC1-AC56-EB9FD54EAB8E"),
-                FirstMemberId = _firstMemberId,
-                SecondMemberId = _secondMemberId
-            };
+            var id = new Guid("B815B750-BB22-45E0-B332-0EE39D9A7A5C");
 
             // Act
-            await UnitOfWork.DirectMemberRepository.CreateDirectMembers(direct);
-
-            var newDirectMembers = await UnitOfWork.DirectMemberRepository.GetDirectMembersById(direct.Id);
+            await UnitOfWork.DirectMemberRepository.CreateDirectMembers(id, _firstMemberId, _secondMemberId);
+            var newDirectMembers = await UnitOfWork.DirectMemberRepository.GetDirectMembersById(id);
 
             // Assert
-            newDirectMembers.Should().BeEquivalentTo(direct);
+            newDirectMembers.Id.Should().Be(id);
+            newDirectMembers.FirstMemberId.Should().Be(_firstMemberId);
+            newDirectMembers.SecondMemberId.Should().Be(_secondMemberId);
         }
     }
 }

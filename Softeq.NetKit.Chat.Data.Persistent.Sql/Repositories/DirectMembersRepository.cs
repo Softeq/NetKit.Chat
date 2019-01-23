@@ -23,15 +23,24 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task CreateDirectMembers(DirectMembers directMembers)
+        public async Task CreateDirectMembers(Guid directId, Guid firstMemberId, Guid secondMemberId)
         {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
+            try
+            {
+                            using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"INSERT INTO DirectMembers(Id, FirstMemberId, SecondMemberId) 
-                                 VALUES (@Id, @FirstMemberId, @SecondMemberId)";
+                                 VALUES (@directId, @firstMemberId, @secondMemberId)";
 
-                await connection.ExecuteScalarAsync(sqlQuery, directMembers);
+                await connection.ExecuteScalarAsync(sqlQuery, new { directId, firstMemberId, secondMemberId });
             }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+
         }
 
         public async Task<DirectMembers> GetDirectMembersById(Guid id)
