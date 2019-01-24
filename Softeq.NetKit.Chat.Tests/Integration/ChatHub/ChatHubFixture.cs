@@ -57,6 +57,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
                                  DELETE FROM ChannelMembers
                                  DELETE FROM Clients
                                  DELETE FROM Notifications
+                                 DELETE FROM NotificationSettings
                                  DELETE FROM Settings
                                  DELETE FROM ForwardMessages
                                  DELETE FROM Messages
