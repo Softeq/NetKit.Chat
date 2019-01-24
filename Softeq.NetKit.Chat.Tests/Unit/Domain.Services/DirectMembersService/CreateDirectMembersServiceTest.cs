@@ -94,7 +94,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             _directMemberRepositoryMock.Setup(x => x.CreateDirectMembers(It.Is<Guid>(id => id.Equals(directMembersId)),
                 It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm => sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
 
-            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId) { DirectId = directMembersId };
+            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId) { DirectMembersId = directMembersId };
 
             _domainModelsMapperMock.Setup(x => x.MapToDirectMembersResponse(
                     It.Is<Guid>(id => id.Equals(directMembersId)),

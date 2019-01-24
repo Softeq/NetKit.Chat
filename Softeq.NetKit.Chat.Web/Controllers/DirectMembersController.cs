@@ -30,12 +30,12 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(CreateDirectMembersResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateDirectMembersAsync([FromBody] TransportModels.Request.DirectMembers.CreateDirectMembersRequest request)
         {
-            var createDirectMembersRequest = new CreateDirectMembersRequest(GetCurrentSaasUserId(), request.FirstMemberId, request.SecondMemberId)
+            var createDirectMembersRequest = new CreateDirectMembersRequest(GetCurrentSaasUserId(), request.OwnerId, request.MemberId)
             {
-                DirectId = Guid.NewGuid()
+                DirectMembersId = Guid.NewGuid()
             };
 
-           var createDirectMembersResponse = await _directMessageSocketService.CreateDirectMembers(createDirectMembersRequest);
+           var createDirectMembersResponse = await _directMessageSocketService.CreateDirectMembers(createDirectMembersRequest, HttpContext.Connection.Id);
 
             return Ok(createDirectMembersResponse);
         }

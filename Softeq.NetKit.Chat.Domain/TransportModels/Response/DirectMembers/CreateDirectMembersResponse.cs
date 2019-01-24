@@ -9,7 +9,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers
     public class CreateDirectMembersResponse
     {
         public Guid DirectMembersId { get; set; }
-        public MemberSummary FirstDirectMember { get; set; }
-        public MemberSummary SecondDirectMember { get; set; }
+        public MemberSummary Owner { get; set; }
+        public MemberSummary Member { get; set; }
     }
 }

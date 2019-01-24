@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var request = new CreateDirectMembersRequest(SaasFirstUserId, _firstMemberId, _secondMemberId)
             {
-                DirectId = directId
+                DirectMembersId = directId
             };
 
             // Act
@@ -64,8 +64,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             //Assert
             Assert.NotNull(response);
             Assert.Equal(response.DirectMembersId, directId);
-            Assert.Equal(response.FirstDirectMember.Id, _firstMemberId);
-            Assert.Equal(response.SecondDirectMember.Id, _secondMemberId);
+            Assert.Equal(response.Owner.Id, _firstMemberId);
+            Assert.Equal(response.Member.Id, _secondMemberId);
         }
     }
 }

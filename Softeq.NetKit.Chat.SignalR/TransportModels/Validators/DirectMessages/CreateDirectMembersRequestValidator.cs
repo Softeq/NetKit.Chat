@@ -10,8 +10,8 @@ namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.DirectMessages
     {
         public CreateDirectMembersRequestValidator()
         {
-            RuleFor(x => x.FirstMemberId).NotNull().NotEmpty();
-            RuleFor(x => x.SecondMemberId).NotNull().NotEmpty();
+            RuleFor(x => x.OwnerId).NotNull().NotEmpty();
+            RuleFor(x => x.MemberId).NotNull().NotEmpty();
         }
     }
 }

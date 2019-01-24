@@ -39,15 +39,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to create direct members.Member { nameof(request.SaasUserId) }:{ request.SaasUserId} is not found.");
             }
 
-            var secondDirectMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.SecondMemberId);
+            var secondDirectMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.MemberId);
             if (secondDirectMember == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to create direct members.Member { nameof(request.SaasUserId) }:{ request.SaasUserId} is not found.");
             }
 
-            await UnitOfWork.DirectMemberRepository.CreateDirectMembers(request.DirectId, request.FirstMemberId, request.SecondMemberId);
+            await UnitOfWork.DirectMemberRepository.CreateDirectMembers(request.DirectMembersId, request.OwnerId, request.MemberId);
 
-            return DomainModelsMapper.MapToDirectMembersResponse(request.DirectId, firstDirectMember, secondDirectMember);
+            return DomainModelsMapper.MapToDirectMembersResponse(request.DirectMembersId, firstDirectMember, secondDirectMember);
         }
 
         public Task<DirectMembers> GetDirectMembersById(Guid id)

@@ -19,16 +19,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             : base(channelMemberService, memberService, clientService, hubContext)
         { }
 
-        public async Task OnCreateDirectMembers(CreateDirectMembersResponse request)
+        public async Task OnCreateDirectMembers(CreateDirectMembersResponse request, string connectionId)
         {
             var clientIds = new List<string>
             {
-                request.FirstDirectMember.Id.ToString(),
-                request.SecondDirectMember.Id.ToString()
+                request.Owner.Id.ToString(),
+                request.Member.Id.ToString()
             };
 
             // Tell the people that direct was created.
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.DirectMembersCreated);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.DirectMembersCreated, request.DirectMembersId, request.Owner.Id, connectionId);
         }
     }
 }

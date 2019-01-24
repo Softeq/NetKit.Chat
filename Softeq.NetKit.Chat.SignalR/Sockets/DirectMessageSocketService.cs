@@ -4,8 +4,8 @@
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
-using System.Threading.Tasks;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
+using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
@@ -20,11 +20,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             _directMessageNotificationService = directMessageNotificationService;
         }
 
-        public async Task<CreateDirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest request)
+        public async Task<CreateDirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest request, string connectionId)
         {
             var createDirectMembersResponse = await _directMessageService.CreateDirectMembers(request);
 
-            await _directMessageNotificationService.OnCreateDirectMembers(createDirectMembersResponse);
+            await _directMessageNotificationService.OnCreateDirectMembers(createDirectMembersResponse, connectionId);
 
             return createDirectMembersResponse;
         }

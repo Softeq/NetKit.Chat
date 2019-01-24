@@ -13,13 +13,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
             Execute(@"
                 CREATE TABLE [dbo].DirectMembers(
                 	[Id] [uniqueidentifier] NOT NULL PRIMARY KEY CLUSTERED,
-                    [FirstMemberId] [uniqueidentifier] NOT NULL,
-                    [SecondMemberId] [uniqueidentifier] NOT NULL)
+                    [OwnerId] [uniqueidentifier] NOT NULL,
+                    [MemberId] [uniqueidentifier] NOT NULL)
 
-				ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_FirstMemberId] FOREIGN KEY([FirstMemberId])
+				ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_FirstMemberId] FOREIGN KEY([OwnerId])
                 REFERENCES [dbo].[Members] ([Id])
 
-                ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_SecondMemberId] FOREIGN KEY([SecondMemberId])
+                ALTER TABLE [dbo].[DirectMembers] WITH CHECK ADD CONSTRAINT [FK_DirectMembers_Members_SecondMemberId] FOREIGN KEY([MemberId])
                 REFERENCES [dbo].[Members] ([Id])  
             ");
         }

@@ -212,10 +212,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 
             // Assert
             response.DirectMembersId.Should().Be(directMembersId);
-            response.FirstDirectMember.AvatarUrl.Should().Contain($"/{firstMember.PhotoName}");
-            response.SecondDirectMember.AvatarUrl.Should().Contain($"/{secondMember.PhotoName}");
-            response.FirstDirectMember.UserName.Should().Be(firstMember.Name);
-            response.SecondDirectMember.UserName.Should().Be(secondMember.Name);
+            response.Owner.AvatarUrl.Should().Contain($"/{firstMember.PhotoName}");
+            response.Member.AvatarUrl.Should().Contain($"/{secondMember.PhotoName}");
+            response.Owner.UserName.Should().Be(firstMember.Name);
+            response.Member.UserName.Should().Be(secondMember.Name);
         }
     }
 }

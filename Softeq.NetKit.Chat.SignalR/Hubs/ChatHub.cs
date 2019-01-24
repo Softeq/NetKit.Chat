@@ -38,24 +38,28 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         private readonly IMessageSocketService _messageSocketService;
         private readonly IChannelService _channelService;
         private readonly IClientService _clientService;
+        private readonly IDirectMessageSocketService _directMessageSocketService;
 
         public ChatHub(ILogger logger,
                        IChannelSocketService channelSocketService,
                        IMessageSocketService messageSocketService,
                        IChannelService channelService,
-                       IClientService clientService)
+                       IClientService clientService,
+                       IDirectMessageSocketService directMessageSocketService)
         {
             Ensure.That(logger).IsNotNull();
             Ensure.That(channelSocketService).IsNotNull();
             Ensure.That(messageSocketService).IsNotNull();
             Ensure.That(channelService).IsNotNull();
             Ensure.That(clientService).IsNotNull();
+            Ensure.That(directMessageSocketService).IsNotNull();
 
             _logger = logger;
             _channelSocketService = channelSocketService;
             _messageSocketService = messageSocketService;
             _channelService = channelService;
             _clientService = clientService;
+            _directMessageSocketService = directMessageSocketService;
         }
 
         #region Override
@@ -118,13 +122,13 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             return await ValidateAndExecuteAsync(request, new CreateDirectMembersRequestValidator(), new TaskReference<CreateDirectMembersResponse>(async () =>
                 {
                     var createDirectMembersRequest = new DomainRequest.DirectMembers.CreateDirectMembersRequest(
-                        Context.GetSaasUserId(), request.FirstMemberId, request.SecondMemberId)
+                        Context.GetSaasUserId(), request.OwnerId, request.MemberId)
                     {
-                        DirectId = Guid.NewGuid()
+                        DirectMembersId = Guid.NewGuid()
                     };
 
                     // TODO
-                    return new CreateDirectMembersResponse();
+                    return await _directMessageSocketService.CreateDirectMembers(createDirectMembersRequest, Context.ConnectionId);
 
                 }),
                 request.RequestId);
