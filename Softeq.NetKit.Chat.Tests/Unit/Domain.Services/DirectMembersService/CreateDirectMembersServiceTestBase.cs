@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 {
     public abstract class CreateDirectMembersServiceTestBase
     {
-        protected readonly IDirectMemberService _directMemberService;
+        protected readonly IDirectMessageService DirectMessageService;
 
         protected readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new Mock<IDateTimeProvider>(MockBehavior.Strict);
         protected readonly Mock<IDomainModelsMapper> _domainModelsMapperMock = new Mock<IDomainModelsMapper>(MockBehavior.Strict);
@@ -41,7 +41,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             _unitOfWorkMock.Setup(x => x.NotificationRepository).Returns(_notificationRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.DirectMemberRepository).Returns(_directMemberRepositoryMock.Object);
 
-            _directMemberService = new Chat.Domain.Services.DomainServices.DirectMembersService(_unitOfWorkMock.Object,
+            DirectMessageService = new Chat.Domain.Services.DomainServices.DirectMessagesService(_unitOfWorkMock.Object,
                 _domainModelsMapperMock.Object,
                 _dateTimeProviderMock.Object);
         }

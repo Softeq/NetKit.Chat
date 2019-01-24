@@ -9,9 +9,9 @@ using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Xunit;
 using CreateDirectMembersRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers.CreateDirectMembersRequest;
 
-namespace Softeq.NetKit.Chat.Tests.Integration.DirectMembersServiceTests
+namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 {
-    public class DirectMemberServiceTests : BaseTest
+    public class DirectMessageServiceTests : BaseTest
     {
         private const string SaasFirstUserId = "4d048b6c-37b8-499a-a9e3-d3fe5211d5fc";
         private const string SaasSecondUserId = "D7556759-D12D-4E9F-ADC7-A02F409CC74B";
@@ -19,13 +19,11 @@ namespace Softeq.NetKit.Chat.Tests.Integration.DirectMembersServiceTests
         private readonly Guid _firstMemberId = new Guid("2c47a9d9-faf5-4ac2-92a4-d2770afc58e8");
         private readonly Guid _secondMemberId = new Guid("9A999BF0-AA09-41B4-9305-64031F271B8A");
 
-        private readonly IDirectMemberService _directMemberService;
-        private readonly IMemberService _memberService;
+        private readonly IDirectMessageService _directMessageService;
 
-        public DirectMemberServiceTests()
+        public DirectMessageServiceTests()
         {
-            _directMemberService = LifetimeScope.Resolve<IDirectMemberService>();
-            _memberService = LifetimeScope.Resolve<IMemberService>();
+            _directMessageService = LifetimeScope.Resolve<IDirectMessageService>();
 
             var firstMember = new Member
             {
@@ -55,17 +53,17 @@ namespace Softeq.NetKit.Chat.Tests.Integration.DirectMembersServiceTests
             // Arrange
             var directId = new Guid("1DF71432-00F4-4B3C-82AA-D26BA86F6AF6");
 
-            var request = new CreateDirectMembersRequest(_firstMemberId, _secondMemberId, SaasFirstUserId)
+            var request = new CreateDirectMembersRequest(SaasFirstUserId, _firstMemberId, _secondMemberId)
             {
                 DirectId = directId
             };
 
             // Act
-            var response = await _directMemberService.CreateDirectMembers(request);
+            var response = await _directMessageService.CreateDirectMembers(request);
 
             //Assert
             Assert.NotNull(response);
-            Assert.Equal(response.DirectMemberId, directId);
+            Assert.Equal(response.DirectMembersId, directId);
             Assert.Equal(response.FirstDirectMember.Id, _firstMemberId);
             Assert.Equal(response.SecondDirectMember.Id, _secondMemberId);
         }

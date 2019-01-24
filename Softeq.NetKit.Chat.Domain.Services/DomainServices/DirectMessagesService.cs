@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
-    internal class DirectMembersService : BaseService, IDirectMemberService
+    internal class DirectMessagesService : BaseService, IDirectMessageService
     {
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IDirectMemberRepository _directMemberRepository;
 
-        public DirectMembersService(
+        public DirectMessagesService(
             IUnitOfWork unitOfWork,
             IDomainModelsMapper domainModelsMapper,
             IDateTimeProvider dateTimeProvider)

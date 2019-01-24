@@ -1,8 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Threading.Tasks;
 using EnsureThat;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +20,11 @@ using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Member;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Message;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.MessageAttachment;
 using Softeq.Serilog.Extension;
+using System;
+using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
+using Softeq.NetKit.Chat.SignalR.TransportModels.Request.DirectMessage;
+using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.DirectMessages;
 using DomainRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using SignalRRequest = Softeq.NetKit.Chat.SignalR.TransportModels.Request;
 
@@ -83,7 +86,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
             {
-            	var getClientRequest = new GetClientRequest(Context.ConnectionId);
+                var getClientRequest = new GetClientRequest(Context.ConnectionId);
                 return await _clientService.GetClientAsync(getClientRequest);
             }));
         }
@@ -104,6 +107,27 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                 var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
                 await _clientService.DeleteClientAsync(deleteClientRequest);
             }));
+        }
+
+        #endregion
+
+        #region Direct message Commands
+
+        public async Task<CreateDirectMembersResponse> CreateDirectMembersAsync(CreateDirectMembersRequest request)
+        {
+            return await ValidateAndExecuteAsync(request, new CreateDirectMembersRequestValidator(), new TaskReference<CreateDirectMembersResponse>(async () =>
+                {
+                    var createDirectMembersRequest = new DomainRequest.DirectMembers.CreateDirectMembersRequest(
+                        Context.GetSaasUserId(), request.FirstMemberId, request.SecondMemberId)
+                    {
+                        DirectId = Guid.NewGuid()
+                    };
+
+                    // TODO
+                    return new CreateDirectMembersResponse();
+
+                }),
+                request.RequestId);
         }
 
         #endregion

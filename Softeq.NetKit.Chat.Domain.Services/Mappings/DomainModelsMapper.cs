@@ -72,7 +72,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             return new CreateDirectMembersResponse
             {
-                DirectMemberId = directMemberId,
+                DirectMembersId = directMemberId,
                 FirstDirectMember = firstMember,
                 SecondDirectMember = secondMember
             };

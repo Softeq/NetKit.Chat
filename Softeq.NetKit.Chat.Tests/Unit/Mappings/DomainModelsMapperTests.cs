@@ -211,7 +211,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             var response = _domainModelsMapper.MapToDirectMembersResponse(directMembersId, firstMember, secondMember);
 
             // Assert
-            response.DirectMemberId.Should().Be(directMembersId);
+            response.DirectMembersId.Should().Be(directMembersId);
             response.FirstDirectMember.AvatarUrl.Should().Contain($"/{firstMember.PhotoName}");
             response.SecondDirectMember.AvatarUrl.Should().Contain($"/{secondMember.PhotoName}");
             response.FirstDirectMember.UserName.Should().Be(firstMember.Name);

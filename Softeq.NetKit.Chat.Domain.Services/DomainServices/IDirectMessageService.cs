@@ -9,7 +9,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
-    public interface IDirectMemberService
+    public interface IDirectMessageService
     {
         Task<CreateDirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest createDirectMembersRequest);
         Task<DirectMembers> GetDirectMembersById(Guid id);

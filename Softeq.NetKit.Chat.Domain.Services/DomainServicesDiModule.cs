@@ -34,8 +34,8 @@ namespace Softeq.NetKit.Chat.Domain.Services
             builder.RegisterType<SystemDateTimeProvider>()
                 .As<IDateTimeProvider>();
 
-            builder.RegisterType<DirectMembersService>()
-                .As<IDirectMemberService>();
+            builder.RegisterType<DirectMessagesService>()
+                .As<IDirectMessageService>();
 
             RegisterMappings(builder);
         }

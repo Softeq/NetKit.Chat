@@ -19,12 +19,14 @@ namespace Softeq.NetKit.Chat.SignalR
         {
             builder.RegisterType<ChannelSocketService>().As<IChannelSocketService>();
             builder.RegisterType<MessageSocketService>().As<IMessageSocketService>();
+            builder.RegisterType<DirectMessageSocketService>().As<IDirectMessageSocketService>();
         }
 
         private static void RegisterNotificationServices(ContainerBuilder builder)
         {
             builder.RegisterType<ChannelNotificationService>().As<IChannelNotificationService>();
             builder.RegisterType<MessageNotificationService>().As<IMessageNotificationService>();
+            builder.RegisterType<DirectMessageNotificationService>().As<IDirectMessageNotificationService>();
         }
     }
 }

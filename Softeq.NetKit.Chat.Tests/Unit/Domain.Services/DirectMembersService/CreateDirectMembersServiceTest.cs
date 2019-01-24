@@ -27,10 +27,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var createDirectMemberRequest = new CreateDirectMembersRequest(firstMemberId, secondMemberId, saasUserId);
+            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await _directMemberService.CreateDirectMembers(createDirectMemberRequest); };
+            Func<Task> act = async () => { await DirectMessageService.CreateDirectMembers(createDirectMemberRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -57,10 +57,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var createDirectMemberRequest = new CreateDirectMembersRequest(firstMemberId, secondMemberId, saasUserId);
+            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await _directMemberService.CreateDirectMembers(createDirectMemberRequest); };
+            Func<Task> act = async () => { await DirectMessageService.CreateDirectMembers(createDirectMemberRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -92,9 +92,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .Verifiable();
 
             _directMemberRepositoryMock.Setup(x => x.CreateDirectMembers(It.Is<Guid>(id => id.Equals(directMembersId)),
-                It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm =>sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
+                It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm => sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
 
-            var createDirectMemberRequest = new CreateDirectMembersRequest(firstMemberId, secondMemberId, saasUserId) { DirectId = directMembersId };
+            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId) { DirectId = directMembersId };
 
             _domainModelsMapperMock.Setup(x => x.MapToDirectMembersResponse(
                     It.Is<Guid>(id => id.Equals(directMembersId)),
@@ -104,7 +104,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .Verifiable();
 
             // Act
-            var act = await _directMemberService.CreateDirectMembers(createDirectMemberRequest);
+            var act = await DirectMessageService.CreateDirectMembers(createDirectMemberRequest);
 
             // Assert
             act.Should().BeEquivalentTo(createDirectMembersResponse);

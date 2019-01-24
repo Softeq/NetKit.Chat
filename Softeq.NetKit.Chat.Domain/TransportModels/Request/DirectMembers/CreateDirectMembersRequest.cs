@@ -7,7 +7,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers
 {
     public class CreateDirectMembersRequest : UserRequest
     {
-        public CreateDirectMembersRequest(Guid firstMemberId, Guid secondMemberId, string saasUserId)
+        public CreateDirectMembersRequest(string saasUserId, Guid firstMemberId, Guid secondMemberId)
             : base(saasUserId)
         {
             FirstMemberId = firstMemberId;
