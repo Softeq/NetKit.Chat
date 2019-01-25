@@ -60,8 +60,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             // Assert
             newDirectMembers.Id.Should().Be(id);
-            newDirectMembers.FirstMemberId.Should().Be(_firstMemberId);
-            newDirectMembers.SecondMemberId.Should().Be(_secondMemberId);
+            newDirectMembers.OwnerId.Should().Be(_firstMemberId);
+            newDirectMembers.MemberId.Should().Be(_secondMemberId);
         }
     }
 }

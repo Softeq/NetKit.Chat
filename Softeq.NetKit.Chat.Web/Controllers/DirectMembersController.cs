@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
+using Softeq.NetKit.Chat.SignalR.Sockets;
 using System;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.SignalR.Sockets;
+using EnsureThat;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -20,14 +21,28 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     public class DirectMembersController : BaseApiController
     {
         private readonly IDirectMessageSocketService _directMessageSocketService;
+        private readonly IDirectMessageService _directMessageService;
 
-        public DirectMembersController(IDirectMessageSocketService directMessageSocketService)
+        public DirectMembersController(IDirectMessageSocketService directMessageSocketService, IDirectMessageService directMessageService)
         {
+            Ensure.That(directMessageSocketService).IsNotNull();
+            Ensure.That(directMessageService).IsNotNull();
+
             _directMessageSocketService = directMessageSocketService;
+            _directMessageService = directMessageService;
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(DirectMembersResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetDirectMembersByIdAsync([FromBody] Guid id)
+        {
+            var directMembersResponse = await _directMessageService.GetDirectMembersById(id);
+
+            return Ok(directMembersResponse);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(CreateDirectMembersResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DirectMembersResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateDirectMembersAsync([FromBody] TransportModels.Request.DirectMembers.CreateDirectMembersRequest request)
         {
             var createDirectMembersRequest = new CreateDirectMembersRequest(GetCurrentSaasUserId(), request.OwnerId, request.MemberId)
@@ -35,7 +50,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
                 DirectMembersId = Guid.NewGuid()
             };
 
-           var createDirectMembersResponse = await _directMessageSocketService.CreateDirectMembers(createDirectMembersRequest, HttpContext.Connection.Id);
+            var createDirectMembersResponse = await _directMessageSocketService.CreateDirectMembers(createDirectMembersRequest, HttpContext.Connection.Id);
 
             return Ok(createDirectMembersResponse);
         }

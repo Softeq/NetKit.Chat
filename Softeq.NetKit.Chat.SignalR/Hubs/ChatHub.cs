@@ -117,9 +117,9 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #region Direct message Commands
 
-        public async Task<CreateDirectMembersResponse> CreateDirectMembersAsync(CreateDirectMembersRequest request)
+        public async Task<DirectMembersResponse> CreateDirectMembersAsync(CreateDirectMembersRequest request)
         {
-            return await ValidateAndExecuteAsync(request, new CreateDirectMembersRequestValidator(), new TaskReference<CreateDirectMembersResponse>(async () =>
+            return await ValidateAndExecuteAsync(request, new CreateDirectMembersRequestValidator(), new TaskReference<DirectMembersResponse>(async () =>
                 {
                     var createDirectMembersRequest = new DomainRequest.DirectMembers.CreateDirectMembersRequest(
                         Context.GetSaasUserId(), request.OwnerId, request.MemberId)

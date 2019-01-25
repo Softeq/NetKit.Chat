@@ -31,18 +31,18 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<CreateDirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest request)
+        public async Task<DirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest request)
         {
             var firstDirectMember = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (firstDirectMember == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to create direct members.Member { nameof(request.SaasUserId) }:{ request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to create direct members. Member { nameof(request.SaasUserId) }:{ request.SaasUserId} is not found.");
             }
 
             var secondDirectMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.MemberId);
             if (secondDirectMember == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to create direct members.Member { nameof(request.SaasUserId) }:{ request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to create direct members. Member { nameof(request.MemberId) }:{ request.MemberId} is not found.");
             }
 
             await UnitOfWork.DirectMemberRepository.CreateDirectMembers(request.DirectMembersId, request.OwnerId, request.MemberId);
@@ -50,9 +50,28 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToDirectMembersResponse(request.DirectMembersId, firstDirectMember, secondDirectMember);
         }
 
-        public Task<DirectMembers> GetDirectMembersById(Guid id)
+        public async Task<DirectMembersResponse> GetDirectMembersById(Guid id)
         {
-            throw new NotImplementedException();
+            var directMembers = await UnitOfWork.DirectMemberRepository.GetDirectMembersById(id);
+
+            if (directMembers == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get direct members. Chat with {nameof(id)}:{id} is not found.");
+            }
+
+            var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(directMembers.OwnerId);
+            if (owner == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get member {nameof(directMembers.OwnerId)}:{directMembers.OwnerId} is not found.");
+            }
+
+            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(directMembers.MemberId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get member {nameof(directMembers.MemberId)}:{directMembers.MemberId} is not found.");
+            }
+
+            return DomainModelsMapper.MapToDirectMembersResponse(directMembers.Id, owner, member);
         }
     }
 }

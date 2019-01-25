@@ -1,11 +1,11 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Threading.Tasks;
 using Autofac;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 using CreateDirectMembersRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers.CreateDirectMembersRequest;
 
@@ -66,6 +66,24 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.Equal(response.DirectMembersId, directId);
             Assert.Equal(response.Owner.Id, _firstMemberId);
             Assert.Equal(response.Member.Id, _secondMemberId);
+        }
+
+        [Fact]
+        public async Task GetDirectMemberByIdAsyncTest()
+        {
+            // Arrange
+            var directId = new Guid("1DF71432-00F4-4B3C-82AA-D26BA86F6AF6");
+
+            var request = new CreateDirectMembersRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectMembersId = directId };
+
+            await _directMessageService.CreateDirectMembers(request);
+
+            // Act
+            var response = await _directMessageService.GetDirectMembersById(request.DirectMembersId);
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(response.DirectMembersId, directId);
         }
     }
 }

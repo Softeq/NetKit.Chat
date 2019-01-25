@@ -195,27 +195,27 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             // Arrange
             var directMembersId = new Guid("6CCC3DD2-826C-4523-AB2C-A3839BB166CB");
 
-            var firstMember = new Member
+            var owner = new Member
             {
                 PhotoName = "firstPhotoName",
                 Name = "FirstName"
             };
 
-            var secondMember = new Member
+            var member = new Member
             {
                 PhotoName = "secondPhotoName",
                 Name = "SecondName"
             };
 
             // Act
-            var response = _domainModelsMapper.MapToDirectMembersResponse(directMembersId, firstMember, secondMember);
+            var response = _domainModelsMapper.MapToDirectMembersResponse(directMembersId, owner, member);
 
             // Assert
             response.DirectMembersId.Should().Be(directMembersId);
-            response.Owner.AvatarUrl.Should().Contain($"/{firstMember.PhotoName}");
-            response.Member.AvatarUrl.Should().Contain($"/{secondMember.PhotoName}");
-            response.Owner.UserName.Should().Be(firstMember.Name);
-            response.Member.UserName.Should().Be(secondMember.Name);
+            response.Owner.AvatarUrl.Should().Contain($"/{owner.PhotoName}");
+            response.Member.AvatarUrl.Should().Contain($"/{member.PhotoName}");
+            response.Owner.UserName.Should().Be(owner.Name);
+            response.Member.UserName.Should().Be(member.Name);
         }
     }
 }

@@ -13,10 +13,10 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 {
-    public class CreateDirectMembersServiceTest : CreateDirectMembersServiceTestBase
+    public class CreateDirectMembersTest : DirectMessageTestBase
     {
         [Fact]
-        public void ShouldThrowIfFirstMemberDoesNotExist()
+        public void ShouldThrowIfOwnerDoesNotExist()
         {
             // Arrange
             var saasUserId = "4C21A8B9-75CD-43BA-9F18-2D86D479E9F0";
@@ -34,13 +34,13 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to create direct members.Member { nameof(createDirectMemberRequest.SaasUserId) }:{ createDirectMemberRequest.SaasUserId} is not found.");
+                .And.Message.Should().Be($"Unable to create direct members. Member { nameof(createDirectMemberRequest.SaasUserId) }:{ createDirectMemberRequest.SaasUserId} is not found.");
 
             VerifyMocks();
         }
 
         [Fact]
-        public void ShouldThrowIfSecondMemberDoesNotExist()
+        public void ShouldThrowIfMemberDoesNotExist()
         {
             // Arrange
             var saasUserId = "4C21A8B9-75CD-43BA-9F18-2D86D479E9F0";
@@ -64,7 +64,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to create direct members.Member { nameof(createDirectMemberRequest.SaasUserId) }:{ createDirectMemberRequest.SaasUserId} is not found.");
+                .And.Message.Should()
+                .Be($"Unable to create direct members. Member {nameof(createDirectMemberRequest.MemberId)}:{createDirectMemberRequest.MemberId} is not found.");
 
             VerifyMocks();
         }
@@ -81,7 +82,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var firstMember = new Member { Id = firstMemberId };
             var secondMember = new Member { Id = secondMemberId };
 
-            var createDirectMembersResponse = new CreateDirectMembersResponse();
+            var createDirectMembersResponse = new DirectMembersResponse();
 
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saas => saas.Equals(saasUserId))))
                     .ReturnsAsync(firstMember)
