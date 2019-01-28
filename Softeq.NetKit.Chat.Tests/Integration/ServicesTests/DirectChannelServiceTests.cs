@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 {
-    public class DirectMessageServiceTests : BaseTest
+    public class DirectChannelServiceTests : BaseTest
     {
         private const string SaasFirstUserId = "4d048b6c-37b8-499a-a9e3-d3fe5211d5fc";
         private const string SaasSecondUserId = "D7556759-D12D-4E9F-ADC7-A02F409CC74B";
@@ -21,7 +21,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
         private readonly IDirectMessageService _directMessageService;
 
-        public DirectMessageServiceTests()
+        public DirectChannelServiceTests()
         {
             _directMessageService = LifetimeScope.Resolve<IDirectMessageService>();
 

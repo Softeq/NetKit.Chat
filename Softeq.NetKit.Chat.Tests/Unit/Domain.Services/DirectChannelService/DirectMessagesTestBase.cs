@@ -41,7 +41,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             _unitOfWorkMock.Setup(x => x.NotificationRepository).Returns(_notificationRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.DirectChannelRepository).Returns(_directChannelRepositoryMock.Object);
 
-            DirectMessageService = new Chat.Domain.Services.DomainServices.DirectMessagesService(_unitOfWorkMock.Object,
+            DirectMessageService = new Chat.Domain.Services.DomainServices.DirectChannelService(_unitOfWorkMock.Object,
                 _domainModelsMapperMock.Object,
                 _dateTimeProviderMock.Object);
         }

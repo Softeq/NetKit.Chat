@@ -14,12 +14,12 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
-    internal class DirectMessagesService : BaseService, IDirectMessageService
+    internal class DirectChannelService : BaseService, IDirectMessageService
     {
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IDirectChannelRepository _directChannelRepository;
 
-        public DirectMessagesService(
+        public DirectChannelService(
             IUnitOfWork unitOfWork,
             IDomainModelsMapper domainModelsMapper,
             IDateTimeProvider dateTimeProvider)
