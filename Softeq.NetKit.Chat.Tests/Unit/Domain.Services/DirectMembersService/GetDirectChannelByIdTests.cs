@@ -6,14 +6,13 @@ using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 {
-    public class GetDirectMembersByIdTests : DirectMessagesTestBase
+    public class GetDirectChannelByIdTests : DirectMessagesTestBase
     {
         [Fact]
         public void ShouldThrowIfDirectMembersDoesNotExist()
@@ -21,7 +20,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             // Arrange
             var id = new Guid("29251B3A-4D91-4664-A239-5EF3AED81FD6");
 
-            _directMemberRepositoryMock.Setup(x => x.GetDirectChannelById(It.IsAny<Guid>()))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.IsAny<Guid>()))
                 .ReturnsAsync((DirectChannel)null)
                 .Verifiable();
 
@@ -45,7 +44,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 
             var directMembers = new DirectChannel { Id = id, OwnerId = ownerId, MemberId = memberId };
 
-            _directMemberRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(id))))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(id))))
                 .ReturnsAsync(directMembers)
                 .Verifiable();
 
@@ -71,24 +70,24 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var ownerId = new Guid("0D8BB89F-5A10-4E7C-8F49-73CE5B32DCD6");
             var memberId = new Guid("93F52D8D-0187-478B-9978-6A07D62A286C");
 
-            var directMembers = new DirectChannel { Id = directId, OwnerId = ownerId, MemberId = memberId };
+            var directChannel = new DirectChannel { Id = directId, OwnerId = ownerId, MemberId = memberId };
 
-            _directMemberRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(directId))))
-                .ReturnsAsync(directMembers)
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(directId))))
+                .ReturnsAsync(directChannel)
                 .Verifiable();
 
             var owner = new Member { Id = ownerId };
-            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.Is<Guid>(id => id.Equals(directMembers.OwnerId))))
+            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.Is<Guid>(id => id.Equals(directChannel.OwnerId))))
                          .ReturnsAsync(owner)
                          .Verifiable();
 
             var member = new Member { Id = memberId };
-            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.Is<Guid>(id => id.Equals(directMembers.MemberId))))
+            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.Is<Guid>(id => id.Equals(directChannel.MemberId))))
                 .ReturnsAsync(member)
                 .Verifiable();
 
             var directMembersResponse = new DirectChannelResponse();
-            _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(directMembers.Id, owner, member))
+            _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(directChannel.Id, owner, member))
                 .Returns(directMembersResponse)
                 .Verifiable();
 
