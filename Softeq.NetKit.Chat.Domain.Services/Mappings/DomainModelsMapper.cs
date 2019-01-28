@@ -65,12 +65,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return response;
         }
 
-        public DirectMembersResponse MapToDirectMembersResponse(Guid directMemberId, Member owner, Member member)
+        public DirectChannelResponse MapToDirectMembersResponse(Guid directMemberId, Member owner, Member member)
         {
             var firstMember = owner != null ? _mapper.Map<MemberSummary>(owner) : new MemberSummary();
             var secondMember = owner != null ? _mapper.Map<MemberSummary>(member) : new MemberSummary();
 
-            return new DirectMembersResponse
+            return new DirectChannelResponse
             {
                 DirectMembersId = directMemberId,
                 Owner = firstMember,

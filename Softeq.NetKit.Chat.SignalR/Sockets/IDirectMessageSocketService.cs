@@ -9,6 +9,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
     public interface IDirectMessageSocketService
     {
-        Task<DirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest request, string connectionId);
+        Task<DirectChannelResponse> CreateDirectMembers(CreateDirectMembersRequest request, string connectionId);
     }
 }

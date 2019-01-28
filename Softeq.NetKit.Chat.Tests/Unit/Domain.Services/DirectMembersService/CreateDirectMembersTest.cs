@@ -82,7 +82,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var firstMember = new Member { Id = firstMemberId };
             var secondMember = new Member { Id = secondMemberId };
 
-            var createDirectMembersResponse = new DirectMembersResponse();
+            var createDirectMembersResponse = new DirectChannelResponse();
 
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saas => saas.Equals(saasUserId))))
                     .ReturnsAsync(firstMember)

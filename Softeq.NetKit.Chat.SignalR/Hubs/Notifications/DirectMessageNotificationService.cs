@@ -19,7 +19,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             : base(channelMemberService, memberService, clientService, hubContext)
         { }
 
-        public async Task OnCreateDirectMembers(DirectMembersResponse request, string connectionId)
+        public async Task OnCreateDirectMembers(DirectChannelResponse request, string connectionId)
         {
             var clientIds = new List<string>
             {

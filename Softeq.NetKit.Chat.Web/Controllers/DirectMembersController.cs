@@ -33,7 +33,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(DirectMembersResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DirectChannelResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDirectMembersByIdAsync([FromBody] Guid id)
         {
             var directMembersResponse = await _directMessageService.GetDirectMembersById(id);
@@ -42,7 +42,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(DirectMembersResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DirectChannelResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateDirectMembersAsync([FromBody] TransportModels.Request.DirectMembers.CreateDirectMembersRequest request)
         {
             var createDirectMembersRequest = new CreateDirectMembersRequest(GetCurrentSaasUserId(), request.OwnerId, request.MemberId)

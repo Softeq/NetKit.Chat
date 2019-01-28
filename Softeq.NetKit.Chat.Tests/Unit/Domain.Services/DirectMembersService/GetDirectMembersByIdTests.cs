@@ -87,7 +87,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync(member)
                 .Verifiable();
 
-            var directMembersResponse = new DirectMembersResponse();
+            var directMembersResponse = new DirectChannelResponse();
             _domainModelsMapperMock.Setup(x => x.MapToDirectMembersResponse(directMembers.Id, owner, member))
                 .Returns(directMembersResponse)
                 .Verifiable();

@@ -4,7 +4,6 @@
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
-using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
@@ -31,7 +30,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<DirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest request)
+        public async Task<DirectChannelResponse> CreateDirectMembers(CreateDirectMembersRequest request)
         {
             var firstDirectMember = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (firstDirectMember == null)
@@ -50,7 +49,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToDirectMembersResponse(request.DirectMembersId, firstDirectMember, secondDirectMember);
         }
 
-        public async Task<DirectMembersResponse> GetDirectMembersById(Guid id)
+        public async Task<DirectChannelResponse> GetDirectMembersById(Guid id)
         {
             var directMembers = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
             if (directMembers == null)

@@ -6,7 +6,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers
 {
-    public class DirectMembersResponse
+    public class DirectChannelResponse
     {
         public Guid DirectMembersId { get; set; }
         public MemberSummary Owner { get; set; }

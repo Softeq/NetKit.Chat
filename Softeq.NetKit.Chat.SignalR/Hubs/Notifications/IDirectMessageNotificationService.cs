@@ -8,6 +8,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
     public interface IDirectMessageNotificationService
     {
-        Task OnCreateDirectMembers(DirectMembersResponse request, string connectionId);
+        Task OnCreateDirectMembers(DirectChannelResponse request, string connectionId);
     }
 }

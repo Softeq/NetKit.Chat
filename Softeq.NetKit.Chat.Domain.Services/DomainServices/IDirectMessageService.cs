@@ -11,7 +11,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     public interface IDirectMessageService
     {
-        Task<DirectMembersResponse> CreateDirectMembers(CreateDirectMembersRequest createDirectMembersRequest);
-        Task<DirectMembersResponse> GetDirectMembersById(Guid id);
+        Task<DirectChannelResponse> CreateDirectMembers(CreateDirectMembersRequest createDirectMembersRequest);
+        Task<DirectChannelResponse> GetDirectMembersById(Guid id);
     }
 }
