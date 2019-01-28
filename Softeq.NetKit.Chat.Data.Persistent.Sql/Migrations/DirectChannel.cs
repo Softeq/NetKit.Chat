@@ -5,7 +5,7 @@ using SimpleMigrations;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
 {
-    [Migration(20190121100500, "Add DirectChannel table")]
+    [Migration(20190105100500, "Add DirectChannel table")]
     public class DirectChannel : Migration
     {
         protected override void Up()
