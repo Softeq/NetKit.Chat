@@ -72,9 +72,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration
                     DELETE FROM ForwardMessages;
                     DELETE FROM Messages;
                     DELETE FROM Channels;
-                    DELETE FROM DirectMembersSettings;
-                    DELETE FROM ForwardMessages;
-                    DELETE FROM DirectMembers;
+                    DELETE FROM DirectChannelSettings;
+                    DELETE FROM DirectMessages;
+                    DELETE FROM DirectChannel;
                     DELETE FROM Members;";
 
                 await connection.ExecuteScalarAsync(sqlQuery);

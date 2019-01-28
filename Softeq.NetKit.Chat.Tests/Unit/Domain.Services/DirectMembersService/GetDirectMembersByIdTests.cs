@@ -21,8 +21,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             // Arrange
             var id = new Guid("29251B3A-4D91-4664-A239-5EF3AED81FD6");
 
-            _directMemberRepositoryMock.Setup(x => x.GetDirectMembersById(It.IsAny<Guid>()))
-                .ReturnsAsync((DirectMembers)null)
+            _directMemberRepositoryMock.Setup(x => x.GetDirectChannelById(It.IsAny<Guid>()))
+                .ReturnsAsync((DirectChannel)null)
                 .Verifiable();
 
             // Act
@@ -43,9 +43,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var ownerId = new Guid("0D8BB89F-5A10-4E7C-8F49-73CE5B32DCD6");
             var memberId = new Guid("93F52D8D-0187-478B-9978-6A07D62A286C");
 
-            var directMembers = new DirectMembers { Id = id, OwnerId = ownerId, MemberId = memberId };
+            var directMembers = new DirectChannel { Id = id, OwnerId = ownerId, MemberId = memberId };
 
-            _directMemberRepositoryMock.Setup(x => x.GetDirectMembersById(It.Is<Guid>(d => d.Equals(id))))
+            _directMemberRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(id))))
                 .ReturnsAsync(directMembers)
                 .Verifiable();
 
@@ -71,9 +71,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var ownerId = new Guid("0D8BB89F-5A10-4E7C-8F49-73CE5B32DCD6");
             var memberId = new Guid("93F52D8D-0187-478B-9978-6A07D62A286C");
 
-            var directMembers = new DirectMembers { Id = directId, OwnerId = ownerId, MemberId = memberId };
+            var directMembers = new DirectChannel { Id = directId, OwnerId = ownerId, MemberId = memberId };
 
-            _directMemberRepositoryMock.Setup(x => x.GetDirectMembersById(It.Is<Guid>(d => d.Equals(directId))))
+            _directMemberRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(directId))))
                 .ReturnsAsync(directMembers)
                 .Verifiable();
 

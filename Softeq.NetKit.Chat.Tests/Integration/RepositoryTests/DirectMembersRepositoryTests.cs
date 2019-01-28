@@ -11,14 +11,14 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 {
     public class DirectMembersRepositoryTests : BaseTest
     {
-        private Guid _firstMemberId = new Guid("F5092772-3BEF-40C7-8FFD-2E0773DA3C1F");
-        private Guid _secondMemberId = new Guid("8E5FCE8B-4BD3-4D97-AF1C-07FFD4933406");
+        private Guid _ownerId = new Guid("F5092772-3BEF-40C7-8FFD-2E0773DA3C1F");
+        private Guid _memberId = new Guid("8E5FCE8B-4BD3-4D97-AF1C-07FFD4933406");
 
         public DirectMembersRepositoryTests()
         {
             var firstMember = new Member
             {
-                Id = _firstMemberId,
+                Id = _ownerId,
                 Email = "test",
                 Role = UserRole.Admin,
                 IsAfk = true,
@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             var secondMember = new Member
             {
-                Id = _secondMemberId,
+                Id = _memberId,
                 Email = "test",
                 Role = UserRole.Admin,
                 IsAfk = true,
@@ -55,13 +55,13 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             var id = new Guid("B815B750-BB22-45E0-B332-0EE39D9A7A5C");
 
             // Act
-            await UnitOfWork.DirectMemberRepository.CreateDirectMembers(id, _firstMemberId, _secondMemberId);
-            var newDirectMembers = await UnitOfWork.DirectMemberRepository.GetDirectMembersById(id);
+            await UnitOfWork.DirectChannelRepository.CreateDirectChannel(id, _ownerId, _memberId);
+            var newDirectMembers = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
 
             // Assert
             newDirectMembers.Id.Should().Be(id);
-            newDirectMembers.OwnerId.Should().Be(_firstMemberId);
-            newDirectMembers.MemberId.Should().Be(_secondMemberId);
+            newDirectMembers.OwnerId.Should().Be(_ownerId);
+            newDirectMembers.MemberId.Should().Be(_memberId);
         }
     }
 }

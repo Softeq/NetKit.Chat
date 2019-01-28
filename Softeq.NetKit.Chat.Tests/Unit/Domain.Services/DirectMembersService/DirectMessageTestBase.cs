@@ -27,7 +27,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
         protected readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>(MockBehavior.Strict);
         protected readonly Mock<IClientRepository> _clientRepositoryMock = new Mock<IClientRepository>(MockBehavior.Strict);
         protected readonly Mock<INotificationRepository> _notificationRepositoryMock = new Mock<INotificationRepository>(MockBehavior.Strict);
-        protected readonly Mock<IDirectMemberRepository> _directMemberRepositoryMock = new Mock<IDirectMemberRepository>(MockBehavior.Strict);
+        protected readonly Mock<IDirectChannelRepository> _directMemberRepositoryMock = new Mock<IDirectChannelRepository>(MockBehavior.Strict);
 
         protected DirectMessageTestBase()
         {
@@ -39,7 +39,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             _unitOfWorkMock.Setup(x => x.AttachmentRepository).Returns(_attachmentRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.ClientRepository).Returns(_clientRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.NotificationRepository).Returns(_notificationRepositoryMock.Object);
-            _unitOfWorkMock.Setup(x => x.DirectMemberRepository).Returns(_directMemberRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.DirectChannelRepository).Returns(_directMemberRepositoryMock.Object);
 
             DirectMessageService = new Chat.Domain.Services.DomainServices.DirectMessagesService(_unitOfWorkMock.Object,
                 _domainModelsMapperMock.Object,

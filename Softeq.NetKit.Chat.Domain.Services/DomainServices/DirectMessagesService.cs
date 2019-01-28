@@ -18,7 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     internal class DirectMessagesService : BaseService, IDirectMessageService
     {
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IDirectMemberRepository _directMemberRepository;
+        private readonly IDirectChannelRepository _directChannelRepository;
 
         public DirectMessagesService(
             IUnitOfWork unitOfWork,
@@ -45,15 +45,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to create direct members. Member { nameof(request.MemberId) }:{ request.MemberId} is not found.");
             }
 
-            await UnitOfWork.DirectMemberRepository.CreateDirectMembers(request.DirectMembersId, request.OwnerId, request.MemberId);
+            await UnitOfWork.DirectChannelRepository.CreateDirectChannel(request.DirectMembersId, request.OwnerId, request.MemberId);
 
             return DomainModelsMapper.MapToDirectMembersResponse(request.DirectMembersId, firstDirectMember, secondDirectMember);
         }
 
         public async Task<DirectMembersResponse> GetDirectMembersById(Guid id)
         {
-            var directMembers = await UnitOfWork.DirectMemberRepository.GetDirectMembersById(id);
-
+            var directMembers = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
             if (directMembers == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to get direct members. Chat with {nameof(id)}:{id} is not found.");

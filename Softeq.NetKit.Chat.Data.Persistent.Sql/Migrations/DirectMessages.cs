@@ -5,7 +5,7 @@ using SimpleMigrations;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
 {
-    [Migration(20190122100500, "Add Direct messages table")]
+    [Migration(20190122100500, "Add DirectMessages table")]
     public class DirectMessages : Migration
     {
         protected override void Up()
@@ -13,23 +13,23 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
             Execute(@"
                 CREATE TABLE [dbo].DirectMessages(
                 	[Id] [uniqueidentifier] NOT NULL PRIMARY KEY CLUSTERED,
-                    [DirectMembersID] [uniqueidentifier] NOT NULL,
+                    [DirectChannelId] [uniqueidentifier] NOT NULL,
                     [Created] [datetimeoffset](7) NOT NULL,
                     [OwnerId] [uniqueidentifier] NOT NULL,
                     [Body] [nvarchar](MAX),
                     [Updated] [datetimeoffset](7) NOT NULL)
 
-				ALTER TABLE [dbo].[DirectMessages] WITH CHECK ADD CONSTRAINT [FK_DirectMessages_DirectMembers_DirectMembersID] FOREIGN KEY([DirectMembersID])
-                REFERENCES [dbo].[DirectMembers] ([Id])
+				ALTER TABLE [dbo].[DirectMessages] WITH CHECK ADD CONSTRAINT [FK_DirectMessages_DirectChannel_DirectChannelId] FOREIGN KEY([DirectChannelId])
+                REFERENCES [dbo].[DirectChannel] ([Id])
             ");
         }
 
         protected override void Down()
         {
             Execute(@"
-               ALTER TABLE dbo.DirectMessages DROP CONSTRAINT FK_DirectMessages_DirectMembers_DirectMembersID
+               ALTER TABLE dbo.DirectMessages DROP CONSTRAINT FK_DirectMessages_DirectChannel_DirectChannelId
 
-               DROP TABLE dbo.DirectMembers
+               DROP TABLE dbo.DirectMessages
             ");
         }
     }

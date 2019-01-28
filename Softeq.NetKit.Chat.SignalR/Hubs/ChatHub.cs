@@ -22,9 +22,6 @@ using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.MessageAttachment;
 using Softeq.Serilog.Extension;
 using System;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.DirectMessage;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.DirectMessages;
 using DomainRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using SignalRRequest = Softeq.NetKit.Chat.SignalR.TransportModels.Request;
 
@@ -38,28 +35,24 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         private readonly IMessageSocketService _messageSocketService;
         private readonly IChannelService _channelService;
         private readonly IClientService _clientService;
-        private readonly IDirectMessageSocketService _directMessageSocketService;
 
         public ChatHub(ILogger logger,
                        IChannelSocketService channelSocketService,
                        IMessageSocketService messageSocketService,
                        IChannelService channelService,
-                       IClientService clientService,
-                       IDirectMessageSocketService directMessageSocketService)
+                       IClientService clientService)
         {
             Ensure.That(logger).IsNotNull();
             Ensure.That(channelSocketService).IsNotNull();
             Ensure.That(messageSocketService).IsNotNull();
             Ensure.That(channelService).IsNotNull();
             Ensure.That(clientService).IsNotNull();
-            Ensure.That(directMessageSocketService).IsNotNull();
 
             _logger = logger;
             _channelSocketService = channelSocketService;
             _messageSocketService = messageSocketService;
             _channelService = channelService;
             _clientService = clientService;
-            _directMessageSocketService = directMessageSocketService;
         }
 
         #region Override
@@ -111,27 +104,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                 var deleteClientRequest = new DeleteClientRequest(Context.ConnectionId);
                 await _clientService.DeleteClientAsync(deleteClientRequest);
             }));
-        }
-
-        #endregion
-
-        #region Direct message Commands
-
-        public async Task<DirectMembersResponse> CreateDirectMembersAsync(CreateDirectMembersRequest request)
-        {
-            return await ValidateAndExecuteAsync(request, new CreateDirectMembersRequestValidator(), new TaskReference<DirectMembersResponse>(async () =>
-                {
-                    var createDirectMembersRequest = new DomainRequest.DirectMembers.CreateDirectMembersRequest(
-                        Context.GetSaasUserId(), request.OwnerId, request.MemberId)
-                    {
-                        DirectMembersId = Guid.NewGuid()
-                    };
-
-                    // TODO
-                    return await _directMessageSocketService.CreateDirectMembers(createDirectMembersRequest, Context.ConnectionId);
-
-                }),
-                request.RequestId);
         }
 
         #endregion

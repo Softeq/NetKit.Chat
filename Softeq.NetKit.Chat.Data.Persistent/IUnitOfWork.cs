@@ -16,6 +16,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent
         ISettingRepository SettingRepository { get; }
         IMemberRepository MemberRepository { get; }
         IForwardMessageRepository ForwardMessageRepository { get; }
-        IDirectMemberRepository DirectMemberRepository { get; }
+        IDirectChannelRepository DirectChannelRepository { get; }
     }
 }
