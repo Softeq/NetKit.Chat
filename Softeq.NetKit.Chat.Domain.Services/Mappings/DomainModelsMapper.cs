@@ -1,8 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Linq;
 using AutoMapper;
 using EnsureThat;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -13,6 +11,9 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
+using System;
+using System.Linq;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
@@ -62,6 +63,19 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             }
 
             return response;
+        }
+
+        public DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, Member owner, Member member)
+        {
+            var firstMember = owner != null ? _mapper.Map<MemberSummary>(owner) : new MemberSummary();
+            var secondMember = owner != null ? _mapper.Map<MemberSummary>(member) : new MemberSummary();
+
+            return new DirectChannelResponse
+            {
+                DirectChannelId = directChannelId,
+                Owner = firstMember,
+                Member = secondMember
+            };
         }
 
         public AttachmentResponse MapToAttachmentResponse(Attachment attachment)
