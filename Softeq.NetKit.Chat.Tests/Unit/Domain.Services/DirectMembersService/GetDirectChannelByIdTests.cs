@@ -5,9 +5,9 @@ using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
@@ -86,16 +86,16 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync(member)
                 .Verifiable();
 
-            var directMembersResponse = new DirectChannelResponse();
+            var channelResponse = new DirectChannelResponse();
             _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(directChannel.Id, owner, member))
-                .Returns(directMembersResponse)
+                .Returns(channelResponse)
                 .Verifiable();
 
             // Act
             var act = await DirectMessageService.GetDirectChannelById(directId);
 
             // Assert
-            act.Should().BeEquivalentTo(directMembersResponse);
+            act.Should().BeEquivalentTo(channelResponse);
 
             VerifyMocks();
         }

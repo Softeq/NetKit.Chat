@@ -1,8 +1,8 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {

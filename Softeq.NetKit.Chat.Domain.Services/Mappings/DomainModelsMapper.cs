@@ -7,13 +7,13 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using System;
 using System.Linq;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
@@ -72,7 +72,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             return new DirectChannelResponse
             {
-                DirectMembersId = directChannelId,
+                DirectChannelId = directChannelId,
                 Owner = firstMember,
                 Member = secondMember
             };

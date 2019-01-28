@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

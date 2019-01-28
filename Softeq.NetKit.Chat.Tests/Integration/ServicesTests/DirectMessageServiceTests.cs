@@ -63,7 +63,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             //Assert
             Assert.NotNull(response);
-            Assert.Equal(response.DirectMembersId, directId);
+            Assert.Equal(response.DirectChannelId, directId);
             Assert.Equal(response.Owner.Id, _firstMemberId);
             Assert.Equal(response.Member.Id, _secondMemberId);
         }
@@ -83,7 +83,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             // Assert
             Assert.NotNull(response);
-            Assert.Equal(response.DirectMembersId, directId);
+            Assert.Equal(response.DirectChannelId, directId);
         }
     }
 }

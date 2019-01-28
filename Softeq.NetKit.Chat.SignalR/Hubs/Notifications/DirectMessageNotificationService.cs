@@ -3,9 +3,9 @@
 
 using Microsoft.AspNetCore.SignalR;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
@@ -28,7 +28,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             };
 
             // Tell the people that direct was created.
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.DirectMembersCreated, request.DirectMembersId, request.Owner.Id, connectionId);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.DirectMembersCreated, request.DirectChannelId, request.Owner.Id, connectionId);
         }
     }
 }

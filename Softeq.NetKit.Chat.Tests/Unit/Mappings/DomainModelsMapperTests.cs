@@ -210,7 +210,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             var response = _domainModelsMapper.MapToDirectChannelResponse(directMembersId, owner, member);
 
             // Assert
-            response.DirectMembersId.Should().Be(directMembersId);
+            response.DirectChannelId.Should().Be(directMembersId);
             response.Owner.AvatarUrl.Should().Contain($"/{owner.PhotoName}");
             response.Member.AvatarUrl.Should().Contain($"/{member.PhotoName}");
             response.Owner.UserName.Should().Be(owner.Name);

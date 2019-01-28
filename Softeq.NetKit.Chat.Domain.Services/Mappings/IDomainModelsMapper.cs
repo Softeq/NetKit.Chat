@@ -6,7 +6,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;

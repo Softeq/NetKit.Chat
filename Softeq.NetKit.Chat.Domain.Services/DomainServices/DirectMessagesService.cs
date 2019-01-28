@@ -7,10 +7,10 @@ using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using System;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

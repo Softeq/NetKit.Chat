@@ -5,10 +5,10 @@ using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using System;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
@@ -57,15 +57,15 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
+            var createDirectChannelRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectMemberRequest); };
+            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectChannelRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
                 .And.Message.Should()
-                .Be($"Unable to create direct members. Member {nameof(createDirectMemberRequest.MemberId)}:{createDirectMemberRequest.MemberId} is not found.");
+                .Be($"Unable to create direct members. Member {nameof(createDirectChannelRequest.MemberId)}:{createDirectChannelRequest.MemberId} is not found.");
 
             VerifyMocks();
         }
