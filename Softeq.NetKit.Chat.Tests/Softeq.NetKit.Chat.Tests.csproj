@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Integration\DirectMembersServiceTests\**" />
+    <EmbeddedResource Remove="Integration\DirectMembersServiceTests\**" />
+    <None Remove="Integration\DirectMembersServiceTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.0" />
     <PackageReference Include="AutoMapper" Version="8.0.0" />
