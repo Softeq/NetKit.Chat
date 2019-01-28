@@ -14,7 +14,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel
             MemberId = memberId;
         }
 
-        public Guid DirectMembersId { get; set; }
+        public Guid DirectChannelId { get; set; }
         public Guid OwnerId { get; }
         public Guid MemberId { get; }
     }

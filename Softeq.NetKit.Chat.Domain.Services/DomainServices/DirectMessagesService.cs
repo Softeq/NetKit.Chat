@@ -7,10 +7,10 @@ using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -44,9 +44,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to create direct members. Member { nameof(request.MemberId) }:{ request.MemberId} is not found.");
             }
 
-            await UnitOfWork.DirectChannelRepository.CreateDirectChannel(request.DirectMembersId, request.OwnerId, request.MemberId);
+            await UnitOfWork.DirectChannelRepository.CreateDirectChannel(request.DirectChannelId, request.OwnerId, request.MemberId);
 
-            return DomainModelsMapper.MapToDirectChannelResponse(request.DirectMembersId, owner, member);
+            return DomainModelsMapper.MapToDirectChannelResponse(request.DirectChannelId, owner, member);
         }
 
         public async Task<DirectChannelResponse> GetDirectChannelById(Guid id)

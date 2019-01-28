@@ -5,10 +5,10 @@ using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMembers;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
@@ -95,7 +95,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             _directMemberRepositoryMock.Setup(x => x.CreateDirectChannel(It.Is<Guid>(id => id.Equals(directMembersId)),
                 It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm => sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
 
-            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId) { DirectMembersId = directMembersId };
+            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId) { DirectChannelId = directMembersId };
 
             _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(
                     It.Is<Guid>(id => id.Equals(directMembersId)),

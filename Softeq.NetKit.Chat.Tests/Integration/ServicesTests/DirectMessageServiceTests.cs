@@ -6,7 +6,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using System;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var request = new CreateDirectChannelRequest(SaasFirstUserId, _firstMemberId, _secondMemberId)
             {
-                DirectMembersId = directId
+                DirectChannelId = directId
             };
 
             // Act
@@ -69,17 +69,17 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Fact]
-        public async Task GetDirectMemberByIdAsyncTest()
+        public async Task GetDirectChannelByIdAsyncTest()
         {
             // Arrange
             var directId = new Guid("1DF71432-00F4-4B3C-82AA-D26BA86F6AF6");
 
-            var request = new CreateDirectChannelRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectMembersId = directId };
+            var request = new CreateDirectChannelRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectChannelId = directId };
 
             await _directMessageService.CreateDirectChannel(request);
 
             // Act
-            var response = await _directMessageService.GetDirectChannelById(request.DirectMembersId);
+            var response = await _directMessageService.GetDirectChannelById(request.DirectChannelId);
 
             // Assert
             Assert.NotNull(response);
