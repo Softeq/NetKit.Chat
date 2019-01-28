@@ -189,7 +189,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         }
 
         [Fact]
-        public void MapToDirectChannelResponse_ShouldMapTwoMembersToDirectMembersResponse()
+        public void MapToDirectChannelResponse_ShouldMapTwoMembersToDirectChannelResponse()
         {
             // Arrange
             var channelId = new Guid("6CCC3DD2-826C-4523-AB2C-A3839BB166CB");

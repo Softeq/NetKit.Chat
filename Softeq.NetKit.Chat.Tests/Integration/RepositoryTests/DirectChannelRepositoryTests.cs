@@ -49,19 +49,19 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         }
 
         [Fact]
-        public async Task CreateDirectMembers_ShouldReturnNewDirectMembers()
+        public async Task CreateDirectChannel_ShouldReturnNewDirectChannel()
         {
             // Arrange
             var id = new Guid("B815B750-BB22-45E0-B332-0EE39D9A7A5C");
 
             // Act
             await UnitOfWork.DirectChannelRepository.CreateDirectChannel(id, _ownerId, _memberId);
-            var newDirectMembers = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
+            var directChannel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
 
             // Assert
-            newDirectMembers.Id.Should().Be(id);
-            newDirectMembers.OwnerId.Should().Be(_ownerId);
-            newDirectMembers.MemberId.Should().Be(_memberId);
+            directChannel.Id.Should().Be(id);
+            directChannel.OwnerId.Should().Be(_ownerId);
+            directChannel.MemberId.Should().Be(_memberId);
         }
     }
 }

@@ -8,7 +8,7 @@ using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
 
-namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
+namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
     public abstract class DirectMessagesTestBase
     {

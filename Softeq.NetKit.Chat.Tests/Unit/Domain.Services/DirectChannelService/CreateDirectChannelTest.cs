@@ -11,7 +11,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Xunit;
 
-namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
+namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
     public class CreateDirectChannelTest : DirectMessagesTestBase
     {
@@ -71,10 +71,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
         }
 
         [Fact]
-        public async Task ShouldReturnCreateDirectMemberResponse()
+        public async Task ShouldReturnCreateDirectChannelResponse()
         {
             // Arrange
-            var directMembersId = new Guid("CF5485B5-9613-447C-AE61-DCE038782F6D");
+            var channelId = new Guid("CF5485B5-9613-447C-AE61-DCE038782F6D");
             var saasUserId = "4C21A8B9-75CD-43BA-9F18-2D86D479E9F0";
             var firstMemberId = new Guid("29B700AC-42E5-4148-8230-6A61E0648F32");
             var secondMemberId = new Guid("AC926107-F55C-49EC-A48E-B9985CEDB473");
@@ -92,20 +92,20 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync(secondMember)
                 .Verifiable();
 
-            _directChannelRepositoryMock.Setup(x => x.CreateDirectChannel(It.Is<Guid>(id => id.Equals(directMembersId)),
+            _directChannelRepositoryMock.Setup(x => x.CreateDirectChannel(It.Is<Guid>(id => id.Equals(channelId)),
                 It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm => sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
 
-            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId) { DirectChannelId = directMembersId };
+            var createDirectChannelRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId) { DirectChannelId = channelId };
 
             _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(
-                    It.Is<Guid>(id => id.Equals(directMembersId)),
+                    It.Is<Guid>(id => id.Equals(channelId)),
                     It.Is<Member>(fm => fm.Equals(firstMember)),
                     It.Is<Member>(sm => sm.Equals(secondMember))))
                 .Returns(directChannelResponse)
                 .Verifiable();
 
             // Act
-            var act = await DirectMessageService.CreateDirectChannel(createDirectMemberRequest);
+            var act = await DirectMessageService.CreateDirectChannel(createDirectChannelRequest);
 
             // Assert
             act.Should().BeEquivalentTo(directChannelResponse);

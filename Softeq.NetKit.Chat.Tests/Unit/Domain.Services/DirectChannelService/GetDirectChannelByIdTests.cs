@@ -1,21 +1,21 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using System;
-using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Xunit;
 
-namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
+namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
     public class GetDirectChannelByIdTests : DirectMessagesTestBase
     {
         [Fact]
-        public void ShouldThrowIfDirectMembersDoesNotExist()
+        public void ShouldThrowIfDirectChannelDoesNotExist()
         {
             // Arrange
             var id = new Guid("29251B3A-4D91-4664-A239-5EF3AED81FD6");

@@ -48,7 +48,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Fact]
-        public async Task CreateDirectMemberAsyncTest()
+        public async Task CreateDirectChannelAsyncTest()
         {
             // Arrange
             var directId = new Guid("1DF71432-00F4-4B3C-82AA-D26BA86F6AF6");
