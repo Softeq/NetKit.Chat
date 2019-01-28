@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.CreateDirectMembers(createDirectMemberRequest); };
+            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectMemberRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -60,7 +60,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.CreateDirectMembers(createDirectMemberRequest); };
+            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectMemberRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -97,7 +97,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 
             var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId) { DirectMembersId = directMembersId };
 
-            _domainModelsMapperMock.Setup(x => x.MapToDirectMembersResponse(
+            _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(
                     It.Is<Guid>(id => id.Equals(directMembersId)),
                     It.Is<Member>(fm => fm.Equals(firstMember)),
                     It.Is<Member>(sm => sm.Equals(secondMember))))
@@ -105,7 +105,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .Verifiable();
 
             // Act
-            var act = await DirectMessageService.CreateDirectMembers(createDirectMemberRequest);
+            var act = await DirectMessageService.CreateDirectChannel(createDirectMemberRequest);
 
             // Assert
             act.Should().BeEquivalentTo(createDirectMembersResponse);

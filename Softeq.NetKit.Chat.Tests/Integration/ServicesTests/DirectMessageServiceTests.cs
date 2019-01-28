@@ -59,7 +59,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             };
 
             // Act
-            var response = await _directMessageService.CreateDirectMembers(request);
+            var response = await _directMessageService.CreateDirectChannel(request);
 
             //Assert
             Assert.NotNull(response);
@@ -76,10 +76,10 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var request = new CreateDirectMembersRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectMembersId = directId };
 
-            await _directMessageService.CreateDirectMembers(request);
+            await _directMessageService.CreateDirectChannel(request);
 
             // Act
-            var response = await _directMessageService.GetDirectMembersById(request.DirectMembersId);
+            var response = await _directMessageService.GetDirectChannelById(request.DirectMembersId);
 
             // Assert
             Assert.NotNull(response);

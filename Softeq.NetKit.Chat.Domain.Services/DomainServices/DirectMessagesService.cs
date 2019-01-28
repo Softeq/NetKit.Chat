@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<DirectChannelResponse> CreateDirectMembers(CreateDirectMembersRequest request)
+        public async Task<DirectChannelResponse> CreateDirectChannel(CreateDirectMembersRequest request)
         {
             var firstDirectMember = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (firstDirectMember == null)
@@ -46,10 +46,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             await UnitOfWork.DirectChannelRepository.CreateDirectChannel(request.DirectMembersId, request.OwnerId, request.MemberId);
 
-            return DomainModelsMapper.MapToDirectMembersResponse(request.DirectMembersId, firstDirectMember, secondDirectMember);
+            return DomainModelsMapper.MapToDirectChannelResponse(request.DirectMembersId, firstDirectMember, secondDirectMember);
         }
 
-        public async Task<DirectChannelResponse> GetDirectMembersById(Guid id)
+        public async Task<DirectChannelResponse> GetDirectChannelById(Guid id)
         {
             var directMembers = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
             if (directMembers == null)
@@ -69,7 +69,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member {nameof(directMembers.MemberId)}:{directMembers.MemberId} is not found.");
             }
 
-            return DomainModelsMapper.MapToDirectMembersResponse(directMembers.Id, owner, member);
+            return DomainModelsMapper.MapToDirectChannelResponse(directMembers.Id, owner, member);
         }
     }
 }

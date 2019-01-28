@@ -208,7 +208,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             };
 
             // Act
-            var response = _domainModelsMapper.MapToDirectMembersResponse(directMembersId, owner, member);
+            var response = _domainModelsMapper.MapToDirectChannelResponse(directMembersId, owner, member);
 
             // Assert
             response.DirectMembersId.Should().Be(directMembersId);

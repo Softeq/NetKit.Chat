@@ -26,7 +26,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .Verifiable();
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.GetDirectMembersById(id); };
+            Func<Task> act = async () => { await DirectMessageService.GetDirectChannelById(id); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -54,7 +54,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .Verifiable();
 
             //Act
-            Func<Task> act = async () => { await DirectMessageService.GetDirectMembersById(id); };
+            Func<Task> act = async () => { await DirectMessageService.GetDirectChannelById(id); };
 
             //Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -88,12 +88,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .Verifiable();
 
             var directMembersResponse = new DirectChannelResponse();
-            _domainModelsMapperMock.Setup(x => x.MapToDirectMembersResponse(directMembers.Id, owner, member))
+            _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(directMembers.Id, owner, member))
                 .Returns(directMembersResponse)
                 .Verifiable();
 
             // Act
-            var act = await DirectMessageService.GetDirectMembersById(directId);
+            var act = await DirectMessageService.GetDirectChannelById(directId);
 
             // Assert
             act.Should().BeEquivalentTo(directMembersResponse);

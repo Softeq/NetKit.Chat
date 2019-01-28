@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task<DirectChannelResponse> CreateDirectMembers(CreateDirectMembersRequest request, string connectionId)
         {
-            var createDirectMembersResponse = await _directMessageService.CreateDirectMembers(request);
+            var createDirectMembersResponse = await _directMessageService.CreateDirectChannel(request);
 
             await _directMessageNotificationService.OnCreateDirectMembers(createDirectMembersResponse, connectionId);
 
