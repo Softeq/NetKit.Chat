@@ -5,9 +5,9 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers
 {
-    public class CreateDirectMembersRequest : UserRequest
+    public class CreateDirectChannelRequest : UserRequest
     {
-        public CreateDirectMembersRequest(string saasUserId, Guid ownerId, Guid memberId)
+        public CreateDirectChannelRequest(string saasUserId, Guid ownerId, Guid memberId)
             : base(saasUserId)
         {
             OwnerId = ownerId;

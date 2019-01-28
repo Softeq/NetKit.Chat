@@ -10,7 +10,7 @@ using Softeq.NetKit.Chat.Domain.Services.Utility;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 {
-    public abstract class DirectMessageTestBase
+    public abstract class DirectMessagesTestBase
     {
         protected readonly IDirectMessageService DirectMessageService;
 
@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
         protected readonly Mock<INotificationRepository> _notificationRepositoryMock = new Mock<INotificationRepository>(MockBehavior.Strict);
         protected readonly Mock<IDirectChannelRepository> _directMemberRepositoryMock = new Mock<IDirectChannelRepository>(MockBehavior.Strict);
 
-        protected DirectMessageTestBase()
+        protected DirectMessagesTestBase()
         {
             _unitOfWorkMock.Setup(x => x.ChannelRepository).Returns(_channelRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.MemberRepository).Returns(_memberRepositoryMock.Object);

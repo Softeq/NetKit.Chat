@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             _directMessageNotificationService = directMessageNotificationService;
         }
 
-        public async Task<DirectChannelResponse> CreateDirectMembers(CreateDirectMembersRequest request, string connectionId)
+        public async Task<DirectChannelResponse> CreateDirectMembers(CreateDirectChannelRequest request, string connectionId)
         {
             var createDirectMembersResponse = await _directMessageService.CreateDirectChannel(request);
 

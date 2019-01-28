@@ -6,8 +6,8 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers;
 using Xunit;
-using CreateDirectMembersRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectMembers.CreateDirectMembersRequest;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 {
@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             // Arrange
             var directId = new Guid("1DF71432-00F4-4B3C-82AA-D26BA86F6AF6");
 
-            var request = new CreateDirectMembersRequest(SaasFirstUserId, _firstMemberId, _secondMemberId)
+            var request = new CreateDirectChannelRequest(SaasFirstUserId, _firstMemberId, _secondMemberId)
             {
                 DirectMembersId = directId
             };
@@ -74,7 +74,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             // Arrange
             var directId = new Guid("1DF71432-00F4-4B3C-82AA-D26BA86F6AF6");
 
-            var request = new CreateDirectMembersRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectMembersId = directId };
+            var request = new CreateDirectChannelRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectMembersId = directId };
 
             await _directMessageService.CreateDirectChannel(request);
 

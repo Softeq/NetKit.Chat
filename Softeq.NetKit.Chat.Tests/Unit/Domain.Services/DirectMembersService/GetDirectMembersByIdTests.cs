@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 {
-    public class GetDirectMembersByIdTests : DirectMessageTestBase
+    public class GetDirectMembersByIdTests : DirectMessagesTestBase
     {
         [Fact]
         public void ShouldThrowIfDirectMembersDoesNotExist()

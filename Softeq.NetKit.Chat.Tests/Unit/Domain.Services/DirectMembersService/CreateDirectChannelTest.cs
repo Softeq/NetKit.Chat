@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 {
-    public class CreateDirectMembersTest : DirectMessageTestBase
+    public class CreateDirectChannelTest : DirectMessagesTestBase
     {
         [Fact]
         public void ShouldThrowIfOwnerDoesNotExist()
@@ -27,7 +27,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId);
+            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
             Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectMemberRequest); };
@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId);
+            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
             Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectMemberRequest); };
@@ -95,7 +95,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             _directMemberRepositoryMock.Setup(x => x.CreateDirectChannel(It.Is<Guid>(id => id.Equals(directMembersId)),
                 It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm => sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
 
-            var createDirectMemberRequest = new CreateDirectMembersRequest(saasUserId, firstMemberId, secondMemberId) { DirectMembersId = directMembersId };
+            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId) { DirectMembersId = directMembersId };
 
             _domainModelsMapperMock.Setup(x => x.MapToDirectChannelResponse(
                     It.Is<Guid>(id => id.Equals(directMembersId)),
