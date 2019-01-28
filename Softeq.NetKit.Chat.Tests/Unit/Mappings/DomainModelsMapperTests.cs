@@ -192,7 +192,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         public void MapToDirectChannelResponse_ShouldMapTwoMembersToDirectMembersResponse()
         {
             // Arrange
-            var directMembersId = new Guid("6CCC3DD2-826C-4523-AB2C-A3839BB166CB");
+            var channelId = new Guid("6CCC3DD2-826C-4523-AB2C-A3839BB166CB");
 
             var owner = new Member
             {
@@ -207,10 +207,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             };
 
             // Act
-            var response = _domainModelsMapper.MapToDirectChannelResponse(directMembersId, owner, member);
+            var response = _domainModelsMapper.MapToDirectChannelResponse(channelId, owner, member);
 
             // Assert
-            response.DirectChannelId.Should().Be(directMembersId);
+            response.DirectChannelId.Should().Be(channelId);
             response.Owner.AvatarUrl.Should().Contain($"/{owner.PhotoName}");
             response.Member.AvatarUrl.Should().Contain($"/{member.PhotoName}");
             response.Owner.UserName.Should().Be(owner.Name);

@@ -9,12 +9,12 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 {
-    public class DirectMembersRepositoryTests : BaseTest
+    public class DirectChannelRepositoryTests : BaseTest
     {
         private Guid _ownerId = new Guid("F5092772-3BEF-40C7-8FFD-2E0773DA3C1F");
         private Guid _memberId = new Guid("8E5FCE8B-4BD3-4D97-AF1C-07FFD4933406");
 
-        public DirectMembersRepositoryTests()
+        public DirectChannelRepositoryTests()
         {
             var firstMember = new Member
             {

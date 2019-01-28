@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get direct members. Chat with {nameof(id)}:{id} is not found.");
+                .And.Message.Should().Be($"Unable to get direct channel. Chat with {nameof(id)}:{id} is not found.");
 
             VerifyMocks();
         }
@@ -42,10 +42,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var ownerId = new Guid("0D8BB89F-5A10-4E7C-8F49-73CE5B32DCD6");
             var memberId = new Guid("93F52D8D-0187-478B-9978-6A07D62A286C");
 
-            var directMembers = new DirectChannel { Id = id, OwnerId = ownerId, MemberId = memberId };
+            var directChannel = new DirectChannel { Id = id, OwnerId = ownerId, MemberId = memberId };
 
             _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(id))))
-                .ReturnsAsync(directMembers)
+                .ReturnsAsync(directChannel)
                 .Verifiable();
 
             _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
 
             //Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get member {nameof(directMembers.OwnerId)}:{directMembers.OwnerId} is not found.");
+                .And.Message.Should().Be($"Unable to get member {nameof(directChannel.OwnerId)}:{directChannel.OwnerId} is not found.");
 
             VerifyMocks();
         }

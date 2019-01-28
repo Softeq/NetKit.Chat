@@ -35,13 +35,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to create direct members. Member { nameof(request.SaasUserId) }:{ request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to create direct channel. Member { nameof(request.SaasUserId) }:{ request.SaasUserId} is not found.");
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.MemberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to create direct members. Member { nameof(request.MemberId) }:{ request.MemberId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to create direct channel. Member { nameof(request.MemberId) }:{ request.MemberId} is not found.");
             }
 
             await UnitOfWork.DirectChannelRepository.CreateDirectChannel(request.DirectChannelId, request.OwnerId, request.MemberId);
@@ -54,7 +54,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
             if (channel == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get direct members. Chat with {nameof(id)}:{id} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to get direct channel. Chat with {nameof(id)}:{id} is not found.");
             }
 
             var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(channel.OwnerId);

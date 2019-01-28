@@ -27,14 +27,14 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var createDirectMemberRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
+            var createDirectChannelRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectMemberRequest); };
+            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectChannelRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to create direct members. Member { nameof(createDirectMemberRequest.SaasUserId) }:{ createDirectMemberRequest.SaasUserId} is not found.");
+                .And.Message.Should().Be($"Unable to create direct channel. Member { nameof(createDirectChannelRequest.SaasUserId) }:{ createDirectChannelRequest.SaasUserId} is not found.");
 
             VerifyMocks();
         }
@@ -65,7 +65,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
                 .And.Message.Should()
-                .Be($"Unable to create direct members. Member {nameof(createDirectChannelRequest.MemberId)}:{createDirectChannelRequest.MemberId} is not found.");
+                .Be($"Unable to create direct channel. Member {nameof(createDirectChannelRequest.MemberId)}:{createDirectChannelRequest.MemberId} is not found.");
 
             VerifyMocks();
         }
@@ -82,7 +82,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
             var firstMember = new Member { Id = firstMemberId };
             var secondMember = new Member { Id = secondMemberId };
 
-            var createDirectMembersResponse = new DirectChannelResponse();
+            var directChannelResponse = new DirectChannelResponse();
 
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saas => saas.Equals(saasUserId))))
                     .ReturnsAsync(firstMember)
@@ -101,14 +101,14 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectMembersService
                     It.Is<Guid>(id => id.Equals(directMembersId)),
                     It.Is<Member>(fm => fm.Equals(firstMember)),
                     It.Is<Member>(sm => sm.Equals(secondMember))))
-                .Returns(createDirectMembersResponse)
+                .Returns(directChannelResponse)
                 .Verifiable();
 
             // Act
             var act = await DirectMessageService.CreateDirectChannel(createDirectMemberRequest);
 
             // Assert
-            act.Should().BeEquivalentTo(createDirectMembersResponse);
+            act.Should().BeEquivalentTo(directChannelResponse);
 
             VerifyMocks();
         }
