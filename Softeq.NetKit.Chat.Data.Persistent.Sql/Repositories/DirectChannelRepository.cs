@@ -12,25 +12,25 @@ using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    public class DirectChannelsRepository : IDirectChannelRepository
+    public class DirectChannelRepository : IDirectChannelRepository
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
-        public DirectChannelsRepository(ISqlConnectionFactory sqlConnectionFactory)
+        public DirectChannelRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
             Ensure.That(sqlConnectionFactory).IsNotNull();
 
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task CreateDirectChannel(Guid directId, Guid ownerId, Guid memberId)
+        public async Task CreateDirectChannel(Guid directChannelId, Guid ownerId, Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"INSERT INTO DirectChannel(Id, ownerId, MemberId) 
-                                 VALUES (@directId, @ownerId, @memberId)";
+                                 VALUES (@directChannelId, @ownerId, @memberId)";
 
-                await connection.ExecuteScalarAsync(sqlQuery, new { directId, ownerId = ownerId, memberId });
+                await connection.ExecuteScalarAsync(sqlQuery, new { directChannelId, ownerId, memberId });
             }
         }
 
