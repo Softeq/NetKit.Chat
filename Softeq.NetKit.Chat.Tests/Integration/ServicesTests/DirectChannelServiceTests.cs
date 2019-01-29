@@ -19,11 +19,11 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         private readonly Guid _firstMemberId = new Guid("2c47a9d9-faf5-4ac2-92a4-d2770afc58e8");
         private readonly Guid _secondMemberId = new Guid("9A999BF0-AA09-41B4-9305-64031F271B8A");
 
-        private readonly IDirectMessageService _directMessageService;
+        private readonly IDirectChannelService _directChannelService;
 
         public DirectChannelServiceTests()
         {
-            _directMessageService = LifetimeScope.Resolve<IDirectMessageService>();
+            _directChannelService = LifetimeScope.Resolve<IDirectChannelService>();
 
             var firstMember = new Member
             {
@@ -59,7 +59,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             };
 
             // Act
-            var response = await _directMessageService.CreateDirectChannel(request);
+            var response = await _directChannelService.CreateDirectChannel(request);
 
             //Assert
             Assert.NotNull(response);
@@ -76,10 +76,10 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var request = new CreateDirectChannelRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectChannelId = directId };
 
-            await _directMessageService.CreateDirectChannel(request);
+            await _directChannelService.CreateDirectChannel(request);
 
             // Act
-            var response = await _directMessageService.GetDirectChannelById(request.DirectChannelId);
+            var response = await _directChannelService.GetDirectChannelById(request.DirectChannelId);
 
             // Assert
             Assert.NotNull(response);

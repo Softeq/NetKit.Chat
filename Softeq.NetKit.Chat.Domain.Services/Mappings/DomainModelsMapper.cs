@@ -78,6 +78,21 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             };
         }
 
+        public DirectMessageResponse MapToDirectMessageResponse(DirectMessage message, Member owner)
+        {
+            var member = owner != null ? _mapper.Map<MemberSummary>(owner) : new MemberSummary();
+
+            return new DirectMessageResponse()
+            {
+                Id = message.Id,
+                Body = message.Body,
+                Created = message.Created,
+                DirectChannelId = message.DirectChannelId,
+                Owner = member,
+                Updated = message.Updated
+            };
+        }
+
         public AttachmentResponse MapToAttachmentResponse(Attachment attachment)
         {
             return attachment != null ? _mapper.Map<AttachmentResponse>(attachment) : new AttachmentResponse();

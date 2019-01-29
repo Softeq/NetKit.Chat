@@ -15,6 +15,5 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
        Task UpdateMessageAsync(DirectMessage message);
        Task<IReadOnlyList<DirectMessage>> GetMessagesByChannelIdAsync(Guid channelId);
        Task<DirectMessage> GetMessagesByIdAsync(Guid messageId);
-
    }
 }

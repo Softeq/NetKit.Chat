@@ -8,13 +8,15 @@ using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
-    internal class DirectChannelService : BaseService, IDirectMessageService
+    internal class DirectChannelService : BaseService, IDirectChannelService
     {
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IDirectChannelRepository _directChannelRepository;
@@ -70,6 +72,45 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             return DomainModelsMapper.MapToDirectChannelResponse(channel.Id, owner, member);
+        }
+
+        public async Task<DirectMessageResponse> AddMessageAsync(DirectMessage message)
+        {
+            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(message.DirectChannelId);
+            if (channel == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to add direct message. Channel { nameof(message.DirectChannelId) }:{ message.DirectChannelId} is not found.");
+            }
+
+            var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(message.OwnerId);
+            if (owner == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to create direct channel. Member { nameof(message.OwnerId) }:{ message.OwnerId} is not found.");
+            }
+
+            await UnitOfWork.DirectMessagesRepository.AddMessageAsync(message);
+
+            return DomainModelsMapper.MapToDirectMessageResponse(message, owner);
+        }
+
+        public Task DeleteMessageAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateMessageAsync(DirectMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<DirectMessage>> GetMessagesByChannelIdAsync(Guid channelId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DirectMessage> GetMessagesByIdAsync(Guid messageId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
