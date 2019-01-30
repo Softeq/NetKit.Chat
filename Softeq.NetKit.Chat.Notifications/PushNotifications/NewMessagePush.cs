@@ -1,15 +1,16 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Softeq.NetKit.Services.PushNotifications.Models;
 
 namespace Softeq.NetKit.Chat.Notifications.PushNotifications
 {
-    public class NewMessagePush : BasePushNotificationModel
+    public class NewMessagePush : PushNotificationMessage
     {
         public NewMessagePush()
         {
             Title = "New chat message.";
             Body = "New chat message. Check it out!";
-            NotificationType = PushNotificationType.ChatMessage;
+            NotificationType = (int)PushNotificationType.ChatMessage;
         }
 
         [JsonProperty("channelId")]
