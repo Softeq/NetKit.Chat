@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Notifications.PushNotifications;
+using Softeq.NetKit.Services.PushNotifications.Models;
 
 namespace Softeq.NetKit.Chat.Notifications.Services
 {
     public interface IPushNotificationService
     {
-        Task SubscribeUserOnTagAsync(string userId, string tag);
-        Task UnsubscribeUserFromTagAsync(string userId, string tag);
-        Task<bool> SendToSingleAsync(string userId, IPushNotificationModel model);
-        Task<bool> SendForTagAsync(IPushNotificationModel model, List<string> includedTags, List<string> excludedTags);
+        Task SubscribeUserOnTagAsync(string userId, string tagName);
+        Task UnsubscribeUserFromTagAsync(string userId, string tagName);
+        Task<bool> SendToSingleAsync(string userId, PushNotificationMessage model);
+        Task<bool> SendForTagAsync(PushNotificationMessage model, List<string> includedTags, List<string> excludedTags);
     }
 }
