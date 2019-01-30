@@ -3,11 +3,12 @@
 
 using Autofac;
 using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.Exceptions;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
@@ -153,7 +154,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             await _directChannelService.DeleteMessageAsync(messageId);
 
             // Assert
-            NetKitChatNotFoundException ex =  Assert.Throws<NetKitChatNotFoundException>(() => _directChannelService.GetMessagesByIdAsync(messageId).GetAwaiter().GetResult());
+            NetKitChatNotFoundException ex = Assert.Throws<NetKitChatNotFoundException>(() => _directChannelService.GetMessagesByIdAsync(messageId).GetAwaiter().GetResult());
             Assert.Equal(ex.Message, $"Unable to get direct message. Message with {nameof(messageId)}:{messageId} is not found.");
         }
 
@@ -222,12 +223,105 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             };
 
             // Act
-           var directMessageResponse = await _directChannelService.UpdateMessageAsync(newDirectMessage);
+            var directMessageResponse = await _directChannelService.UpdateMessageAsync(newDirectMessage);
 
             // Assert
             Assert.Equal(directMessageResponse.Id, directMessage.Id);
             Assert.Equal(directMessageResponse.Id, newDirectMessage.Id);
             Assert.Equal(directMessageResponse.Body, newDirectMessage.Body);
+        }
+
+        [Fact]
+        public async Task GetMessagesByChannelIdAsyncTest()
+        {
+            var directChannelId = new Guid("9EDBC8A4-2EEC-4FB2-8410-A2852EB8989A");
+            var ownerId = new Guid("2C1CFFE1-3656-4100-9364-6D100D006FA0");
+            var memberId = new Guid("B2C9F384-B0E1-45BE-B729-4DB1BB44FDBF");
+
+            var owner = new Member
+            {
+                Id = ownerId,
+                Email = "test",
+                Role = UserRole.Admin,
+                IsAfk = true,
+                IsBanned = true,
+                LastNudged = DateTimeOffset.UtcNow,
+                LastActivity = DateTimeOffset.UtcNow,
+                Name = "test",
+                SaasUserId = "test",
+                Status = UserStatus.Offline
+            };
+
+            var member = new Member
+            {
+                Id = memberId,
+                Email = "test",
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastNudged = DateTimeOffset.UtcNow,
+                LastActivity = DateTimeOffset.UtcNow,
+                Name = "test",
+                SaasUserId = "test",
+                Status = UserStatus.Offline
+            };
+
+            UnitOfWork.MemberRepository.AddMemberAsync(owner).GetAwaiter().GetResult();
+            UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
+            UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
+
+            var directMessage01 = new DirectMessage
+            {
+                Body = "TestBody01",
+                Created = DateTimeOffset.UtcNow,
+                DirectChannelId = directChannelId,
+                Id = new Guid("661F903F-246F-434A-AD7A-A5ED76C5919A"),
+                OwnerId = ownerId,
+                Updated = DateTimeOffset.UtcNow
+            };
+
+            var directMessage02 = new DirectMessage
+            {
+                Body = "TestBody02",
+                Created = DateTimeOffset.UtcNow,
+                DirectChannelId = directChannelId,
+                Id = new Guid("6F01ABA0-6DD4-49BC-A6DD-83350E7F6D74"),
+                OwnerId = ownerId,
+                Updated = DateTimeOffset.UtcNow
+            };
+
+            var directMessage03 = new DirectMessage
+            {
+                Body = "TestBody03",
+                Created = DateTimeOffset.UtcNow,
+                DirectChannelId = directChannelId,
+                Id = new Guid("7AF65CEC-788B-4040-9590-96793615D9FD"),
+                OwnerId = memberId,
+                Updated = DateTimeOffset.UtcNow
+            };
+
+            var directMessage04 = new DirectMessage
+            {
+                Body = "TestBody04",
+                Created = DateTimeOffset.UtcNow,
+                DirectChannelId = directChannelId,
+                Id = new Guid("094630E1-95FC-4B9A-ABF9-D89361C44C07"),
+                OwnerId = ownerId,
+                Updated = DateTimeOffset.UtcNow
+            };
+
+            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage01).GetAwaiter().GetResult();
+            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage02).GetAwaiter().GetResult();
+            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage03).GetAwaiter().GetResult();
+            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage04).GetAwaiter().GetResult();
+
+            // Act
+            var directMessagesResponse = await _directChannelService.GetMessagesByChannelIdAsync(directChannelId);
+
+            // Assert
+            Assert.Equal(directMessagesResponse.Count, 4);
+            Assert.Equal(directMessagesResponse.Where(x =>x.Owner.Id == ownerId).Count(), 3);
+            Assert.Equal(directMessagesResponse.Where(x => x.Owner.Id == memberId).Count(), 1);
         }
     }
 }
