@@ -17,7 +17,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<DirectMessageResponse> AddMessageAsync(DirectMessage message);
         Task DeleteMessageAsync(Guid id);
         Task<DirectMessageResponse> UpdateMessageAsync(DirectMessage message);
-        Task<IReadOnlyList<DirectMessage>> GetMessagesByChannelIdAsync(Guid channelId);
+        Task<IList<DirectMessageResponse>> GetMessagesByChannelIdAsync(Guid channelId);
         Task<DirectMessageResponse> GetMessagesByIdAsync(Guid messageId);
     }
 }

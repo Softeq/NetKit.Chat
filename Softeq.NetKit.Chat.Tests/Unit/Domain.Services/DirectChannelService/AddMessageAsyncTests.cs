@@ -75,10 +75,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             var memberId = new Guid("BE5C68F1-5983-4C08-B57B-FD4EFD7295B8");
-            var member = new Member
-            {
-                Id = memberId
-            };
+            var member = new Member { Id = memberId };
             _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(member)
                 .Verifiable();
