@@ -72,11 +72,10 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             var members = await _memberService.GetChannelMembersAsync(_channelId);
             var channel = await _memberService.InviteMemberAsync(_memberId, _channelId);
 
-
             // Assert
             Assert.NotNull(channel);
             Assert.True(channel.MembersCount > 0);
-            Assert.True(members.Count() < channel.MembersCount);
+            Assert.True(members.Count < channel.MembersCount);
         }
 
         [Fact]

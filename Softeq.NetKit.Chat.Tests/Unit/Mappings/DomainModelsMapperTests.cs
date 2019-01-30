@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Autofac;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -188,6 +187,36 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.SaasUserId.Should().Be(client.Member.SaasUserId);
             response.UserName.Should().Be(client.Name);
         }
+
+        [Fact]
+        public void MapToDirectChannelResponse_ShouldMapTwoMembersToDirectChannelResponse()
+        {
+            // Arrange
+            var channelId = new Guid("6CCC3DD2-826C-4523-AB2C-A3839BB166CB");
+
+            var owner = new Member
+            {
+                PhotoName = "firstPhotoName",
+                Name = "FirstName"
+            };
+
+            var member = new Member
+            {
+                PhotoName = "secondPhotoName",
+                Name = "SecondName"
+            };
+
+            // Act
+            var response = _domainModelsMapper.MapToDirectChannelResponse(channelId, owner, member);
+
+            // Assert
+            response.DirectChannelId.Should().Be(channelId);
+            response.Owner.AvatarUrl.Should().Contain($"/{owner.PhotoName}");
+            response.Member.AvatarUrl.Should().Contain($"/{member.PhotoName}");
+            response.Owner.UserName.Should().Be(owner.Name);
+            response.Member.UserName.Should().Be(member.Name);
+        }
+
 
         [Fact]
         public void MapToNotificationSettingsResponse_ShouldMapNotificationSettingsResponse()

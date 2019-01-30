@@ -48,5 +48,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 
         private IForwardMessageRepository _forwardMessageRepository;
         public IForwardMessageRepository ForwardMessageRepository => _forwardMessageRepository ?? (_forwardMessageRepository = new ForwardMessageRepository(_sqlConnectionFactory));
+
+        private IDirectChannelRepository _directChannelRepository;
+        public IDirectChannelRepository DirectChannelRepository => _directChannelRepository ?? (_directChannelRepository = new DirectChannelsRepository(_sqlConnectionFactory));
     }
 }

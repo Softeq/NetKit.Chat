@@ -6,6 +6,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
@@ -24,6 +25,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         MemberSummary MapToMemberSummary(DomainModels.Member member);
         MessageResponse MapToMessageResponse(Message message, DateTimeOffset? lastReadMessageCreated = null);
         SettingsResponse MapToSettingsResponse(Settings settings);
+        DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, DomainModels.Member owner, DomainModels.Member member);
         NotificationSettingResponse MapToNotificationSettingsResponse(NotificationSettings notificationSettings);
     }
 }

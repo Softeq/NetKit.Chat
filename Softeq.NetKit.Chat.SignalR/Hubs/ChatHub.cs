@@ -25,6 +25,8 @@ using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Member;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Message;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.MessageAttachment;
 using Softeq.Serilog.Extension;
+using System;
+using System.Threading.Tasks;
 using DomainRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using SignalRRequest = Softeq.NetKit.Chat.SignalR.TransportModels.Request;
 
@@ -86,7 +88,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
             {
-            	var getClientRequest = new GetClientRequest(Context.ConnectionId);
+                var getClientRequest = new GetClientRequest(Context.ConnectionId);
                 return await _clientService.GetClientAsync(getClientRequest);
             }));
         }
