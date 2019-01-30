@@ -65,7 +65,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             // Act
             UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage);
-            var result = UnitOfWork.DirectMessagesRepository.GetMessagesByIdAsync(directMessage.Id).GetAwaiter().GetResult();
+            var result = UnitOfWork.DirectMessagesRepository.GetMessageByIdAsync(directMessage.Id).GetAwaiter().GetResult();
 
             // Assert
             result.Should().BeEquivalentTo(directMessage);
@@ -127,7 +127,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage);
             UnitOfWork.DirectMessagesRepository.DeleteMessageAsync(directMessageId).GetAwaiter();
 
-            var result = UnitOfWork.DirectMessagesRepository.GetMessagesByIdAsync(directMessageId).GetAwaiter().GetResult();
+            var result = UnitOfWork.DirectMessagesRepository.GetMessageByIdAsync(directMessageId).GetAwaiter().GetResult();
 
             // Assert
             result.Should().BeNull();
@@ -188,14 +188,14 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage);
 
             var newDirectMessageDatetime = DateTimeOffset.UtcNow;
-            var message = UnitOfWork.DirectMessagesRepository.GetMessagesByIdAsync(directMessageId).GetAwaiter().GetResult();
+            var message = UnitOfWork.DirectMessagesRepository.GetMessageByIdAsync(directMessageId).GetAwaiter().GetResult();
             message.Body = "NewTestBody";
             message.Updated = newDirectMessageDatetime;
 
             UnitOfWork.DirectMessagesRepository.UpdateMessageAsync(message).GetAwaiter().GetResult();
 
             // Act
-            var result = UnitOfWork.DirectMessagesRepository.GetMessagesByIdAsync(message.Id).GetAwaiter().GetResult();
+            var result = UnitOfWork.DirectMessagesRepository.GetMessageByIdAsync(message.Id).GetAwaiter().GetResult();
 
             // Assert
             result.Body.Should().Be(message.Body);

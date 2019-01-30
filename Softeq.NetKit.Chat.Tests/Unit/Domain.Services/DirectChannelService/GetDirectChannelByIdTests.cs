@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
-    public class GetDirectChannelByIdTests : DirectMessagesTestBase
+    public class GetDirectChannelByIdTests : DirectChannelTestBase
     {
         [Fact]
         public void ShouldThrowIfDirectChannelDoesNotExist()

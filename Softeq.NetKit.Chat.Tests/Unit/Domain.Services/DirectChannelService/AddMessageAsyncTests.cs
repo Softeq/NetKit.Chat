@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
-    public class AddMessageAsyncTests : DirectMessagesTestBase
+    public class AddMessageAsyncTests : DirectChannelTestBase
     {
         [Fact]
         public void ShouldThrowIfChannelDoesNotExist()
@@ -61,7 +61,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 
             //Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to create direct channel. Member { nameof(directMessage.OwnerId) }:{ directMessage.OwnerId} is not found.");
+                .And.Message.Should().Be($"Unable to get member. Member { nameof(directMessage.OwnerId) }:{ directMessage.OwnerId} is not found.");
 
             VerifyMocks();
         }

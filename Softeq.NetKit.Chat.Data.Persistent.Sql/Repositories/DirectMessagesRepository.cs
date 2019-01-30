@@ -70,7 +70,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<DirectMessage> GetMessagesByIdAsync(Guid messageId)
+        public async Task<DirectMessage> GetMessageByIdAsync(Guid messageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
