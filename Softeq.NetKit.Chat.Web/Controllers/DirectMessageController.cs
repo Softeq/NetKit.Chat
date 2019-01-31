@@ -5,11 +5,15 @@ using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Softeq.NetKit.Chat.SignalR.Sockets;
+using Softeq.NetKit.Chat.Web.TransportModels.Request.DirectChannel;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UpdateDirectMessageRequest = Softeq.NetKit.Chat.Web.TransportModels.Request.DirectChannel.UpdateDirectMessageRequest;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -20,38 +24,48 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     public class DirectMessageController : BaseApiController
     {
         private readonly IDirectMessageSocketService _directMessageSocketService;
+        private readonly IDirectChannelService _directChannelService;
 
-        public DirectMessageController(IDirectMessageSocketService directMessageSocketService)
+        public DirectMessageController(IDirectMessageSocketService directMessageSocketService, IDirectChannelService directChannelService)
         {
             Ensure.That(directMessageSocketService).IsNotNull();
+            Ensure.That(directChannelService).IsNotNull();
 
             _directMessageSocketService = directMessageSocketService;
+            _directChannelService = directChannelService;
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(DirectMessageResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> AddDirectMessageAsync([FromBody] TransportModels.Request.Channel.UpdateChannelRequest request)
+        public async Task<IActionResult> AddDirectMessageAsync([FromBody] AddDirectMessageRequest request)
         {
-            // TODO
-            return Ok();
+            var addDirectMessageRequest = new CreateDirectMessageRequest(GetCurrentSaasUserId(), request.DirectChannelId, request.Body);
+            var directMessageResponse = await _directMessageSocketService.AddMessage(addDirectMessageRequest);
+
+            return Ok(directMessageResponse);
         }
 
         [HttpPut]
         [ProducesResponseType(typeof(DirectMessageResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}")]
-        public async Task<IActionResult> UpdateDirectMessageAsync(Guid channelId, [FromBody] TransportModels.Request.Channel.UpdateChannelRequest request)
+        public async Task<IActionResult> UpdateDirectMessageAsync(Guid channelId, [FromBody] UpdateDirectMessageRequest request)
         {
-            // TODO
-            return Ok();
+            var updateDirectMessageRequest = new Domain.TransportModels.Request.DirectChannel.UpdateDirectMessageRequest(GetCurrentSaasUserId(),
+                    request.MessageId, request.DirectChannelId, request.Body);
+
+            var directMessageResponse = await _directMessageSocketService.UpdateMessage(updateDirectMessageRequest);
+
+            return Ok(directMessageResponse);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/delete/{memberId:guid}")]
-        public async Task<IActionResult> DeleteDirectMessageAsync(Guid channelId, Guid memberId)
+        public async Task<IActionResult> DeleteDirectMessageAsync(Guid messageId, Guid directChannelId)
         {
-            // TODO
-            return Ok();
+            var directMessageResponse = await _directMessageSocketService.DeleteMessage(GetCurrentSaasUserId(), messageId, directChannelId);
+
+            return Ok(directMessageResponse);
         }
 
         [HttpGet]
@@ -59,8 +73,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/settings")]
         public async Task<IActionResult> GetDirectMessageByIdAsync(Guid messageId)
         {
-            // TODO
-            return Ok();
+            var directMessageResponse = await _directChannelService.GetMessagesByIdAsync(messageId);
+
+            return Ok(directMessageResponse);
         }
 
         [HttpGet]
@@ -68,8 +83,8 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/settings")]
         public async Task<IActionResult> GetDirectMessageByChannelIdAsync(Guid channelId)
         {
-            // TODO
-            return Ok();
+            var directMessageResponse = await _directChannelService.GetMessagesByChannelIdAsync(channelId);
+            return Ok(directMessageResponse);
         }
     }
 }

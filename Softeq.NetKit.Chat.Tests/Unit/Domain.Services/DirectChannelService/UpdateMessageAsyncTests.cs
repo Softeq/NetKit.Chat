@@ -8,6 +8,7 @@ using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Xunit;
 
@@ -20,24 +21,21 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
         {
             // Arrange
             var messageId = new Guid("DA1D61EE-420F-4F8E-82AD-F2158358B0E0");
+            var saasUserId = "BD0F3206-37AF-43E4-90B8-C302CB74DC02";
+            var directChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43");
 
             _directMessagesRepository.Setup(x => x.GetMessageByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((DirectMessage)null)
                 .Verifiable();
 
-            var directMessage = new DirectMessage
-            {
-                Id = messageId,
-                DirectChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43"),
-                OwnerId = new Guid("B7AF30DD-A06C-4621-A98F-2F4E9FB8076A")
-            };
+            var directMessage = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, "NewTestBody");
 
             // Act
             Func<Task> act = async () => { await DirectChannelService.UpdateMessageAsync(directMessage); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get direct message. Message with {nameof(directMessage.Id)}:{directMessage.Id} is not found.");
+                .And.Message.Should().Be($"Unable to get direct message. Message with {nameof(directMessage.MessageId)}:{directMessage.MessageId} is not found.");
 
             VerifyMocks();
         }
@@ -47,6 +45,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
         {
             // Arrange
             var messageId = new Guid("DA1D61EE-420F-4F8E-82AD-F2158358B0E0");
+            var saasUserId = "BD0F3206-37AF-43E4-90B8-C302CB74DC02";
+            var directChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43");
+
+            var updateDirectMessageRequest = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, "NewTestBody");
 
             var directMessage = new DirectMessage
             {
@@ -64,7 +66,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             // Act
-            Func<Task> act = async () => { await DirectChannelService.UpdateMessageAsync(directMessage); };
+            Func<Task> act = async () => { await DirectChannelService.UpdateMessageAsync(updateDirectMessageRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()

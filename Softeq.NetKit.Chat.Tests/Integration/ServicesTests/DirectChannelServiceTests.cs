@@ -131,36 +131,26 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
-            var datetime = DateTimeOffset.UtcNow;
-            var messageId = new Guid("51F70B32-B656-4FF8-9C6C-69252F2295B9");
-            var directMessage = new DirectMessage
-            {
-                Body = "TestBody",
-                Created = datetime,
-                DirectChannelId = directChannelId,
-                Id = messageId,
-                OwnerId = ownerId,
-                Updated = datetime
-            };
+            var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, "TestBody");
 
-            var directMessageResponse = await _directChannelService.AddMessageAsync(directMessage);
-            Assert.Equal(directMessageResponse.Id, messageId);
-
-            var messageResponse = await _directChannelService.GetMessagesByIdAsync(messageId);
+            var directMessageResponse = await _directChannelService.AddMessageAsync(directMessageRequest);
+  
+            var messageResponse = await _directChannelService.GetMessagesByIdAsync(directMessageResponse.Id);
             Assert.Equal(directMessageResponse.Id, messageResponse.Id);
 
-
             // Act
-            await _directChannelService.DeleteMessageAsync(messageId);
+            await _directChannelService.DeleteMessageAsync(directMessageResponse.Id, owner.SaasUserId);
 
             // Assert
-            NetKitChatNotFoundException ex = Assert.Throws<NetKitChatNotFoundException>(() => _directChannelService.GetMessagesByIdAsync(messageId).GetAwaiter().GetResult());
-            Assert.Equal(ex.Message, $"Unable to get direct message. Message with {nameof(messageId)}:{messageId} is not found.");
+            NetKitChatNotFoundException ex = Assert.Throws<NetKitChatNotFoundException>(() => _directChannelService.GetMessagesByIdAsync(directMessageResponse.Id).GetAwaiter().GetResult());
+            Assert.Equal(ex.Message, $"Unable to get direct message. Message with messageId:{directMessageResponse.Id} is not found.");
         }
 
         [Fact]
         public async Task UpdateDirectMessageByIdAsyncTest()
         {
+            // TODO
+
             // Arrange
             var directChannelId = new Guid("9EDBC8A4-2EEC-4FB2-8410-A2852EB8989A");
             var ownerId = new Guid("2C1CFFE1-3656-4100-9364-6D100D006FA0");
@@ -199,36 +189,18 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
-            var datetime = DateTimeOffset.UtcNow;
-            var messageId = new Guid("51F70B32-B656-4FF8-9C6C-69252F2295B9");
-            var directMessage = new DirectMessage
-            {
-                Body = "TestBody",
-                Created = datetime,
-                DirectChannelId = directChannelId,
-                Id = messageId,
-                OwnerId = ownerId,
-                Updated = datetime
-            };
+            var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, "TestBody");
 
-            await _directChannelService.AddMessageAsync(directMessage);
-            var newDirectMessage = new DirectMessage
-            {
-                Body = "NewTestBody",
-                Created = datetime,
-                DirectChannelId = directChannelId,
-                Id = messageId,
-                OwnerId = ownerId,
-                Updated = DateTimeOffset.UtcNow
-            };
+            var directMessageResponse = await _directChannelService.AddMessageAsync(directMessageRequest);
+
+            var newDirectMessageRequest = new UpdateDirectMessageRequest(owner.SaasUserId, directMessageResponse.Id, directMessageResponse.DirectChannelId, "NewTestBody");
 
             // Act
-            var directMessageResponse = await _directChannelService.UpdateMessageAsync(newDirectMessage);
+            var result = await _directChannelService.UpdateMessageAsync(newDirectMessageRequest);
 
             // Assert
-            Assert.Equal(directMessageResponse.Id, directMessage.Id);
-            Assert.Equal(directMessageResponse.Id, newDirectMessage.Id);
-            Assert.Equal(directMessageResponse.Body, newDirectMessage.Body);
+            Assert.Equal(result.Id, newDirectMessageRequest.MessageId);
+            Assert.Equal(result.Body, newDirectMessageRequest.Body);
         }
 
         [Fact]
@@ -320,7 +292,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             // Assert
             Assert.Equal(directMessagesResponse.Count, 4);
-            Assert.Equal(directMessagesResponse.Where(x =>x.Owner.Id == ownerId).Count(), 3);
+            Assert.Equal(directMessagesResponse.Where(x => x.Owner.Id == ownerId).Count(), 3);
             Assert.Equal(directMessagesResponse.Where(x => x.Owner.Id == memberId).Count(), 1);
         }
     }
