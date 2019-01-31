@@ -28,7 +28,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"INSERT INTO DirectChannel(Id, ownerId, MemberId) 
-                                 VALUES (@directChannelId, @ownerId, @memberId)";
+                                 VALUES (@id, @ownerId, @memberId)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, new { id, ownerId, memberId });
             }
