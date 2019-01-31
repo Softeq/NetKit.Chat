@@ -82,7 +82,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         {
             var member = owner != null ? _mapper.Map<MemberSummary>(owner) : new MemberSummary();
 
-            return new DirectMessageResponse()
+            return new DirectMessageResponse
             {
                 Id = message.Id,
                 Body = message.Body,

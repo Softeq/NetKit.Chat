@@ -49,7 +49,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 
         protected void VerifyMocks()
         {
-            _dateTimeProviderMock.VerifyAll();
             _directChannelRepositoryMock.VerifyAll();
             _domainModelsMapperMock.VerifyAll();
             _channelRepositoryMock.VerifyAll();
@@ -60,6 +59,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             _attachmentRepositoryMock.VerifyAll();
             _clientRepositoryMock.VerifyAll();
             _notificationRepositoryMock.VerifyAll();
+            _dateTimeProviderMock.VerifyAll();
         }
     }
 }

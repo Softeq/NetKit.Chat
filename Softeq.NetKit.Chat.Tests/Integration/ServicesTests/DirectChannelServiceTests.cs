@@ -149,8 +149,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         [Fact]
         public async Task UpdateDirectMessageByIdAsyncTest()
         {
-            // TODO
-
             // Arrange
             var directChannelId = new Guid("9EDBC8A4-2EEC-4FB2-8410-A2852EB8989A");
             var ownerId = new Guid("2C1CFFE1-3656-4100-9364-6D100D006FA0");

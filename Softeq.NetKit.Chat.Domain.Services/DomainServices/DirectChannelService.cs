@@ -139,7 +139,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new NetKitChatNotFoundException($"Unable to get direct message. Message with {nameof(request.MessageId)}:{request.MessageId} is not found.");
             }
-            var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(directMessage.OwnerId);
+            var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to get member. Member { nameof(directMessage.OwnerId) }:{ directMessage.OwnerId} is not found.");
@@ -156,9 +156,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             };
 
             await UnitOfWork.DirectMessagesRepository.UpdateMessageAsync(message);
-            var newMessage = await UnitOfWork.DirectMessagesRepository.GetMessageByIdAsync(message.Id);
 
-            return DomainModelsMapper.MapToDirectMessageResponse(newMessage, owner);
+            return DomainModelsMapper.MapToDirectMessageResponse(message, owner);
         }
 
         public async Task<IList<DirectMessageResponse>> GetMessagesByChannelIdAsync(Guid channelId)
