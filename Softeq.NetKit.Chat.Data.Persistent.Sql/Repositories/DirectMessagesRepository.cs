@@ -53,6 +53,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                  SET Body = @Body, 
                                      Updated = @Updated                                     
                                  WHERE Id = @Id";
+
                 await connection.ExecuteScalarAsync(sqlQuery, new { message.Body, message.Updated, message.Id });
             }
         }

@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnsureThat;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -24,6 +25,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             IDomainModelsMapper domainModelsMapper, IDateTimeProvider dateTimeProvider)
             : base(unitOfWork, domainModelsMapper)
         {
+            Ensure.That(dateTimeProvider).IsNotNull();
+
             _dateTimeProvider = dateTimeProvider;
         }
 
