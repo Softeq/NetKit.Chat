@@ -18,7 +18,9 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         private readonly IMemberService _memberService;
 
 
-        public DirectMessageSocketService(IDirectMessageNotificationService directMessageNotificationService, IDirectChannelService directChannelService, IMemberService memberService)
+        public DirectMessageSocketService(IDirectMessageNotificationService directMessageNotificationService, 
+                                          IDirectChannelService directChannelService, 
+                                          IMemberService memberService)
         {
             Ensure.That(directMessageNotificationService).IsNotNull();
             Ensure.That(directChannelService).IsNotNull();

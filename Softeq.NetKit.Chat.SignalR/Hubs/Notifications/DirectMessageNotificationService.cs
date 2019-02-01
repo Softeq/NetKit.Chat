@@ -11,7 +11,10 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
     public class DirectMessageNotificationService : BaseNotificationService, IDirectMessageNotificationService
     {
-        public DirectMessageNotificationService(IChannelMemberService channelMemberService, IMemberService memberService, IClientService clientService, IHubContext<ChatHub> hubContext) 
+        public DirectMessageNotificationService(IChannelMemberService channelMemberService, 
+                                                IMemberService memberService, 
+                                                IClientService clientService, 
+                                                IHubContext<ChatHub> hubContext) 
             : base(channelMemberService, memberService, clientService, hubContext)
         { }
 
