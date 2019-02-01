@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get direct channel. Chat with {nameof(id)}:{id} is not found.");
+                .And.Message.Should().Be($"Unable to get direct channel. Chat with channelId:{id} is not found.");
 
             VerifyMocks();
         }

@@ -20,7 +20,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     {
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public DirectChannelService(IUnitOfWork unitOfWork, IDomainModelsMapper domainModelsMapper, IDateTimeProvider dateTimeProvider)
+        public DirectChannelService(
+            IUnitOfWork unitOfWork,
+            IDomainModelsMapper domainModelsMapper,
+            IDateTimeProvider dateTimeProvider)
             : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(dateTimeProvider).IsNotNull();
@@ -47,12 +50,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToDirectChannelResponse(request.DirectChannelId, owner, member);
         }
 
-        public async Task<DirectChannelResponse> GetDirectChannelByIdAsync(Guid id)
+        public async Task<DirectChannelResponse> GetDirectChannelByIdAsync(Guid channelId)
         {
-            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
+            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(channelId);
             if (channel == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get direct channel. Chat with {nameof(id)}:{id} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to get direct channel. Chat with {nameof(channelId)}:{channelId} is not found.");
             }
 
             var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(channel.OwnerId);
@@ -115,12 +118,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToDirectMessageResponse(directMessage, owner);
         }
 
-        public async Task<DirectMessageResponse> DeleteMessageAsync(Guid id, string saasUserId)
+        public async Task<DirectMessageResponse> DeleteMessageAsync(Guid messageId, string saasUserId)
         {
-            var directMessage = await UnitOfWork.DirectMessagesRepository.GetMessageByIdAsync(id);
+            var directMessage = await UnitOfWork.DirectMessagesRepository.GetMessageByIdAsync(messageId);
             if (directMessage == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get direct message. Message with {nameof(id)}:{id} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to get direct message. Message with {nameof(messageId)}:{messageId} is not found.");
             }
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (owner == null)
@@ -128,7 +131,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
-            await UnitOfWork.DirectMessagesRepository.DeleteMessageAsync(id);
+            await UnitOfWork.DirectMessagesRepository.DeleteMessageAsync(messageId);
 
             return DomainModelsMapper.MapToDirectMessageResponse(directMessage, owner);
         }
@@ -171,20 +174,22 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var messages = await UnitOfWork.DirectMessagesRepository.GetMessagesByChannelIdAsync(channelId);
 
-            var uniqueMembersId = messages.GroupBy(x => x.OwnerId).Select(x => x.FirstOrDefault()).Select(y => y.OwnerId);
             var directMessagesResponse = new List<DirectMessageResponse>();
 
-            foreach (var ownerId in uniqueMembersId)
+            if (messages != null)
             {
-                var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(ownerId);
-
-                if (owner == null)
+                var uniqueMembersId = messages.GroupBy(x => x.OwnerId).Select(x => x.FirstOrDefault()).Select(y => y.OwnerId);
+                foreach (var ownerId in uniqueMembersId)
                 {
-                    throw new NetKitChatNotFoundException($"Unable to get member. Member {nameof(ownerId)}:{ownerId} is not found.");
-                }
+                    var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(ownerId);
+                    if (owner == null)
+                    {
+                        throw new NetKitChatNotFoundException($"Unable to get member. Member {nameof(ownerId)}:{ownerId} is not found.");
+                    }
 
-                directMessagesResponse.AddRange(messages.Where(message => message.OwnerId == ownerId)
-                    .Select(message => DomainModelsMapper.MapToDirectMessageResponse(message, owner)));
+                    directMessagesResponse.AddRange(messages.Where(message => message.OwnerId == ownerId)
+                        .Select(message => DomainModelsMapper.MapToDirectMessageResponse(message, owner)));
+                }
             }
 
             return directMessagesResponse;

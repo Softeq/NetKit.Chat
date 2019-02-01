@@ -52,7 +52,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         {
             var updateDirectMessageRequest = new Domain.TransportModels.Request.DirectChannel.UpdateDirectMessageRequest(GetCurrentSaasUserId(),
                     request.MessageId, request.DirectChannelId, request.Body);
-
             var directMessageResponse = await _directMessageSocketService.UpdateMessageAsync(updateDirectMessageRequest);
 
             return Ok(directMessageResponse);
@@ -84,6 +83,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         public async Task<IActionResult> GetDirectMessageByChannelIdAsync(Guid channelId)
         {
             var directMessageResponse = await _directChannelService.GetMessagesByChannelIdAsync(channelId);
+
             return Ok(directMessageResponse);
         }
     }
