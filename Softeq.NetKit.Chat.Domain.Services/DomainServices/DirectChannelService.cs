@@ -180,7 +180,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 foreach (var ownerId in uniqueMembersId)
                 {
                     var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(ownerId);
-
                     if (owner == null)
                     {
                         throw new NetKitChatNotFoundException($"Unable to get member. Member {nameof(ownerId)}:{ownerId} is not found.");

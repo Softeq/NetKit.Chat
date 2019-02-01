@@ -81,7 +81,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         public DirectMessageResponse MapToDirectMessageResponse(DirectMessage message, DomainModels.Member owner)
         {
             var member = owner != null ? _mapper.Map<MemberSummary>(owner) : new MemberSummary();
-
             return new DirectMessageResponse
             {
                 Id = message.Id,
