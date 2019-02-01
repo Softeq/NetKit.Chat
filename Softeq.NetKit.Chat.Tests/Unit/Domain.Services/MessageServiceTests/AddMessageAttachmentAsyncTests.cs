@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} not found.");
+                .And.Message.Should().Be($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
 
             VerifyMocks();
         }
@@ -54,7 +54,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to add message attachment. Member {nameof(request.SaasUserId)}:{request.SaasUserId} not found.");
+                .And.Message.Should().Be($"Unable to add message attachment. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
 
             VerifyMocks();
         }

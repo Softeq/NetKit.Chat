@@ -117,5 +117,19 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 await connection.ExecuteAsync(sqlQuery, new { previousLastReadMessageId, currentLastReadMessageId });
             }
         }
+
+        public async Task<IList<string>> GetSaasUserIdsWithDisabledChannelNotificationsAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT SaasUserId 
+                                 FROM ChannelMembers
+                                 INNER JOIN Members
+                                 ON Members.Id = ChannelMembers.MemberId
+                                 WHERE ChannelId = @channelId AND IsMuted = 1";
+
+                return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
+            }
+        }
     }
 }

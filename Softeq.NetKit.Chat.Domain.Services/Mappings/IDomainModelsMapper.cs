@@ -22,9 +22,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         ChannelSummaryResponse MapToChannelSummaryResponse(Channel channel, ChannelMember channelMember, Message lastReadMessage = null);
         ClientResponse MapToClientResponse(Client client);
         ForwardMessage MapToForwardMessage(Message message);
-        MemberSummary MapToMemberSummary(Member member);
+        MemberSummary MapToMemberSummary(DomainModels.Member member);
         MessageResponse MapToMessageResponse(Message message, DateTimeOffset? lastReadMessageCreated = null);
         SettingsResponse MapToSettingsResponse(Settings settings);
-        DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, Member owner, Member member);
+        DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, DomainModels.Member owner, DomainModels.Member member);
+        NotificationSettingResponse MapToNotificationSettingsResponse(NotificationSettings notificationSettings);
     }
 }

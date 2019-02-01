@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
@@ -35,6 +36,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         protected readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>(MockBehavior.Strict);
         
         protected readonly Mock<ICloudAttachmentProvider> _cloudAttachmentProviderMock = new Mock<ICloudAttachmentProvider>(MockBehavior.Strict);
+        protected readonly Mock<ICloudImageProvider> _cloudImageProviderMock = new Mock<ICloudImageProvider>(MockBehavior.Strict);
 
         protected MessageServiceTestBase()
         {
@@ -59,7 +61,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 _unitOfWorkMock.Object, 
                 _domainModelsMapperMock.Object, 
                 attachmentConfiguration, 
-                _cloudAttachmentProviderMock.Object, 
+                _cloudAttachmentProviderMock.Object,
+                _cloudImageProviderMock.Object,
                 _dateTimeProviderMock.Object);
         }
 
@@ -77,6 +80,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _attachmentRepositoryMock.VerifyAll();
 
             _cloudAttachmentProviderMock.VerifyAll();
+            _cloudImageProviderMock.VerifyAll();
         }
     }
 }

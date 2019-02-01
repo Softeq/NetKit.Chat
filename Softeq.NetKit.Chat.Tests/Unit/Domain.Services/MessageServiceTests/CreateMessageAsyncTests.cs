@@ -89,7 +89,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to create message. Forward message {nameof(request.ForwardedMessageId)}:{request.ForwardedMessageId} not found.");
+                .And.Message.Should().Be($"Unable to create message. Forward message {nameof(request.ForwardedMessageId)}:{request.ForwardedMessageId} is not found.");
 
             VerifyMocks();
         }
@@ -111,6 +111,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saasUserId => saasUserId.Equals(request.SaasUserId))))
                 .ReturnsAsync(member)
                 .Verifiable();
+
+            _cloudImageProviderMock.Setup(x => x.CopyImageToDestinationContainerAsync(It.IsAny<string>())).ReturnsAsync(string.Empty).Verifiable();
 
             Message message = null;
             _messageRepositoryMock.Setup(x => x.AddMessageAsync(It.IsAny<Message>()))
@@ -174,6 +176,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(member)
                 .Verifiable();
+
+            _cloudImageProviderMock.Setup(x => x.CopyImageToDestinationContainerAsync(It.IsAny<string>())).ReturnsAsync(string.Empty).Verifiable();
 
             Message message = null;
             _messageRepositoryMock.Setup(x => x.AddMessageAsync(It.IsAny<Message>()))

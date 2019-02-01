@@ -25,6 +25,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     {
         private readonly MessagesConfiguration _messagesConfiguration;
         private readonly ICloudAttachmentProvider _cloudAttachmentProvider;
+        private readonly ICloudImageProvider _cloudImageProvider;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public MessageService(
@@ -32,6 +33,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             IDomainModelsMapper domainModelsMapper,
             MessagesConfiguration messagesConfiguration,
             ICloudAttachmentProvider cloudAttachmentProvider,
+            ICloudImageProvider cloudImageProvider,
             IDateTimeProvider dateTimeProvider)
             : base(unitOfWork, domainModelsMapper)
         {
@@ -41,6 +43,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             _messagesConfiguration = messagesConfiguration;
             _cloudAttachmentProvider = cloudAttachmentProvider;
+            _cloudImageProvider = cloudImageProvider;
             _dateTimeProvider = dateTimeProvider;
         }
 
@@ -56,6 +59,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (member == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to create message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+            }
+
+            // move image to persistent container
+            if (!string.IsNullOrWhiteSpace(request.ImageUrl))
+            {
+                request.ImageUrl = await _cloudImageProvider.CopyImageToDestinationContainerAsync(request.ImageUrl);
             }
 
             var message = new Message

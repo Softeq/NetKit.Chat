@@ -18,5 +18,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task<IReadOnlyCollection<Client>> GetClientsWithMembersAsync(List<Guid> memberIds);
         Task<bool> IsClientExistsAsync(string clientConnectionId);
         Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId);
+        Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId);
     }
 }

@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnAddChannel(ChannelSummaryResponse channel)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelCreated, channel);
@@ -28,7 +28,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnUpdateChannel(ChannelSummaryResponse channel)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelUpdated, channel);
@@ -36,7 +36,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnCloseChannel(ChannelSummaryResponse channel)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelClosed, channel);
@@ -44,7 +44,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channel.Id);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
@@ -52,7 +52,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnLeaveChannel(MemberSummary member, Guid channelId)
         {
-            var clientIds = await GetNotMutedChannelClientConnectionIdsAsync(channelId);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channelId);
             var senderClients = await MemberService.GetMemberClientsAsync(member.Id);
             clientIds.AddRange(senderClients.Select(x => x.ClientConnectionId));
 
@@ -62,7 +62,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnDeletedFromChannel(MemberSummary member, Guid channelId)
         {
-            var channelClients = await GetNotMutedChannelClientConnectionIdsAsync(channelId);
+            var channelClients = await GetChannelClientConnectionIdsAsync(channelId);
             var deletingMemberClients = (await MemberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();
 
             await HubContext.Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channelId);

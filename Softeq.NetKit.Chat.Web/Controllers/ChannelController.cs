@@ -217,7 +217,13 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/mute")]
         public async Task<IActionResult> MuteChannelAsync(Guid channelId)
         {
-            await _channelService.MuteChannelAsync(GetCurrentSaasUserId(), channelId, true);
+            await _channelSocketService.MuteChannelAsync(new MuteChannelRequest
+            {
+                SaasUserId = GetCurrentSaasUserId(),
+                ChannelId = channelId,
+                IsMuted = true
+            });
+
             return Ok();
         }
 
@@ -226,7 +232,13 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/unmute")]
         public async Task<IActionResult> UnmuteChannelAsync(Guid channelId)
         {
-            await _channelService.MuteChannelAsync(GetCurrentSaasUserId(), channelId, false);
+            await _channelSocketService.MuteChannelAsync(new MuteChannelRequest
+            {
+                SaasUserId = GetCurrentSaasUserId(),
+                ChannelId = channelId,
+                IsMuted = false
+            });
+
             return Ok();
         }
 

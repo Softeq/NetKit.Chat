@@ -18,5 +18,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task SetLastReadMessageAsync(Guid memberId, Guid channelId, Guid messageId);
         Task UpdateLastReadMessageAsync(Guid previousLastReadMessageId, Guid? currentLastReadMessageId);
         Task<ChannelMember> GetChannelMemberAsync(Guid memberId, Guid channelId);
+        Task<IList<string>> GetSaasUserIdsWithDisabledChannelNotificationsAsync(Guid channelId);
     }
 }
