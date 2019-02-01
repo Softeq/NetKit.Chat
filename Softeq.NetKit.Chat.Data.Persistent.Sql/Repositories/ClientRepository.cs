@@ -50,6 +50,20 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT client.ClientConnectionId
+                                 FROM Clients client
+                                 LEFT JOIN Members member ON client.MemberId = member.Id
+                                 LEFT JOIN ChannelMembers channelMember ON member.Id = channelMember.MemberId
+                                 WHERE channelMember.ChannelId = @channelId";
+
+                return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
+            }
+        }
+
         public async Task<Client> GetClientWithMemberAsync(string clientConnectionId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

@@ -5,6 +5,7 @@ using Autofac;
 using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Domain.Services;
+using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.SignalR;
 
 namespace Softeq.NetKit.Chat.Web.Extensions
@@ -18,6 +19,7 @@ namespace Softeq.NetKit.Chat.Web.Extensions
             builder.RegisterModule<DomainServicesDiModule>();
             builder.RegisterModule<DataPersistentSqlDiModule>();
             builder.RegisterModule<DataCloudAzureDiModule>();
+            builder.RegisterModule<NotificationServicesDiModule>();
         }
     }
 }

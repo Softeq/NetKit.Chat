@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using Autofac;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
@@ -24,6 +25,9 @@ namespace Softeq.NetKit.Chat.Domain.Services
 
             builder.RegisterType<MessageService>()
                 .As<IMessageService>();
+            
+            builder.RegisterType<NotificationSettingsService>()
+                .As<INotificationSettingsService>();
 
             builder.RegisterType<ChannelMemberService>()
                 .As<IChannelMemberService>();

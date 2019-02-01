@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get message by {nameof(messageId)}. Message {nameof(messageId)}:{messageId} not found.");
+                .And.Message.Should().Be($"Unable to get message by {nameof(messageId)}. Message {nameof(messageId)}:{messageId} is not found.");
 
             VerifyMocks();
         }

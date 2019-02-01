@@ -4,11 +4,10 @@
 using AutoMapper;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
-using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
-    public class AvatarUrlValueResolver : IValueResolver<Member, object, string>
+    public class AvatarUrlValueResolver : IValueResolver<DomainModels.Member, object, string>
     {
         private readonly ICloudImageProvider _cloudImageProvider;
 
@@ -19,7 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             _cloudImageProvider = cloudImageProvider;
         }
 
-        string IValueResolver<Member, object, string>.Resolve(Member source, object destination, string destMember, ResolutionContext context)
+        string IValueResolver<DomainModels.Member, object, string>.Resolve(DomainModels.Member source, object destination, string destMember, ResolutionContext context)
         {
             return _cloudImageProvider.GetMemberAvatarUrl(source.PhotoName);
         }

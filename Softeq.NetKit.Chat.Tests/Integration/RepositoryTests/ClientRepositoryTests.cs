@@ -183,6 +183,123 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         }
 
         [Fact]
+        public async Task GetChannelClientConnectionIdsAsync_ShouldReturnChannelClientConnectionIds()
+        {
+            // Arrange
+            var firstNotMutedMember = new Member
+            {
+                Id = new Guid("15D2571D-9A64-4E3F-A0DB-4CBEF6315BD9"),
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online
+            };
+            await UnitOfWork.MemberRepository.AddMemberAsync(firstNotMutedMember);
+
+            var secondNotMutedMember = new Member
+            {
+                Id = new Guid("E5516862-1704-4564-BF47-C1F2DBBE4E5B"),
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online
+            };
+            await UnitOfWork.MemberRepository.AddMemberAsync(secondNotMutedMember);
+
+            var mutedMember = new Member
+            {
+                Id = new Guid("BD1510B1-A88D-4C81-8F08-92F17A1B3C2C"),
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online
+            };
+            await UnitOfWork.MemberRepository.AddMemberAsync(mutedMember);
+            
+            var channel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = true,
+                CreatorId = firstNotMutedMember.Id,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 2
+            };
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            var firstNotMutedChannelMember = new ChannelMember
+            {
+                MemberId = firstNotMutedMember.Id,
+                ChannelId = channel.Id,
+                IsMuted = false
+            };
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(firstNotMutedChannelMember);
+
+            var secondNotMutedChannelMember = new ChannelMember
+            {
+                MemberId = secondNotMutedMember.Id,
+                ChannelId = channel.Id,
+                IsMuted = false
+            };
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(secondNotMutedChannelMember);
+
+            var mutedChannelMember = new ChannelMember
+            {
+                MemberId = mutedMember.Id,
+                ChannelId = channel.Id,
+                IsMuted = true
+            };
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(mutedChannelMember);
+
+            var firstNotMutedMemberClient1 = new Client
+            {
+                Id = Guid.Parse("89C0A79E-DAF2-4180-80A2-9FB0CBCBC1F9"),
+                ClientConnectionId = "B7426717-F49E-4788-97AD-62DCCC123590",
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                MemberId = firstNotMutedMember.Id
+            };
+            await UnitOfWork.ClientRepository.AddClientAsync(firstNotMutedMemberClient1);
+
+            var firstNotMutedMemberClient2 = new Client
+            {
+                Id = Guid.Parse("B92A9753-D19F-489B-AC15-FD8EAF1AC85F"),
+                ClientConnectionId = "D9C276A1-597A-40F3-9C21-6967CF42FF26",
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                MemberId = firstNotMutedMember.Id
+            };
+            await UnitOfWork.ClientRepository.AddClientAsync(firstNotMutedMemberClient2);
+
+            var secondNotMutedMemberClient = new Client
+            {
+                Id = Guid.Parse("D1F29BBA-AFF1-4780-8714-CE21237C4F76"),
+                ClientConnectionId = "2708C531-4903-42D1-9B90-384F4B0E4AE6",
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                MemberId = secondNotMutedMember.Id
+            };
+            await UnitOfWork.ClientRepository.AddClientAsync(secondNotMutedMemberClient);
+
+            var mutedMemberClient = new Client
+            {
+                Id = Guid.Parse("396DBB59-545F-4948-AB89-5875C1EB2894"),
+                ClientConnectionId = "461A3EC9-ABC0-4AA1-9652-A9B762785A5E",
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                MemberId = mutedMember.Id
+            };
+            await UnitOfWork.ClientRepository.AddClientAsync(mutedMemberClient);
+
+            // Act
+            var clientConnectionIds = await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channel.Id);
+
+            // Assert
+            var expectedClientConnectionIds = new List<string>
+            {
+                firstNotMutedMemberClient1.ClientConnectionId,
+                firstNotMutedMemberClient2.ClientConnectionId,
+                secondNotMutedMemberClient.ClientConnectionId,
+                mutedMemberClient.ClientConnectionId
+            };
+            clientConnectionIds.Should().BeEquivalentTo(expectedClientConnectionIds);
+        }
+
+        [Fact]
         public async Task GetClientWithMemberAsync_ShouldGetClientWithMemberByClientConnectionId()
         {
             var member = new Member

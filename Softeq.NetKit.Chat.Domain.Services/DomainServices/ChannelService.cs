@@ -1,6 +1,11 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
@@ -12,11 +17,6 @@ using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -80,12 +80,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             if (request.Type == ChannelType.Private && request.AllowedMembers.Any())
             {
-                foreach (var saasUserId in request.AllowedMembers)
+                foreach (var memberId in request.AllowedMembers)
                 {
-                    var allowedMember = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+                    var allowedMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(Guid.Parse(memberId));
                     if (allowedMember == null)
                     {
-                        throw new NetKitChatNotFoundException($"Unable to add member to channel. Member {nameof(saasUserId)}:{saasUserId} is not found.");
+                        throw new NetKitChatNotFoundException($"Unable to add member to channel. Member {nameof(memberId)}:{memberId} is not found.");
                     }
 
                     var model = new ChannelMember
@@ -173,7 +173,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(member.Id, channelId);
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, channelId);
-
+            
             return DomainModelsMapper.MapToChannelSummaryResponse(channel, channelMember, lastReadMessage);
         }
 

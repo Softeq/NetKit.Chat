@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(dateTimeProvider).IsNotNull();
-
+            
             _dateTimeProvider = dateTimeProvider;
         }
 
@@ -123,7 +123,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             member.IsActive = true;
 
-            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
+            await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
         }
 
         public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
@@ -134,7 +134,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatInvalidOperationException($"Unable to add member. Member {nameof(saasUserId)}:{saasUserId} already exists.");
             }
 
-            var newMember = new Member
+            var newMember = new DomainModels.Member
             {
                 Id = Guid.NewGuid(),
                 Role = UserRole.User,

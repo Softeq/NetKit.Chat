@@ -29,7 +29,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get channel settings. Settings with {nameof(channelId)}:{channelId} not found.");
+                .And.Message.Should().Be($"Unable to get channel settings. Settings with {nameof(channelId)}:{channelId} is not found.");
 
             VerifyMocks();
         }

@@ -15,6 +15,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task<Member> GetMemberByIdAsync(Guid memberId);
         Task AddMemberAsync(Member member);
         Task UpdateMemberAsync(Member member);
+        Task ActivateMemberAsync(Member member);
         Task<Member> GetMemberBySaasUserIdAsync(string saasUserId);
         Task<IReadOnlyCollection<Member>> GetAllMembersByChannelIdAsync(Guid channelId);
     }
