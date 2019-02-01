@@ -20,9 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     {
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public DirectChannelService(
-            IUnitOfWork unitOfWork,
-            IDomainModelsMapper domainModelsMapper, IDateTimeProvider dateTimeProvider)
+        public DirectChannelService(IUnitOfWork unitOfWork, IDomainModelsMapper domainModelsMapper, IDateTimeProvider dateTimeProvider)
             : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(dateTimeProvider).IsNotNull();
