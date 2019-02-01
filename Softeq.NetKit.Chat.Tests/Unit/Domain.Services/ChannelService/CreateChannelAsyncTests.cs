@@ -217,18 +217,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync((string)null)
                 .Verifiable();
 
-            var channelMembersToAdd = new List<ChannelMember>();
-            _channelMemberRepositoryMock.Setup(x => x.AddChannelMemberAsync(It.IsAny<ChannelMember>()))
-                .Callback<ChannelMember>(x => channelMembersToAdd.Add(x))
-                .Returns(Task.CompletedTask)
-                .Verifiable();
-
-            Channel channelToAdd = null;
-            _channelRepositoryMock.Setup(x => x.AddChannelAsync(It.IsAny<Channel>()))
-                .Callback<Channel>(x => channelToAdd = x)
-                .Returns(Task.CompletedTask)
-                .Verifiable();
-
             _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((Member)null)
                 .Verifiable();
