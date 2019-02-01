@@ -171,22 +171,20 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var messages = await UnitOfWork.DirectMessagesRepository.GetMessagesByChannelIdAsync(channelId);
 
+            var uniqueMembersId = messages.GroupBy(x => x.OwnerId).Select(x => x.FirstOrDefault()).Select(y => y.OwnerId);
             var directMessagesResponse = new List<DirectMessageResponse>();
 
-            if (messages != null)
+            foreach (var ownerId in uniqueMembersId)
             {
-                var uniqueMembersId = messages.GroupBy(x => x.OwnerId).Select(x => x.FirstOrDefault()).Select(y => y.OwnerId);
+                var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(ownerId);
 
-                foreach (var ownerId in uniqueMembersId)
+                if (owner == null)
                 {
-                    var owner = await UnitOfWork.MemberRepository.GetMemberByIdAsync(ownerId);
-                    if (owner == null)
-                    {
-                        throw new NetKitChatNotFoundException($"Unable to get member. Member {nameof(ownerId)}:{ownerId} is not found.");
-                    }
-
-                    directMessagesResponse.AddRange(GetDirectMessageResponses(messages, owner));
+                    throw new NetKitChatNotFoundException($"Unable to get member. Member {nameof(ownerId)}:{ownerId} is not found.");
                 }
+
+                directMessagesResponse.AddRange(messages.Where(message => message.OwnerId == ownerId)
+                    .Select(message => DomainModelsMapper.MapToDirectMessageResponse(message, owner)));
             }
 
             return directMessagesResponse;
