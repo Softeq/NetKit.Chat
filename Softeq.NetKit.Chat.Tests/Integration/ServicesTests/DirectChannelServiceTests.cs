@@ -63,7 +63,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             };
 
             // Act
-            var response = await _directChannelService.CreateDirectChannel(request);
+            var response = await _directChannelService.CreateDirectChannelAsync(request);
 
             //Assert
             Assert.NotNull(response);
@@ -80,10 +80,10 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var request = new CreateDirectChannelRequest(SaasFirstUserId, _firstMemberId, _secondMemberId) { DirectChannelId = directId };
 
-            await _directChannelService.CreateDirectChannel(request);
+            await _directChannelService.CreateDirectChannelAsync(request);
 
             // Act
-            var response = await _directChannelService.GetDirectChannelById(request.DirectChannelId);
+            var response = await _directChannelService.GetDirectChannelByIdAsync(request.DirectChannelId);
 
             // Assert
             Assert.NotNull(response);

@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<DirectChannelResponse> CreateDirectChannel(CreateDirectChannelRequest request)
+        public async Task<DirectChannelResponse> CreateDirectChannelAsync(CreateDirectChannelRequest request)
         {
             var owner = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (owner == null)
@@ -49,7 +49,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToDirectChannelResponse(request.DirectChannelId, owner, member);
         }
 
-        public async Task<DirectChannelResponse> GetDirectChannelById(Guid id)
+        public async Task<DirectChannelResponse> GetDirectChannelByIdAsync(Guid id)
         {
             var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
             if (channel == null)

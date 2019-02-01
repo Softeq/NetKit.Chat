@@ -25,7 +25,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             // Act
-            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelById(id); };
+            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelByIdAsync(id); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             //Act
-            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelById(id); };
+            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelByIdAsync(id); };
 
             //Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             // Act
-            var act = await DirectChannelService.GetDirectChannelById(directId);
+            var act = await DirectChannelService.GetDirectChannelByIdAsync(directId);
 
             // Assert
             act.Should().BeEquivalentTo(channelResponse);

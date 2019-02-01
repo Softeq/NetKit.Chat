@@ -40,7 +40,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         public async Task<IActionResult> AddDirectMessageAsync([FromBody] AddDirectMessageRequest request)
         {
             var addDirectMessageRequest = new CreateDirectMessageRequest(GetCurrentSaasUserId(), request.DirectChannelId, request.Body);
-            var directMessageResponse = await _directMessageSocketService.AddMessage(addDirectMessageRequest);
+            var directMessageResponse = await _directMessageSocketService.AddMessageAsync(addDirectMessageRequest);
 
             return Ok(directMessageResponse);
         }
@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             var updateDirectMessageRequest = new Domain.TransportModels.Request.DirectChannel.UpdateDirectMessageRequest(GetCurrentSaasUserId(),
                     request.MessageId, request.DirectChannelId, request.Body);
 
-            var directMessageResponse = await _directMessageSocketService.UpdateMessage(updateDirectMessageRequest);
+            var directMessageResponse = await _directMessageSocketService.UpdateMessageAsync(updateDirectMessageRequest);
 
             return Ok(directMessageResponse);
         }
@@ -63,7 +63,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{channelId:guid}/delete/{memberId:guid}")]
         public async Task<IActionResult> DeleteDirectMessageAsync(Guid messageId, Guid directChannelId)
         {
-            var directMessageResponse = await _directMessageSocketService.DeleteMessage(GetCurrentSaasUserId(), messageId, directChannelId);
+            var directMessageResponse = await _directMessageSocketService.DeleteMessageAsync(GetCurrentSaasUserId(), messageId, directChannelId);
 
             return Ok(directMessageResponse);
         }

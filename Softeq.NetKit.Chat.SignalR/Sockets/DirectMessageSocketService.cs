@@ -29,42 +29,42 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             _memberService = memberService;
         }
 
-        public async Task<DirectMessageResponse> AddMessage(CreateDirectMessageRequest request)
+        public async Task<DirectMessageResponse> AddMessageAsync(CreateDirectMessageRequest request)
         {
             var message = await _directChannelService.AddMessageAsync(request);
             var owner = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var memberId = await GetOneMemberIdToCall(request.DirectChannelId, owner.Id);
+            var memberId = await GetOneMemberIdToCallAsync(request.DirectChannelId, owner.Id);
 
             await _directMessageNotificationService.OnAddMessage(message, memberId);
 
             return message;
         }
 
-        public async Task<DirectMessageResponse> UpdateMessage(UpdateDirectMessageRequest request)
+        public async Task<DirectMessageResponse> UpdateMessageAsync(UpdateDirectMessageRequest request)
         {
             var updatedMessage = await _directChannelService.UpdateMessageAsync(request);
             var owner = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            var memberId = await GetOneMemberIdToCall(request.DirectChannelId, owner.Id);
+            var memberId = await GetOneMemberIdToCallAsync(request.DirectChannelId, owner.Id);
 
             await _directMessageNotificationService.OnUpdateMessage(updatedMessage, memberId);
 
             return updatedMessage;
         }
 
-        public async Task<DirectMessageResponse> DeleteMessage(string saasUserId, Guid messageId, Guid directChannelId)
+        public async Task<DirectMessageResponse> DeleteMessageAsync(string saasUserId, Guid messageId, Guid directChannelId)
         {
             var message = await _directChannelService.DeleteMessageAsync(messageId, saasUserId);
             var owner = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
-            var memberId = await GetOneMemberIdToCall(directChannelId, owner.Id);
+            var memberId = await GetOneMemberIdToCallAsync(directChannelId, owner.Id);
 
             await _directMessageNotificationService.OnDeleteMessage(message, memberId);
 
             return message;
         }
 
-        private async Task<Guid> GetOneMemberIdToCall(Guid channelId, Guid ownerId)
+        private async Task<Guid> GetOneMemberIdToCallAsync(Guid channelId, Guid ownerId)
         {
-            var directChannelResponse = await _directChannelService.GetDirectChannelById(channelId);
+            var directChannelResponse = await _directChannelService.GetDirectChannelByIdAsync(channelId);
 
             return directChannelResponse.Owner.Id == ownerId ? directChannelResponse.Member.Id : directChannelResponse.Owner.Id;
         }
