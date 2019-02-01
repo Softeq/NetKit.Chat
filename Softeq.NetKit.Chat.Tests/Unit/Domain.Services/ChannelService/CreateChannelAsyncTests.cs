@@ -1,15 +1,15 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
@@ -99,7 +99,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             channelToAdd.CreatorId.Should().Be(member.Id);
             channelToAdd.Creator.Should().Be(member);
             channelToAdd.PhotoUrl.Should().Be(null);
-            channelToAdd.Members.Should().BeEquivalentTo(new List<ChannelMember> {channelMemberToAdd});
+            channelToAdd.Members.Should().BeEquivalentTo(new List<ChannelMember> { channelMemberToAdd });
 
             _channelMemberRepositoryMock.Verify(prov => prov.AddChannelMemberAsync(It.IsAny<ChannelMember>()), Times.Once);
             _channelRepositoryMock.Verify(prov => prov.IncrementChannelMembersCount(It.Is<Guid>(channelId => channelId.Equals(channelToAdd.Id))), Times.Once);
@@ -128,7 +128,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             _memberRepositoryMock.SetupSequence(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(member)
                 .ReturnsAsync(allowedMember);
-            
+
             var cloudPhotoUrl = "cloudPhotoUrl";
             _cloudImageProviderMock.Setup(x => x.CopyImageToDestinationContainerAsync(It.Is<string>(photoUrl => photoUrl.Equals(request.PhotoUrl))))
                 .ReturnsAsync(cloudPhotoUrl)
@@ -149,6 +149,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             _channelMemberRepositoryMock.Setup(x => x.AddChannelMemberAsync(It.IsAny<ChannelMember>()))
                 .Callback<ChannelMember>(x => channelMembersToAdd.Add(x))
                 .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(allowedMember)
                 .Verifiable();
 
             _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCount(It.IsAny<Guid>()))
@@ -185,7 +189,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             _channelMemberRepositoryMock.Verify(prov => prov.AddChannelMemberAsync(It.IsAny<ChannelMember>()), Times.Exactly(2));
             _channelRepositoryMock.Verify(prov => prov.IncrementChannelMembersCount(It.Is<Guid>(channelId => channelId.Equals(channelToAdd.Id))), Times.Exactly(2));
-            _memberRepositoryMock.Verify(prov => prov.GetMemberBySaasUserIdAsync(It.IsAny<string>()), Times.Exactly(2));
+            _memberRepositoryMock.Verify(prov => prov.GetMemberBySaasUserIdAsync(It.IsAny<string>()), Times.Exactly(1));
 
             result.Should().BeEquivalentTo(channelSummaryResponse);
         }
@@ -213,6 +217,22 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync((string)null)
                 .Verifiable();
 
+            var channelMembersToAdd = new List<ChannelMember>();
+            _channelMemberRepositoryMock.Setup(x => x.AddChannelMemberAsync(It.IsAny<ChannelMember>()))
+                .Callback<ChannelMember>(x => channelMembersToAdd.Add(x))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            Channel channelToAdd = null;
+            _channelRepositoryMock.Setup(x => x.AddChannelAsync(It.IsAny<Channel>()))
+                .Callback<Channel>(x => channelToAdd = x)
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Member)null)
+                .Verifiable();
+
             _dateTimeProviderMock.Setup(x => x.GetUtcNow())
                 .Returns(DateTimeOffset.UtcNow)
                 .Verifiable();
@@ -222,7 +242,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to add member to channel. Member saasUserId:{allowedMember.SaasUserId} is not found.");
+                .And.Message.Should().Be($"Unable to add member to channel. Member memberId:{allowedMember.SaasUserId} is not found.");
 
             VerifyMocks();
         }
