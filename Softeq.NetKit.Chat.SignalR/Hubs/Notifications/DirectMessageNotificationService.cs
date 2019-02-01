@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnDeleteMessage(DirectMessageResponse message, Guid memberId)
         {
-            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.DirectMessageDeleted, message); ;
+            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.DirectMessageDeleted, message);
         }
 
         public async Task OnUpdateMessage(DirectMessageResponse message, Guid memberId)
