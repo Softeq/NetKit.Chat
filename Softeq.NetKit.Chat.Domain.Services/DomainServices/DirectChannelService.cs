@@ -185,13 +185,25 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     throw new NetKitChatNotFoundException($"Unable to get member. Member {nameof(ownerId)}:{ownerId} is not found.");
                 }
 
-                directMessagesResponse.AddRange(
-                    from directMessage in messages
-                    where directMessage.OwnerId == ownerId
-                    select DomainModelsMapper.MapToDirectMessageResponse(directMessage, owner));
+                directMessagesResponse.AddRange(GetDirectMessageResponses(messages, owner));
             }
 
             return directMessagesResponse;
+        }
+
+        private List<DirectMessageResponse> GetDirectMessageResponses(IReadOnlyList<DirectMessage> messages, DomainModels.Member owner)
+        {
+            var directMessageResponses = new List<DirectMessageResponse>();
+
+            foreach (var directMessage in messages)
+            {
+                if (directMessage.OwnerId == owner.Id)
+                {
+                    directMessageResponses.Add(DomainModelsMapper.MapToDirectMessageResponse(directMessage, owner));
+                }
+            }
+
+            return directMessageResponses;
         }
     }
 }
