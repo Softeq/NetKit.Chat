@@ -5,9 +5,9 @@ using System;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Message
 {
-    public class DeleteMessageRequest : UserRequest
+    public class DisabledMessageRequest : UserRequest
     {
-        public DeleteMessageRequest(string saasUserId, Guid messageId)
+        public DisabledMessageRequest(string saasUserId, Guid messageId)
             : base(saasUserId)
         {
             MessageId = messageId;

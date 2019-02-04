@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             result.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get channel summary. Channel {nameof(channelId)}:{channelId} not found.");
+                .And.Message.Should().Be($"Unable to get channel summary. Channel {nameof(channelId)}:{channelId} is not found.");
 
             VerifyMocks();
         }
@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             result.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get channel summary. Member { nameof(saasUserId)}:{ saasUserId} not found.");
+                .And.Message.Should().Be($"Unable to get channel summary. Member { nameof(saasUserId)}:{ saasUserId} is not found.");
 
             VerifyMocks();
         }

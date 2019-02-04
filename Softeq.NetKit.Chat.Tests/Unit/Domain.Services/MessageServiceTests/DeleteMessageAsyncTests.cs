@@ -23,10 +23,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .ReturnsAsync((Message)null)
                 .Verifiable();
 
-            var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
+            var request = new DisabledMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
             // Act
-            Func<Task> act = async () => { await _messageService.DeleteMessageAsync(request); };
+            Func<Task> act = async () => { await _messageService.DisableMessageAsync(request); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -46,10 +46,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
+            var request = new DisabledMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
             // Act
-            Func<Task> act = async () => { await _messageService.DeleteMessageAsync(request); };
+            Func<Task> act = async () => { await _messageService.DisableMessageAsync(request); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -69,10 +69,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .ReturnsAsync(new Member { Id = new Guid("ABF2CA08-5374-4CED-BE87-6EA93A8B90DA") })
                 .Verifiable();
 
-            var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
+            var request = new DisabledMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
             // Act
-            Func<Task> act = async () => { await _messageService.DeleteMessageAsync(request); };
+            Func<Task> act = async () => { await _messageService.DisableMessageAsync(request); };
 
             // Assert
             act.Should().Throw<NetKitChatAccessForbiddenException>()
@@ -85,7 +85,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         public async Task ShouldDeleteDefaultMessageWithAttachmentsAndWithPreviousMessage()
         {
             // Arrange
-            var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
+            var request = new DisabledMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
             var messageOwnerId = new Guid("F19AD922-B0DB-4686-8CB4-F51902800CAE");
             var message = new Message
@@ -107,7 +107,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<DateTimeOffset>()))
                 .ReturnsAsync(previousMessage)
                 .Verifiable();
-            _messageRepositoryMock.Setup(x => x.DeleteMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+            _messageRepositoryMock.Setup(x => x.DisableMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -138,7 +138,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .Verifiable();
 
             // Act
-            await _messageService.DeleteMessageAsync(request);
+            await _messageService.DisableMessageAsync(request);
 
             // Assert
             VerifyMocks();
@@ -149,7 +149,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         public async Task ShouldDeleteForwardMessageWithoutAttachmentsAndWithoutPreviousMessage()
         {
             // Arrange
-            var request = new DeleteMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
+            var request = new DisabledMessageRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", new Guid("A455F139-09E6-4EF5-B55A-D4C94D05DFDE"));
 
             var messageOwnerId = new Guid("F19AD922-B0DB-4686-8CB4-F51902800CAE");
             var message = new Message
@@ -166,7 +166,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<DateTimeOffset>()))
                 .ReturnsAsync((Message)null)
                 .Verifiable();
-            _messageRepositoryMock.Setup(x => x.DeleteMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
+            _messageRepositoryMock.Setup(x => x.DisableMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -192,7 +192,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .Verifiable();
 
             // Act
-            await _messageService.DeleteMessageAsync(request);
+            await _messageService.DisableMessageAsync(request);
 
             // Assert
             VerifyMocks();

@@ -93,7 +93,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
 
         public async Task<MessageResponse> DeleteMessageAsync(DeleteMessageRequest model)
         {
-            return await _connection.InvokeAsync<MessageResponse>("DeleteMessageAsync", model);
+            return await _connection.InvokeAsync<MessageResponse>("DisableMessageAsync", model);
         }
 
         public async Task InviteMultipleMembersAsync(SignalR.TransportModels.Request.Member.InviteMultipleMembersRequest model)

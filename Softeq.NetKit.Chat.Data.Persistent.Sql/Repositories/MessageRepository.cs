@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = @"SELECT *
                                  FROM Messages m
                                  INNER JOIN Members me ON m.OwnerId = me.Id
-                                 WHERE m.ChannelId = @channelId
+                                 WHERE m.ChannelId = @channelId AND m.IsDisabled = @messageAcessibility
                                  ORDER BY m.Created DESC";
 
                 return (await connection.QueryAsync<Message, Member, Message>(
@@ -40,9 +40,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {
                             message.OwnerId = member.Id;
                             message.Owner = member;
+                            message.IsDisabled = MessageAcessibility.Enable;
                             return message;
                         },
-                        new { channelId }))
+                        new { channelId, messageAcessibility = MessageAcessibility.Enable }))
                     .Distinct()
                     .ToList()
                     .AsReadOnly();
@@ -55,11 +56,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = @"SELECT Id
                                  FROM Messages m                    
-                                 WHERE ChannelId = @channelId AND Body LIKE @searchTerm
+                                 WHERE ChannelId = @channelId AND Body LIKE @searchTerm AND m.IsDisabled = @messageAcessibility
                                  ORDER BY m.Created DESC";
 
                 var searchTerm = $"%{searchText.Trim().Replace("[", "[[]").Replace("%", "[%]").Replace("_","[_]")}%";
-                return (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchTerm })).ToList().AsReadOnly();
+                return (await connection.QueryAsync<Guid>(sqlQuery, new { channelId, searchTerm, messageAcessibility = MessageAcessibility.Enable })).ToList().AsReadOnly();
             }
         }
 
@@ -74,7 +75,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     sqlQuery = @"SELECT TOP(@pageSize) *
                                  FROM Messages message
                                  INNER JOIN Members member ON message.OwnerId = member.Id
-                                 WHERE ChannelId = @channelId AND Created < @lastReadMessageCreated
+                                 WHERE ChannelId = @channelId AND Created < @lastReadMessageCreated AND message.IsDisabled = @messageAcessibility
                                  ORDER BY Created DESC";
                 }
                 else
@@ -82,7 +83,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     sqlQuery = @"SELECT *
                                  FROM Messages message
                                  INNER JOIN Members member ON message.OwnerId = member.Id
-                                 WHERE ChannelId = @channelId AND Created < @lastReadMessageCreated
+                                 WHERE ChannelId = @channelId AND Created < @lastReadMessageCreated AND message.IsDisabled = @messageAcessibility
                                  ORDER BY Created";
                 }
 
@@ -92,9 +93,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {
                             message.OwnerId = member.Id;
                             message.Owner = member;
+                            message.IsDisabled = MessageAcessibility.Enable;
                             return message;
                         },
-                        new { channelId, lastReadMessageCreated, pageSize }
+                        new { channelId, lastReadMessageCreated, pageSize, messageAcessibility = MessageAcessibility.Enable }
                         ))
                     .Distinct()
                     .OrderBy(o => o.Created)
@@ -111,7 +113,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = $"SELECT {pageSizeQuery} * " +
                                @"FROM Messages message
                                  INNER JOIN Members member ON message.OwnerId = member.Id
-                                 WHERE Created >= @lastReadMessageCreated AND ChannelId = @channelId 
+                                 WHERE Created >= @lastReadMessageCreated AND ChannelId = @channelId AND message.IsDisabled = @messageAcessibility
                                  ORDER BY Created";
 
                 return (await connection.QueryAsync<Message, Member, Message>(
@@ -122,7 +124,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             message.Owner = member;
                             return message;
                         },
-                        new { ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, PageSize = pageSize }))
+                        new { ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, PageSize = pageSize, messageAcessibility = MessageAcessibility.Enable }))
                     .Distinct()
                     .ToList()
                     .AsReadOnly();
@@ -141,7 +143,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 							                                                 me.Id AS memberId, me.Email, me.IsAfk, me.IsBanned, me.LastActivity, me.LastNudged, me.Name, me.PhotoName, me.Role, me.SaasUserId, me.Status 
 							                 FROM Messages m  
                                              INNER JOIN Members me ON m.OwnerId = me.Id
-                                             WHERE Created <= @LastReadMessageCreated AND ChannelId = @ChannelId
+                                             WHERE Created <= @LastReadMessageCreated AND ChannelId = @ChannelId AND m.IsDisabled = @messageAcessibility
 					                         ORDER BY Created DESC) 
                                          AS LastReadMessages";
 
@@ -151,7 +153,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 							                   me.Id AS memberId, me.Email, me.IsAfk, me.IsBanned, me.LastActivity, me.LastNudged, me.Name, me.PhotoName, me.Role, me.SaasUserId, me.Status 
 							            FROM Messages m  
                                         INNER JOIN Members me ON m.OwnerId = me.Id
-                                        WHERE Created > @LastReadMessageCreated AND ChannelId = @ChannelId) 
+                                        WHERE Created > @LastReadMessageCreated AND ChannelId = @ChannelId AND m.IsDisabled = @messageAcessibility) 
                                     AS NewMessages";
 
                 var sqlQuery = $"{lastReadMessages} UNION {newMessages} ORDER BY Created";
@@ -164,7 +166,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             message.Owner = member;
                             return message;
                         },
-                        new { ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated, ReadMessagesCount = readMessagesCount }))
+                        new
+                        {
+                            ChannelId = channelId, LastReadMessageCreated = lastReadMessageCreated,
+                            ReadMessagesCount = readMessagesCount, messageAcessibility = MessageAcessibility.Enable
+                        }))
                     .Distinct()
                     .ToList()
                     .AsReadOnly();
@@ -179,7 +185,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                  FROM Messages m 
                                  INNER JOIN Members mem ON m.OwnerId = mem.Id
                                  LEFT JOIN ForwardMessages fm ON m.ForwardMessageId = fm.Id
-                                 WHERE m.Id = @messageId";
+                                 WHERE m.Id = @messageId AND m.IsDisabled = @messageAcessibility";
 
                 return (await connection.QueryAsync<Message, Member, ForwardMessage, Message>(
                         sqlQuery,
@@ -194,7 +200,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             message.OwnerId = member.Id;
                             return message;
                         },
-                        new { messageId }))
+                        new { messageId, messageAcessibility = MessageAcessibility.Enable }))
                      .FirstOrDefault();
             }
         }
@@ -206,7 +212,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = @"SELECT TOP(1) *
 		                         FROM Messages m    
 		                         LEFT JOIN Members mem ON mem.Id = m.OwnerId   
-		                         WHERE m.ChannelId = @channelId AND OwnerId = @ownerId AND m.Created < @created
+		                         WHERE m.ChannelId = @channelId AND OwnerId = @ownerId AND m.Created < @created AND m.IsDisabled = @messageAcessibility
 		                         ORDER BY Created ASC";
 
                 return (await connection.QueryAsync<Message, Member, Message>(
@@ -217,7 +223,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             msg.OwnerId = member.Id;
                             return msg;
                         },
-                        new { channelId, ownerId, created }))
+                        new { channelId, ownerId, created, messageAcessibility = MessageAcessibility.Enable }))
                     .FirstOrDefault();
             }
         }
@@ -226,18 +232,19 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId, Updated, ForwardMessageId) 
-                                 VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId, @Updated, @ForwardMessageId)";
+                var sqlQuery = @"INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId, Updated, ForwardMessageId, IsDisabled) 
+                                 VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId, @Updated, @ForwardMessageId, @IsDisabled)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, message);
             }
         }
 
-        public async Task DeleteMessageAsync(Guid messageId)
+        public async Task DisableMessageAsync(Guid messageId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"DELETE FROM Messages 
+                var sqlQuery = @"UPDATE Messages
+                                 SET IsDisabled = 1
                                  WHERE Id = @messageId";
 
                 await connection.ExecuteAsync(sqlQuery, new { messageId });
@@ -262,9 +269,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = @"SELECT COUNT(*) 
                                  FROM Messages 
-                                 Where ChannelId = @channelId";
+                                 WHERE ChannelId = @channelId AND Messages.IsDisabled = @messageAcessibility";
 
-                return (await connection.QueryAsync<int>(sqlQuery, new { channelId })).FirstOrDefault();
+                return (await connection.QueryAsync<int>(sqlQuery, new { channelId, messageAcessibility = MessageAcessibility.Enable })).FirstOrDefault();
             }
         }
 
@@ -277,7 +284,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                  INNER JOIN ChannelMembers c ON m.Id = c.LastReadMessageId
                                  INNER JOIN Members mem ON c.MemberId = mem.Id
                                  LEFT JOIN ForwardMessages  fm ON m.ForwardMessageId = fm.Id
-                                 WHERE c.MemberId = @memberId AND c.ChannelId = @channelId";
+                                 WHERE c.MemberId = @memberId AND c.ChannelId = @channelId AND m.IsDisabled = @messageAcessibility";
 
                 return (await connection.QueryAsync<Message, Member, ForwardMessage, Message>(
                         sqlQuery,
@@ -288,7 +295,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             message.OwnerId = member.Id;
                             return message;
                         },
-                        new { memberId, channelId },
+                        new { memberId, channelId, messageAcessibility = MessageAcessibility.Enable },
                         splitOn: "Id, ChannelId, Id"))
                     .FirstOrDefault();
             }
