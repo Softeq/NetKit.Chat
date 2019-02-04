@@ -113,7 +113,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             _connection.On<MemberSummary, ChannelSummaryResponse>(HubEvents.MemberJoined, (member, channel) => { Execute(MemberJoined, action => action(member, channel)); });
             _connection.On<MessageResponse>(HubEvents.MessageAdded, response => { Execute(MessageAdded, action => action(response)); });
             _connection.On<MessageResponse>(HubEvents.MessageUpdated, response => { Execute(MessageUpdated, action => action(response)); });
-            _connection.On<Guid, ChannelSummaryResponse>(HubEvents.MessageDeleted, (id, response) => { Execute(MessageDeleted, action => action(id, response)); });
+            _connection.On<Guid, ChannelSummaryResponse>(HubEvents.MessageDisabled, (id, response) => { Execute(MessageDeleted, action => action(id, response)); });
             _connection.On<ChannelSummaryResponse>(HubEvents.ChannelClosed, response => { Execute(ChannelClosed, action => action(response)); });
             _connection.On<ChannelSummaryResponse>(HubEvents.ChannelUpdated, response => { Execute(ChannelUpdated, action => action(response)); });
         }

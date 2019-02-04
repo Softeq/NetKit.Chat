@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
-        public async Task<IActionResult> DeleteMessageAsync(Guid channelId, Guid messageId)
+        public async Task<IActionResult> DisableMessageAsync(Guid channelId, Guid messageId)
         {
             await _messageSocketService.DisableMessageAsync(new DisabledMessageRequest(GetCurrentSaasUserId(), messageId));
             return Ok();

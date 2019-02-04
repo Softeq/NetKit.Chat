@@ -5,7 +5,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 {
     public static class HubEvents
     {
-        public const string MessageDeleted = "MessageDeleted";
+        public const string MessageDisabled = "MessageDisabled";
         public const string MessageAdded = "MessageAdded";
         public const string MessageUpdated = "MessageUpdated";
         public const string LastReadMessageChanged = "LastReadMessageChanged";

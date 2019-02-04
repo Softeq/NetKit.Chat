@@ -38,11 +38,11 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIdsExceptCaller).SendAsync(HubEvents.MessageAdded, message);
         }
 
-        public async Task OnDeleteMessage(ChannelSummaryResponse channelSummary, MessageResponse message)
+        public async Task OnDisableMessage(ChannelSummaryResponse channelSummary, MessageResponse message)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
             
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageDeleted, message.Id, channelSummary);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageDisabled, message.Id, channelSummary);
         }
 
         public async Task OnUpdateMessage(MessageResponse message)

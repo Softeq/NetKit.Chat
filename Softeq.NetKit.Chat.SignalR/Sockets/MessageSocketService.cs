@@ -91,7 +91,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, message.ChannelId);
 
-            await _messageNotificationService.OnDeleteMessage(channelSummary, message);
+            await _messageNotificationService.OnDisableMessage(channelSummary, message);
         }
 
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)

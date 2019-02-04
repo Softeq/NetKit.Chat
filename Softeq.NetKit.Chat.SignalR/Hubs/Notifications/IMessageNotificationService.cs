@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
     public interface IMessageNotificationService
     {
         Task OnAddMessage(MessageResponse message, string callerConnectionId);
-        Task OnDeleteMessage(ChannelSummaryResponse channelSummary, MessageResponse message);
+        Task OnDisableMessage(ChannelSummaryResponse channelSummary, MessageResponse message);
         Task OnUpdateMessage(MessageResponse message);
         Task OnAddMessageAttachment(Guid channelId);
         Task OnDeleteMessageAttachment(MessageResponse message);
