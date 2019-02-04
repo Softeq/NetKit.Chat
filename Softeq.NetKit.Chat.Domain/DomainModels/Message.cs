@@ -17,7 +17,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset? Updated { get; set; }
         public MessageType Type { get; set; }
-        public MessageAcessibility IsDisabled { get; set; }
+        public MessageAccessibility IsArchived { get; set; }
 
         // Notifications
         public string ImageUrl { get; set; }
