@@ -101,7 +101,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             // Act
             var getMessagesRequest = new GetMessagesRequest(SaasUserId, _channelId, message.Id, message.Created, 10);
             var messages = await _messageService.GetMessagesAsync(getMessagesRequest);
-            await _messageService.DeleteMessageAsync(new DeleteMessageRequest(SaasUserId, message.Id));
+            await _messageService.ArchiveMessageAsync(new ArchiveMessageRequest(SaasUserId, message.Id));
             var newMessages = await _messageService.GetMessagesAsync(getMessagesRequest);
 
             // Assert

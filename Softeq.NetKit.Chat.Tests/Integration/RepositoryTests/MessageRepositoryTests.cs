@@ -52,7 +52,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     OwnerId = _member.Id,
                     Owner = _member,
-                    Updated = DateTimeOffset.Now
+                    Updated = DateTimeOffset.Now,
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
                 expectedChannelMessages.Add(message);
@@ -75,7 +76,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Type = MessageType.Default,
                 ChannelId = channel.Id,
                 OwnerId = _member.Id,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(messageInSecondChannel);
 
@@ -100,7 +102,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 OwnerId = _member.Id,
                 Owner = _member,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
@@ -117,7 +120,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     OwnerId = _member.Id,
                     Owner = _member,
-                    Updated = DateTimeOffset.Now
+                    Updated = DateTimeOffset.Now,
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
             }
@@ -136,7 +140,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     OwnerId = _member.Id,
                     Owner = _member,
-                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i)
+                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i),
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
                 readMessages.Add(readMessage);
@@ -167,7 +172,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
@@ -189,7 +195,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     Owner = _member,
                     OwnerId = _member.Id,
-                    Updated = DateTimeOffset.Now
+                    Updated = DateTimeOffset.Now,
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
                 unreadMessages.Add(unreadMessage);
@@ -210,7 +217,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     OwnerId = _member.Id,
                     Owner = _member,
-                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i)
+                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i),
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
             }
@@ -239,7 +247,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
@@ -258,7 +267,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     Owner = _member,
                     OwnerId = _member.Id,
-                    Updated = DateTimeOffset.Now
+                    Updated = DateTimeOffset.Now,
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
                 unreadMessages.Add(unreadMessage);
@@ -283,7 +293,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     OwnerId = _member.Id,
                     Owner = _member,
-                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i)
+                    Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i),
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
                 readMessages.Add(readMessage);
@@ -314,7 +325,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                ForwardMessageId = messageId
+                ForwardMessageId = messageId,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(expectedMessage);
 
@@ -351,7 +363,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(firstMessage);
 
@@ -365,7 +378,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
 
@@ -389,6 +403,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(firstMessage);
 
@@ -420,6 +435,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
 
@@ -442,7 +458,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
@@ -464,11 +481,12 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                Updated = DateTimeOffset.Now
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
-            await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);
+            await UnitOfWork.MessageRepository.ArchiveMessageAsync(message.Id);
 
             var deletedMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(message.Id);
             deletedMessage.Should().BeNull();
@@ -487,7 +505,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                Updated = null
+                Updated = null,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
@@ -516,7 +535,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ChannelId = _channelId,
                     Owner = _member,
                     OwnerId = _member.Id,
-                    Updated = DateTimeOffset.Now
+                    Updated = DateTimeOffset.Now,
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
             }
@@ -542,7 +562,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     Body = $"[]test{i}",
                     Created = DateTimeOffset.UtcNow,
                     Type = 0,
-                    ChannelId = _channelId
+                    ChannelId = _channelId,
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
             }

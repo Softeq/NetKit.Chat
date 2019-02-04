@@ -133,8 +133,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         {
             await ValidateAndExecuteAsync(request, new DeleteMessageRequestValidator(), new TaskReference(async () =>
             {
-                var deleteMessageRequest = new DomainRequest.Message.DeleteMessageRequest(Context.GetSaasUserId(), request.MessageId);
-                await _messageSocketService.DeleteMessageAsync(deleteMessageRequest);
+                var archiveMessageRequest = new ArchiveMessageRequest(Context.GetSaasUserId(), request.MessageId);
+                await _messageSocketService.ArchiveMessageAsync(archiveMessageRequest);
             }),
             request.RequestId);
         }
