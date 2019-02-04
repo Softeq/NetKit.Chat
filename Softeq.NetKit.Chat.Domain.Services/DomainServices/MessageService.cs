@@ -106,7 +106,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToMessageResponse(message);
         }
 
-        public async Task DisableMessageAsync(DisabledMessageRequest request)
+        public async Task DisableMessageAsync(DisableMessageRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.MessageId);
             if (message == null)

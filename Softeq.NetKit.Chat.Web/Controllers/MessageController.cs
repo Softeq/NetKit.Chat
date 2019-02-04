@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}")]
         public async Task<IActionResult> DisableMessageAsync(Guid channelId, Guid messageId)
         {
-            await _messageSocketService.DisableMessageAsync(new DisabledMessageRequest(GetCurrentSaasUserId(), messageId));
+            await _messageSocketService.DisableMessageAsync(new DisableMessageRequest(GetCurrentSaasUserId(), messageId));
             return Ok();
         }
 

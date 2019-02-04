@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
     public interface IMessageSocketService
     {
         Task<MessageResponse> AddMessageAsync(CreateMessageRequest request, string clientConnectionId);
-        Task DisableMessageAsync(DisabledMessageRequest request);
+        Task DisableMessageAsync(DisableMessageRequest request);
         Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request);
         Task<AttachmentResponse> AddMessageAttachmentAsync(AddMessageAttachmentRequest request);
         Task DeleteMessageAttachmentAsync(DeleteMessageAttachmentRequest request);

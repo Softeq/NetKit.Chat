@@ -83,7 +83,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             await _pushNotificationService.SendForTagAsync(new NewMessagePush { ChannelId = channelId }, includedTags, excludedTags);
         }
 
-        public async Task DisableMessageAsync(DisabledMessageRequest request)
+        public async Task DisableMessageAsync(DisableMessageRequest request)
         {
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
