@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     OwnerId = _member.Id,
                     Owner = _member,
                     Updated = DateTimeOffset.Now,
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
                 expectedChannelMessages.Add(message);
@@ -77,7 +77,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = channel.Id,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(messageInSecondChannel);
 
@@ -103,7 +103,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 OwnerId = _member.Id,
                 Owner = _member,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
@@ -121,7 +121,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     OwnerId = _member.Id,
                     Owner = _member,
                     Updated = DateTimeOffset.Now,
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
             }
@@ -141,7 +141,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     OwnerId = _member.Id,
                     Owner = _member,
                     Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i),
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
                 readMessages.Add(readMessage);
@@ -173,7 +173,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
@@ -196,7 +196,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     Owner = _member,
                     OwnerId = _member.Id,
                     Updated = DateTimeOffset.Now,
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
                 unreadMessages.Add(unreadMessage);
@@ -218,7 +218,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     OwnerId = _member.Id,
                     Owner = _member,
                     Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i),
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
             }
@@ -248,7 +248,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(lastReadMessage);
 
@@ -268,7 +268,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     Owner = _member,
                     OwnerId = _member.Id,
                     Updated = DateTimeOffset.Now,
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(unreadMessage);
                 unreadMessages.Add(unreadMessage);
@@ -294,7 +294,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     OwnerId = _member.Id,
                     Owner = _member,
                     Updated = DateTimeOffset.Now - TimeSpan.FromSeconds(i),
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(readMessage);
                 readMessages.Add(readMessage);
@@ -326,7 +326,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
                 ForwardMessageId = messageId,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(expectedMessage);
 
@@ -364,7 +364,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(firstMessage);
 
@@ -379,7 +379,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
 
@@ -403,7 +403,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(firstMessage);
 
@@ -435,7 +435,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ChannelId = _channelId,
                 Owner = _member,
                 OwnerId = _member.Id,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
 
@@ -459,7 +459,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
@@ -482,7 +482,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = DateTimeOffset.Now,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
@@ -506,7 +506,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 Owner = _member,
                 OwnerId = _member.Id,
                 Updated = null,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
@@ -536,7 +536,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     Owner = _member,
                     OwnerId = _member.Id,
                     Updated = DateTimeOffset.Now,
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
             }
@@ -563,7 +563,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     Created = DateTimeOffset.UtcNow,
                     Type = 0,
                     ChannelId = _channelId,
-                    IsArchived = MessageAccessibility.Present
+                    AccessibilityStatus = AccessibilityStatus.Present
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
             }

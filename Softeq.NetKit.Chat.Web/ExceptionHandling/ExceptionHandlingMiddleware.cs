@@ -51,7 +51,7 @@ namespace Softeq.NetKit.Chat.Web.ExceptionHandling
         {
             _logger.Event("UnhandledExceptionCaughtByMiddleware")
                    .With.Exception(ex)
-                   .Message("Exception was caught by exception handling middleware. Status code = {StatusCode}; error code = {ErrorCode}", statusCode, errorCode)
+                   .Message("Exception was caught by exception handling middleware. AccessibilityStatus code = {StatusCode}; error code = {ErrorCode}", statusCode, errorCode)
                    .AsError();
 
             if (context.Response.HasStarted)

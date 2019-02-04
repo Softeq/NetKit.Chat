@@ -76,7 +76,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Created = _dateTimeProvider.GetUtcNow(),
                 Type = request.Type,
                 ImageUrl = request.ImageUrl,
-                IsArchived = MessageAccessibility.Present
+                AccessibilityStatus = AccessibilityStatus.Present
             };
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -106,7 +106,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToMessageResponse(message);
         }
 
-        public async Task ArchiveMessageAsync(DisableMessageRequest request)
+        public async Task ArchiveMessageAsync(ArchiveMessageRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.MessageId);
             if (message == null)

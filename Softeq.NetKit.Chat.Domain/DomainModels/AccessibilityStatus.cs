@@ -3,9 +3,9 @@
 
 namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
-   public enum MessageAccessibility
+   public enum AccessibilityStatus
     {
         Present = 0,
-        Archive = 1
+        Archived = 1
     }
 }
