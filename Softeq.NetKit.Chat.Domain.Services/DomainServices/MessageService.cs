@@ -75,7 +75,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Body = request.Body,
                 Created = _dateTimeProvider.GetUtcNow(),
                 Type = request.Type,
-                ImageUrl = request.ImageUrl
+                ImageUrl = request.ImageUrl,
+                AccessibilityStatus = AccessibilityStatus.Present
             };
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -105,7 +106,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToMessageResponse(message);
         }
 
-        public async Task DeleteMessageAsync(DeleteMessageRequest request)
+        public async Task ArchiveMessageAsync(ArchiveMessageRequest request)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.MessageId);
             if (message == null)
@@ -124,25 +125,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatAccessForbiddenException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
-            var messageAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(message.Id);
-
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                if (message.Type == MessageType.Forward && message.ForwardMessageId.HasValue)
-                {
-                    await UnitOfWork.ForwardMessageRepository.DeleteForwardMessageAsync(message.ForwardMessageId.Value);
-                }
-                
-                await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(message.Id);
-                foreach (var attachment in messageAttachments)
-                {
-                    await _cloudAttachmentProvider.DeleteMessageAttachmentAsync(attachment.FileName);
-                }
-
+            {              
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message.ChannelId, message.OwnerId, message.Created);
                 await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage?.Id);
 
-                await UnitOfWork.MessageRepository.DeleteMessageAsync(message.Id);
+                await UnitOfWork.MessageRepository.ArchiveMessageAsync(message.Id);
 
                 transactionScope.Complete();
             }

@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}")]
         public async Task<IActionResult> DeleteMessageAsync(Guid channelId, Guid messageId)
         {
-            await _messageSocketService.DeleteMessageAsync(new DeleteMessageRequest(GetCurrentSaasUserId(), messageId));
+            await _messageSocketService.ArchiveMessageAsync(new ArchiveMessageRequest(GetCurrentSaasUserId(), messageId));
             return Ok();
         }
 
