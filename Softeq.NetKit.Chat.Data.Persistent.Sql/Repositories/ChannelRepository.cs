@@ -41,9 +41,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
-                                        creator.Id, creator.SaasUserId, creator.Name, creator.AccessibilityStatus, creator.Role, creator.IsAfk, creator.Email, creator.LastActivity,
+                                        creator.Id, creator.SaasUserId, creator.Name, creator.Status, creator.Role, creator.IsAfk, creator.Email, creator.LastActivity,
                                         m.Id, m.ChannelId, m.Created, m.Body, m.ImageUrl, m.Type, m.OwnerId, m.Updated, 
-                                        mem.Id, mem.SaasUserId, mem.Name, mem.AccessibilityStatus, mem.Role, mem.IsAfk, mem.Email, mem.LastActivity
+                                        mem.Id, mem.SaasUserId, mem.Name, mem.Status, mem.Role, mem.IsAfk, mem.Email, mem.LastActivity
                                  FROM Channels c 
                                  LEFT JOIN Members creator ON c.CreatorId = creator.Id
                                  LEFT JOIN Messages m ON c.Id = m.ChannelId
@@ -115,7 +115,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
-                                        m.Id, m.SaasUserId, m.Name, m.AccessibilityStatus, m.Role, m.IsAfk, m.Email, m.LastActivity
+                                        m.Id, m.SaasUserId, m.Name, m.Status, m.Role, m.IsAfk, m.Email, m.LastActivity
                                  FROM Channels c 
                                  LEFT JOIN Members m ON c.CreatorId = m.Id
                                  WHERE c.Id = @channelId";
