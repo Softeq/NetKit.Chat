@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
-    public class GetDirectChannelByIdTests : DirectMessagesTestBase
+    public class GetDirectChannelByIdTests : DirectChannelTestBase
     {
         [Fact]
         public void ShouldThrowIfDirectChannelDoesNotExist()
@@ -25,11 +25,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.GetDirectChannelById(id); };
+            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelByIdAsync(id); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get direct channel. Chat with {nameof(id)}:{id} is not found.");
+                .And.Message.Should().Be($"Unable to get direct channel. Chat with channelId:{id} is not found.");
 
             VerifyMocks();
         }
@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             //Act
-            Func<Task> act = async () => { await DirectMessageService.GetDirectChannelById(id); };
+            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelByIdAsync(id); };
 
             //Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             // Act
-            var act = await DirectMessageService.GetDirectChannelById(directId);
+            var act = await DirectChannelService.GetDirectChannelByIdAsync(directId);
 
             // Assert
             act.Should().BeEquivalentTo(channelResponse);

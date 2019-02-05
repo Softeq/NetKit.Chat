@@ -25,6 +25,7 @@ namespace Softeq.NetKit.Chat.SignalR
         {
             builder.RegisterType<ChannelNotificationService>().As<IChannelNotificationService>();
             builder.RegisterType<MessageNotificationService>().As<IMessageNotificationService>();
+            builder.RegisterType<DirectMessageNotificationService>().As<IDirectMessageNotificationService>();
         }
     }
 }
