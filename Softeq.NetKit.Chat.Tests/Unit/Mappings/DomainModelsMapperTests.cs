@@ -224,22 +224,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             var directChannelId = new Guid("9EDBC8A4-2EEC-4FB2-8410-A2852EB8989A");
             var ownerId = new Guid("2C1CFFE1-3656-4100-9364-6D100D006FA0");
 
-            var owner = new Member
-            {
-                Id = ownerId,
-                Email = "test",
-                Role = UserRole.Admin,
-                IsAfk = true,
-                IsBanned = true,
-                LastNudged = DateTimeOffset.UtcNow,
-                LastActivity = DateTimeOffset.UtcNow,
-                Name = "test",
-                SaasUserId = "test",
-                Status = UserStatus.Offline
-            };
-
             var directMessageId = new Guid("51F70B32-B656-4FF8-9C6C-69252F2295B9");
-            var directMessage = new DirectMessage
+            var directMessage = new Message
             {
                 Body = "TestBody",
                 Created = DateTimeOffset.UtcNow,
@@ -250,7 +236,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             };
 
             // Act
-            var response = _domainModelsMapper.MapToDirectMessageResponse(directMessage, owner);
+            var response = _domainModelsMapper.MapToDirectMessageResponse(directMessage);
 
             // Assert
             response.Id.Should().Be(directMessage.Id);

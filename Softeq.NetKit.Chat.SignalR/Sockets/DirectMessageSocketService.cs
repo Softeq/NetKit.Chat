@@ -4,10 +4,10 @@
 using EnsureThat;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
         public async Task<DirectMessageResponse> DeleteMessageAsync(string saasUserId, Guid messageId, Guid directChannelId)
         {
-            var message = await _directChannelService.DeleteMessageAsync(messageId, saasUserId);
+            var message = await _directChannelService.ArchiveMessageAsync(messageId, saasUserId);
             var owner = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
             var memberId = await GetInterlocutorIdAsync(directChannelId, owner.Id);
 

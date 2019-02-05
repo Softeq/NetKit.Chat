@@ -1,27 +1,38 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:33487/",
-      "sslPort": 0
+  "ConnectionStrings": {
+    "DefaultConnection": "data source=MWW-020;Initial Catalog=Chat.MessageServiceTest;integrated security=True;MultipleActiveResultSets=True"
+  },
+  "AzureStorage": {
+    "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=softeqnonamemessaging;AccountKey=cC/EhsPuwhJH7f10X7Q7YD7RpA0pRVXXD29fhFgK+5s0UMGIp1WIh5XAyZLYXGL/nHzKqLHW8P4cbIGEWFP0FA==;EndpointSuffix=core.windows.net",
+    "ContentStorageHost": "https://softeqnonamemessaging.blob.core.windows.net",
+    "MessageAttachmentsContainer": "message",
+    "MemberAvatarsContainer": "avatar",
+    "ChannelImagesContainer": "channel",
+    "TempContainerName": "temp",
+    "MessagePhotoSize": 300
+  },
+  "Authentications": {
+    "Bearer": {
+      "ApiSecret": "secret",
+      "Authority": "http://softeq-netkit-auth-stage.azurewebsites.net",
+      "RequireHttpsMetadata": false,
+      "ApiName": "api"
     }
   },
-  "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "Softeq.NoName.Chat.Web": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:20987/"
-    }
+  "AzureNotificationHub": {
+    "ConnectionString": "connection_string",
+    "HubName": "hub_name"
+  },
+  "Message": {
+    "MessageAttachmentsLimit": 10,
+    "LastMessageReadCount": 20
+  },
+  "ApplicationInsights": {
+    "InstrumentationKey": "ea80ad99-bb9b-4d96-88eb-d64fa796e2bf"
+  },
+  "Serilog": {
+    "MinimumLevel": "Debug",
+    "ApplicationName": "Softeq.NetKit.Messaging.IntegrationTests",
+    "FileSizeLimitMBytes": 100
   }
 }

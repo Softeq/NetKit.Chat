@@ -27,7 +27,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .ReturnsAsync((DirectChannel)null)
                 .Verifiable();
 
-            var directMessageRequest = new CreateDirectMessageRequest(saasUserId, directChannelId, "TestBody");
+            var directMessageRequest = new CreateDirectMessageRequest(saasUserId, directChannelId, MessageType.Default, "TestBody");
 
             // Act
             Func<Task> act = async () => { await DirectChannelService.AddMessageAsync(directMessageRequest); };
@@ -56,7 +56,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
-            var directMessageRequest = new CreateDirectMessageRequest(saasUserId, directChannelId, "TestBody");
+            var directMessageRequest = new CreateDirectMessageRequest(saasUserId, directChannelId, MessageType.Default, "TestBody");
 
             // Act
             Func<Task> act = async () => { await DirectChannelService.AddMessageAsync(directMessageRequest); };
@@ -89,18 +89,13 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Returns(utcNow)
                 .Verifiable();
             
-            var directMessageRequest = new CreateDirectMessageRequest(saasUserId, new Guid("4359E70A-E6B5-4D18-8010-759678A945EF"), "TestBody");
+            var directMessageRequest = new CreateDirectMessageRequest(saasUserId, new Guid("4359E70A-E6B5-4D18-8010-759678A945EF"), MessageType.Default, "TestBody");
 
-
-            DirectMessage messageToAdd = null;
-            _directMessagesRepository.Setup(x => x.AddMessageAsync(It.IsAny<DirectMessage>()))
-                .Callback<DirectMessage>(x => messageToAdd = x)
-                .Returns(Task.CompletedTask)
-                .Verifiable();
+            Message messageToAdd = null;
 
             var directMessageResponse = new DirectMessageResponse();
             _domainModelsMapperMock
-                .Setup(x => x.MapToDirectMessageResponse(It.Is<DirectMessage>(dm => dm.Equals(messageToAdd)), It.Is<Member>(m => m.Equals(member))))
+                .Setup(x => x.MapToDirectMessageResponse(It.Is<Message>(dm => dm.Equals(messageToAdd))))
                 .Returns(directMessageResponse)
                 .Verifiable();
 

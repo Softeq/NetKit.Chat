@@ -131,7 +131,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
-            var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, "TestBody");
+            var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, MessageType.Default, "TestBody");
 
             var directMessageResponse = await _directChannelService.AddMessageAsync(directMessageRequest);
   
@@ -139,7 +139,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.Equal(directMessageResponse.Id, messageResponse.Id);
 
             // Act
-            await _directChannelService.DeleteMessageAsync(directMessageResponse.Id, owner.SaasUserId);
+            await _directChannelService.ArchiveMessageAsync(directMessageResponse.Id, owner.SaasUserId);
 
             // Assert
             NetKitChatNotFoundException ex = Assert.Throws<NetKitChatNotFoundException>(() => _directChannelService.GetMessagesByIdAsync(directMessageResponse.Id).GetAwaiter().GetResult());
@@ -187,7 +187,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
-            var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, "TestBody");
+            var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, MessageType.Default, "TestBody");
 
             var directMessageResponse = await _directChannelService.AddMessageAsync(directMessageRequest);
 
@@ -240,7 +240,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
             UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
-            var directMessage01 = new DirectMessage
+            var directMessage01 = new Message
             {
                 Body = "TestBody01",
                 Created = DateTimeOffset.UtcNow,
@@ -250,7 +250,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
                 Updated = DateTimeOffset.UtcNow
             };
 
-            var directMessage02 = new DirectMessage
+            var directMessage02 = new Message
             {
                 Body = "TestBody02",
                 Created = DateTimeOffset.UtcNow,
@@ -260,7 +260,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
                 Updated = DateTimeOffset.UtcNow
             };
 
-            var directMessage03 = new DirectMessage
+            var directMessage03 = new Message
             {
                 Body = "TestBody03",
                 Created = DateTimeOffset.UtcNow,
@@ -270,7 +270,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
                 Updated = DateTimeOffset.UtcNow
             };
 
-            var directMessage04 = new DirectMessage
+            var directMessage04 = new Message
             {
                 Body = "TestBody04",
                 Created = DateTimeOffset.UtcNow,
@@ -280,10 +280,10 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
                 Updated = DateTimeOffset.UtcNow
             };
 
-            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage01).GetAwaiter().GetResult();
-            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage02).GetAwaiter().GetResult();
-            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage03).GetAwaiter().GetResult();
-            UnitOfWork.DirectMessagesRepository.AddMessageAsync(directMessage04).GetAwaiter().GetResult();
+            UnitOfWork.MessageRepository.AddMessageAsync(directMessage01).GetAwaiter().GetResult();
+            UnitOfWork.MessageRepository.AddMessageAsync(directMessage02).GetAwaiter().GetResult();
+            UnitOfWork.MessageRepository.AddMessageAsync(directMessage03).GetAwaiter().GetResult();
+            UnitOfWork.MessageRepository.AddMessageAsync(directMessage04).GetAwaiter().GetResult();
 
             // Act
             var directMessagesResponse = await _directChannelService.GetMessagesByChannelIdAsync(directChannelId);

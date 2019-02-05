@@ -10,6 +10,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
     {
         public Guid Id { get; set; }
         public Guid ChannelId { get; set; }
+        public Guid DirectChannelId { get; set; }
         public Guid? OwnerId { get; set; }
         public Channel Channel { get; set; }
         public Member Owner { get; set; }
@@ -17,6 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset? Updated { get; set; }
         public MessageType Type { get; set; }
+        public MessageDirection Direction { get; set; }
         public AccessibilityStatus AccessibilityStatus { get; set; }
 
         // Notifications

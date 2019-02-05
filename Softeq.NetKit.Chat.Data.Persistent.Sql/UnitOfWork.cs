@@ -51,8 +51,5 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 
         private IDirectChannelRepository _directChannelRepository;
         public IDirectChannelRepository DirectChannelRepository => _directChannelRepository ?? (_directChannelRepository = new DirectChannelRepository(_sqlConnectionFactory));
-
-        private IDirectMessagesRepository _directMessagesRepository;
-        public IDirectMessagesRepository DirectMessagesRepository => _directMessagesRepository ?? (_directMessagesRepository = new DirectMessagesRepository(_sqlConnectionFactory));
     }
 }

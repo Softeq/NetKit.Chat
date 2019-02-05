@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
     {
         Task<QueryResult<Member>> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter);
         Task<QueryResult<Member>> GetPotentialChannelMembersAsync(Guid channelId, int pageNumber, int pageSize, string nameFilter);
-        Task<Member> GetMemberByIdAsync(Guid memberId);
+        Task<Member> GetMemberByIdAsync(Guid? memberId);
         Task AddMemberAsync(Member member);
         Task UpdateMemberAsync(Member member);
         Task ActivateMemberAsync(Member member);
