@@ -233,7 +233,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<Message> GetPreviousMessageAsync(Guid channelId, Guid? ownerId, DateTimeOffset created)
+        public async Task<Message> GetPreviousMessageAsync(Guid? channelId, Guid? ownerId, DateTimeOffset created)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -260,8 +260,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId, Updated, ForwardMessageId, AccessibilityStatus) 
-                                 VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId, @Updated, @ForwardMessageId, @AccessibilityStatus)";
+                var sqlQuery = @"INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, Direction, ChannelId, DirectChannelId, OwnerId, Updated, ForwardMessageId, AccessibilityStatus) 
+                                 VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @Direction, @ChannelId, @DirectChannelId, @OwnerId, @Updated, @ForwardMessageId, @AccessibilityStatus)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, message);
             }

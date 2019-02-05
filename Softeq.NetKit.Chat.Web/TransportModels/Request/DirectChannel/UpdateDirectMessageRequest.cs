@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Web.TransportModels.Request.DirectChannel
 {
@@ -17,5 +18,6 @@ namespace Softeq.NetKit.Chat.Web.TransportModels.Request.DirectChannel
         public Guid MessageId { get; set; }
         public Guid DirectChannelId { get; set; }
         public string Body { get; set; }
+        public MessageType Type { get; set; }
     }
 }

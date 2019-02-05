@@ -20,6 +20,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             // Arrange
             var messageId = new Guid("4C21A8B9-75CD-43BA-9F18-2D86D479E9F0");
 
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Message) null)
+                .Verifiable();
+
             // Act
             Func<Task> act = async () => { await DirectChannelService.GetMessagesByIdAsync(messageId); };
 
@@ -39,7 +43,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 
             var directMessage = new Message { DirectChannelId = directChannelId };
 
-            _memberRepositoryMock.Setup(x =>x.GetMemberByIdAsync(It.IsAny<Guid>()))
+            _messageRepositoryMock.Setup(x =>x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(id =>id.Equals(messageId))))
+                .ReturnsAsync(directMessage)
+                .Verifiable();
+
+            _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((Member)null)
                 .Verifiable();
 
@@ -58,7 +66,13 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
         {
             // Arrange
             var messageId = new Guid("4C21A8B9-75CD-43BA-9F18-2D86D479E9F0");
-            var directMessage = new Message();
+            var directChannelId = new Guid("7626270A-FC98-4C36-A717-FB12128D723D");
+
+            var directMessage = new Message { DirectChannelId = directChannelId };
+
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(id => id.Equals(messageId))))
+                .ReturnsAsync(directMessage)
+                .Verifiable();
 
             var member = new Member();
             _memberRepositoryMock.Setup(x => x.GetMemberByIdAsync(It.IsAny<Guid>()))

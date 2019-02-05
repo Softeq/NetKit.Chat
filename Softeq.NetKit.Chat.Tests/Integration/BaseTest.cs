@@ -64,7 +64,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration
 
                 var sqlQuery = @"   
                     DELETE FROM DirectChannelSettings;
-                    DELETE FROM DirectMessages;
                     DELETE FROM DirectChannel;
                     DELETE FROM Attachments;
                     DELETE FROM ChannelMembers;

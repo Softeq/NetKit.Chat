@@ -11,8 +11,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         protected override void Up()
         {
             Execute(@"
-                      ALTER TABLE [dbo].[Messages] ADD DirectChannelId uniqueidentifier NULL DEFAULT 0
-                      ALTER TABLE [dbo].[Messages] ADD MessageDirection int NOT NULL DEFAULT 0
+                      ALTER TABLE [dbo].[Messages] ADD DirectChannelId uniqueidentifier NULL
+                      ALTER TABLE [dbo].[Messages] ADD Direction int NOT NULL DEFAULT 0
                     ");
         }
 

@@ -13,7 +13,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task<IReadOnlyCollection<Message>> GetAllChannelMessagesWithOwnersAsync(Guid channelId);
         Task<IReadOnlyCollection<Message>> GetAllDirectChannelMessagesWithOwnersAsync(Guid channelId);
         Task<Message> GetMessageWithOwnerAndForwardMessageAsync(Guid messageId);
-        Task<Message> GetPreviousMessageAsync(Guid channelId, Guid? ownerId, DateTimeOffset created);
+        Task<Message> GetPreviousMessageAsync(Guid? channelId, Guid? ownerId, DateTimeOffset created);
         Task AddMessageAsync(Message message);
         Task ArchiveMessageAsync(Guid messageId);
         Task UpdateMessageBodyAsync(Guid messageId, string body, DateTimeOffset updated);

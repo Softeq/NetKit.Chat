@@ -191,7 +191,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var directMessageResponse = await _directChannelService.AddMessageAsync(directMessageRequest);
 
-            var newDirectMessageRequest = new UpdateDirectMessageRequest(owner.SaasUserId, directMessageResponse.Id, directMessageResponse.DirectChannelId, "NewTestBody");
+            var newDirectMessageRequest = new UpdateDirectMessageRequest(owner.SaasUserId, directMessageResponse.Id, directMessageResponse.DirectChannelId, MessageType.Default, "NewTestBody");
 
             // Act
             var result = await _directChannelService.UpdateMessageAsync(newDirectMessageRequest);

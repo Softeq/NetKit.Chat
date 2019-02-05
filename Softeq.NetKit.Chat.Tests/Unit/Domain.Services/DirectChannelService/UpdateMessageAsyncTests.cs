@@ -23,7 +23,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var saasUserId = "BD0F3206-37AF-43E4-90B8-C302CB74DC02";
             var directChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43");
 
-            var directMessage = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, "NewTestBody");
+            var directMessage = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, MessageType.Default, "NewTestBody");
+
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Message)null)
+                .Verifiable();
 
             // Act
             Func<Task> act = async () => { await DirectChannelService.UpdateMessageAsync(directMessage); };
@@ -43,7 +47,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var saasUserId = "BD0F3206-37AF-43E4-90B8-C302CB74DC02";
             var directChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43");
 
-            var updateDirectMessageRequest = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, "NewTestBody");
+            var updateDirectMessageRequest = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, MessageType.Default, "NewTestBody");
 
             var directMessage = new Message
             {
@@ -51,6 +55,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 DirectChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43"),
                 OwnerId = new Guid("B7AF30DD-A06C-4621-A98F-2F4E9FB8076A")
             };
+
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(m => m.Equals(messageId))))
+                .ReturnsAsync(directMessage)
+                .Verifiable();
 
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((Member)null)
@@ -73,12 +81,22 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var messageId = new Guid("DA1D61EE-420F-4F8E-82AD-F2158358B0E0");
             var saasUserId = "BD0F3206-37AF-43E4-90B8-C302CB74DC02";
             var directChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43");
-            var body = "TestBody";
 
-            var updateDirectMessageRequest = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, "NewTestBody");
+            var updateDirectMessageRequest = new UpdateDirectMessageRequest(saasUserId, messageId, directChannelId, MessageType.Default, "NewTestBody");
+
+            var directMessage = new Message
+            {
+                Id = messageId,
+                DirectChannelId = new Guid("0285A417-E6F4-402D-942E-E808F568EF43"),
+                OwnerId = new Guid("B7AF30DD-A06C-4621-A98F-2F4E9FB8076A")
+            };
+
+            _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(m => m.Equals(messageId))))
+                .ReturnsAsync(directMessage)
+                .Verifiable();
 
             var member = new Member();
-            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(id => id.Equals(saasUserId))))
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.Is<string>(saas => saas.Equals(saasUserId))))
                 .ReturnsAsync(member)
                 .Verifiable();
 
@@ -86,12 +104,16 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             _dateTimeProviderMock.Setup(x => x.GetUtcNow())
                 .Returns(utcNow)
                 .Verifiable();
-
-            Message messageToAdd = null;
-
+          
+            _messageRepositoryMock.Setup(x => x.UpdateMessageBodyAsync(It.Is<Guid>(m => m.Equals(messageId)), It.IsAny<string>(), It.Is<DateTimeOffset>(t =>t.Equals(utcNow))))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+         
             var directMessageResponse = new DirectMessageResponse();
-            _domainModelsMapperMock
-                .Setup(x => x.MapToDirectMessageResponse(It.Is<Message>(dm => dm.Equals(messageToAdd))))
+            Message message = null;
+
+            _domainModelsMapperMock.Setup(x => x.MapToDirectMessageResponse(It.IsAny<Message>()))
+                .Callback<Message>(x => message = x)
                 .Returns(directMessageResponse)
                 .Verifiable();
 

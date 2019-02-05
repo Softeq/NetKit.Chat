@@ -92,6 +92,10 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var directMessageRequest = new CreateDirectMessageRequest(saasUserId, new Guid("4359E70A-E6B5-4D18-8010-759678A945EF"), MessageType.Default, "TestBody");
 
             Message messageToAdd = null;
+            _messageRepositoryMock.Setup(x => x.AddMessageAsync(It.IsAny<Message>()))
+                .Callback<Message>(m => messageToAdd = m)
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
             var directMessageResponse = new DirectMessageResponse();
             _domainModelsMapperMock

@@ -19,7 +19,7 @@ using UpdateDirectMessageRequest = Softeq.NetKit.Chat.Web.TransportModels.Reques
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
     [Produces("application/json")]
-    [Route("api/channel")]
+    [Route("api/directmessages")]
     [Authorize(Roles = "Admin, User")]
     [ApiVersion("1.0")]
     public class DirectMessageController : BaseApiController
@@ -40,7 +40,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddDirectMessageAsync([FromBody] AddDirectMessageRequest request)
         {
-            var addDirectMessageRequest = new CreateDirectMessageRequest(GetCurrentSaasUserId(), request.DirectChannelId, MessageType.Default, request.Body);
+            var addDirectMessageRequest = new CreateDirectMessageRequest(GetCurrentSaasUserId(), request.DirectChannelId, request.Type, request.Body);
             var directMessageResponse = await _directMessageSocketService.AddMessageAsync(addDirectMessageRequest);
 
             return Ok(directMessageResponse);
@@ -52,7 +52,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         public async Task<IActionResult> UpdateDirectMessageAsync(Guid channelId, [FromBody] UpdateDirectMessageRequest request)
         {
             var updateDirectMessageRequest = new Domain.TransportModels.Request.DirectChannel.UpdateDirectMessageRequest(GetCurrentSaasUserId(),
-                    request.MessageId, request.DirectChannelId, request.Body);
+                    request.MessageId, request.DirectChannelId, request.Type, request.Body);
             var directMessageResponse = await _directMessageSocketService.UpdateMessageAsync(updateDirectMessageRequest);
 
             return Ok(directMessageResponse);
