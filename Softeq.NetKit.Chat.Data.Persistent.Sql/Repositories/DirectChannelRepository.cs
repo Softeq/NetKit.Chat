@@ -12,25 +12,25 @@ using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    public class DirectChannelsRepository : IDirectChannelRepository
+    public class DirectChannelRepository : IDirectChannelRepository
     {
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
-        public DirectChannelsRepository(ISqlConnectionFactory sqlConnectionFactory)
+        public DirectChannelRepository(ISqlConnectionFactory sqlConnectionFactory)
         {
             Ensure.That(sqlConnectionFactory).IsNotNull();
 
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task CreateDirectChannelAsync(Guid directId, Guid ownerId, Guid memberId)
+        public async Task CreateDirectChannelAsync(Guid directChannelId, Guid ownerId, Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO DirectChannel(Id, ownerId, MemberId) 
-                                 VALUES (@directId, @ownerId, @memberId)";
+                var sqlQuery = @"INSERT INTO DirectChannel(Id, OwnerId, MemberId) 
+                                 VALUES (@directChannelId, @ownerId, @memberId)";
 
-                await connection.ExecuteScalarAsync(sqlQuery, new { directId, ownerId = ownerId, memberId });
+                await connection.ExecuteScalarAsync(sqlQuery, new { directChannelId, ownerId, memberId });
             }
         }
 
@@ -42,7 +42,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                  FROM DirectChannel
                                  WHERE Id = @directChannelId";
 
-                return (await connection.QueryAsync<DirectChannel>(sqlQuery, new { id = directChannelId })).FirstOrDefault();
+                return (await connection.QueryAsync<DirectChannel>(sqlQuery, new { directChannelId })).FirstOrDefault();
             }
         }
     }

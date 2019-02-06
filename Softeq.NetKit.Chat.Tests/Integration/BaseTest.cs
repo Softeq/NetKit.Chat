@@ -62,7 +62,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration
             {
                 await connection.OpenAsync();
 
-                var sqlQuery = @"
+                var sqlQuery = @"   
+                    DELETE FROM DirectChannelSettings;
+                    DELETE FROM DirectChannel;
                     DELETE FROM Attachments;
                     DELETE FROM ChannelMembers;
                     DELETE FROM Clients;
@@ -72,9 +74,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration
                     DELETE FROM Messages;
                     DELETE FROM Channels;
                     DELETE FROM Members;
-                    DELETE FROM NotificationSettings;
-                    DELETE FROM DirectChannelSettings;
-                    DELETE FROM DirectMessages";
+                    DELETE FROM NotificationSettings;";
 
                 await connection.ExecuteScalarAsync(sqlQuery);
             }

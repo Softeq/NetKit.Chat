@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
-    public class GetDirectChannelByIdTests : DirectMessagesTestBase
+    public class GetDirectChannelByIdTests : DirectChannelTestBase
     {
         [Fact]
         public void ShouldThrowIfDirectChannelDoesNotExist()
@@ -20,16 +20,16 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             // Arrange
             var id = new Guid("29251B3A-4D91-4664-A239-5EF3AED81FD6");
 
-            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.IsAny<Guid>()))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((DirectChannel)null)
                 .Verifiable();
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.GetDirectChannelById(id); };
+            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelByIdAsync(id); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to get direct channel. Chat with {nameof(id)}:{id} is not found.");
+                .And.Message.Should().Be($"Unable to get direct channel. Chat with channelId:{id} is not found.");
 
             VerifyMocks();
         }
@@ -44,7 +44,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 
             var directChannel = new DirectChannel { Id = id, OwnerId = ownerId, MemberId = memberId };
 
-            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(id))))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelAsync(It.Is<Guid>(d => d.Equals(id))))
                 .ReturnsAsync(directChannel)
                 .Verifiable();
 
@@ -53,7 +53,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             //Act
-            Func<Task> act = async () => { await DirectMessageService.GetDirectChannelById(id); };
+            Func<Task> act = async () => { await DirectChannelService.GetDirectChannelByIdAsync(id); };
 
             //Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -72,7 +72,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 
             var directChannel = new DirectChannel { Id = directId, OwnerId = ownerId, MemberId = memberId };
 
-            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.Is<Guid>(d => d.Equals(directId))))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelAsync(It.Is<Guid>(d => d.Equals(directId))))
                 .ReturnsAsync(directChannel)
                 .Verifiable();
 
@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             // Act
-            var act = await DirectMessageService.GetDirectChannelById(directId);
+            var act = await DirectChannelService.GetDirectChannelByIdAsync(directId);
 
             // Assert
             act.Should().BeEquivalentTo(channelResponse);

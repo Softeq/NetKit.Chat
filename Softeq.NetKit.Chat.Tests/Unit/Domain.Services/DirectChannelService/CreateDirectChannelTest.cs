@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
-    public class CreateDirectChannelTest : DirectMessagesTestBase
+    public class CreateDirectChannelTest : DirectChannelTestBase
     {
         [Fact]
         public void ShouldThrowIfOwnerDoesNotExist()
@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var createDirectChannelRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectChannelRequest); };
+            Func<Task> act = async () => { await DirectChannelService.CreateDirectChannelAsync(createDirectChannelRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -60,7 +60,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var createDirectChannelRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId);
 
             // Act
-            Func<Task> act = async () => { await DirectMessageService.CreateDirectChannel(createDirectChannelRequest); };
+            Func<Task> act = async () => { await DirectChannelService.CreateDirectChannelAsync(createDirectChannelRequest); };
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .ReturnsAsync(secondMember)
                 .Verifiable();
 
-            _directChannelRepositoryMock.Setup(x => x.CreateDirectChannel(It.Is<Guid>(id => id.Equals(channelId)),
+            _directChannelRepositoryMock.Setup(x => x.CreateDirectChannelAsync(It.Is<Guid>(id => id.Equals(channelId)),
                 It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm => sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
 
             var createDirectChannelRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId) { DirectChannelId = channelId };
@@ -105,7 +105,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .Verifiable();
 
             // Act
-            var act = await DirectMessageService.CreateDirectChannel(createDirectChannelRequest);
+            var act = await DirectChannelService.CreateDirectChannelAsync(createDirectChannelRequest);
 
             // Assert
             act.Should().BeEquivalentTo(directChannelResponse);

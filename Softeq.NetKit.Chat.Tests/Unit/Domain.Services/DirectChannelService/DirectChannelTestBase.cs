@@ -10,11 +10,10 @@ using Softeq.NetKit.Chat.Domain.Services.Utility;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
 {
-    public abstract class DirectMessagesTestBase
+    public abstract class DirectChannelTestBase
     {
-        protected readonly IDirectMessageService DirectMessageService;
+        protected readonly IDirectChannelService DirectChannelService;
 
-        protected readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new Mock<IDateTimeProvider>(MockBehavior.Strict);
         protected readonly Mock<IDomainModelsMapper> _domainModelsMapperMock = new Mock<IDomainModelsMapper>(MockBehavior.Strict);
 
         protected readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>(MockBehavior.Strict);
@@ -28,8 +27,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
         protected readonly Mock<IClientRepository> _clientRepositoryMock = new Mock<IClientRepository>(MockBehavior.Strict);
         protected readonly Mock<INotificationRepository> _notificationRepositoryMock = new Mock<INotificationRepository>(MockBehavior.Strict);
         protected readonly Mock<IDirectChannelRepository> _directChannelRepositoryMock = new Mock<IDirectChannelRepository>(MockBehavior.Strict);
+        protected readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new Mock<IDateTimeProvider>(MockBehavior.Strict);
 
-        protected DirectMessagesTestBase()
+        protected DirectChannelTestBase()
         {
             _unitOfWorkMock.Setup(x => x.ChannelRepository).Returns(_channelRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.MemberRepository).Returns(_memberRepositoryMock.Object);
@@ -41,7 +41,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             _unitOfWorkMock.Setup(x => x.NotificationRepository).Returns(_notificationRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.DirectChannelRepository).Returns(_directChannelRepositoryMock.Object);
 
-            DirectMessageService = new Chat.Domain.Services.DomainServices.DirectChannelService(_unitOfWorkMock.Object,
+            DirectChannelService = new Chat.Domain.Services.DomainServices.DirectChannelService(
+                _unitOfWorkMock.Object,
                 _domainModelsMapperMock.Object,
                 _dateTimeProviderMock.Object);
         }
@@ -49,7 +50,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
         protected void VerifyMocks()
         {
             _directChannelRepositoryMock.VerifyAll();
-            _dateTimeProviderMock.VerifyAll();
             _domainModelsMapperMock.VerifyAll();
             _channelRepositoryMock.VerifyAll();
             _memberRepositoryMock.VerifyAll();
@@ -59,6 +59,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             _attachmentRepositoryMock.VerifyAll();
             _clientRepositoryMock.VerifyAll();
             _notificationRepositoryMock.VerifyAll();
+            _dateTimeProviderMock.VerifyAll();
         }
     }
 }

@@ -55,8 +55,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             var id = new Guid("B815B750-BB22-45E0-B332-0EE39D9A7A5C");
 
             // Act
-            await UnitOfWork.DirectChannelRepository.CreateDirectChannel(id, _ownerId, _memberId);
-            var directChannel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(id);
+            await UnitOfWork.DirectChannelRepository.CreateDirectChannelAsync(id, _ownerId, _memberId);
+            var directChannel = await UnitOfWork.DirectChannelRepository.GetDirectChannelAsync(id);
 
             // Assert
             directChannel.Id.Should().Be(id);

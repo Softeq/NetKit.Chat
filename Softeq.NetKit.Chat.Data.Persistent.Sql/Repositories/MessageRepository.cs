@@ -50,6 +50,32 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<IReadOnlyCollection<Message>> GetAllDirectChannelMessagesWithOwnersAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT *
+                                 FROM Messages m
+                                 INNER JOIN Members me ON m.OwnerId = me.Id
+                                 WHERE m.DirectChannelId = @channelId AND m.AccessibilityStatus = @accessibilityStatus
+                                 ORDER BY m.Created DESC";
+
+                return (await connection.QueryAsync<Message, Member, Message>(
+                        sqlQuery,
+                        (message, member) =>
+                        {
+                            message.OwnerId = member.Id;
+                            message.Owner = member;
+                            message.AccessibilityStatus = AccessibilityStatus.Present;
+                            return message;
+                        },
+                        new { channelId, accessibilityStatus = AccessibilityStatus.Present }))
+                    .Distinct()
+                    .ToList()
+                    .AsReadOnly();
+            }
+        }
+
         public async Task<IReadOnlyList<Guid>> FindMessageIdsAsync(Guid channelId, string searchText)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
@@ -207,7 +233,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<Message> GetPreviousMessageAsync(Guid channelId, Guid? ownerId, DateTimeOffset created)
+        public async Task<Message> GetPreviousMessageAsync(Guid? channelId, Guid? ownerId, DateTimeOffset created)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -234,8 +260,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelId, OwnerId, Updated, ForwardMessageId, AccessibilityStatus) 
-                                 VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelId, @OwnerId, @Updated, @ForwardMessageId, @AccessibilityStatus)";
+                var sqlQuery = @"INSERT INTO Messages(Id, Body, Created, ImageUrl, Type, ChannelType, ChannelId, DirectChannelId, OwnerId, Updated, ForwardMessageId, AccessibilityStatus) 
+                                 VALUES (@Id, @Body, @Created, @ImageUrl, @Type, @ChannelType, @ChannelId, @DirectChannelId, @OwnerId, @Updated, @ForwardMessageId, @AccessibilityStatus)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, message);
             }

@@ -96,12 +96,24 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 ForwardMessageId = new Guid("C7EFF82F-56FF-4966-9040-E79C90F118A7")
             };
 
+            var previousMessage = new Message();
+
             _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
                 .ReturnsAsync(message)
                 .Verifiable();
-            _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<DateTimeOffset>()))
-                .ReturnsAsync((Message)null)
+
+            var utcNow = DateTimeOffset.UtcNow;
+            _dateTimeProviderMock.Setup(x => x.GetUtcNow())
+                .Returns(utcNow)
                 .Verifiable();
+
+            _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(
+                    It.Is<Guid>(messageId => messageId.Equals(message.Id)), 
+                    It.Is<Guid>(ownerId => ownerId.Equals(message.OwnerId)),
+                    It.Is<DateTimeOffset>(d =>d.Equals(utcNow))))
+                .ReturnsAsync(previousMessage)
+                .Verifiable();
+
             _messageRepositoryMock.Setup(x => x.ArchiveMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
                 .Returns(Task.CompletedTask)
                 .Verifiable();

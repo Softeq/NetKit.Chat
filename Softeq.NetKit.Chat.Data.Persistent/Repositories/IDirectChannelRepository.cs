@@ -9,7 +9,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
 {
     public interface IDirectChannelRepository
     {
-        Task CreateDirectChannel(Guid id, Guid ownerId, Guid memberId);
-        Task<DirectChannel> GetDirectChannelById(Guid id);
+        Task CreateDirectChannelAsync(Guid directChannelId, Guid ownerId, Guid memberId);
+        Task<DirectChannel> GetDirectChannelAsync(Guid directChannelId);
     }
 }
