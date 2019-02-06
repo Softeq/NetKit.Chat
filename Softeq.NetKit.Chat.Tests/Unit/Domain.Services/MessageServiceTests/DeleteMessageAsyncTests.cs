@@ -93,10 +93,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 Id = request.MessageId,
                 OwnerId = messageOwnerId,
                 Type = MessageType.Forward,
-                ForwardMessageId = new Guid("C7EFF82F-56FF-4966-9040-E79C90F118A7")
+                ForwardMessageId = new Guid("C7EFF82F-56FF-4966-9040-E79C90F118A7"),
+                ChannelId = new Guid("FE0ED6EF-588A-4844-B754-0ADAC9D5A217")
             };
-
-            var previousMessage = new Message();
 
             _messageRepositoryMock.Setup(x => x.GetMessageWithOwnerAndForwardMessageAsync(It.Is<Guid>(messageId => messageId.Equals(request.MessageId))))
                 .ReturnsAsync(message)
@@ -107,10 +106,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .Returns(utcNow)
                 .Verifiable();
 
+            var previousMessage = new Message();
+
             _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(
-                    It.Is<Guid>(messageId => messageId.Equals(message.Id)), 
-                    It.Is<Guid>(ownerId => ownerId.Equals(message.OwnerId)),
-                    It.Is<DateTimeOffset>(d =>d.Equals(utcNow))))
+                    It.Is<Guid?>(channelId => channelId.Equals(message.ChannelId)), 
+                    It.Is<Guid?>(ownerId => ownerId.Equals(message.OwnerId)),
+                    It.Is<DateTimeOffset>(d => d.Equals(utcNow))))
                 .ReturnsAsync(previousMessage)
                 .Verifiable();
 
