@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
                 .ReturnsAsync(secondMember)
                 .Verifiable();
 
-            _directChannelRepositoryMock.Setup(x => x.CreateDirectChannel(It.Is<Guid>(id => id.Equals(channelId)),
+            _directChannelRepositoryMock.Setup(x => x.CreateDirectChannelAsync(It.Is<Guid>(id => id.Equals(channelId)),
                 It.Is<Guid>(fm => fm.Equals(firstMemberId)), It.Is<Guid>(sm => sm.Equals(secondMemberId)))).Returns(Task.CompletedTask);
 
             var createDirectChannelRequest = new CreateDirectChannelRequest(saasUserId, firstMemberId, secondMemberId) { DirectChannelId = channelId };

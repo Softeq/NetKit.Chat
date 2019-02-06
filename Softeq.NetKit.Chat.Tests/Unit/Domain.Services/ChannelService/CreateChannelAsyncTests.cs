@@ -230,7 +230,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to add member to channel. Member memberId:{allowedMember.SaasUserId} is not found.");
+                .And.Message.Should().Be($"Unable to add member to channel. Member with saasUserId:{allowedMember.SaasUserId} is not found.");
 
             VerifyMocks();
         }

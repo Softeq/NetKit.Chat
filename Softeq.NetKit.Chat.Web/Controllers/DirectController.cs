@@ -18,7 +18,7 @@ using UpdateDirectMessageRequest = Softeq.NetKit.Chat.Web.TransportModels.Reques
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
     [Produces("application/json")]
-    [Route("api/directmessage")]
+    [Route("api/direct")]
     [Authorize(Roles = "Admin, User")]
     [ApiVersion("1.0")]
     public class DirectMessageController : BaseApiController
@@ -47,7 +47,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpPut]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
-        [Route("{channelId:guid}")]
+        [Route("{messageId:guid}")]
         public async Task<IActionResult> UpdateDirectMessageAsync(Guid channelId, [FromBody] UpdateDirectMessageRequest request)
         {
             var updateDirectMessageRequest = new Domain.TransportModels.Request.DirectChannel.UpdateDirectMessageRequest(GetCurrentSaasUserId(),
@@ -59,7 +59,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [Route("{channelId:guid}/delete/{memberId:guid}")]
+        [Route("{messageId:guid}")]
         public async Task<IActionResult> DeleteDirectMessageAsync(Guid messageId, Guid directChannelId)
         {
             var directMessageResponse = await _directMessageSocketService.DeleteMessageAsync(GetCurrentSaasUserId(), messageId, directChannelId);
@@ -69,7 +69,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
-        [Route("{channelId:guid}/settings")]
+        [Route("")]
         public async Task<IActionResult> GetDirectMessageByIdAsync(Guid messageId)
         {
             var directMessageResponse = await _directChannelService.GetMessagesByIdAsync(messageId);
@@ -79,10 +79,10 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IList<MessageResponse>), StatusCodes.Status200OK)]
-        [Route("{channelId:guid}/settings")]
+        [Route("{channelId:guid")]
         public async Task<IActionResult> GetDirectMessageByChannelIdAsync(Guid channelId)
         {
-            var directMessageResponse = await _directChannelService.GetMessagesByChannelIdAsync(channelId);
+            var directMessageResponse = await _directChannelService.GetChannelMessagesAsync(channelId);
 
             return Ok(directMessageResponse);
         }

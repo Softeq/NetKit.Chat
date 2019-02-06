@@ -23,7 +23,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var saasUserId = "4761D81E-F700-4BDF-B986-C09FA22D8CF8";
             var directChannelId = new Guid("4359E70A-E6B5-4D18-8010-759678A945EF");
 
-            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.IsAny<Guid>()))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((DirectChannel)null)
                 .Verifiable();
 
@@ -48,7 +48,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var saasUserId = "4761D81E-F700-4BDF-B986-C09FA22D8CF8";
             var directChannelId = new Guid("4359E70A-E6B5-4D18-8010-759678A945EF");
 
-            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.IsAny<Guid>()))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(new DirectChannel())
                 .Verifiable();
 
@@ -75,7 +75,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.DirectChannelService
             var saasUserId = "4761D81E-F700-4BDF-B986-C09FA22D8CF8";
 
             var directChannel = new DirectChannel();
-            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelById(It.IsAny<Guid>()))
+            _directChannelRepositoryMock.Setup(x => x.GetDirectChannelAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(directChannel)
                 .Verifiable();
 

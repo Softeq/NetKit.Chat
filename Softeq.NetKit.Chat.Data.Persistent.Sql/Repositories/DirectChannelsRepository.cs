@@ -23,7 +23,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task CreateDirectChannel(Guid directId, Guid ownerId, Guid memberId)
+        public async Task CreateDirectChannelAsync(Guid directId, Guid ownerId, Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -34,15 +34,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<DirectChannel> GetDirectChannelById(Guid id)
+        public async Task<DirectChannel> GetDirectChannelAsync(Guid directChannelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"SELECT *
                                  FROM DirectChannel
-                                 WHERE Id = @id";
+                                 WHERE Id = @directChannelId";
 
-                return (await connection.QueryAsync<DirectChannel>(sqlQuery, new { id })).FirstOrDefault();
+                return (await connection.QueryAsync<DirectChannel>(sqlQuery, new { id = directChannelId })).FirstOrDefault();
             }
         }
     }

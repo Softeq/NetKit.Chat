@@ -48,7 +48,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to create channel. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException($"Unable to create channel. Member with {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
             }
 
             var permanentChannelImageUrl = await _cloudImageProvider.CopyImageToDestinationContainerAsync(request.PhotoUrl);
@@ -80,12 +80,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             if (request.Type == ChannelType.Private && request.AllowedMembers.Any())
             {
-                foreach (var memberId in request.AllowedMembers)
+                foreach (var saasUserId in request.AllowedMembers)
                 {
-                    var allowedMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(Guid.Parse(memberId));
+                    var allowedMember = await UnitOfWork.MemberRepository.GetMemberByIdAsync(Guid.Parse(saasUserId));
                     if (allowedMember == null)
                     {
-                        throw new NetKitChatNotFoundException($"Unable to add member to channel. Member {nameof(memberId)}:{memberId} is not found.");
+                        throw new NetKitChatNotFoundException($"Unable to add member to channel. Member with {nameof(saasUserId)}:{saasUserId} is not found.");
                     }
 
                     var model = new ChannelMember

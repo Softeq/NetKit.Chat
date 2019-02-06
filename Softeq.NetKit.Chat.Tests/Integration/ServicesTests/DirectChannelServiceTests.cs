@@ -129,7 +129,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             UnitOfWork.MemberRepository.AddMemberAsync(owner).GetAwaiter().GetResult();
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
-            UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
+            UnitOfWork.DirectChannelRepository.CreateDirectChannelAsync(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
             var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, MessageType.Default, "TestBody");
 
@@ -185,7 +185,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             UnitOfWork.MemberRepository.AddMemberAsync(owner).GetAwaiter().GetResult();
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
 
-            UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
+            UnitOfWork.DirectChannelRepository.CreateDirectChannelAsync(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
             var directMessageRequest = new CreateDirectMessageRequest(owner.SaasUserId, directChannelId, MessageType.Default, "TestBody");
 
@@ -238,7 +238,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             UnitOfWork.MemberRepository.AddMemberAsync(owner).GetAwaiter().GetResult();
             UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
-            UnitOfWork.DirectChannelRepository.CreateDirectChannel(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
+            UnitOfWork.DirectChannelRepository.CreateDirectChannelAsync(directChannelId, ownerId, memberId).GetAwaiter().GetResult();
 
             var directMessage01 = new Message
             {
@@ -286,7 +286,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             UnitOfWork.MessageRepository.AddMessageAsync(directMessage04).GetAwaiter().GetResult();
 
             // Act
-            var directMessagesResponse = await _directChannelService.GetMessagesByChannelIdAsync(directChannelId);
+            var directMessagesResponse = await _directChannelService.GetChannelMessagesAsync(directChannelId);
 
             // Assert
             Assert.Equal(directMessagesResponse.Count, 4);

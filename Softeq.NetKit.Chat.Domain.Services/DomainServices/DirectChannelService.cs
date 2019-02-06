@@ -45,14 +45,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to create direct channel. Member { nameof(request.MemberId) }:{ request.MemberId} is not found.");
             }
 
-            await UnitOfWork.DirectChannelRepository.CreateDirectChannel(request.DirectChannelId, request.OwnerId, request.MemberId);
+            await UnitOfWork.DirectChannelRepository.CreateDirectChannelAsync(request.DirectChannelId, request.OwnerId, request.MemberId);
 
             return DomainModelsMapper.MapToDirectChannelResponse(request.DirectChannelId, owner, member);
         }
 
         public async Task<DirectChannelResponse> GetDirectChannelByIdAsync(Guid channelId)
         {
-            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(channelId);
+            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelAsync(channelId);
             if (channel == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to get direct channel. Chat with {nameof(channelId)}:{channelId} is not found.");
@@ -75,7 +75,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<DirectMessageResponse> AddMessageAsync(CreateDirectMessageRequest request)
         {
-            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(request.DirectChannelId);
+            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelAsync(request.DirectChannelId);
             if (channel == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to add direct message. Channel { nameof(request.DirectChannelId) }:{ request.DirectChannelId} is not found.");
@@ -168,9 +168,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToDirectMessageResponse(message);
         }
 
-        public async Task<IList<DirectMessageResponse>> GetMessagesByChannelIdAsync(Guid channelId)
+        public async Task<IList<DirectMessageResponse>> GetChannelMessagesAsync(Guid channelId)
         {
-            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelById(channelId);
+            var channel = await UnitOfWork.DirectChannelRepository.GetDirectChannelAsync(channelId);
             if (channel == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to add direct message. Channel { nameof(channelId) }:{ channelId} is not found.");

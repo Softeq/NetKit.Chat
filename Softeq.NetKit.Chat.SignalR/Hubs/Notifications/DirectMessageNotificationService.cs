@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
@@ -21,17 +20,17 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnAddMessage(DirectMessageResponse message, Guid memberId)
         {
-            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.DirectMessageAdded, message);
+            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.MessageAdded, message);
         }
 
         public async Task OnDeleteMessage(DirectMessageResponse message, Guid memberId)
         {
-            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.DirectMessageDeleted, message);
+            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.MessageDeleted, message);
         }
 
         public async Task OnUpdateMessage(DirectMessageResponse message, Guid memberId)
         {
-            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.DirectMessageUpdated, message);
+            await HubContext.Clients.User(memberId.ToString()).SendAsync(HubEvents.MessageUpdated, message);
         }
     }
 }

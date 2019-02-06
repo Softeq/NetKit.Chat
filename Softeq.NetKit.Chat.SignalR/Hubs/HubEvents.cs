@@ -28,10 +28,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         public const string ExceptionOccurred = "ExceptionOccurred";
         public const string RequestSuccess = "RequestSuccess";
 
-        public const string DirectMessageAdded = "DirectMessageAdded";
-        public const string DirectMessageDeleted = "DirectMessageDeleted";
-        public const string DirectMessageUpdated = "DirectMessageUpdated";
-
         public const string RequestValidationFailed = "RequestValidationFailed";
     }
 }
