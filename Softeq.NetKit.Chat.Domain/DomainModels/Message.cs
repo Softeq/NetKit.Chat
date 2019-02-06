@@ -18,7 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset? Updated { get; set; }
         public MessageType Type { get; set; }
-        public MessageDirection Direction { get; set; }
+        public ChannelTypes ChannelType { get; set; }
         public AccessibilityStatus AccessibilityStatus { get; set; }
 
         // Notifications

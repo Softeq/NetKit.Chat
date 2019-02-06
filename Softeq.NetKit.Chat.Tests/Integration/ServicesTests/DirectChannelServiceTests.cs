@@ -22,11 +22,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         private readonly Guid _secondMemberId = new Guid("9A999BF0-AA09-41B4-9305-64031F271B8A");
 
         private readonly IDirectChannelService _directChannelService;
-        private readonly IMemberService _memberService;
 
         public DirectChannelServiceTests()
         {
-            _memberService = LifetimeScope.Resolve<IMemberService>();
             _directChannelService = LifetimeScope.Resolve<IDirectChannelService>();
 
             var firstMember = new Member

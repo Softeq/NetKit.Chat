@@ -21,12 +21,12 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [Route("api/direct")]
     [Authorize(Roles = "Admin, User")]
     [ApiVersion("1.0")]
-    public class DirectMessageController : BaseApiController
+    public class DirectController : BaseApiController
     {
         private readonly IDirectMessageSocketService _directMessageSocketService;
         private readonly IDirectChannelService _directChannelService;
 
-        public DirectMessageController(IDirectMessageSocketService directMessageSocketService, IDirectChannelService directChannelService)
+        public DirectController(IDirectMessageSocketService directMessageSocketService, IDirectChannelService directChannelService)
         {
             Ensure.That(directMessageSocketService).IsNotNull();
             Ensure.That(directChannelService).IsNotNull();

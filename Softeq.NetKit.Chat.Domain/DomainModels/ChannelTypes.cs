@@ -3,7 +3,7 @@
 
 namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
-    public enum MessageDirection
+    public enum ChannelTypes
     {
         Direct = 0,
         Group = 1

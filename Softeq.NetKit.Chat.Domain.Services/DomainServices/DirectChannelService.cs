@@ -97,7 +97,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Type = request.Type,
                 AccessibilityStatus = AccessibilityStatus.Present,
                 Updated = _dateTimeProvider.GetUtcNow(),
-                Direction = MessageDirection.Direct
+                ChannelType = ChannelTypes.Direct
             };
 
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
