@@ -563,7 +563,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     Created = DateTimeOffset.UtcNow,
                     Type = 0,
                     ChannelId = _channelId,
-                    AccessibilityStatus = AccessibilityStatus.Present
+                    AccessibilityStatus = AccessibilityStatus.Present,
+                    Owner = _member,
+                    OwnerId = _member.Id
                 };
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
             }

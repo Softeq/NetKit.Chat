@@ -79,7 +79,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IList<MessageResponse>), StatusCodes.Status200OK)]
-        [Route("{channelId:guid")]
+        [Route("{channelId:guid}")]
         public async Task<IActionResult> GetDirectMessageByChannelIdAsync(Guid channelId)
         {
             var directMessageResponse = await _directChannelService.GetChannelMessagesAsync(channelId);

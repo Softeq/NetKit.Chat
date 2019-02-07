@@ -1,26 +1,28 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using FluentAssertions;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Softeq.NetKit.Chat.Domain.DomainModels;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 {
     public class AttachmentRepositoryTests : BaseTest
     {
-        private readonly Guid _memberId = new Guid("FE728AF3-DDE7-4B11-BB9B-55C3862262AA");
-        private readonly Guid _channelId = new Guid("FE728AF3-DDE7-4B11-BB9B-11C3862262EE");
-        private readonly Guid _messageId = new Guid("67303234-4653-48fb-8ba6-8719d6770811");
+        private readonly Message _message;
 
         public AttachmentRepositoryTests()
         {
+            var memberId = new Guid("FE728AF3-DDE7-4B11-BB9B-55C3862262AA");
+            var channelId = new Guid("FE728AF3-DDE7-4B11-BB9B-11C3862262EE");
+            var messageId = new Guid("67303234-4653-48fb-8ba6-8719d6770811");
+
             var member = new Member
             {
-                Id = _memberId,
+                Id = memberId,
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Online
             };
@@ -28,7 +30,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             var channel = new Channel
             {
-                Id = _channelId,
+                Id = channelId,
                 CreatorId = member.Id,
                 Name = "testAttachmentChannel",
                 MembersCount = 0,
@@ -36,13 +38,15 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
 
-            var message = new Message
+            _message = new Message
             {
-                Id = _messageId,
+                Id = messageId,
                 Type = MessageType.Default,
-                ChannelId = _channelId
+                ChannelId = channelId,
+                OwnerId = memberId,
+                Owner = member
             };
-            UnitOfWork.MessageRepository.AddMessageAsync(message).GetAwaiter().GetResult();
+            UnitOfWork.MessageRepository.AddMessageAsync(_message).GetAwaiter().GetResult();
         }
 
         [Fact]
@@ -54,7 +58,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ContentType = "test",
                 Created = DateTimeOffset.UtcNow,
                 FileName = "test",
-                MessageId = _messageId,
+                MessageId = _message.Id,
                 Size = 100
             };
 
@@ -74,7 +78,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ContentType = "test",
                 Created = DateTimeOffset.UtcNow,
                 FileName = "test",
-                MessageId = _messageId,
+                MessageId = _message.Id,
                 Size = 100
             };
 
@@ -96,7 +100,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 ContentType = "test",
                 Created = DateTimeOffset.UtcNow,
                 FileName = "test",
-                MessageId = _messageId,
+                MessageId = _message.Id,
                 Size = 100
             };
 
@@ -117,7 +121,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ContentType = "jpg",
                     Created = DateTimeOffset.UtcNow,
                     FileName = "a1.jpg",
-                    MessageId = _messageId,
+                    MessageId = _message.Id,
                     Size = 100
                 },
                 new Attachment
@@ -126,7 +130,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ContentType = "jpg",
                     Created = DateTimeOffset.UtcNow,
                     FileName = "a2.jpg",
-                    MessageId = _messageId,
+                    MessageId = _message.Id,
                     Size = 222
                 }
             };
@@ -136,7 +140,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
             }
 
-            var newAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(_messageId);
+            var newAttachments = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsAsync(_message.Id);
 
             newAttachments.Should().BeEquivalentTo(attachments);
         }
@@ -152,7 +156,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ContentType = "jpg",
                     Created = DateTimeOffset.UtcNow,
                     FileName = "pic",
-                    MessageId = _messageId,
+                    MessageId = _message.Id,
                     Size = 100
                 },
                 new Attachment
@@ -161,7 +165,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ContentType = "png",
                     Created = DateTimeOffset.UtcNow,
                     FileName = "image",
-                    MessageId = _messageId,
+                    MessageId = _message.Id,
                     Size = 100
                 }
             };
@@ -171,7 +175,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
             }
 
-            var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_messageId);
+            var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_message.Id);
 
             attachmentsCount.Should().Be(attachments.Length);
         }
@@ -187,7 +191,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ContentType = "jpg",
                     Created = DateTimeOffset.UtcNow,
                     FileName = "pic",
-                    MessageId = _messageId,
+                    MessageId = _message.Id,
                     Size = 100
                 },
                 new Attachment
@@ -196,7 +200,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     ContentType = "png",
                     Created = DateTimeOffset.UtcNow,
                     FileName = "image",
-                    MessageId = _messageId,
+                    MessageId = _message.Id,
                     Size = 100
                 }
             };
@@ -206,9 +210,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 await UnitOfWork.AttachmentRepository.AddAttachmentAsync(attachment);
             }
 
-            await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(_messageId);
+            await UnitOfWork.AttachmentRepository.DeleteMessageAttachmentsAsync(_message.Id);
 
-            var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_messageId);
+            var attachmentsCount = await UnitOfWork.AttachmentRepository.GetMessageAttachmentsCountAsync(_message.Id);
 
             attachmentsCount.Should().Be(0);
         }
