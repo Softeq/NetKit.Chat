@@ -2,7 +2,7 @@
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
 {
-    [Migration(20190102144700, "Add Notification Settings")]
+    [Migration(20190102144700, "Add SystemNotification Settings")]
     public class AddNotificationSettings : Migration
     {
         protected override void Up()

@@ -1,4 +1,7 @@
-﻿using SimpleMigrations;
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
+using SimpleMigrations;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
 {

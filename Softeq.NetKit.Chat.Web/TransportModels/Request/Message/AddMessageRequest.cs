@@ -14,7 +14,7 @@ namespace Softeq.NetKit.Chat.Web.TransportModels.Request.Message
 
         public MessageType Type { get; set; }
 
-        // If Message type is Notification
+        // If Message type is SystemNotification
         public string ImageUrl { get; set; }
 
         // If Message type is Forward
