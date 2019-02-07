@@ -17,8 +17,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         public async Task ShouldCreateSystemDirectMessage()
         {
             // Arrange
-            var SaasUserId = "392CA5D5-C427-4D9A-BA21-DFB4EBC1E27A";
-
             var request = new CreateSystemMessageRequest
             {
                 Body = "TestBody",

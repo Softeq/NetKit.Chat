@@ -1,8 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
 using Autofac;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +10,8 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Web;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
@@ -257,6 +257,26 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 
             response.IsChannelNotificationsDisabled.Should().Be(notificationSettings.IsChannelNotificationsDisabled);
             response.MemberId.Should().Be(notificationSettings.MemberId);
+        }
+
+        [Fact]
+        public void MapToSystemMessageResponse_ShouldMapToSystemMessageResponse()
+        {
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                ChannelId = new Guid("5AD766AD-E418-44B3-9B62-73B1FDACCF20"),
+                Body = "TestBody",
+                Created = DateTimeOffset.UtcNow,
+                Type = MessageType.SystemNotification,
+                Updated = DateTimeOffset.UtcNow
+            };
+
+            var response = _domainModelsMapper.MapToSystemMessageResponse(message);
+
+            response.Id.Should().Be(message.Id);
+            response.Body.Should().BeEquivalentTo(response.Body);
+            response.Created.Should().Be(response.Created);
         }
     }
 }

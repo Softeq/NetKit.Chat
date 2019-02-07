@@ -10,7 +10,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
     {
         protected override void Up()
         {
-            Execute(@"ALTER TABLE dbo.DirectMessages DROP CONSTRAINT FK_Messages_Members_OwnerId");
+            Execute(@"ALTER TABLE dbo.Messages DROP CONSTRAINT FK_Messages_Members_OwnerId");
         }
 
         protected override void Down()

@@ -139,6 +139,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             response.Body.Should().Be(request.Body);
             response.Type.Should().Be(MessageType.SystemNotification);
+            response.ChannelId.Should().Be(request.ChannelId);
         }
     }
 }

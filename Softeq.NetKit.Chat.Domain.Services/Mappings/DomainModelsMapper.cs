@@ -68,7 +68,19 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
         public SystemMessageResponse MapToSystemMessageResponse(Message message)
         {
-            return message != null ? _mapper.Map<SystemMessageResponse>(message) : new SystemMessageResponse();
+            if (message?.ChannelId != null)
+            {
+                return new SystemMessageResponse
+                {
+                    Body = message.Body,
+                    ChannelId = (Guid) message.ChannelId,
+                    Created = message.Created,
+                    Id = message.Id,
+                    Type = message.Type
+                };
+            }
+
+            return new SystemMessageResponse();
         }
 
         public DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, DomainModels.Member owner, DomainModels.Member member)

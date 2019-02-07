@@ -12,6 +12,6 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.SystemMessage
         public string Body { get; set; }
         public DateTimeOffset Created { get; set; }
         public MessageType Type { get; set; }
-        public DomainModels.Channel Channel { get; set; }
+        public Guid ChannelId { get; set; }
     }
 }
