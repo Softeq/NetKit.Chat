@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using Autofac;
+using Softeq.NetKit.Chat.Application.Services;
 using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Domain.Services;
@@ -20,6 +21,7 @@ namespace Softeq.NetKit.Chat.Web.Extensions
             builder.RegisterModule<DataPersistentSqlDiModule>();
             builder.RegisterModule<DataCloudAzureDiModule>();
             builder.RegisterModule<NotificationServicesDiModule>();
+            builder.RegisterModule<ApplicationServicesDIModule>();
         }
     }
 }

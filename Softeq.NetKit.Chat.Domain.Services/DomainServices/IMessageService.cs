@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.SystemMessage;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.SystemMessage;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -24,5 +26,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<MessagesResult> GetMessagesAsync(GetMessagesRequest request);
         Task<MessagesResult> GetLastMessagesAsync(GetLastMessagesRequest request);
         Task<IReadOnlyCollection<Guid>> FindMessageIdsAsync(Guid channelId, string searchText);
+        Task<SystemMessageResponse> CreateSystemMessageAsync(CreateSystemMessageRequest request);
     }
 }

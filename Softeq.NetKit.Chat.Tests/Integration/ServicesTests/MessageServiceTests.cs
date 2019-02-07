@@ -9,6 +9,7 @@ using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.SystemMessage;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
@@ -123,6 +124,21 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             var forwardMessageResult = await _messageService.CreateMessageAsync(forwardMessage);
 
             forwardMessageResult.ForwardedMessage.Body.Should().BeEquivalentTo(messageForForwarding.Body);
+        }
+
+        [Fact]
+        public async Task ShouldAddSystemMessage()
+        {
+            var request = new CreateSystemMessageRequest
+            {
+                Body = "TestBody",
+                ChannelId = _channelId
+            };
+
+           var response = await _messageService.CreateSystemMessageAsync(request);
+
+            response.Body.Should().Be(request.Body);
+            response.Type.Should().Be(MessageType.SystemNotification);
         }
     }
 }

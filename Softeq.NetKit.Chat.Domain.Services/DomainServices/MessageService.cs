@@ -1,11 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
@@ -16,8 +11,15 @@ using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.SystemMessage;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.SystemMessage;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -126,7 +128,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {              
+            {
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message.ChannelId, message.OwnerId, message.Created);
                 await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage?.Id);
 
@@ -280,7 +282,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetOlderMessagesWithOwnersAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
             var results = messages.Select(message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created)).ToList();
-            
+
             return new MessagesResult
             {
                 PageSize = request.PageSize,
@@ -329,7 +331,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(request.ChannelId);
             }
-            
+
             var results = messages.Select(message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created)).ToList();
 
             return new MessagesResult
@@ -341,6 +343,29 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task<IReadOnlyCollection<Guid>> FindMessageIdsAsync(Guid channelId, string searchText)
         {
             return await UnitOfWork.MessageRepository.FindMessageIdsAsync(channelId, searchText);
+        }
+
+        public async Task<SystemMessageResponse> CreateSystemMessageAsync(CreateSystemMessageRequest request)
+        {
+            var channel = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
+            if (!channel)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get channel. Chat with {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
+            }
+
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                ChannelId = request.ChannelId,
+                Body = request.Body,
+                Created = _dateTimeProvider.GetUtcNow(),
+                Type = MessageType.SystemNotification,
+                Updated = _dateTimeProvider.GetUtcNow()
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+            return DomainModelsMapper.MapToSystemMessageResponse(message);
         }
 
         private async Task<bool> IsAttachmentLimitExceededAsync(Guid messageId)
