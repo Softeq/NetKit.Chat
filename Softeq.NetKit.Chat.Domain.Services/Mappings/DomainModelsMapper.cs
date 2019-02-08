@@ -96,7 +96,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 Id = message.Id,
                 Body = message.Body,
                 Created = message.Created,
-                DirectChannelId = (Guid)message.DirectChannelId,
+                DirectChannelId = (Guid) message.DirectChannelId,
                 Owner = message.Owner,
                 Updated = message.Updated,
                 Type = message.Type

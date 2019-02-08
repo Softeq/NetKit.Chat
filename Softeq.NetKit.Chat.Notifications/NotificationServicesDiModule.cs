@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Softeq.NetKit.Chat.Notifications.Services;

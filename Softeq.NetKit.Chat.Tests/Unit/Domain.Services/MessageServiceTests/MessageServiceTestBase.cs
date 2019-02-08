@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
@@ -31,7 +32,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         protected readonly Mock<IForwardMessageRepository> _forwardMessageRepositoryMock = new Mock<IForwardMessageRepository>(MockBehavior.Strict);
         protected readonly Mock<IChannelMemberRepository> _channelMemberRepositoryMock = new Mock<IChannelMemberRepository>(MockBehavior.Strict);
         protected readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>(MockBehavior.Strict);
-        protected readonly Mock<IDirectChannelRepository> _directChannelRepository = new Mock<IDirectChannelRepository>(MockBehavior.Strict);
 
         protected readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>(MockBehavior.Strict);
         
@@ -46,7 +46,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _unitOfWorkMock.Setup(x => x.ForwardMessageRepository).Returns(_forwardMessageRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.ChannelMemberRepository).Returns(_channelMemberRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.AttachmentRepository).Returns(_attachmentRepositoryMock.Object);
-            _unitOfWorkMock.Setup(x => x.DirectChannelRepository).Returns(_directChannelRepository.Object);
 
             var messageAttachmentsLimitSectionMock = new Mock<IConfigurationSection>();
             messageAttachmentsLimitSectionMock.Setup(x => x.Value).Returns(MessageAttachmentsLimit.ToString());
@@ -74,7 +73,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             _domainModelsMapperMock.VerifyAll();
 
             _channelRepositoryMock.VerifyAll();
-            _directChannelRepository.VerifyAll();
             _memberRepositoryMock.VerifyAll();
             _messageRepositoryMock.VerifyAll();
             _forwardMessageRepositoryMock.VerifyAll();

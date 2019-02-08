@@ -7,6 +7,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.DirectChannel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using System;
 using System.Threading.Tasks;
 using Xunit;
