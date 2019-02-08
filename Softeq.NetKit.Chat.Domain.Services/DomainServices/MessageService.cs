@@ -367,7 +367,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Created = _dateTimeProvider.GetUtcNow(),
                 Type = MessageType.SystemNotification,
                 Updated = _dateTimeProvider.GetUtcNow(),
-                Channel = channel
+                Channel = channel,
+                ChannelType = ChannelTypes.Group
             };
 
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
