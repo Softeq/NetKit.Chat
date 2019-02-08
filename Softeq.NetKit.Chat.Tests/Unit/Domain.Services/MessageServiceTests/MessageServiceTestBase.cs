@@ -1,7 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;

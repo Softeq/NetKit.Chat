@@ -133,14 +133,14 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 
             var directMessageResponse = await _directChannelService.AddMessageAsync(directMessageRequest);
   
-            var messageResponse = await _directChannelService.GetMessagesByIdAsync(directMessageResponse.Id);
+            var messageResponse = await _directChannelService.GetMessageAsync(directMessageResponse.Id);
             Assert.Equal(directMessageResponse.Id, messageResponse.Id);
 
             // Act
             await _directChannelService.ArchiveMessageAsync(directMessageResponse.Id, owner.SaasUserId);
 
             // Assert
-            NetKitChatNotFoundException ex = Assert.Throws<NetKitChatNotFoundException>(() => _directChannelService.GetMessagesByIdAsync(directMessageResponse.Id).GetAwaiter().GetResult());
+            NetKitChatNotFoundException ex = Assert.Throws<NetKitChatNotFoundException>(() => _directChannelService.GetMessageAsync(directMessageResponse.Id).GetAwaiter().GetResult());
             Assert.Equal(ex.Message, $"Unable to get direct message. Message with messageId:{directMessageResponse.Id} is not found.");
         }
 

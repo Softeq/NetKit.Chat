@@ -1,13 +1,13 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using EnsureThat;
+using Microsoft.AspNetCore.SignalR;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EnsureThat;
-using Microsoft.AspNetCore.SignalR;
-using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             Ensure.That(memberService).IsNotNull();
             Ensure.That(hubContext).IsNotNull();
             Ensure.That(clientService).IsNotNull();
-            
+
             MemberService = memberService;
             HubContext = hubContext;
             _channelMemberService = channelMemberService;

@@ -105,7 +105,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToDirectMessageResponse(message);
         }
 
-        public async Task<DirectMessageResponse> GetMessagesByIdAsync(Guid messageId)
+        public async Task<DirectMessageResponse> GetMessageAsync(Guid messageId)
         {
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(messageId);
             if (message == null)

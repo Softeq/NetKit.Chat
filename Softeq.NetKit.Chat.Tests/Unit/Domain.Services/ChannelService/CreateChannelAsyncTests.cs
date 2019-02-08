@@ -113,12 +113,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             // Arrange
             var allowedMember = new Member
             {
-                SaasUserId = "1AB5626B-B311-4862-A0F1-AFD21D9F421B"
+                Id = new Guid("1AB5626B-B311-4862-A0F1-AFD21D9F421B")
             };
 
             var request = new CreateChannelRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", "channel name", ChannelType.Private)
             {
-                AllowedMembers = new List<string> { allowedMember.SaasUserId },
+                AllowedMembers = new List<string> { allowedMember.Id.ToString() },
                 Description = "Description",
                 PhotoUrl = "PhotoUrl",
                 WelcomeMessage = "WelcomeMessage"

@@ -1,19 +1,21 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Threading.Tasks;
 using EnsureThat;
+using Softeq.NetKit.Chat.Application.Services.Services.SystemMessages;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.SystemMessage;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.Notifications.Services;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
+using System;
+using System.Threading.Tasks;
 using ChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.ChannelRequest;
 using CreateChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.CreateChannelRequest;
-using UpdateChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.UpdateChannelRequest;
 using MuteChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.MuteChannelRequest;
+using UpdateChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.UpdateChannelRequest;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
@@ -23,19 +25,28 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         private readonly IMemberService _memberService;
         private readonly IChannelNotificationService _channelNotificationService;
         private readonly IPushNotificationService _pushNotificationService;
+        private readonly IMessageService _messageService;
+        private readonly IChatSystemMessagesService _chatSystemMessagesService;
 
         public ChannelSocketService(
-            IChannelService channelService, 
-            IMemberService memberService, 
+            IChannelService channelService,
+            IMemberService memberService,
             IChannelNotificationService channelNotificationService,
-            IPushNotificationService pushNotificationService)
+            IPushNotificationService pushNotificationService,
+            IMessageService messageService,
+            IChatSystemMessagesService chatSystemMessagesService)
         {
             Ensure.That(channelService).IsNotNull();
             Ensure.That(memberService).IsNotNull();
             Ensure.That(channelNotificationService).IsNotNull();
+            Ensure.That(messageService).IsNotNull();
+            Ensure.That(pushNotificationService).IsNotNull();
+            Ensure.That(chatSystemMessagesService).IsNotNull();
 
             _channelNotificationService = channelNotificationService;
             _pushNotificationService = pushNotificationService;
+            _messageService = messageService;
+            _chatSystemMessagesService = chatSystemMessagesService;
             _channelService = channelService;
             _memberService = memberService;
         }
@@ -74,6 +85,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnUpdateChannel(channelSummary);
 
+            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelUpdated", request.SaasUserId, request.ChannelId);
+            var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
+
+            await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
+
             return channelSummary;
         }
 
@@ -95,6 +111,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             // TODO [az]: do we need this notification?
             await _channelNotificationService.OnUpdateChannel(channelSummary);
+
+            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelClosed", request.SaasUserId, request.ChannelId);
+            var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
+
+            await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
         }
 
         public async Task JoinToChannelAsync(ChannelRequest request)
@@ -109,6 +130,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             await _pushNotificationService.SubscribeUserOnTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
 
             await _channelNotificationService.OnJoinChannel(member, channel);
+
+            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelJoined", request.SaasUserId, request.ChannelId);
+            var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
+
+            await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
@@ -146,6 +172,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             await _pushNotificationService.UnsubscribeUserFromTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
 
             await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
+
+            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelLeft", request.SaasUserId, request.ChannelId);
+            var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
+
+            await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
         }
 
         public async Task DeleteMemberFromChannelAsync(DeleteMemberRequest request)
@@ -171,6 +202,20 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             }
 
             await _channelService.MuteChannelAsync(request.SaasUserId, request.ChannelId, request.IsMuted);
+        }
+
+        private async Task<CreateSystemMessageRequest> GetSystemMessageRequestAsync(string key, string saasUserId, Guid channelId)
+        {
+            var member = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
+            var channel = await _channelService.GetChannelByIdAsync(channelId);
+            var body = _chatSystemMessagesService.FormatSystemMessage(key, member.UserName, channel.Name);
+
+            return new CreateSystemMessageRequest
+            {
+                MemberId = member.Id,
+                ChannelId = channel.Id,
+                Body = body
+            };
         }
     }
 }

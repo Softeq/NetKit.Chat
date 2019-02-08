@@ -3,7 +3,6 @@
 
 using FluentAssertions;
 using Moq;
-using ServiceStack;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;

@@ -1,7 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;

@@ -10,6 +10,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
         public const string MessageUpdated = "MessageUpdated";
         public const string LastReadMessageChanged = "LastReadMessageChanged";
 
+        public const string SystemMessageAdded = "SystemMessageAdded";
+
         public const string TypingStarted = "TypingStarted";
 
         public const string AttachmentAdded = "AttachmentAdded";

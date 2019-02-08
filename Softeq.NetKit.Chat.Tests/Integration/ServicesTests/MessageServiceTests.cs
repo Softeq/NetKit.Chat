@@ -132,14 +132,15 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             var request = new CreateSystemMessageRequest
             {
                 Body = "TestBody",
-                ChannelId = _channelId
+                ChannelId = _channelId,
+                MemberId = _memberId
             };
 
            var response = await _messageService.CreateSystemMessageAsync(request);
 
-            response.Body.Should().Be(request.Body);
-            response.Type.Should().Be(MessageType.SystemNotification);
-            response.ChannelId.Should().Be(request.ChannelId);
+            response.Message.Body.Should().Be(request.Body);
+            response.Message.Type.Should().Be(MessageType.SystemNotification);
+            response.Channel.Id.Should().Be(request.ChannelId);
         }
     }
 }

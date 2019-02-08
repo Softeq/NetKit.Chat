@@ -1,17 +1,12 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Softeq.NetKit.Chat.Domain.DomainModels;
-using System;
-
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.SystemMessage
 {
     public class SystemMessageResponse
     {
-        public Guid Id { get; set; }
-        public string Body { get; set; }
-        public DateTimeOffset Created { get; set; }
-        public MessageType Type { get; set; }
-        public Guid ChannelId { get; set; }
+        public DomainModels.Message Message { get; set; }
+        public DomainModels.Member  Member { get; set; }
+        public DomainModels.Channel Channel { get; set; }
     }
 }

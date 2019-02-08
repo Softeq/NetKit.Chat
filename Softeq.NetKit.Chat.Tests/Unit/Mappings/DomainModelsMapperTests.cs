@@ -12,6 +12,7 @@ using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Web;
 using System;
 using System.Collections.Generic;
+using Softeq.NetKit.Chat.Application.Services;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
@@ -31,6 +32,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
                 .As<IConfigurationRoot>()
                 .As<IConfiguration>();
 
+            builder.RegisterModule<ApplicationServicesDiModule>();
             builder.RegisterModule<DataPersistentSqlDiModule>();
             builder.RegisterModule<DataCloudAzureDiModule>();
             builder.RegisterModule<DomainServicesDiModule>();
@@ -262,21 +264,26 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         [Fact]
         public void MapToSystemMessageResponse_ShouldMapToSystemMessageResponse()
         {
+            var channelId = new Guid("5AD766AD-E418-44B3-9B62-73B1FDACCF20");
+
             var message = new Message
             {
                 Id = Guid.NewGuid(),
-                ChannelId = new Guid("5AD766AD-E418-44B3-9B62-73B1FDACCF20"),
+                ChannelId = channelId,
                 Body = "TestBody",
                 Created = DateTimeOffset.UtcNow,
                 Type = MessageType.SystemNotification,
                 Updated = DateTimeOffset.UtcNow
             };
 
-            var response = _domainModelsMapper.MapToSystemMessageResponse(message);
+            var member = new Member { Id = new Guid("0FE9DA67-DDB9-45CC-BC50-E58F730FB1CA") };
+            var channel = new Channel { Id = channelId };
 
-            response.Id.Should().Be(message.Id);
-            response.Body.Should().BeEquivalentTo(response.Body);
-            response.Created.Should().Be(response.Created);
+            var response = _domainModelsMapper.MapToSystemMessageResponse(message, member, channel);
+
+            response.Message.Id.Should().Be(message.Id);
+            response.Message.Body.Should().BeEquivalentTo(message.Body);
+            response.Message.Created.Should().Be(message.Created);
         }
     }
 }

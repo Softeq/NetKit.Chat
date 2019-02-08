@@ -1,13 +1,14 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.SystemMessage;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
@@ -67,6 +68,12 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
             await HubContext.Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channelId);
             await HubContext.Clients.Clients(channelClients).SendAsync(HubEvents.MemberDeleted, member, channelId);
+        }
+
+        public async Task OnAddSystemMessage(SystemMessageResponse response)
+        {
+            var clientIds = await GetChannelClientConnectionIdsAsync(response.Channel.Id);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.SystemMessageAdded, response);
         }
     }
 }

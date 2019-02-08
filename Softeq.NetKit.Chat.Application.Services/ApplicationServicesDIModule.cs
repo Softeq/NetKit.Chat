@@ -6,7 +6,7 @@ using Softeq.NetKit.Chat.Application.Services.Services.SystemMessages;
 
 namespace Softeq.NetKit.Chat.Application.Services
 {
-    public class ApplicationServicesDIModule : Module
+    public class ApplicationServicesDiModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
@@ -15,7 +15,7 @@ namespace Softeq.NetKit.Chat.Application.Services
 
         private static void RegisterApplicationServices(ContainerBuilder builder)
         {
-            builder.RegisterType<ChatSystemMessages>().As<IChatSystemMessages>();
+            builder.RegisterType<ChatSystemMessagesService>().As<IChatSystemMessagesService>();
         }
     }
 }

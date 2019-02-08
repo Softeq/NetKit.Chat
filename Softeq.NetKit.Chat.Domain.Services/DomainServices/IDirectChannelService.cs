@@ -17,6 +17,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<DirectMessageResponse> ArchiveMessageAsync(Guid messageId, string saasUserId);
         Task<DirectMessageResponse> UpdateMessageAsync(UpdateDirectMessageRequest request);
         Task<IList<DirectMessageResponse>> GetChannelMessagesAsync(Guid channelId);
-        Task<DirectMessageResponse> GetMessagesByIdAsync(Guid messageId);
+        Task<DirectMessageResponse> GetMessageAsync(Guid messageId);
     }
 }

@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelMemberService
 {
-    public class GetChannelMembersAsyncTests : ChannelMemberServiceTestsBase
+    public class GetChannelMembersTests : ChannelMemberServiceTestsBase
     {
         [Fact]
         public void ShouldThrowIfChannelIsNotExist()

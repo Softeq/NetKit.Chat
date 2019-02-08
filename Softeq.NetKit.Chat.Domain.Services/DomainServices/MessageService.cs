@@ -347,10 +347,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<SystemMessageResponse> CreateSystemMessageAsync(CreateSystemMessageRequest request)
         {
-            var channel = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
-            if (!channel)
+            var channel = await UnitOfWork.ChannelRepository.GetChannelAsync(request.ChannelId);
+            if (channel == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to get channel. Chat with {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
+            }
+
+            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(request.MemberId);
+            if (member == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get channel. Chat with {nameof(request.MemberId)}:{request.MemberId} is not found.");
             }
 
             var message = new Message
@@ -360,12 +366,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 Body = request.Body,
                 Created = _dateTimeProvider.GetUtcNow(),
                 Type = MessageType.SystemNotification,
-                Updated = _dateTimeProvider.GetUtcNow()
+                Updated = _dateTimeProvider.GetUtcNow(),
+                Channel = channel
             };
 
             await UnitOfWork.MessageRepository.AddMessageAsync(message);
 
-            return DomainModelsMapper.MapToSystemMessageResponse(message);
+            return DomainModelsMapper.MapToSystemMessageResponse(message, member, channel);
         }
 
         private async Task<bool> IsAttachmentLimitExceededAsync(Guid messageId)
