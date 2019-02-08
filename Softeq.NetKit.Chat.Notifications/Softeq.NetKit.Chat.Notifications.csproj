@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.0" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="2.0.2" />
-    <PackageReference Include="Softeq.PushNotificationService" Version="1.0.2-alpha" />
+    <PackageReference Include="Softeq.PushNotificationService" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>

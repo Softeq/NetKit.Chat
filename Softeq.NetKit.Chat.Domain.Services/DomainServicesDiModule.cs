@@ -46,9 +46,6 @@ namespace Softeq.NetKit.Chat.Domain.Services
 
         private void RegisterMappings(ContainerBuilder builder)
         {
-            builder.RegisterType<AvatarUrlValueResolver>()
-                .AsSelf();
-
             builder.RegisterType<DomainModelsMapper>()
                 .As<IDomainModelsMapper>();
         }

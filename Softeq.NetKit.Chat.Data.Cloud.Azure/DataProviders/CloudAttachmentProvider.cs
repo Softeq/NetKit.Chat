@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Softeq.CloudStorage.Extension;
@@ -21,7 +22,7 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure.DataProviders
             await Storage.DeleteContentAsync(attachmentFileName, Configuration.MessageAttachmentsContainer);
         }
 
-        public async Task<string> SaveAttachmentAsync(string attachmentFileName, Stream content)
+        public async Task<Uri> SaveAttachmentAsync(string attachmentFileName, Stream content)
         {
             return await Storage.SaveContentAsync(attachmentFileName, content, Configuration.MessageAttachmentsContainer);
         }

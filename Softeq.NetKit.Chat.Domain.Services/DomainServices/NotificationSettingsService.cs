@@ -24,7 +24,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _memberService = memberService;
         }
 
-        public async Task<IList<Guid>> GetSaasUserIdsWithDisabledGroupNotificationsAsync()
+        public async Task<IList<string>> GetSaasUserIdsWithDisabledGroupNotificationsAsync()
         {
             return await UnitOfWork.NotificationSettingRepository.GetSaasUserIdsWithDisabledGroupNotificationsAsync();
         }

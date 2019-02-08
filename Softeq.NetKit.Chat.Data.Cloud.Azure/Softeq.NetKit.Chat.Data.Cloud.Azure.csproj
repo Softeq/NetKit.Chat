@@ -9,7 +9,7 @@
     <PackageReference Include="Ensure.That" Version="8.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
-    <PackageReference Include="Softeq.CloudStorage.Extension" Version="1.0.0" />
+    <PackageReference Include="Softeq.CloudStorage.Extension" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>

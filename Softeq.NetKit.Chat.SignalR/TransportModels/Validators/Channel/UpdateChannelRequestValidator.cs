@@ -13,7 +13,6 @@ namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Channel
         {
             RuleFor(x => x.ChannelId).NotEmpty();
             RuleFor(x => x.Name).NotNull().NotEmpty();
-            RuleFor(x => x.Name).Must(name => name != null && !name.Contains(' ')).WithMessage(x => $"{nameof(x.Name)} cannot contain spaces.");
         }
     }
 }

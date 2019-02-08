@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using EnsureThat;
+using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
@@ -48,13 +49,17 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             // subscribe creator on channel
             await _pushNotificationService.SubscribeUserOnTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
 
-            // subscribe invited members
-            foreach (var allowedMemberId in request.AllowedMembers)
+            if (request.AllowedMembers != null)
             {
-                var chatMember = await _memberService.GetMemberByIdAsync(Guid.Parse(allowedMemberId));
-
-                if (chatMember != null)
+                // subscribe invited members
+                foreach (var allowedMemberId in request.AllowedMembers)
                 {
+                    var chatMember = await _memberService.GetMemberByIdAsync(Guid.Parse(allowedMemberId));
+                    if (chatMember == null)
+                    {
+                        throw new NetKitChatNotFoundException($"Specified chat member {allowedMemberId} is not found.");
+                    }
+
                     await _pushNotificationService.SubscribeUserOnTagAsync(chatMember.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
                 }
             }
