@@ -10,6 +10,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task<NotificationSettings> GetSettingsByMemberIdAsync(Guid memberId);
         Task AddSettingsAsync(NotificationSettings settings);
         Task UpdateSettingsAsync(NotificationSettings settings);
-        Task<IList<Guid>> GetSaasUserIdsWithDisabledGroupNotificationsAsync();
+        Task<IList<string>> GetSaasUserIdsWithDisabledGroupNotificationsAsync();
     }
 }

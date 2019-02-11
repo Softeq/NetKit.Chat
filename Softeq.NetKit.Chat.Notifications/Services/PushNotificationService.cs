@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Notifications.Services
 
         public async Task SubscribeUserOnTagAsync(string userId, string tagName)
         {
-            var registrations = await _pushNotificationSubscriber.GetRegistrationsByTagAsync(PushNotificationsTagTemplates.GetChatChannelTag(userId));
+            var registrations = await _pushNotificationSubscriber.GetRegistrationsByTagAsync(PushNotificationsTagTemplates.GetMemberSubscriptionTag(userId));
 
             foreach (var registration in registrations)
             {
@@ -42,7 +42,7 @@ namespace Softeq.NetKit.Chat.Notifications.Services
 
         public async Task UnsubscribeUserFromTagAsync(string userId, string tagName)
         {
-            var registrations = await _pushNotificationSubscriber.GetRegistrationsByTagAsync(PushNotificationsTagTemplates.GetChatChannelTag(userId));
+            var registrations = await _pushNotificationSubscriber.GetRegistrationsByTagAsync(PushNotificationsTagTemplates.GetMemberSubscriptionTag(userId));
 
             foreach (var registration in registrations)
             {

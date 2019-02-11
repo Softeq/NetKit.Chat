@@ -143,7 +143,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             string attachmentFileName = null;
             _cloudAttachmentProviderMock.Setup(x => x.SaveAttachmentAsync(It.IsAny<string>(), It.IsAny<Stream>()))
                 .Callback<string, Stream>((name, stream) => attachmentFileName = name)
-                .ReturnsAsync("path_in_cloud")
+                .ReturnsAsync(new Uri("http://localhost"))
                 .Verifiable();
 
             Attachment attachmentToMap = null;

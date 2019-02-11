@@ -15,7 +15,7 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure.DataProviders
 
         public async Task<string> CopyImageToDestinationContainerAsync(string photoUrl)
         {
-            string permanentChannelImageUrl = null;
+            Uri permanentChannelImageUrl = null;
 
             if (!string.IsNullOrEmpty(photoUrl))
             {
@@ -24,7 +24,7 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure.DataProviders
                 permanentChannelImageUrl = await Storage.CopyBlobAsync(fileName, Configuration.TempContainerName, Configuration.ChannelImagesContainer);
             }
 
-            return permanentChannelImageUrl;
+            return !string.IsNullOrEmpty(permanentChannelImageUrl?.ToString()) ? $"{permanentChannelImageUrl}" : null;
         }
 
         public string GetMemberAvatarUrl(string memberPhotoName)
