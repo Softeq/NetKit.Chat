@@ -9,7 +9,7 @@ namespace Softeq.NetKit.Chat.Application.Services.Services.SystemMessages
     {
         public string FormatSystemMessage(SystemMessagesKey key, string memberName, string channelName)
         {
-            return $"{memberName} {SystemMessageStorage.ChannelModifyStorage.FirstOrDefault(x => x.Key == key)?.Message} {channelName}";
+            return $"{memberName} {SystemMessageStorage.ChannelModifyMessageStorage.FirstOrDefault(x => x.Key == key)?.Message} {channelName}";
         }
     }
 }
