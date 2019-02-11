@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         public async Task OnAddSystemMessage(SystemMessageResponse response)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(response.Channel.Id);
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.SystemMessageAdded, response);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageAdded, response);
         }
     }
 }

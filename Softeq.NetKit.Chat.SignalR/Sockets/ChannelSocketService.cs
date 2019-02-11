@@ -85,7 +85,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnUpdateChannel(channelSummary);
 
-            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelUpdated", request.SaasUserId, request.ChannelId);
+            var systemMessageRequest = await GetSystemMessageRequestAsync(SystemMessagesKey.ChannelUpdated, request.SaasUserId, request.ChannelId);
             var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
 
             await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
@@ -112,7 +112,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             // TODO [az]: do we need this notification?
             await _channelNotificationService.OnUpdateChannel(channelSummary);
 
-            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelClosed", request.SaasUserId, request.ChannelId);
+            var systemMessageRequest = await GetSystemMessageRequestAsync(SystemMessagesKey.ChannelClosed, request.SaasUserId, request.ChannelId);
             var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
 
             await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
@@ -131,7 +131,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnJoinChannel(member, channel);
 
-            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelJoined", request.SaasUserId, request.ChannelId);
+            var systemMessageRequest = await GetSystemMessageRequestAsync(SystemMessagesKey.ChannelJoined, request.SaasUserId, request.ChannelId);
             var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
 
             await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
@@ -173,7 +173,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
 
-            var systemMessageRequest = await GetSystemMessageRequestAsync("ChannelLeft", request.SaasUserId, request.ChannelId);
+            var systemMessageRequest = await GetSystemMessageRequestAsync(SystemMessagesKey.ChannelLeft, request.SaasUserId, request.ChannelId);
             var systemMessageResponse = await _messageService.CreateSystemMessageAsync(systemMessageRequest);
 
             await _channelNotificationService.OnAddSystemMessage(systemMessageResponse);
@@ -204,7 +204,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             await _channelService.MuteChannelAsync(request.SaasUserId, request.ChannelId, request.IsMuted);
         }
 
-        private async Task<CreateSystemMessageRequest> GetSystemMessageRequestAsync(string key, string saasUserId, Guid channelId)
+        private async Task<CreateSystemMessageRequest> GetSystemMessageRequestAsync(SystemMessagesKey key, string saasUserId, Guid channelId)
         {
             var member = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
             var channel = await _channelService.GetChannelByIdAsync(channelId);

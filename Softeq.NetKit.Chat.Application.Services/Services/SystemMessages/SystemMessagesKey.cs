@@ -3,9 +3,11 @@
 
 namespace Softeq.NetKit.Chat.Application.Services.Services.SystemMessages
 {
-    public class SystemMessageWithKey
+    public enum SystemMessagesKey
     {
-        public SystemMessagesKey Key { get; set; }
-        public string Message { get; set; }
+        ChannelUpdated,
+        ChannelClosed,
+        ChannelJoined,
+        ChannelLeft
     }
 }

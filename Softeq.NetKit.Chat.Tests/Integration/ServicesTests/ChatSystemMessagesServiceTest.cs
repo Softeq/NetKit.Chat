@@ -17,11 +17,11 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Theory]
-        [InlineData("ChannelLeft", "memberName", "channelName", "memberName left channel channelName")]
-        [InlineData("ChannelJoined", "memberName", "channelName", "memberName joined channel channelName")]
-        [InlineData("ChannelUpdated", "memberName", "channelName", "memberName updated channel channelName")]
-        [InlineData("ChannelClosed", "memberName", "channelName", "memberName closed channel channelName")]
-        public void CreateSystemMessageBody(string key, string memberName, string channelName, string result)
+        [InlineData(SystemMessagesKey.ChannelLeft, "memberName", "channelName", "memberName left channel channelName")]
+        [InlineData(SystemMessagesKey.ChannelJoined, "memberName", "channelName", "memberName joined channel channelName")]
+        [InlineData(SystemMessagesKey.ChannelUpdated, "memberName", "channelName", "memberName updated channel channelName")]
+        [InlineData(SystemMessagesKey.ChannelClosed, "memberName", "channelName", "memberName closed channel channelName")]
+        public void CreateSystemMessageBody(SystemMessagesKey key, string memberName, string channelName, string result)
         {
             var body = _chatSystemMessagesService.FormatSystemMessage(key, memberName, channelName);
 

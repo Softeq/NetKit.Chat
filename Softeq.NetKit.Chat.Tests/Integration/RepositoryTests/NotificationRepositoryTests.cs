@@ -39,7 +39,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             var message = new Message
             {
                 Id = _messageId,
-                Type = MessageType.SystemNotification,
+                Type = MessageType.Notification,
                 ChannelId = _channelId,
                 OwnerId = _memberId,
                 Created = DateTimeOffset.UtcNow

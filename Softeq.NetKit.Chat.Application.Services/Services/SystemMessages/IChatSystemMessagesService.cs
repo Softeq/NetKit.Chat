@@ -5,6 +5,6 @@ namespace Softeq.NetKit.Chat.Application.Services.Services.SystemMessages
 {
     public interface IChatSystemMessagesService
     {
-        string FormatSystemMessage(string key, string memberName, string channelName);
+        string FormatSystemMessage(SystemMessagesKey key, string memberName, string channelName);
     }
 }
