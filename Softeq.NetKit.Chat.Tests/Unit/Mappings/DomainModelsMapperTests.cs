@@ -12,7 +12,6 @@ using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Web;
 using System;
 using System.Collections.Generic;
-using Softeq.NetKit.Chat.Application.Services;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
@@ -32,7 +31,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
                 .As<IConfigurationRoot>()
                 .As<IConfiguration>();
 
-            builder.RegisterModule<ApplicationServicesDiModule>();
             builder.RegisterModule<DataPersistentSqlDiModule>();
             builder.RegisterModule<DataCloudAzureDiModule>();
             builder.RegisterModule<DomainServicesDiModule>();

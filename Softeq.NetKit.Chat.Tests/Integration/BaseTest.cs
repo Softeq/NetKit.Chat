@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Autofac;
 using Dapper;
 using Microsoft.Extensions.Configuration;
-using Softeq.NetKit.Chat.Application.Services;
 using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Data.Persistent.Database;
@@ -34,7 +33,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration
                 .As<IConfigurationRoot>()
                 .As<IConfiguration>();
 
-            builder.RegisterModule<ApplicationServicesDiModule>();
             builder.RegisterModule<DataPersistentSqlDiModule>();
             builder.RegisterModule<DataCloudAzureDiModule>();
             builder.RegisterModule<DomainServicesDiModule>();

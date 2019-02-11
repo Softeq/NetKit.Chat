@@ -3,7 +3,7 @@
 
 using System.Linq;
 
-namespace Softeq.NetKit.Chat.Application.Services.Services.SystemMessages
+namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
     public class ChatSystemMessagesService : IChatSystemMessagesService
     {

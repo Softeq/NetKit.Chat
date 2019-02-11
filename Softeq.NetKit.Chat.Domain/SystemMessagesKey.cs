@@ -1,7 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-namespace Softeq.NetKit.Chat.Application.Services.Services.SystemMessages
+namespace Softeq.NetKit.Chat.Domain
 {
     public enum SystemMessagesKey
     {

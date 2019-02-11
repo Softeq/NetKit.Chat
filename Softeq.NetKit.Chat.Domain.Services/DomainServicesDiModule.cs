@@ -41,6 +41,9 @@ namespace Softeq.NetKit.Chat.Domain.Services
             builder.RegisterType<DirectChannelService>()
                 .As<IDirectChannelService>();
 
+            builder.RegisterType<ChatSystemMessagesService>()
+                .As<IChatSystemMessagesService>();
+
             RegisterMappings(builder);
         }
 

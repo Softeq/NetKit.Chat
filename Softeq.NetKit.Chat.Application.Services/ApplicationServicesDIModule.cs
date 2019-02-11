@@ -2,7 +2,6 @@
 // http://www.softeq.com
 
 using Autofac;
-using Softeq.NetKit.Chat.Application.Services.Services.SystemMessages;
 
 namespace Softeq.NetKit.Chat.Application.Services
 {

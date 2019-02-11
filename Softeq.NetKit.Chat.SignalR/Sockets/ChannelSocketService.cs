@@ -2,7 +2,6 @@
 // http://www.softeq.com
 
 using EnsureThat;
-using Softeq.NetKit.Chat.Application.Services.Services.SystemMessages;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.SystemMessage;
@@ -12,6 +11,8 @@ using Softeq.NetKit.Chat.Notifications.Services;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain;
+using Softeq.NetKit.Chat.Domain.Services;
 using ChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.ChannelRequest;
 using CreateChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.CreateChannelRequest;
 using MuteChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.MuteChannelRequest;

@@ -2,7 +2,8 @@
 // http://www.softeq.com
 
 using Autofac;
-using Softeq.NetKit.Chat.Application.Services.Services.SystemMessages;
+using Softeq.NetKit.Chat.Domain;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests

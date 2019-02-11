@@ -2,7 +2,6 @@
 // http://www.softeq.com
 
 using Autofac;
-using Softeq.NetKit.Chat.Application.Services;
 using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Domain.Services;
