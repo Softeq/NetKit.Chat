@@ -7,7 +7,7 @@ namespace Softeq.NetKit.Chat.Application.Services.Services.SystemMessages
 {
     public static class SystemMessageStorage
     {
-        public static List<SystemMessageWithKey> ChannelModifyStorage = new List<SystemMessageWithKey>
+        public static List<SystemMessageWithKey> ChannelModifyMessageStorage = new List<SystemMessageWithKey>
         {
             new SystemMessageWithKey {Key = SystemMessagesKey.ChannelLeft, Message = "left channel"},
             new SystemMessageWithKey {Key = SystemMessagesKey.ChannelJoined, Message = "joined channel"},
