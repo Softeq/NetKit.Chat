@@ -69,7 +69,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             };
             var summary = _domainModelsMapper.MapToMemberSummary(member);
 
-            summary.AvatarUrl.Should().Contain($"/{member.PhotoName}");
+            summary.AvatarUrl.Should().Contain(member.PhotoName);
             summary.UserName.Should().Be(member.Name);
         }
 
@@ -217,8 +217,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 
             // Assert
             response.DirectChannelId.Should().Be(channelId);
-            response.Owner.AvatarUrl.Should().Contain($"/{owner.PhotoName}");
-            response.Member.AvatarUrl.Should().Contain($"/{member.PhotoName}");
+            response.Owner.AvatarUrl.Should().Contain(owner.PhotoName);
+            response.Member.AvatarUrl.Should().Contain(member.PhotoName);
             response.Owner.UserName.Should().Be(owner.Name);
             response.Member.UserName.Should().Be(member.Name);
         }
