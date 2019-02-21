@@ -1,7 +1,12 @@
-﻿# NetKit.Chat
+﻿![Azure DevOps builds](https://img.shields.io/azure-devops/build/SofteqDevelopment/NetKit/23.svg)
+
+# NetKit.Chat
+
 Open source product is used to communicate people in real time. 
 This project uses ASP.NET Core 2.0
+
 ## Development setup
+
 Product's dependencies are installed as NuGet-packages.
 
 ## Dependencies
@@ -42,14 +47,23 @@ Product's dependencies are installed as NuGet-packages.
  - Xunit 2.4.0
  - Xunit.runner.visualstudio 2.4.0
 
+## Additional documentation
+[WebSockets documetation](ChatHub.md)
+
 ## About
 
 This project is maintained by [Softeq Development Corp.](https://www.softeq.com/)
+We specialize in .NET core applications.
 
  - [Facebook](https://web.facebook.com/Softeq.by/)
  - [Instagram](https://www.instagram.com/softeq/)
  - [Twitter](https://twitter.com/Softeq)
  - [Vk](https://vk.com/club21079655)
 
-## Additional documentation
-[WebSockets documetation](ChatHub.md )
+## Contributing
+
+We welcome any contributions.
+
+## License
+
+The Query Utils project is available for free use, as described by the [LICENSE](/LICENSE) (MIT).
