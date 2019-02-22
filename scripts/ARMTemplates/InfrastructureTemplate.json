@@ -31,7 +31,7 @@
     },
     "webPlanSku": {
       "type": "string",
-      "defaultValue": "S1",
+      "defaultValue": "B1",
       "allowedValues": [
         "F1",
         "D1",
@@ -172,6 +172,22 @@
     "authServiceUrl": {
       "type": "string",
       "defaultValue": ""
+    },
+    "tempContainerName": {
+      "type": "string",
+      "defaultValue": "temp"
+    },
+    "avatarsContainerName": {
+      "type": "string",
+      "defaultValue": "avatar"
+    },
+    "attachmentsContainerName": {
+      "type": "string",
+      "defaultValue": "message"
+    },
+    "imagesContainerName": {
+      "type": "string",
+      "defaultValue": "channel"
     }
   },
   "variables": {
@@ -224,7 +240,41 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "accountType": "Standard_LRS"
-      }
+      },
+      "resources": [
+        {
+            "name": "[concat('default/', parameters('avatarsContainerName'))]",
+            "type": "blobServices/containers",
+            "apiVersion": "2018-03-01-preview",
+            "dependsOn": [
+                "[variables('storageAccount')]"
+            ]
+        },
+        {
+            "name": "[concat('default/', parameters('attachmentsContainerName'))]",
+            "type": "blobServices/containers",
+            "apiVersion": "2018-03-01-preview",
+            "dependsOn": [
+                "[variables('storageAccount')]"
+            ]
+        },
+        {
+          "name": "[concat('default/', parameters('imagesContainerName'))]",
+          "type": "blobServices/containers",
+          "apiVersion": "2018-03-01-preview",
+          "dependsOn": [
+              "[variables('storageAccount')]"
+          ]
+        },
+        {
+          "name": "[concat('default/', parameters('tempContainerName'))]",
+          "type": "blobServices/containers",
+          "apiVersion": "2018-03-01-preview",
+          "dependsOn": [
+              "[variables('storageAccount')]"
+          ]
+        }
+      ]
     },
     {
       "name": "[concat(variables('appInsightsName'),'/', replace(parameters('appInsightsServiceTier'), ' ', ''))]",
@@ -269,12 +319,16 @@
           ],
           "properties": {
             "ApplicationInsights:InstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]",
-            "ConnectionStrings:DefaultConnection": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDatabaseName'), ';User Id=', parameters('sqlServerAdminLogin'), ';Password=', parameters('sqlServerAdminPassword'), ';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Max Pool Size=300;')]",
+            "Database:ConnectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', variables('sqlServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', variables('sqlDatabaseName'), ';User Id=', parameters('sqlServerAdminLogin'), ';Password=', parameters('sqlServerAdminPassword'), ';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Max Pool Size=300;')]",
             "AzureNotificationHub:ConnectionString" : "[listkeys(variables('notificationHubAuthRuleResourceId'), '2017-04-01').primaryConnectionString]",
             "AzureNotificationHub:HubName" : "[parameters('notificationHubName')]",
+            "AzureStorage:MessageAttachmentsContainer" : "[parameters('attachmentsContainerName')]",
+            "AzureStorage:MemberAvatarsContainer" : "[parameters('avatarsContainerName')]",
+            "AzureStorage:ChannelImagesContainer" : "[parameters('imagesContainerName')]",
+            "AzureStorage:TempContainerName" : "[parameters('tempContainerName')]",
             "AzureStorage:ConnectionString" : "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccount'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-06-15').key1))]",
             "AzureStorage:ContentStorageHost" : "[concat('https://', variables('storageAccount'),'.blob.core.windows.net')]",
-            "Authentication:Bearer:Authority": "[parameters('authServiceUrl')]" 
+            "Authentications:Bearer:Authority": "[parameters('authServiceUrl')]" 
           }
         },
         {
@@ -285,8 +339,9 @@
             "[concat('Microsoft.Web/Sites/', variables('webAppSiteName'))]"
           ],
           "properties": {
-            "alwaysOn": false,
-            "use32BitWorkerProcess": true
+            "alwaysOn": true,
+            "use32BitWorkerProcess": false,
+            "webSocketsEnabled": true
           }
         }
       ]

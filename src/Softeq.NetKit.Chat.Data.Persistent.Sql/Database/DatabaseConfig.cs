@@ -9,7 +9,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Database
     {
         public DatabaseConfig(IConfiguration configuration)
         {
-            ConnectionString = configuration.GetConnectionString("DefaultConnection");
+            ConnectionString = configuration["Database:ConnectionString"];
         }
 
         public string ConnectionString { get; }

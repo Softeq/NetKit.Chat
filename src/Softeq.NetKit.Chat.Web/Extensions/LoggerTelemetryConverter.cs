@@ -36,7 +36,10 @@ namespace Softeq.NetKit.Chat.Web.Extensions
                     yield return exceptionTelemetry;
                 }
             }
-            yield return ToExceptionTelemetry(serilogLogEvent, formatProvider);
+            else
+            {
+                yield return ToExceptionTelemetry(serilogLogEvent, formatProvider);
+            }
         }
     }
 }

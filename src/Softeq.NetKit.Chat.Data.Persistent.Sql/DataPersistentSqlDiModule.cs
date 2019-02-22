@@ -17,7 +17,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
             {
                 var context = x.Resolve<IComponentContext>();
                 var config = context.Resolve<IConfiguration>();
-                return new SqlConnectionFactory(new SqlConnectionStringBuilder(config["ConnectionStrings:DefaultConnection"]));
+                return new SqlConnectionFactory(new SqlConnectionStringBuilder(config["Database:ConnectionString"]));
             }).As<ISqlConnectionFactory>();
 
             builder.RegisterType<DatabaseManager>()
