@@ -214,5 +214,20 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 await connection.ExecuteAsync(sqlQuery, new { channelId });
             }
         }
+        
+        public async Task<Guid> GetDirectChannelForMembersAsync(Guid member1Id, Guid member2Id)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT c.Id
+                                    FROM Channels c
+                                    INNER JOIN ChannelMembers cm ON c.Id = cm.ChannelId
+                                    WHERE (cm.MemberId = @member1Id OR cm.MemberId = @member2Id) AND c.Type = 2
+                                    GROUP BY c.Id
+                                    HAVING COUNT(cm.MemberId) = 2";
+
+                return (await connection.QueryAsync<Guid>(sqlQuery, new { member1Id, member2Id })).FirstOrDefault();
+            }
+        }
     }
 }

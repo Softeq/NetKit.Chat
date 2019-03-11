@@ -16,7 +16,8 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using Softeq.NetKit.Chat.Web.Common;
-using WebRequest = Softeq.NetKit.Chat.Web.TransportModels.Request;
+using Softeq.NetKit.Chat.Web.TransportModels.Request.Message;
+using UpdateMessageRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Message.UpdateMessageRequest;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -41,7 +42,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("")]
-        public async Task<IActionResult> AddMessageAsync(Guid channelId, [FromBody] WebRequest.Message.AddMessageRequest request)
+        public async Task<IActionResult> AddMessageAsync(Guid channelId, [FromBody] AddMessageRequest request)
         {
             var createMessageRequest = new CreateMessageRequest(GetCurrentSaasUserId(), channelId, request.Type, request.Body)
             {
@@ -64,9 +65,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
-        public async Task<IActionResult> UpdateMessageAsync(Guid messageId, [FromBody] WebRequest.Message.UpdateMessageRequest request)
+        public async Task<IActionResult> UpdateMessageAsync(Guid messageId, [FromBody] UpdateMessageRequest request)
         {
-            var result = await _messageSocketService.UpdateMessageAsync(new UpdateMessageRequest(GetCurrentSaasUserId(), messageId, request.Body));
+            var result = await _messageSocketService.UpdateMessageAsync(new Softeq.NetKit.Chat.Domain.TransportModels.Request.Message.UpdateMessageRequest(GetCurrentSaasUserId(), messageId, request.Body));
             return Ok(result);
         }
 
@@ -120,7 +121,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(MessagesResult), StatusCodes.Status200OK)]
         [Route("old")]
-        public async Task<IActionResult> GetReadMessagesAsync(Guid channelId, [FromQuery] Guid messageId, [FromQuery] DateTimeOffset messageCreated,  [FromQuery] int? pageSize)
+        public async Task<IActionResult> GetReadMessagesAsync(Guid channelId, [FromQuery] Guid messageId, [FromQuery] DateTimeOffset messageCreated, [FromQuery] int? pageSize)
         {
             var request = new GetMessagesRequest(GetCurrentSaasUserId(), channelId, messageId, messageCreated, pageSize);
             var result = await _messageService.GetOlderMessagesAsync(request);

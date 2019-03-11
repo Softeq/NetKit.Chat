@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Softeq.NetKit.Services.PushNotifications.Abstractions;
 using Softeq.NetKit.Services.PushNotifications.Models;
@@ -16,6 +17,35 @@ namespace Softeq.NetKit.Chat.Notifications.Services
         {
             _pushNotificationSender = pushNotificationSender;
             _pushNotificationSubscriber = pushNotificationSubscriber;
+        }
+
+        public async Task SubscribeUserOnTagsAsync(string userId, IEnumerable<string> tagNames)
+        {
+            var registrations = await _pushNotificationSubscriber.GetRegistrationsByTagAsync(PushNotificationsTagTemplates.GetMemberSubscriptionTag(userId));
+
+            foreach (var registration in registrations)
+            {
+                bool hasAnyNotIncludedTags = false;
+                var notIncludedTags = tagNames.Where(x => !registration.Tags.Contains(x));
+
+                foreach (var notIncludedTag in notIncludedTags)
+                {
+                    registration.Tags.Add(notIncludedTag);
+                    hasAnyNotIncludedTags = true;
+                }
+
+                if (hasAnyNotIncludedTags)
+                {
+                    if (registration.Platform == PushPlatformEnum.iOS)
+                    {
+                        await _pushNotificationSubscriber.CreateOrUpdatePushSubscriptionAsync(new PushSubscriptionRequest(registration.PnsHandle, PushPlatformEnum.iOS, registration.Tags));
+                    }
+                    else if (registration.Platform == PushPlatformEnum.Android)
+                    {
+                        await _pushNotificationSubscriber.CreateOrUpdatePushSubscriptionAsync(new PushSubscriptionRequest(registration.PnsHandle, PushPlatformEnum.Android, registration.Tags));
+                    }
+                }
+            }
         }
 
         public async Task SubscribeUserOnTagAsync(string userId, string tagName)

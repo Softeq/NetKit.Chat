@@ -6,6 +6,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
     public enum ChannelType
     {
         Public,
-        Private
+        Private,
+        Direct,
     }
 }

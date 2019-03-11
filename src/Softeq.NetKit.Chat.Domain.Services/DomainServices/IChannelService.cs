@@ -13,6 +13,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
     public interface IChannelService
     {
         Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request);
+        Task<ChannelSummaryResponse> CreateDirectChannelAsync(CreateDirectChannelRequest request);
         Task<IReadOnlyCollection<ChannelResponse>> GetMemberChannelsAsync(string saasUserId);
         Task<ChannelResponse> UpdateChannelAsync(UpdateChannelRequest request);
         Task<ChannelSummaryResponse> GetChannelSummaryAsync(string saasUserId, Guid channelId);

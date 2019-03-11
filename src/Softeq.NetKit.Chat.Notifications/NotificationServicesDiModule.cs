@@ -3,7 +3,6 @@
 
 using System;
 using Autofac;
-using Microsoft.Extensions.Configuration;
 using Softeq.NetKit.Chat.Notifications.Services;
 using Softeq.NetKit.Services.PushNotifications.Abstractions;
 using Softeq.NetKit.Services.PushNotifications.Client;
@@ -26,14 +25,6 @@ namespace Softeq.NetKit.Chat.Notifications
             builder.Register(context => new AzureNotificationHubConfiguration(
                 Environment.GetEnvironmentVariable("AzureNotificationHub:ConnectionString"),
                 Environment.GetEnvironmentVariable("AzureNotificationHub:HubName"))).SingleInstance();
-
-            builder.Register(context =>
-            {
-                var config = context.Resolve<IConfiguration>();
-                return new AzureNotificationHubConfiguration(
-                    config["AzureNotificationHub:ConnectionString"],
-                    config["AzureNotificationHub:HubName"]);
-            }).SingleInstance();
         }
     }
 }

@@ -49,18 +49,18 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
         {
-            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
-            if (!isChannelExists)
-            {
-                throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
-            }
-
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to create message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
             }
 
+            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
+            if (!isChannelExists)
+            {
+                throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
+            }
+            
             // move image to persistent container
             if (!string.IsNullOrWhiteSpace(request.ImageUrl))
             {
@@ -126,8 +126,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {              
+            {            
+                //TODO: [ek] Get previous message for direct channel
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message.ChannelId, message.OwnerId, message.Created);
+                //TODO: [ek]: Save last read message for direct members
                 await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage?.Id);
 
                 await UnitOfWork.MessageRepository.ArchiveMessageAsync(message.Id);

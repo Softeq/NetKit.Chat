@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EnsureThat;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Notifications;
@@ -70,6 +71,23 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             return channel;
         }
+        
+        public async Task<ChannelSummaryResponse> CreateDirectChannelAsync(CreateDirectChannelRequest request)
+        {
+            var channel = await _channelService.CreateDirectChannelAsync(request);
+
+            // subscribe creator on channel
+            await _pushNotificationService.SubscribeUserOnTagAsync(request.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
+            var member = await _memberService.GetMemberByIdAsync(request.MemberId);
+            // subscribe member on channel
+            await _pushNotificationService.SubscribeUserOnTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
+
+            await _channelNotificationService.OnAddChannel(channel);
+            //todo filter creator connection id on join channel
+            await _channelNotificationService.OnJoinChannel(member, channel);
+
+            return channel;
+        }
 
         public async Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request)
         {
@@ -123,6 +141,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             var invitedMember = await _memberService.GetMemberByIdAsync(request.MemberId);
 
             var channel = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
+
+            if (invitedMember != null && channel != null)
+            {
+                await _pushNotificationService.SubscribeUserOnTagAsync(invitedMember.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
+            }
 
             await _channelNotificationService.OnJoinChannel(invitedMember, channel);
 

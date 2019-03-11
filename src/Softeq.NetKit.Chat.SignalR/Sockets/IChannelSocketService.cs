@@ -11,6 +11,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
     public interface IChannelSocketService
     {
         Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request);
+        Task<ChannelSummaryResponse> CreateDirectChannelAsync(CreateDirectChannelRequest request);
         Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request);
         Task CloseChannelAsync(ChannelRequest request);
         Task JoinToChannelAsync(ChannelRequest request);

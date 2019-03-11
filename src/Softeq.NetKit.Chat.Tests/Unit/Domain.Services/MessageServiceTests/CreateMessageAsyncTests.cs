@@ -20,6 +20,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         public void ShouldThrowIfChannelDoesNotExist()
         {
             // Arrange
+            var member = new Member { Id = new Guid("20CAE535-7CE3-4ED4-9D8F-2693953E94D3") };
+            _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(member)
+                .Verifiable();
+
             _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(false)
                 .Verifiable();
@@ -41,9 +46,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         public void ShouldThrowIfMemberDoesNotExist()
         {
             // Arrange
-            _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(true)
-                .Verifiable();
             _memberRepositoryMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((Member)null)
                 .Verifiable();

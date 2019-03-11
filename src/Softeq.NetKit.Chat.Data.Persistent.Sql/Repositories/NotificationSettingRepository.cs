@@ -62,7 +62,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = @"SELECT SaasUserId 
-                                 FROM NotificationSettings
+                                 FROM   NotificationSettings
                                  INNER JOIN Members
                                  ON Members.Id = NotificationSettings.MemberId
                                  WHERE  IsChannelNotificationsDisabled = 1";

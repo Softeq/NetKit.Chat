@@ -41,7 +41,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 .ForMember(d => d.UnreadMessagesCount, opt => opt.Ignore())
                 // These option should be mapped from ChannelMember class. Could be done by MappingHelper class
                 .ForMember(d => d.IsMuted, opt => opt.Ignore())
-                .ForMember(d => d.IsPinned, opt => opt.Ignore());
+                .ForMember(d => d.IsPinned, opt => opt.Ignore())
+                .ForMember(d => d.DirectMemberId, opt => opt.Ignore())
+                .ForMember(d => d.DirectMember, opt => opt.Ignore());
 
             CreateMap<ChannelMember, ChannelSummaryResponse>()
                 // These option should be mapped from Channel class. Could be done by MappingHelper class
@@ -58,7 +60,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 .ForMember(d => d.WelcomeMessage, opt => opt.Ignore())
                 .ForMember(d => d.Type, opt => opt.Ignore())
                 .ForMember(d => d.LastMessage, opt => opt.Ignore())
-                .ForMember(d => d.PhotoUrl, opt => opt.Ignore());
+                .ForMember(d => d.PhotoUrl, opt => opt.Ignore())
+                .ForMember(d => d.DirectMemberId, opt => opt.Ignore())
+                .ForMember(d => d.DirectMember, opt => opt.Ignore());
 
             CreateMap<Attachment, AttachmentResponse>();
 
