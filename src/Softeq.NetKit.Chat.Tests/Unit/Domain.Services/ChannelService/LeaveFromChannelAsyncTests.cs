@@ -52,6 +52,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(false)
                 .Verifiable();
 
+            var channel = new Channel { Id = channelId };
+            _channelRepositoryMock.Setup(x => x.GetChannelAsync(It.Is<Guid>(c => c.Equals(channelId))))
+                .ReturnsAsync(channel)
+                .Verifiable();
+
             // Act
             Func<Task> act = async () => { await _channelService.LeaveFromChannelAsync(saasUserId, channelId); };
 
@@ -65,7 +70,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
         [Fact]
         [Trait("Category", "Unit")]
-        public async Task ShouldLeaveChannel()
+        public async void ShouldLeaveChannel()
         {
             // Arrange
             var saasUserId = "A3F16B2A-EEF1-4DAE-8025-D801ED1532A3";
@@ -82,6 +87,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             _channelMemberRepositoryMock.Setup(x => x.DeleteChannelMemberAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            var channel = new Channel { Id = channelId };
+            _channelRepositoryMock.Setup(x => x.GetChannelAsync(It.Is<Guid>(c => c.Equals(channelId))))
+                .ReturnsAsync(channel)
                 .Verifiable();
 
             _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channelId))))

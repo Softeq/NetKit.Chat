@@ -75,7 +75,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is not found.");
             }
-
+            
+            if (channel.Type == ChannelType.Direct)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to invite member to Direct Channel {nameof(channelId)}:{channelId}.");
+            }
+            
             if (channel.IsClosed)
             {
                 throw new NetKitChatInvalidOperationException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is closed.");

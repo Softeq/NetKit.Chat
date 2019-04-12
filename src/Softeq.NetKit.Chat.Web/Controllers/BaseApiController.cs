@@ -26,7 +26,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             return User.FindFirstValue(JwtClaimTypes.Name);
         }
 
-        protected string GetCurrentEmail()
+        protected string GetCurrentUserEmail()
         {
             return User.FindFirstValue(JwtClaimTypes.Email);
         }

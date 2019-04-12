@@ -51,7 +51,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateChannelAsync([FromBody] WebRequest.Channel.CreateChannelRequest request)
+        public async Task<IActionResult> CreateChannelAsync([FromBody] TransportModels.Request.Channel.CreateChannelRequest request)
         {
             var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.Name, request.Type)
             {
@@ -64,10 +64,20 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             return Ok(channel);
         }
 
+
+        [HttpPost]
+        [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
+        [Route("direct")]
+        public async Task<IActionResult> CreateDirectChannelAsync([FromBody] CreateDirectChannelRequest request)
+        {
+            var channel = await _channelSocketService.CreateDirectChannelAsync(new CreateDirectChannelRequest(GetCurrentSaasUserId(), request.MemberId));
+            return Ok(channel);
+        }
+
         [HttpPut]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}")]
-        public async Task<IActionResult> UpdateChannelAsync(Guid channelId, [FromBody] WebRequest.Channel.UpdateChannelRequest request)
+        public async Task<IActionResult> UpdateChannelAsync(Guid channelId, [FromBody] TransportModels.Request.Channel.UpdateChannelRequest request)
         {
             var updateChannelRequest = new UpdateChannelRequest(GetCurrentSaasUserId(), channelId, request.Name)
             {
@@ -151,7 +161,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/member")]
-        public async Task<IActionResult> InviteMultipleMembersAsync(Guid channelId, [FromBody] WebRequest.Member.InviteMultipleMembersRequest request)
+        public async Task<IActionResult> InviteMultipleMembersAsync(Guid channelId, [FromBody] TransportModels.Request.Member.InviteMultipleMembersRequest request)
         {
             var inviteMultipleMembersRequest = new InviteMultipleMembersRequest(GetCurrentSaasUserId(), channelId, request.InvitedMembersIds);
             var channel = await _channelSocketService.InviteMultipleMembersAsync(inviteMultipleMembersRequest);

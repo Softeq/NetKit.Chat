@@ -204,12 +204,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             // Arrange
             var allowedMember = new Member
             {
-                SaasUserId = "1AB5626B-B311-4862-A0F1-AFD21D9F421B"
+                Id = Guid.Parse("1AB5626B-B311-4862-A0F1-AFD21D9F421B")
             };
 
             var request = new CreateChannelRequest("864EB62D-D833-47FA-8A88-DDBFE76AE6A7", "channel name", ChannelType.Private)
             {
-                AllowedMembers = new List<string> { allowedMember.SaasUserId }
+                AllowedMembers = new List<string> { allowedMember.Id.ToString() }
             };
 
             var member = new Member { Id = new Guid("85B1E28A-3E29-48C5-B85B-1563EEB60742") };
@@ -234,7 +234,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             // Assert
             act.Should().Throw<NetKitChatNotFoundException>()
-                .And.Message.Should().Be($"Unable to add member to channel. Member with saasUserId:{allowedMember.SaasUserId} is not found.");
+                .And.Message.Should().Be($"Unable to add member to channel. Member memberId:{allowedMember.Id} not found.");
 
             VerifyMocks();
         }

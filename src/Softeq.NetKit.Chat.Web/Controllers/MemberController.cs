@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,8 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Settings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
+using Softeq.NetKit.Chat.Notifications;
+using Softeq.NetKit.Chat.Notifications.Services;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -21,11 +24,18 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     public class MemberController : BaseApiController
     {
         private readonly IMemberService _memberService;
+        private readonly IChannelService _channelService;
+        private readonly IPushNotificationService _pushNotificationService;
         private readonly INotificationSettingsService _notificationSettingsService;
 
-        public MemberController(IMemberService memberService, INotificationSettingsService notificationSettingsService)
+        public MemberController(IMemberService memberService,
+            IChannelService channelService,
+            IPushNotificationService pushNotificationService,
+            INotificationSettingsService notificationSettingsService)
         {
             _memberService = memberService;
+            _channelService = channelService;
+            _pushNotificationService = pushNotificationService;
             _notificationSettingsService = notificationSettingsService;
         }
 
@@ -51,9 +61,35 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         public async Task<IActionResult> AddMemberAsync()
         {
             var userId = GetCurrentSaasUserId();
-            var email = GetCurrentEmail();
+            var email = GetCurrentUserEmail();
             var result = await _memberService.AddMemberAsync(userId, email);
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("activate")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ActivateUserAsync()
+        {
+            var userId = GetCurrentSaasUserId();
+
+            await _memberService.ActivateMemberAsync(userId);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("/api/me/notifications/subscribe")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SubscribeUserOnChannelsAsync()
+        {
+            var userId = GetCurrentSaasUserId();
+
+            var memberChannels = await _channelService.GetMemberChannelsAsync(userId);
+
+            await _pushNotificationService.SubscribeUserOnTagsAsync(userId, memberChannels.Select(x => PushNotificationsTagTemplates.GetChatChannelTag(x.Id.ToString())));
+
+            return Ok();
         }
 
         #region Settings

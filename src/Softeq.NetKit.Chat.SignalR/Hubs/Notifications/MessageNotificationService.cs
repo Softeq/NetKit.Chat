@@ -26,7 +26,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             : base(channelMemberService, memberService, clientService, hubContext)
         {
             Ensure.That(channelService).IsNotNull();
-
             _channelService = channelService;
         }
 
@@ -58,7 +57,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
             var clientIds = await GetChannelClientConnectionIdsAsync(channelId);
             
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.AttachmentAdded, channel.Name);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.AttachmentAdded, channel.Id);
         }
 
         public async Task OnDeleteMessageAttachment(MessageResponse message)
@@ -67,7 +66,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
             var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
             
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.AttachmentDeleted, channel.Name);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.AttachmentDeleted, channel.Id);
         }
 
         public async Task OnChangeLastReadMessage(List<Guid> notifyMemberIds, MessageResponse message)
@@ -76,7 +75,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
             var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(message.ChannelId, notifyMemberIds);
             
-            await HubContext.Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Name);
+            await HubContext.Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Id);
         }
     }
 }

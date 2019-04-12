@@ -11,8 +11,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         protected override void Up()
         {
             Execute(@"
-               ALTER TABLE dbo.DirectMessages DROP CONSTRAINT FK_DirectMessages_DirectChannel_DirectChannelId
-
                DROP TABLE dbo.DirectMessages
             ");
         }
