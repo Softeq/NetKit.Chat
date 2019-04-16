@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -30,7 +29,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             : base(unitOfWork, domainModelsMapper)
         {
             Ensure.That(dateTimeProvider).IsNotNull();
-            
+
             _dateTimeProvider = dateTimeProvider;
         }
 
@@ -75,12 +74,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is not found.");
             }
-            
+
             if (channel.Type == ChannelType.Direct)
             {
                 throw new NetKitChatInvalidOperationException($"Unable to invite member to Direct Channel {nameof(channelId)}:{channelId}.");
             }
-            
+
             if (channel.IsClosed)
             {
                 throw new NetKitChatInvalidOperationException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is closed.");
@@ -105,13 +104,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 LastReadMessageId = null
             };
 
-            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
                 await UnitOfWork.ChannelRepository.IncrementChannelMembersCount(channel.Id);
-
-                transactionScope.Complete();
-            }
+            });
 
             channel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
 

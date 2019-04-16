@@ -1,6 +1,9 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
+using System.Threading.Tasks;
+using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
@@ -10,6 +13,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 {
     public class UnitOfWork : IUnitOfWork
     {
+        private const int DefaultTransactionTimeout = 1;
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
         public UnitOfWork(ISqlConnectionFactory sqlConnectionFactory)
@@ -48,5 +52,21 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 
         private IForwardMessageRepository _forwardMessageRepository;
         public IForwardMessageRepository ForwardMessageRepository => _forwardMessageRepository ?? (_forwardMessageRepository = new ForwardMessageRepository(_sqlConnectionFactory));
+
+        public async Task ExecuteTransactionAsync(Func<Task> tranCallbackAsync, TransactionOptions? transactionOptions = null)
+        {
+            var options = transactionOptions ?? new TransactionOptions
+            {
+                IsolationLevel = IsolationLevel.ReadCommitted,
+                Timeout = TimeSpan.FromMinutes(DefaultTransactionTimeout)
+            };
+
+            using (var transaction = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await tranCallbackAsync();
+
+                transaction.Complete();
+            }
+        }
     }
 }

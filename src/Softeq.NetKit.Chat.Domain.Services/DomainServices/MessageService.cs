@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
@@ -60,7 +59,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
             }
-            
+
             // move image to persistent container
             if (!string.IsNullOrWhiteSpace(request.ImageUrl))
             {
@@ -79,7 +78,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 AccessibilityStatus = AccessibilityStatus.Present
             };
 
-            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 if (request.Type == MessageType.Forward)
                 {
@@ -97,9 +96,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
                 await UnitOfWork.MessageRepository.AddMessageAsync(message);
                 await UnitOfWork.ChannelMemberRepository.SetLastReadMessageAsync(member.Id, request.ChannelId, message.Id);
-
-                transactionScope.Complete();
-            }
+            });
 
             message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(message.Id);
 
@@ -125,17 +122,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatAccessForbiddenException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} owner required.");
             }
 
-            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {            
+            await UnitOfWork.ExecuteTransactionAsync(async () =>
+            {
                 //TODO: [ek] Get previous message for direct channel
                 var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message.ChannelId, message.OwnerId, message.Created);
                 //TODO: [ek]: Save last read message for direct members
                 await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage?.Id);
 
                 await UnitOfWork.MessageRepository.ArchiveMessageAsync(message.Id);
-
-                transactionScope.Complete();
-            }
+            });
         }
 
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
@@ -282,7 +277,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var lastReadMessage = await UnitOfWork.MessageRepository.GetLastReadMessageAsync(member.Id, request.ChannelId);
             var messages = await UnitOfWork.MessageRepository.GetOlderMessagesWithOwnersAsync(request.ChannelId, lastMessageCreatedDate, request.PageSize);
             var results = messages.Select(message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created)).ToList();
-            
+
             return new MessagesResult
             {
                 PageSize = request.PageSize,
@@ -331,7 +326,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(request.ChannelId);
             }
-            
+
             var results = messages.Select(message => DomainModelsMapper.MapToMessageResponse(message, lastReadMessage?.Created)).ToList();
 
             return new MessagesResult
