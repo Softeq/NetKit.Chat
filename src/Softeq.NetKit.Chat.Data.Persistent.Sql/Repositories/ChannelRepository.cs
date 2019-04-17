@@ -28,32 +28,87 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Channels";
+                var sqlQuery = $@"
+                    SELECT
+                        {nameof(Channel.Id)},
+                        {nameof(Channel.IsClosed)},
+                        {nameof(Channel.Created)},
+                        {nameof(Channel.CreatorId)},
+                        {nameof(Channel.Name)},
+                        {nameof(Channel.MembersCount)},
+                        {nameof(Channel.Type)},
+                        {nameof(Channel.Description)},
+                        {nameof(Channel.WelcomeMessage)},
+                        {nameof(Channel.Updated)},
+                        {nameof(Channel.PhotoUrl)}
+                    FROM 
+                        Channels";
 
                 return (await connection.QueryAsync<Channel>(sqlQuery)).ToList().AsReadOnly();
             }
         }
-        
+
         // TODO: Improve performance or split this method
         public async Task<IReadOnlyCollection<Channel>> GetAllowedChannelsWithMessagesAndCreatorAsync(Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
-                                        creator.Id, creator.SaasUserId, creator.Name, creator.Status, creator.Role, creator.IsAfk, creator.Email, creator.LastActivity,
-                                        m.Id, m.ChannelId, m.Created, m.Body, m.ImageUrl, m.Type, m.OwnerId, m.Updated, 
-                                        mem.Id, mem.SaasUserId, mem.Name, mem.Status, mem.Role, mem.IsAfk, mem.Email, mem.LastActivity
-                                 FROM Channels c 
-                                 LEFT JOIN Members creator ON c.CreatorId = creator.Id
-                                 LEFT JOIN Messages m ON c.Id = m.ChannelId
-                                 LEFT JOIN Members mem ON m.OwnerId = mem.Id
-                                 WHERE (c.Id IN 
-                                           (SELECT cm.ChannelId 
-                                            FROM ChannelMembers cm 
-                                            WHERE cm.MemberId = @memberId)) 
-                                     AND c.IsClosed <> 1
-                                 ORDER BY m.Created DESC";
+                var sqlQuery = $@"
+                    SELECT 
+                        c.{nameof(Channel.Id)}, 
+                        c.{nameof(Channel.Created)}, 
+                        c.{nameof(Channel.Name)}, 
+                        c.{nameof(Channel.CreatorId)}, 
+                        c.{nameof(Channel.IsClosed)}, 
+                        c.{nameof(Channel.MembersCount)}, 
+                        c.{nameof(Channel.Type)}, 
+                        c.{nameof(Channel.Description)}, 
+                        c.{nameof(Channel.WelcomeMessage)}, 
+                        c.{nameof(Channel.Updated)}, 
+                        c.{nameof(Channel.PhotoUrl)},
+                        creator.{nameof(Member.Id)}, 
+                        creator.{nameof(Member.SaasUserId)}, 
+                        creator.{nameof(Member.Name)}, 
+                        creator.{nameof(Member.Status)}, 
+                        creator.{nameof(Member.Role)}, 
+                        creator.{nameof(Member.IsAfk)}, 
+                        creator.{nameof(Member.Email)}, 
+                        creator.{nameof(Member.LastActivity)},
+                        m.{nameof(Message.Id)}, 
+                        m.{nameof(Message.ChannelId)}, 
+                        m.{nameof(Message.Created)}, 
+                        m.{nameof(Message.Body)}, 
+                        m.{nameof(Message.ImageUrl)}, 
+                        m.{nameof(Message.Type)}, 
+                        m.{nameof(Message.OwnerId)}, 
+                        m.{nameof(Message.Updated)}, 
+                        mem.{nameof(Member.Id)}, 
+                        mem.{nameof(Member.SaasUserId)}, 
+                        mem.{nameof(Member.Name)}, 
+                        mem.{nameof(Member.Status)}, 
+                        mem.{nameof(Member.Role)}, 
+                        mem.{nameof(Member.IsAfk)}, 
+                        mem.{nameof(Member.Email)}, 
+                        mem.{nameof(Member.LastActivity)}
+                    FROM 
+                        Channels c
+                    LEFT JOIN Members creator
+                        ON c.{nameof(Channel.CreatorId)} = creator.{nameof(Member.Id)}
+                    LEFT JOIN Messages m 
+                        ON c.{nameof(Channel.Id)} = m.{nameof(Message.ChannelId)}
+                    LEFT JOIN Members mem 
+                        ON m.{nameof(Message.OwnerId)} = mem.{nameof(Member.Id)}
+                    WHERE 
+                        (c.{nameof(Channel.Id)} IN 
+                            (SELECT 
+                                cm.{nameof(ChannelMember.ChannelId)}
+                            FROM 
+                                ChannelMembers cm 
+                            WHERE 
+                                cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)})) 
+                        AND c.{nameof(Channel.IsClosed)} <> 1
+                    ORDER BY 
+                        m.{nameof(Message.Created)} DESC";
 
                 var channelDictionary = new Dictionary<Guid, Channel>();
 
@@ -67,7 +122,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                 channelEntry.Messages = new List<Message>();
                                 channelDictionary.Add(channelEntry.Id, channelEntry);
                             }
-                            
+
                             channelEntry.Creator = creator;
 
                             if (message != null)
@@ -91,9 +146,14 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT 1
-                                 FROM Channels
-                                 WHERE Id = @channelId";
+                var sqlQuery = $@"
+                    SELECT 
+                        1
+                    FROM 
+                        Channels
+                    WHERE 
+                        {nameof(Channel.Id)} = @{nameof(channelId)}";
+
                 return await connection.ExecuteScalarAsync<bool>(sqlQuery, new { channelId });
             }
         }
@@ -102,9 +162,23 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Channels
-                                 WHERE Id = @channelId";
+                var sqlQuery = $@"
+                    SELECT
+                        {nameof(Channel.Id)},
+                        {nameof(Channel.IsClosed)},
+                        {nameof(Channel.Created)},
+                        {nameof(Channel.CreatorId)},
+                        {nameof(Channel.Name)},
+                        {nameof(Channel.MembersCount)},
+                        {nameof(Channel.Type)},
+                        {nameof(Channel.Description)},
+                        {nameof(Channel.WelcomeMessage)},
+                        {nameof(Channel.Updated)},
+                        {nameof(Channel.PhotoUrl)}
+                    FROM 
+                        Channels
+                    WHERE 
+                        {nameof(Channel.Id)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<Channel>(sqlQuery, new { channelId })).FirstOrDefault();
             }
@@ -114,11 +188,33 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
-                                        m.Id, m.SaasUserId, m.Name, m.Status, m.Role, m.IsAfk, m.Email, m.LastActivity
-                                 FROM Channels c 
-                                 LEFT JOIN Members m ON c.CreatorId = m.Id
-                                 WHERE c.Id = @channelId";
+                var sqlQuery = $@"
+                    SELECT 
+                        c.{nameof(Channel.Id)}, 
+                        c.{nameof(Channel.Created)}, 
+                        c.{nameof(Channel.Name)}, 
+                        c.{nameof(Channel.CreatorId)}, 
+                        c.{nameof(Channel.IsClosed)}, 
+                        c.{nameof(Channel.MembersCount)}, 
+                        c.{nameof(Channel.Type)}, 
+                        c.{nameof(Channel.Description)}, 
+                        c.{nameof(Channel.WelcomeMessage)}, 
+                        c.{nameof(Channel.Updated)}, 
+                        c.{nameof(Channel.PhotoUrl)},
+                        m.{nameof(Member.Id)}, 
+                        m.{nameof(Member.SaasUserId)}, 
+                        m.{nameof(Member.Name)}, 
+                        m.{nameof(Member.Status)}, 
+                        m.{nameof(Member.Role)}, 
+                        m.{nameof(Member.IsAfk)}, 
+                        m.{nameof(Member.Email)}, 
+                        m.{nameof(Member.LastActivity)}
+                    FROM 
+                        Channels c 
+                    LEFT JOIN Members m 
+                        ON c.{nameof(Channel.CreatorId)} = m.{nameof(Member.Id)}
+                    WHERE 
+                        c.{nameof(Channel.Id)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<Channel, Member, Channel>(
                         sqlQuery,
@@ -137,9 +233,14 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT 1
-                                 FROM ChannelMembers
-                                 WHERE MemberId = @memberId AND ChannelId = @channelId";
+                var sqlQuery = $@"
+                    SELECT 
+                        1
+                    FROM 
+                        ChannelMembers
+                    WHERE 
+                        {nameof(ChannelMember.MemberId)} = @{nameof(memberId)}
+                        AND {nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<bool>(sqlQuery, new { memberId, channelId })).FirstOrDefault();
             }
@@ -149,8 +250,34 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Channels(Id, Created, IsClosed, CreatorId, MembersCount, Updated, Name, Type, Description, WelcomeMessage, PhotoUrl) 
-                                 VALUES (@Id, @Created, @IsClosed, @CreatorId, @MembersCount, @Updated, @Name, @Type, @Description, @WelcomeMessage, @PhotoUrl);";
+                var sqlQuery = $@"
+                    INSERT INTO Channels
+                    (
+                        {nameof(Channel.Id)}, 
+                        {nameof(Channel.Created)}, 
+                        {nameof(Channel.IsClosed)}, 
+                        {nameof(Channel.CreatorId)}, 
+                        {nameof(Channel.MembersCount)}, 
+                        {nameof(Channel.Updated)}, 
+                        {nameof(Channel.Name)}, 
+                        {nameof(Channel.Type)}, 
+                        {nameof(Channel.Description)}, 
+                        {nameof(Channel.WelcomeMessage)}, 
+                        {nameof(Channel.PhotoUrl)}
+                    ) VALUES 
+                    (
+                        @{nameof(Channel.Id)}, 
+                        @{nameof(Channel.Created)}, 
+                        @{nameof(Channel.IsClosed)}, 
+                        @{nameof(Channel.CreatorId)}, 
+                        @{nameof(Channel.MembersCount)}, 
+                        @{nameof(Channel.Updated)}, 
+                        @{nameof(Channel.Name)}, 
+                        @{nameof(Channel.Type)}, 
+                        @{nameof(Channel.Description)}, 
+                        @{nameof(Channel.WelcomeMessage)}, 
+                        @{nameof(Channel.PhotoUrl)}
+                    );";
 
                 await connection.ExecuteScalarAsync(sqlQuery, channel);
             }
@@ -160,16 +287,19 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"UPDATE Channels 
-                                 SET Name = @Name, 
-                                     Description = @Description, 
-                                     WelcomeMessage = @WelcomeMessage, 
-                                     MembersCount = @MembersCount,
-                                     Type = @Type, 
-                                     IsClosed = @IsClosed, 
-                                     Updated = @Updated,
-                                     PhotoUrl = @PhotoUrl
-                                 WHERE Id = @Id";
+                var sqlQuery = $@"
+                    UPDATE Channels 
+                    SET 
+                        {nameof(Channel.Name)} = @{nameof(Channel.Name)}, 
+                        {nameof(Channel.Description)} = @{nameof(Channel.Description)}, 
+                        {nameof(Channel.WelcomeMessage)} = @{nameof(Channel.WelcomeMessage)}, 
+                        {nameof(Channel.MembersCount)} = @{nameof(Channel.MembersCount)},
+                        {nameof(Channel.Type)} = @{nameof(Channel.Type)}, 
+                        {nameof(Channel.IsClosed)} = @{nameof(Channel.IsClosed)}, 
+                        {nameof(Channel.Updated)} = @{nameof(Channel.Updated)},
+                        {nameof(Channel.PhotoUrl)} = @{nameof(Channel.PhotoUrl)}
+                    WHERE
+                        {nameof(Channel.Id)} = @{nameof(Channel.Id)}";
 
                 await connection.ExecuteAsync(sqlQuery, channel);
             }
@@ -179,13 +309,30 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Channels c
-                                 WHERE (c.Id IN
-                                           (SELECT cm.ChannelId 
-                                            FROM ChannelMembers cm 
-                                            WHERE cm.MemberId = @memberId)) 
-                                       AND c.IsClosed <> 1";
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(Channel.Id)},
+                        {nameof(Channel.IsClosed)},
+                        {nameof(Channel.Created)},
+                        {nameof(Channel.CreatorId)},
+                        {nameof(Channel.Name)},
+                        {nameof(Channel.MembersCount)},
+                        {nameof(Channel.Type)},
+                        {nameof(Channel.Description)},
+                        {nameof(Channel.WelcomeMessage)},
+                        {nameof(Channel.Updated)},
+                        {nameof(Channel.PhotoUrl)}
+                    FROM
+                        Channels c
+                    WHERE
+                        (c.{nameof(Channel.Id)} IN
+                            (SELECT 
+                                cm.{nameof(ChannelMember.ChannelId)}
+                            FROM 
+                                ChannelMembers cm 
+                            WHERE 
+                                cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)})) 
+                    AND c.{nameof(Channel.IsClosed)} <> 1";
 
                 return (await connection.QueryAsync<Channel>(sqlQuery, new { memberId })).ToList().AsReadOnly();
             }
@@ -195,9 +342,12 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"UPDATE Channels
-                                 SET MembersCount = MembersCount + 1
-                                 WHERE Id = @channelId";
+                var sqlQuery = $@"
+                    UPDATE Channels
+                    SET 
+                        {nameof(Channel.MembersCount)} = {nameof(Channel.MembersCount)} + 1
+                    WHERE 
+                        {nameof(Channel.Id)} = @{nameof(channelId)}";
 
                 await connection.ExecuteAsync(sqlQuery, new { channelId });
             }
@@ -207,24 +357,35 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"UPDATE Channels
-                                SET MembersCount = MembersCount - 1
-                                WHERE Id = @channelId";
+                var sqlQuery = $@"
+                    UPDATE Channels
+                    SET 
+                        {nameof(Channel.MembersCount)} = {nameof(Channel.MembersCount)} - 1
+                    WHERE 
+                        {nameof(Channel.Id)} = @{nameof(channelId)}";
 
                 await connection.ExecuteAsync(sqlQuery, new { channelId });
             }
         }
-        
+
         public async Task<Guid> GetDirectChannelForMembersAsync(Guid member1Id, Guid member2Id)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT c.Id
-                                    FROM Channels c
-                                    INNER JOIN ChannelMembers cm ON c.Id = cm.ChannelId
-                                    WHERE (cm.MemberId = @member1Id OR cm.MemberId = @member2Id) AND c.Type = 2
-                                    GROUP BY c.Id
-                                    HAVING COUNT(cm.MemberId) = 2";
+                var sqlQuery = $@"
+                    SELECT 
+                        c.{nameof(Channel.Id)}
+                    FROM 
+                        Channels c
+                    INNER JOIN ChannelMembers cm 
+                        ON c.{nameof(Channel.Id)} = cm.{nameof(ChannelMember.ChannelId)}
+                    WHERE
+                        (cm.{nameof(ChannelMember.MemberId)} = @{nameof(member1Id)} OR cm.{nameof(ChannelMember.MemberId)} = @{nameof(member2Id)}) 
+                        AND c.{nameof(Channel.Type)} = {(int)ChannelType.Direct}
+                    GROUP BY 
+                        c.{nameof(Channel.Id)}
+                    HAVING 
+                        COUNT(cm.{nameof(ChannelMember.MemberId)}) = 2";
 
                 return (await connection.QueryAsync<Guid>(sqlQuery, new { member1Id, member2Id })).FirstOrDefault();
             }
