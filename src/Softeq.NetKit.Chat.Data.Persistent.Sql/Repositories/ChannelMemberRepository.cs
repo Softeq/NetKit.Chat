@@ -70,6 +70,27 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<IReadOnlyCollection<ChannelMember>> GetChannelMembersWithMemberDetailsAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT *
+                                 FROM ChannelMembers cm
+                                 INNER JOIN Members m ON m.Id = cm.MemberId
+                                 WHERE ChannelId = @channelId";
+
+                return (await connection.QueryAsync<ChannelMember, Member, ChannelMember>(
+                    sqlQuery,
+                    (channelMember, member) =>
+                    {
+                        channelMember.Member = member;
+                        channelMember.MemberId = member.Id;
+                        return channelMember;
+                    },
+                    new {channelId})).ToList().AsReadOnly();
+            }
+        }
+
         public async Task MuteChannelAsync(Guid memberId, Guid channelId, bool isMuted)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

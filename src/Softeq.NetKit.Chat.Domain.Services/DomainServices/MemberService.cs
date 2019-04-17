@@ -187,9 +187,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return clients.Select(client => DomainModelsMapper.MapToClientResponse(client)).ToList().AsReadOnly();
         }
 
-        public async Task<PagedMembersResponse> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter)
+        public async Task<PagedMembersResponse> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter, string currentUserSaasId)
         {
-            var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(pageNumber, pageSize, nameFilter);
+            var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(pageNumber, pageSize, nameFilter, currentUserSaasId);
 
             var response = new PagedMembersResponse
             {

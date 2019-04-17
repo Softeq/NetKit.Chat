@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         ChannelResponse MapToChannelResponse(Channel channel);
         ChannelSummaryResponse MapToChannelSummaryResponse(Channel channel, ChannelMember channelMember, Message lastReadMessage = null);
 
-        ChannelSummaryResponse MapToDirectChannelSummaryResponse(Channel channel, ChannelMember channelMember,
+        ChannelSummaryResponse MapToDirectChannelSummaryResponse(Channel channel, DomainModels.Member currentUser,
             DomainModels.Member directMember, Message lastReadMessage = null);
         ClientResponse MapToClientResponse(Client client);
         ForwardMessage MapToForwardMessage(Message message);

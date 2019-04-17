@@ -43,7 +43,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = @"SELECT c.Id, c.Created, c.Name, c.CreatorId, c.IsClosed, c.MembersCount, c.Type, c.Description, c.WelcomeMessage, c.Updated, c.PhotoUrl,
                                         creator.Id, creator.SaasUserId, creator.Name, creator.Status, creator.Role, creator.IsAfk, creator.Email, creator.LastActivity,
                                         m.Id, m.ChannelId, m.Created, m.Body, m.ImageUrl, m.Type, m.OwnerId, m.Updated, 
-                                        mem.Id, mem.SaasUserId, mem.Name, mem.Status, mem.Role, mem.IsAfk, mem.Email, mem.LastActivity
+                                        mem.Id, mem.SaasUserId, mem.Name, mem.Status, mem.Role, mem.IsAfk, mem.Email, mem.LastActivity, mem.IsDeleted
                                  FROM Channels c 
                                  LEFT JOIN Members creator ON c.CreatorId = creator.Id
                                  LEFT JOIN Messages m ON c.Id = m.ChannelId
@@ -94,6 +94,17 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = @"SELECT 1
                                  FROM Channels
                                  WHERE Id = @channelId";
+                return await connection.ExecuteScalarAsync<bool>(sqlQuery, new { channelId });
+            }
+        }
+
+        public async Task<bool> IsChannelExistsAndOpenAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT 1
+                                 FROM Channels
+                                 WHERE Id = @channelId AND IsClosed = 0";
                 return await connection.ExecuteScalarAsync<bool>(sqlQuery, new { channelId });
             }
         }
@@ -222,7 +233,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = @"SELECT c.Id
                                     FROM Channels c
                                     INNER JOIN ChannelMembers cm ON c.Id = cm.ChannelId
-                                    WHERE (cm.MemberId = @member1Id OR cm.MemberId = @member2Id) AND c.Type = 2
+                                    WHERE ((cm.MemberId = @member1Id OR cm.MemberId = @member2Id) AND (c.CreatorId = @member1Id OR c.CreatorId = @member2Id)) AND c.Type = 2
                                     GROUP BY c.Id
                                     HAVING COUNT(cm.MemberId) = 2";
 

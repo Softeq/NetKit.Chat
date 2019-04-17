@@ -163,10 +163,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 // Take last readMessagesCount read messages
                 var lastReadMessages = @"SELECT Id, Body, ChannelId, Created, ImageUrl, OwnerId, Type, Updated,
-							                    memberId AS Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status 
+							                    memberId AS Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status, IsDeleted  
                                          FROM (
                                              SELECT TOP (@ReadMessagesCount) m.Id, m.Body, m.ChannelId, m.Created, m.ImageUrl, m.OwnerId, m.Type, m.Updated,
-							                                                 me.Id AS memberId, me.Email, me.IsAfk, me.IsBanned, me.LastActivity, me.LastNudged, me.Name, me.PhotoName, me.Role, me.SaasUserId, me.Status 
+							                                                 me.Id AS memberId, me.Email, me.IsAfk, me.IsBanned, me.LastActivity, me.LastNudged, me.Name, me.PhotoName, me.Role, me.SaasUserId, me.Status, me.IsDeleted 
 							                 FROM Messages m  
                                              INNER JOIN Members me ON m.OwnerId = me.Id
                                              WHERE Created <= @LastReadMessageCreated AND ChannelId = @ChannelId AND m.AccessibilityStatus = @accessibilityStatus
@@ -176,7 +176,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 // Take all new messages
                 var newMessages = @"SELECT * FROM (
                                         SELECT m.Id, m.Body, m.ChannelId, m.Created, m.ImageUrl, m.OwnerId, m.Type, m.Updated,
-							                   me.Id AS memberId, me.Email, me.IsAfk, me.IsBanned, me.LastActivity, me.LastNudged, me.Name, me.PhotoName, me.Role, me.SaasUserId, me.Status 
+							                   me.Id AS memberId, me.Email, me.IsAfk, me.IsBanned, me.LastActivity, me.LastNudged, me.Name, me.PhotoName, me.Role, me.SaasUserId, me.Status, me.IsDeleted
 							            FROM Messages m  
                                         INNER JOIN Members me ON m.OwnerId = me.Id
                                         WHERE Created > @LastReadMessageCreated AND ChannelId = @ChannelId AND m.AccessibilityStatus = @accessibilityStatus) 

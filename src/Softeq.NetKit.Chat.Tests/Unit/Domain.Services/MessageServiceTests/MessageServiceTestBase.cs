@@ -55,7 +55,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             lastMessageReadCountSectionMock.Setup(x => x.Value).Returns(LastMessageReadCount.ToString());
             _configurationMock.Setup(x => x.GetSection("Message:LastMessageReadCount")).Returns(lastMessageReadCountSectionMock.Object);
 
-            var attachmentConfiguration = new MessagesConfiguration(_configurationMock.Object);
+            var attachmentConfiguration = new MessagesConfiguration(MessageAttachmentsLimit, LastMessageReadCount);
 
             _messageService = new MessageService(
                 _unitOfWorkMock.Object, 

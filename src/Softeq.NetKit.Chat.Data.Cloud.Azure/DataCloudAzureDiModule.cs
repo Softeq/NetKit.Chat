@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Softeq.CloudStorage.Extension;
@@ -22,7 +23,20 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure
                 })
                 .As<IContentStorage>();
 
-            builder.RegisterType<AzureStorageConfiguration>().AsSelf();
+            builder.Register(x =>
+            {
+                var context = x.Resolve<IComponentContext>();
+                var config = context.Resolve<IConfiguration>();
+                var cfg = new AzureStorageConfiguration(
+                    config["AzureStorage:ContentStorageHost"],
+                    config["AzureStorage:MessageAttachmentsContainer"],
+                    config["AzureStorage:MemberAvatarsContainer"],
+                    config["AzureStorage:ChannelImagesContainer"],
+                    config["AzureStorage:TempContainerName"],
+                    Convert.ToInt32(config["AzureStorage:MessagePhotoSize"]));
+                return cfg;
+
+            }).AsSelf();
 
             builder.RegisterType<CloudImageProvider>().As<ICloudImageProvider>();
             builder.RegisterType<CloudTokenProvider>().As<ICloudTokenProvider>();

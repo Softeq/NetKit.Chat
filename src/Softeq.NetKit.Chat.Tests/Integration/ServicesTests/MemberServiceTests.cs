@@ -49,8 +49,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         }
 
         [Fact]
-        [Trait("Category", "Integration")]
-        public async Task GetChannelMembersAsyncTest()
+	    [Trait("Category", "Integration")]
+        public async Task GetChannelMembersAsync_ShouldGetChannelMembers()
         {
             // Arrange
             await _memberService.InviteMemberAsync(_memberId, _channelId);

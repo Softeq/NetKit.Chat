@@ -1,20 +1,18 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Microsoft.Extensions.Configuration;
-
 namespace Softeq.NetKit.Chat.Data.Cloud.Azure.Configuration
 {
     public class AzureStorageConfiguration
     {
-        public AzureStorageConfiguration(IConfiguration configuration)
+        public AzureStorageConfiguration(string storageHost, string messageAttachmentsContainer, string memberAvatarsContainer, string channelImagesContainer, string tempContainerName, int messagePhotoSize)
         {
-            ContentStorageHost = configuration["AzureStorage:ContentStorageHost"];
-            MessageAttachmentsContainer = configuration["AzureStorage:MessageAttachmentsContainer"];
-            MemberAvatarsContainer = configuration["AzureStorage:MemberAvatarsContainer"];
-            ChannelImagesContainer = configuration["AzureStorage:ChannelImagesContainer"];
-            TempContainerName = configuration["AzureStorage:TempContainerName"];
-            MessagePhotoSize = configuration.GetValue<int>("AzureStorage:MessagePhotoSize");
+            ContentStorageHost = storageHost;
+            MessageAttachmentsContainer = messageAttachmentsContainer;
+            MemberAvatarsContainer = memberAvatarsContainer;
+            ChannelImagesContainer = channelImagesContainer;
+            TempContainerName = tempContainerName;
+            MessagePhotoSize = messagePhotoSize;
         }
 
         public string ContentStorageHost { get; }

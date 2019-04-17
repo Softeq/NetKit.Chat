@@ -24,11 +24,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
-        public async Task<QueryResult<Member>> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter)
+        public async Task<QueryResult<Member>> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter, string currentUserSaasId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var whereCondition = !string.IsNullOrEmpty(nameFilter) ? " WHERE LOWER(Name) LIKE LOWER('%' + @nameFilter + '%')" : "";
+                var whereCondition = !string.IsNullOrEmpty(nameFilter)
+                    ? " WHERE LOWER(Name) LIKE LOWER('%' + @nameFilter + '%') AND SaasUserId <> @currentUserSaasId AND Members.IsDeleted = 0"
+                    : " WHERE SaasUserId <> @currentUserSaasId AND Members.IsDeleted = 0";
 
                 var sqlQuery = @"SELECT *
                                  FROM Members " +
@@ -41,7 +43,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                  FROM Members" +
                                  whereCondition;
 
-                var data = await connection.QueryMultipleAsync(sqlQuery, new { pageNumber, pageSize, nameFilter });
+                var data = await connection.QueryMultipleAsync(sqlQuery, new { pageNumber, pageSize, nameFilter, currentUserSaasId });
 
                 var members = await data.ReadAsync<Member>();
                 var totalRows = await data.ReadSingleAsync<int>();
@@ -67,7 +69,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                         INNER JOIN ChannelMembers
                                         ON Members.Id = ChannelMembers.MemberId
                                         WHERE ChannelMembers.ChannelId = @channelId)" +
-                                        (!string.IsNullOrEmpty(nameFilter) ? " AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%')" : "");
+                                        (!string.IsNullOrEmpty(nameFilter) ? " AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%') AND Members.IsDeleted = 0" : " AND Members.IsDeleted = 0");
 
                 var sqlQuery = @"SELECT *  
                                  FROM Members " +
@@ -112,8 +114,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Members(Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status) 
-                                 VALUES (@Id, @Email, @IsAfk, @IsBanned, @LastActivity, @LastNudged, @Name, @PhotoName, @Role, @SaasUserId, @Status)";
+                var sqlQuery = @"INSERT INTO Members(Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status, IsDeleted) 
+                                 VALUES (@Id, @Email, @IsAfk, @IsBanned, @LastActivity, @LastNudged, @Name, @PhotoName, @Role, @SaasUserId, @Status, @IsDeleted)";
 
                 await connection.ExecuteScalarAsync(sqlQuery, member);
             }
@@ -133,7 +135,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                      PhotoName = @PhotoName,
                                      Role = @Role, 
                                      SaasUserId = @SaasUserId, 
-                                     Status = @Status
+                                     Status = @Status,
+                                     IsDeleted = @IsDeleted
                                  WHERE Id = @Id";
 
                 await connection.ExecuteScalarAsync(sqlQuery, member);
@@ -168,12 +171,24 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT m.Id, m.Email, m.IsAfk, m.IsBanned, m.LastActivity, m.LastNudged, m.Name, m.PhotoName, m.Role, m.SaasUserId, m.Status  
+                var sqlQuery = @"SELECT m.Id, m.Email, m.IsAfk, m.IsBanned, m.LastActivity, m.LastNudged, m.Name, m.PhotoName, m.Role, m.SaasUserId, m.Status, m.IsDeleted  
                                  FROM Members m
                                  INNER JOIN ChannelMembers c ON m.Id = c.MemberId
                                  WHERE c.ChannelId = @channelId";
 
                 return (await connection.QueryAsync<Member>(sqlQuery, new { channelId })).Distinct().ToList().AsReadOnly();
+            }
+        }
+
+        public async Task<List<Member>> GetMembersExceptProvidedAsync(IEnumerable<Guid> memberIds)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = @"SELECT m.Id, m.Email, m.IsAfk, m.IsBanned, m.LastActivity, m.LastNudged, m.Name, m.PhotoName, m.Role, m.SaasUserId, m.Status, m.IsDeleted  
+                                 FROM Members m
+                                 WHERE m.Id NOT IN (SELECT Id FROM Members WHERE Id IN @memberIds)";
+
+                return (await connection.QueryAsync<Member>(sqlQuery, new { memberIds })).Distinct().ToList();
             }
         }
     }

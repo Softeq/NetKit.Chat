@@ -12,7 +12,6 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
 
@@ -66,21 +65,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return response;
         }
         
-        public ChannelSummaryResponse MapToDirectChannelSummaryResponse(Channel channel, ChannelMember channelMember, DomainModels.Member directMember, Message lastReadMessage = null)
+        public ChannelSummaryResponse MapToDirectChannelSummaryResponse(Channel channel, DomainModels.Member currentUser, DomainModels.Member directMember, Message lastReadMessage = null)
         {
             var response = new ChannelSummaryResponse();
-
-            if (channelMember != null)
-            {
-                response = _mapper.Map(channelMember, response);
-            }
-            
-            if (directMember != null)
-            {
-                response.DirectMemberId = directMember.Id;
-                response.DirectMember = MapToMemberSummary(directMember);
-            }
-
+           
             if (channel != null)
             {
                 response = _mapper.Map(channel, response);
@@ -92,6 +80,18 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 response.UnreadMessagesCount = lastReadMessage != null ?
                     channel.Messages.Count(x => x.Created > lastReadMessage.Created) :
                     channel.Messages.Count;
+            }
+
+            if (currentUser != null)
+            {
+                response.CreatorId = currentUser.Id;
+                response.Creator = MapToMemberSummary(currentUser);
+            }
+
+            if (directMember != null)
+            {
+                response.DirectMemberId = directMember.Id;
+                response.DirectMember = MapToMemberSummary(directMember);
             }
 
             return response;
