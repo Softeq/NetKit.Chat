@@ -5,7 +5,7 @@ using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 
 namespace Softeq.NetKit.Chat.Data.Persistent
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork: ITransaction
     {
         IAttachmentRepository AttachmentRepository { get; }
         IClientRepository ClientRepository { get; }

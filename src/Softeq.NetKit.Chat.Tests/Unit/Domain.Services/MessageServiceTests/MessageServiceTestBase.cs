@@ -2,11 +2,14 @@
 // http://www.softeq.com
 
 using System;
+using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
+using Softeq.NetKit.Chat.Data.Persistent.Sql;
+using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
@@ -20,12 +23,12 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         protected const int LastMessageReadCount = 20;
 
         protected readonly IMessageService _messageService;
+        protected readonly Mock<IUnitOfWork> _unitOfWorkMock;
 
         protected readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new Mock<IDateTimeProvider>(MockBehavior.Strict);
-
         protected readonly Mock<IDomainModelsMapper> _domainModelsMapperMock = new Mock<IDomainModelsMapper>(MockBehavior.Strict);
+        protected readonly Mock<ISqlConnectionFactory> _sqlConnectionFactoryMock = new Mock<ISqlConnectionFactory>(MockBehavior.Strict);
 
-        protected readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>(MockBehavior.Strict);
         protected readonly Mock<IChannelRepository> _channelRepositoryMock = new Mock<IChannelRepository>(MockBehavior.Strict);
         protected readonly Mock<IMemberRepository> _memberRepositoryMock = new Mock<IMemberRepository>(MockBehavior.Strict);
         protected readonly Mock<IMessageRepository> _messageRepositoryMock = new Mock<IMessageRepository>(MockBehavior.Strict);
@@ -34,12 +37,16 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
         protected readonly Mock<IAttachmentRepository> _attachmentRepositoryMock = new Mock<IAttachmentRepository>(MockBehavior.Strict);
 
         protected readonly Mock<IConfiguration> _configurationMock = new Mock<IConfiguration>(MockBehavior.Strict);
-        
+
         protected readonly Mock<ICloudAttachmentProvider> _cloudAttachmentProviderMock = new Mock<ICloudAttachmentProvider>(MockBehavior.Strict);
         protected readonly Mock<ICloudImageProvider> _cloudImageProviderMock = new Mock<ICloudImageProvider>(MockBehavior.Strict);
 
         protected MessageServiceTestBase()
         {
+            _sqlConnectionFactoryMock.Setup(x => x.CreateConnection()).Returns(It.IsAny<SqlConnection>());
+            _unitOfWorkMock = new Mock<UnitOfWork>(_sqlConnectionFactoryMock.Object).As<IUnitOfWork>();
+            _unitOfWorkMock.CallBase = true;
+
             _unitOfWorkMock.Setup(x => x.ChannelRepository).Returns(_channelRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.MemberRepository).Returns(_memberRepositoryMock.Object);
             _unitOfWorkMock.Setup(x => x.MessageRepository).Returns(_messageRepositoryMock.Object);
@@ -58,9 +65,9 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
             var attachmentConfiguration = new MessagesConfiguration(_configurationMock.Object);
 
             _messageService = new MessageService(
-                _unitOfWorkMock.Object, 
-                _domainModelsMapperMock.Object, 
-                attachmentConfiguration, 
+                _unitOfWorkMock.Object,
+                _domainModelsMapperMock.Object,
+                attachmentConfiguration,
                 _cloudAttachmentProviderMock.Object,
                 _cloudImageProviderMock.Object,
                 _dateTimeProviderMock.Object);
