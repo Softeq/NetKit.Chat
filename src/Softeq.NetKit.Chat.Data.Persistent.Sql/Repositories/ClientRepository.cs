@@ -23,14 +23,24 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
             _sqlConnectionFactory = sqlConnectionFactory;
         }
-        
+
         public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Clients
-                                 WHERE MemberId = @memberId";
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(Client.Id)},
+                        {nameof(Client.ClientConnectionId)},
+                        {nameof(Client.LastActivity)},
+                        {nameof(Client.LastClientActivity)},
+                        {nameof(Client.Name)},
+                        {nameof(Client.UserAgent)},
+                        {nameof(Client.MemberId)}
+                    FROM 
+                        Clients
+                    WHERE 
+                        {nameof(Client.MemberId)} = @{nameof(memberId)}";
 
                 return (await connection.QueryAsync<Client>(sqlQuery, new { memberId })).ToList().AsReadOnly();
             }
@@ -40,11 +50,18 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT client.ClientConnectionId
-                                 FROM Clients client
-                                 LEFT JOIN Members member ON client.MemberId = member.Id
-                                 LEFT JOIN ChannelMembers channelMember ON member.Id = channelMember.MemberId
-                                 WHERE channelMember.ChannelId = @channelId AND channelMember.IsMuted = 0";
+                var sqlQuery = $@"
+                    SELECT 
+                        client.{nameof(Client.ClientConnectionId)}
+                    FROM 
+                        Clients client
+                    LEFT JOIN Members member 
+                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
+                    LEFT JOIN ChannelMembers channelMember 
+                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
+                    WHERE
+                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}
+                        AND channelMember.{nameof(ChannelMember.IsMuted)} = 0";
 
                 return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
             }
@@ -54,11 +71,17 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT client.ClientConnectionId
-                                 FROM Clients client
-                                 LEFT JOIN Members member ON client.MemberId = member.Id
-                                 LEFT JOIN ChannelMembers channelMember ON member.Id = channelMember.MemberId
-                                 WHERE channelMember.ChannelId = @channelId";
+                var sqlQuery = $@"
+                    SELECT
+                        client.{nameof(Client.ClientConnectionId)}
+                    FROM
+                        Clients client
+                    LEFT JOIN Members member
+                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
+                    LEFT JOIN ChannelMembers channelMember
+                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
+                    WHERE
+                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
             }
@@ -68,10 +91,33 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Clients c 
-                                 INNER JOIN Members m ON c.MemberId = m.Id
-                                 WHERE c.ClientConnectionId = @clientConnectionId";
+                var sqlQuery = $@"
+                    SELECT 
+                        c.{nameof(Client.Id)},
+                        c.{nameof(Client.ClientConnectionId)},
+                        c.{nameof(Client.LastActivity)},
+                        c.{nameof(Client.LastClientActivity)},
+                        c.{nameof(Client.Name)},
+                        c.{nameof(Client.UserAgent)},
+                        c.{nameof(Client.MemberId)},
+                        m.{nameof(Member.Id)},
+                        m.{nameof(Member.Email)},
+                        m.{nameof(Member.IsAfk)},
+                        m.{nameof(Member.IsBanned)},
+                        m.{nameof(Member.LastActivity)},
+                        m.{nameof(Member.LastNudged)},
+                        m.{nameof(Member.Name)},
+                        m.{nameof(Member.PhotoName)},
+                        m.{nameof(Member.Role)},
+                        m.{nameof(Member.SaasUserId)},
+                        m.{nameof(Member.Status)},
+                        m.{nameof(Member.IsActive)}
+                    FROM 
+                        Clients c 
+                    INNER JOIN Members m 
+                        ON c.{nameof(Client.MemberId)} = m.{nameof(Member.Id)}
+                    WHERE 
+                        c.{nameof(Client.ClientConnectionId)} = @{nameof(clientConnectionId)}";
 
                 return (await connection.QueryAsync<Client, Member, Client>(sqlQuery,
                         (client, member) =>
@@ -88,8 +134,26 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Clients(Id, ClientConnectionId, LastActivity, LastClientActivity, Name, UserAgent, MemberId) 
-                                 VALUES (@Id, @ClientConnectionId, @LastActivity, @LastClientActivity, @Name, @UserAgent, @MemberId)";
+                var sqlQuery = $@"
+                    INSERT INTO Clients
+                    (
+                        {nameof(Client.Id)},
+                        {nameof(Client.ClientConnectionId)}, 
+                        {nameof(Client.LastActivity)}, 
+                        {nameof(Client.LastClientActivity)}, 
+                        {nameof(Client.Name)}, 
+                        {nameof(Client.UserAgent)}, 
+                        {nameof(Client.MemberId)}
+                    ) VALUES 
+                    (
+                        @{nameof(Client.Id)},
+                        @{nameof(Client.ClientConnectionId)}, 
+                        @{nameof(Client.LastActivity)}, 
+                        @{nameof(Client.LastClientActivity)}, 
+                        @{nameof(Client.Name)}, 
+                        @{nameof(Client.UserAgent)}, 
+                        @{nameof(Client.MemberId)}
+                    )";
 
                 await connection.ExecuteScalarAsync(sqlQuery, client);
             }
@@ -99,15 +163,18 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"UPDATE Clients 
-                                 SET Id = @Id, 
-                                     ClientConnectionId = @ClientConnectionId, 
-                                     LastActivity = @LastActivity, 
-                                     LastClientActivity = @LastClientActivity, 
-                                     Name = @Name, 
-                                     UserAgent = @UserAgent, 
-                                     MemberId = @MemberId 
-                                 WHERE Id = @Id";
+                var sqlQuery = $@"
+                    UPDATE Clients 
+                    SET 
+                        {nameof(Client.Id)} = @{nameof(Client.Id)}, 
+                        {nameof(Client.ClientConnectionId)} = @{nameof(Client.ClientConnectionId)}, 
+                        {nameof(Client.LastActivity)} = @{nameof(Client.LastActivity)}, 
+                        {nameof(Client.LastClientActivity)} = @{nameof(Client.LastClientActivity)}, 
+                        {nameof(Client.Name)} = @{nameof(Client.Name)}, 
+                        {nameof(Client.UserAgent)} = @{nameof(Client.UserAgent)}, 
+                        {nameof(Client.MemberId)} = @{nameof(Client.MemberId)}
+                    WHERE 
+                        {nameof(Client.Id)} = @{nameof(Client.Id)}";
 
                 await connection.ExecuteAsync(sqlQuery, client);
             }
@@ -117,21 +184,46 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"DELETE FROM Clients 
-                                 WHERE Id = @clientId";
+                var sqlQuery = $@"
+                    DELETE FROM Clients 
+                    WHERE 
+                        {nameof(Client.Id)} = @{nameof(clientId)}";
 
                 await connection.ExecuteAsync(sqlQuery, new { clientId });
             }
         }
-        
+
         public async Task<IReadOnlyCollection<Client>> GetClientsWithMembersAsync(List<Guid> memberIds)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Clients c 
-                                 INNER JOIN Members m ON c.MemberId = m.Id
-                                 WHERE c.MemberId IN @memberIds";
+                var sqlQuery = $@"
+                    SELECT
+                        c.{nameof(Client.Id)},
+                        c.{nameof(Client.ClientConnectionId)},
+                        c.{nameof(Client.LastActivity)},
+                        c.{nameof(Client.LastClientActivity)},
+                        c.{nameof(Client.Name)},
+                        c.{nameof(Client.UserAgent)},
+                        c.{nameof(Client.MemberId)},
+                        m.{nameof(Member.Id)},
+                        m.{nameof(Member.Email)},
+                        m.{nameof(Member.IsAfk)},
+                        m.{nameof(Member.IsBanned)},
+                        m.{nameof(Member.LastActivity)},
+                        m.{nameof(Member.LastNudged)},
+                        m.{nameof(Member.Name)},
+                        m.{nameof(Member.PhotoName)},
+                        m.{nameof(Member.Role)},
+                        m.{nameof(Member.SaasUserId)},
+                        m.{nameof(Member.Status)},
+                        m.{nameof(Member.IsActive)}
+                    FROM 
+                        Clients c 
+                    INNER JOIN Members m 
+                        ON c.{nameof(Client.MemberId)} = m.{nameof(Member.Id)}
+                    WHERE 
+                        c.{nameof(Client.MemberId)} IN @{nameof(memberIds)}";
 
                 return (await connection.QueryAsync<Client, Member, Client>(sqlQuery,
                         (client, member) =>
@@ -150,9 +242,12 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT 1
-                                 FROM Clients
-                                 WHERE ClientConnectionId = @clientConnectionId";
+                var sqlQuery = $@"
+                    SELECT 
+                        1
+                    FROM 
+                        Clients
+                    WHERE {nameof(Client.ClientConnectionId)} = @{nameof(clientConnectionId)}";
 
                 return await connection.ExecuteScalarAsync<bool>(sqlQuery, new { clientConnectionId });
             }
