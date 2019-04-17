@@ -13,14 +13,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private const int DefaultTransactionTimeout = 1;
         private readonly ISqlConnectionFactory _sqlConnectionFactory;
+        private readonly TransactionConfiguration _transactionConfiguration;
 
-        public UnitOfWork(ISqlConnectionFactory sqlConnectionFactory)
+        public UnitOfWork(ISqlConnectionFactory sqlConnectionFactory, TransactionConfiguration transactionConfiguration)
         {
             Ensure.That(sqlConnectionFactory).IsNotNull();
 
             _sqlConnectionFactory = sqlConnectionFactory;
+            _transactionConfiguration = transactionConfiguration;
         }
 
         private IAttachmentRepository _attachmentRepository;
@@ -58,7 +59,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
             var options = transactionOptions ?? new TransactionOptions
             {
                 IsolationLevel = IsolationLevel.ReadCommitted,
-                Timeout = TimeSpan.FromMinutes(DefaultTransactionTimeout)
+                Timeout = TimeSpan.FromMinutes(_transactionConfiguration.TransactionTimeoutInMinutes)
             };
 
             using (var transaction = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
