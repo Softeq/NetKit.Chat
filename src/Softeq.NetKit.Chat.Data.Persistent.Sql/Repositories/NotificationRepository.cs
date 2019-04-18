@@ -133,7 +133,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     INNER JOIN Members me 
                         ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
                     INNER JOIN Channels c 
-                        ON n.{nameof(Message.ChannelId)} = c.{nameof(Channel.Id)}
+                        ON n.{nameof(Notification.ChannelId)} = c.{nameof(Channel.Id)}
                     WHERE 
                         n.{nameof(Notification.MemberId)} = @{nameof(memberId)}";
 

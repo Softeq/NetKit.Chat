@@ -113,7 +113,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     FROM 
                         Members 
                     WHERE 
-                        Id NOT IN (
+                        {nameof(Member.Id)} NOT IN (
                             SELECT 
                                 ChannelMembers.{nameof(ChannelMember.MemberId)}
                             FROM 

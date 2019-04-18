@@ -100,7 +100,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     FROM 
                         Attachments
                     WHERE 
-                        MessageId = @{nameof(messageId)}";
+                        {nameof(Attachment.MessageId)} = @{nameof(messageId)}";
 
                 return (await connection.QueryAsync<Attachment>(sqlQuery, new { messageId })).ToList().AsReadOnly();
             }
@@ -116,7 +116,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     FROM 
                         Attachments
                     WHERE 
-                        {nameof(Attachment.MessageId)} = @{messageId}";
+                        {nameof(Attachment.MessageId)} = @{nameof(messageId)}";
 
                 return await connection.ExecuteScalarAsync<int>(sqlQuery, new { messageId });
             }
