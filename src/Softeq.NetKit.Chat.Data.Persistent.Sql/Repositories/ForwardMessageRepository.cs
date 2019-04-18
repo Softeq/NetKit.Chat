@@ -27,8 +27,22 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO ForwardMessages(Id, Body, Created, ChannelId, OwnerId) 
-                                 VALUES (@Id, @Body, @Created, @ChannelId, @OwnerId)";
+                var sqlQuery = $@"
+                    INSERT INTO ForwardMessages
+                    (
+                        {nameof(ForwardMessage.Id)}, 
+                        {nameof(ForwardMessage.Body)}, 
+                        {nameof(ForwardMessage.Created)}, 
+                        {nameof(ForwardMessage.ChannelId)}, 
+                        {nameof(ForwardMessage.OwnerId)}
+                    ) VALUES 
+                    (
+                        @{nameof(ForwardMessage.Id)}, 
+                        @{nameof(ForwardMessage.Body)}, 
+                        @{nameof(ForwardMessage.Created)}, 
+                        @{nameof(ForwardMessage.ChannelId)}, 
+                        @{nameof(ForwardMessage.OwnerId)}
+                    )";
 
                 await connection.ExecuteScalarAsync(sqlQuery, message);
             }
@@ -38,8 +52,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"DELETE FROM ForwardMessages 
-                                 WHERE Id = @messageId";
+                var sqlQuery = $@"
+                    DELETE FROM ForwardMessages 
+                    WHERE 
+                        {nameof(ForwardMessage.Id)} = @{nameof(messageId)}";
 
                 await connection.ExecuteAsync(sqlQuery, new { messageId });
             }
@@ -49,9 +65,17 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM ForwardMessages
-                                 WHERE Id = @forwardMessageId";
+                var sqlQuery = $@"
+                    SELECT
+                        {nameof(ForwardMessage.Id)},
+                        {nameof(ForwardMessage.Body)},
+                        {nameof(ForwardMessage.Created)},
+                        {nameof(ForwardMessage.ChannelId)},
+                        {nameof(ForwardMessage.OwnerId)}
+                    FROM 
+                        ForwardMessages
+                    WHERE 
+                        {nameof(ForwardMessage.Id)} = @{nameof(forwardMessageId)}";
 
                 return (await connection.QueryAsync<ForwardMessage>(sqlQuery, new { forwardMessageId })).FirstOrDefault();
             }
