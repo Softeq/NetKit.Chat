@@ -17,5 +17,4 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
         public MemberSummary Owner { get; set; }
         public DateTimeOffset Created { get; set; }
     }
-
 }
