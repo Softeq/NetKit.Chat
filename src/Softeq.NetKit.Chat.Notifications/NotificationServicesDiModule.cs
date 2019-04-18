@@ -1,7 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using Softeq.NetKit.Chat.Notifications.Services;
@@ -20,13 +19,12 @@ namespace Softeq.NetKit.Chat.Notifications
             builder.RegisterType<AzureNotificationHubSender>().As<IPushNotificationSender>();
             builder.RegisterType<AzureNotificationHubSubscriber>().As<IPushNotificationSubscriber>();
 
-            builder.Register(x =>
+            builder.Register((context) =>
             {
-                var context = x.Resolve<IComponentContext>();
-                var config = context.Resolve<IConfiguration>();
+                var configuration = context.Resolve<IConfiguration>();
                 return new AzureNotificationHubConfiguration(
-                    config["AzureNotificationHub:ConnectionString"],
-                    config["AzureNotificationHub:HubName"]);
+                    configuration["AzureNotificationHub:ConnectionString"],
+                    configuration["AzureNotificationHub:HubName"]);
             }).SingleInstance();
         }
     }
