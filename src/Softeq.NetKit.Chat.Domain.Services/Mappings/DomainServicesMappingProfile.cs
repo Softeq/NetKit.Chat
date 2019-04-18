@@ -26,8 +26,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             CreateMap<Message, MessageResponse>()
                 .ForMember(d => d.Sender, opt => opt.MapFrom(s => s.Owner))
                 // This option depends on LastReadMessage and could be set by MappingHelper class
-                .ForMember(d => d.IsRead, opt => opt.Ignore());
-
+                .ForMember(d => d.IsRead, opt => opt.Ignore())
+                .ForMember(d => d.ForwardedMessage, opt => opt.MapFrom(s => s.ForwardedMessage));
+            
             CreateMap<DomainModels.Member, MemberSummary>()
                 .ForMember(d => d.AvatarUrl, opt => opt.MapFrom(s => s.PhotoName))
                 .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));
@@ -73,6 +74,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 .ForMember(d => d.ConnectionClientId, opt => opt.MapFrom(s => s.ClientConnectionId))
                 .ForMember(d => d.SaasUserId, opt => opt.MapFrom(s => s.Member.SaasUserId))
                 .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));
+
+            CreateMap<ForwardMessage, ForwardMessageResponse>()
+                .ForMember(d => d.Body, opt => opt.MapFrom(s => s.Body))
+                .ForMember(d => d.Channel, opt => opt.MapFrom(s => s.Channel))
+                .ForMember(d => d.ChannelId, opt => opt.MapFrom(s => s.ChannelId))
+                .ForMember(d => d.Created, opt => opt.MapFrom(s => s.Created))
+                .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
+                .ForMember(d => d.Owner, opt => opt.MapFrom(s => s.Owner))
+                .ForMember(d => d.OwnerId, opt => opt.MapFrom(s => s.OwnerId));
         }
     }
 }
