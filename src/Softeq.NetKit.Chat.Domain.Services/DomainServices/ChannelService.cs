@@ -312,7 +312,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 {
                     //TODO: Extend existing query to make one single request to get all data for both direct and group channel
                     var members = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(channel.Id);
-                    var directChannelMember = members.First(x => x.MemberId != currentUser.Id);
+                    var directChannelMember = members.SingleOrDefault(x => x.MemberId != currentUser.Id);
+                    if (directChannelMember == null)
+                    {
+                        throw new NetKitChatNotFoundException($"Direct channel member is not found.");
+                    }
+
                     var member = directChannelMember.Member;
                     ChannelSummaryResponse channelSummaryResponse;
                     if (channelMember.LastReadMessageId.HasValue)

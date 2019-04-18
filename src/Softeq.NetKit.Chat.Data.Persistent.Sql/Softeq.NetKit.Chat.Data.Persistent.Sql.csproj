@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Repositories\DirectChannelsRepository.cs" />
-  </ItemGroup>
-
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FQ.DEEMA.Chat.Web.TransportModels.Request.Channel
+namespace Softeq.NetKit.Chat.Web.TransportModels.Request.Channel
 {
     public class CreateDirectChannelRequest
     {
