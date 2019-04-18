@@ -22,7 +22,6 @@ using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Channel;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Member;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Message;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.MessageAttachment;
 using Softeq.Serilog.Extension;
 using DomainRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using SignalRRequest = Softeq.NetKit.Chat.SignalR.TransportModels.Request;

@@ -1,12 +1,12 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using Autofac;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace Softeq.NetKit.Chat.Domain.Services
 {
@@ -14,6 +14,21 @@ namespace Softeq.NetKit.Chat.Domain.Services
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.Register(x =>
+                {
+                    var context = x.Resolve<IComponentContext>();
+                    var config = context.Resolve<IConfiguration>();
+
+                    return new SystemMessagesConfiguration
+                    {
+                        MemberJoined = config["SystemMessagesTemplates:MemberJoined"],
+                        MemberDeleted = config["SystemMessagesTemplates:MemberDeleted"],
+                        ChannelIconChanged = config["SystemMessagesTemplates:ChannelNameChanged"],
+                        ChannelNameChanged = config["SystemMessagesTemplates:ChannelIconChanged"]
+                    };
+                })
+                .As<SystemMessagesConfiguration>();
+
             builder.RegisterType<MessagesConfiguration>()
                 .AsSelf();
 
@@ -25,7 +40,7 @@ namespace Softeq.NetKit.Chat.Domain.Services
 
             builder.RegisterType<MessageService>()
                 .As<IMessageService>();
-            
+
             builder.RegisterType<NotificationSettingsService>()
                 .As<INotificationSettingsService>();
 

@@ -7,6 +7,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
     {
         Default,
         Notification,
-        Forward
+        Forward,
+        System
     }
 }

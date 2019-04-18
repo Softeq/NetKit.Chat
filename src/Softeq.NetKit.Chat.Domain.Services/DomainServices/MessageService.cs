@@ -46,6 +46,29 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
+        public async Task<MessageResponse> CreateSystemMessageAsync(CreateMessageRequest request)
+        {
+            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
+            if (!isChannelExists)
+            {
+                throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
+            }
+
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                ChannelId = request.ChannelId,
+                Body = request.Body,
+                Created = _dateTimeProvider.GetUtcNow(),
+                Type = request.Type
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+            message = await UnitOfWork.MessageRepository.GetAsync(message.Id);
+
+            return DomainModelsMapper.MapToMessageResponse(message);
+        }
+
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);

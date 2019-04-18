@@ -4,10 +4,12 @@
 using System;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization;
+using Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Message;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
 {
-    public class MessageResponse
+    public class MessageResponse : LocalizedMessageResponse<MessageResponse>
     {
         public Guid Id { get; set; }
         public Guid ChannelId { get; set; }
@@ -20,5 +22,10 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
         public string ImageUrl { get; set; }
         public ForwardMessageResponse ForwardedMessage { get; set; }
         public ChannelType ChannelType { get; set; }
+
+        public override void Accept(ILocalizationVisitor<MessageResponse> visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

@@ -129,7 +129,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = $@"
                     DELETE FROM Attachments
                     WHERE 
-                        {nameof(Attachment.MessageId)} = @{messageId}";
+                        {nameof(Attachment.MessageId)} = @{nameof(messageId)}";
 
                 await connection.ExecuteScalarAsync<Attachment>(sqlQuery, new { messageId });
             }
