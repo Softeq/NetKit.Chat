@@ -28,8 +28,24 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Attachments(Id, ContentType, Created, FileName, MessageId, Size)
-                                 VALUES (@Id, @ContentType, @Created, @FileName, @MessageId, @Size)";
+                var sqlQuery = $@"
+                    INSERT INTO Attachments
+                    (
+                        {nameof(Attachment.Id)}, 
+                        {nameof(Attachment.ContentType)}, 
+                        {nameof(Attachment.Created)}, 
+                        {nameof(Attachment.FileName)}, 
+                        {nameof(Attachment.MessageId)}, 
+                        {nameof(Attachment.Size)}
+                    ) VALUES 
+                    (
+                        @{nameof(Attachment.Id)}, 
+                        @{nameof(Attachment.ContentType)}, 
+                        @{nameof(Attachment.Created)}, 
+                        @{nameof(Attachment.FileName)}, 
+                        @{nameof(Attachment.MessageId)}, 
+                        @{nameof(Attachment.Size)}
+                    )";
 
                 await connection.ExecuteScalarAsync(sqlQuery, attachment);
             }
@@ -39,8 +55,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"DELETE FROM Attachments 
-                                 WHERE Id = @attachmentId";
+                var sqlQuery = $@"
+                    DELETE FROM Attachments 
+                    WHERE 
+                        {nameof(Attachment.Id)} = @{nameof(attachmentId)}";
 
                 await connection.ExecuteScalarAsync<Attachment>(sqlQuery, new { attachmentId });
             }
@@ -50,9 +68,18 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Attachments
-                                 WHERE Id = @attachmentId";
+                var sqlQuery = $@"
+                    SELECT
+                        {nameof(Attachment.Id)},
+                        {nameof(Attachment.ContentType)},
+                        {nameof(Attachment.Created)},
+                        {nameof(Attachment.FileName)},
+                        {nameof(Attachment.MessageId)},
+                        {nameof(Attachment.Size)}
+                    FROM
+                        Attachments
+                    WHERE 
+                        {nameof(Attachment.Id)} = @{nameof(attachmentId)}";
 
                 return (await connection.QueryAsync<Attachment>(sqlQuery, new { attachmentId })).FirstOrDefault();
             }
@@ -62,9 +89,18 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Attachments
-                                 WHERE MessageId = @messageId";
+                var sqlQuery = $@"
+                    SELECT
+                        {nameof(Attachment.Id)},
+                        {nameof(Attachment.ContentType)},
+                        {nameof(Attachment.Created)},
+                        {nameof(Attachment.FileName)},
+                        {nameof(Attachment.MessageId)},
+                        {nameof(Attachment.Size)}
+                    FROM 
+                        Attachments
+                    WHERE 
+                        {nameof(Attachment.MessageId)} = @{nameof(messageId)}";
 
                 return (await connection.QueryAsync<Attachment>(sqlQuery, new { messageId })).ToList().AsReadOnly();
             }
@@ -74,9 +110,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT COUNT(*)
-                                 FROM Attachments
-                                 WHERE MessageId = @messageId";
+                var sqlQuery = $@"
+                    SELECT 
+                        COUNT(*)
+                    FROM 
+                        Attachments
+                    WHERE 
+                        {nameof(Attachment.MessageId)} = @{nameof(messageId)}";
 
                 return await connection.ExecuteScalarAsync<int>(sqlQuery, new { messageId });
             }
@@ -86,8 +126,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"DELETE FROM Attachments 
-                                 WHERE MessageId = @messageId";
+                var sqlQuery = $@"
+                    DELETE FROM Attachments
+                    WHERE 
+                        {nameof(Attachment.MessageId)} = @{messageId}";
 
                 await connection.ExecuteScalarAsync<Attachment>(sqlQuery, new { messageId });
             }

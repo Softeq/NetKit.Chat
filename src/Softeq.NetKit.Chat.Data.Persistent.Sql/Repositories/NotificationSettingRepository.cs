@@ -25,9 +25,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT Id, MemberId, IsChannelNotificationsDisabled 
-                                 FROM   NotificationSettings
-                                 WHERE  MemberId = @memberId";
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(NotificationSettings.Id)}, 
+                        {nameof(NotificationSettings.MemberId)}, 
+                        {nameof(NotificationSettings.IsChannelNotificationsDisabled)}
+                    FROM
+                        NotificationSettings
+                    WHERE
+                        {nameof(NotificationSettings.MemberId)} = @{nameof(memberId)}";
 
                 return (await connection.QueryAsync<NotificationSettings>(sqlQuery, new { memberId })).FirstOrDefault();
             }
@@ -37,8 +43,18 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO NotificationSettings (Id, MemberId, IsChannelNotificationsDisabled) 
-                                 VALUES (@Id, @MemberId, @IsChannelNotificationsDisabled)";
+                var sqlQuery = $@"
+                    INSERT INTO NotificationSettings 
+                    (
+                        {nameof(NotificationSettings.Id)}, 
+                        {nameof(NotificationSettings.MemberId)}, 
+                        {nameof(NotificationSettings.IsChannelNotificationsDisabled)}
+                    ) VALUES 
+                    (
+                        @{nameof(NotificationSettings.Id)}, 
+                        @{nameof(NotificationSettings.MemberId)}, 
+                        @{nameof(NotificationSettings.IsChannelNotificationsDisabled)}
+                    )";
 
                 await connection.ExecuteScalarAsync(sqlQuery, settings);
             }
@@ -48,10 +64,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"UPDATE NotificationSettings 
-                                 SET    MemberId = @MemberId,
-                                        IsChannelNotificationsDisabled = @IsChannelNotificationsDisabled
-                                 WHERE  Id = @Id";
+                var sqlQuery = $@"
+                    UPDATE NotificationSettings 
+                    SET 
+                        {nameof(NotificationSettings.MemberId)} = @{nameof(NotificationSettings.MemberId)},
+                        {nameof(NotificationSettings.IsChannelNotificationsDisabled)} = @{nameof(NotificationSettings.IsChannelNotificationsDisabled)}
+                    WHERE 
+                        {nameof(NotificationSettings.Id)} = @{nameof(NotificationSettings.Id)}";
 
                 await connection.ExecuteScalarAsync(sqlQuery, settings);
             }
@@ -61,11 +80,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT SaasUserId 
-                                 FROM   NotificationSettings
-                                 INNER JOIN Members
-                                 ON Members.Id = NotificationSettings.MemberId
-                                 WHERE  IsChannelNotificationsDisabled = 1";
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(Member.SaasUserId)}
+                    FROM
+                        NotificationSettings
+                    INNER JOIN Members
+                        ON Members.{nameof(Member.Id)} = NotificationSettings.{nameof(NotificationSettings.MemberId)}
+                    WHERE
+                        {nameof(NotificationSettings.IsChannelNotificationsDisabled)} = 1";
 
                 return (await connection.QueryAsync<string>(sqlQuery)).ToList().AsReadOnly();
             }

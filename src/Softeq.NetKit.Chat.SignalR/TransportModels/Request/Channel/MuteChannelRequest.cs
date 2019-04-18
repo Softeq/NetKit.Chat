@@ -8,7 +8,6 @@ namespace Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel
     public class MuteChannelRequest : BaseRequest
     {
         public Guid ChannelId { get; set; }
-
         public bool IsMuted { get; set; }
     }
 }

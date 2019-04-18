@@ -18,8 +18,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
         public MessageType Type { get; set; }
         public bool IsRead { get; set; }
         public string ImageUrl { get; set; }
-        public ForwardMessage ForwardedMessage { get; set; }
-        
-        public ChannelTypes ChannelType { get; set; }
+        public ForwardMessageResponse ForwardedMessage { get; set; }
+        public ChannelType ChannelType { get; set; }
     }
 }
