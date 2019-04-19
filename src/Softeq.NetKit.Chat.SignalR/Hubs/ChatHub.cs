@@ -218,6 +218,18 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             request.RequestId);
         }
 
+        public async Task<ChannelSummaryResponse> CreateDirectChannelAsync(CreateDirectChannelRequest request)
+        {
+            return await ValidateAndExecuteAsync(request, new CreateDirectChannelRequestValidator(), new TaskReference<ChannelSummaryResponse>(async () =>
+                {
+                    var createChannelRequest =
+                        new DomainRequest.Channel.CreateDirectChannelRequest(Context.GetSaasUserId(), request.MemberId);
+
+                    return await _channelSocketService.CreateDirectChannelAsync(createChannelRequest);
+                }),
+                request.RequestId);
+        }
+
         public async Task<ChannelSummaryResponse> UpdateChannelAsync(UpdateChannelRequest request)
         {
             return await ValidateAndExecuteAsync(request, new UpdateChannelRequestValidator(), new TaskReference<ChannelSummaryResponse>(async () =>

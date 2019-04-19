@@ -290,6 +290,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             // Act
             var clientConnectionIds = await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channel.Id);
+            var memberConnectionIds = await UnitOfWork.ClientRepository.GetChannelMemberClientConnectionIdsAsync(channel.Id, firstNotMutedMember.Id);
 
             // Assert
             var expectedClientConnectionIds = new List<string>
@@ -300,6 +301,13 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 mutedMemberClient.ClientConnectionId
             };
             clientConnectionIds.Should().BeEquivalentTo(expectedClientConnectionIds);
+
+            var expectedMemberConnectionIds = new List<string>
+            {
+                firstNotMutedMemberClient1.ClientConnectionId,
+                firstNotMutedMemberClient2.ClientConnectionId
+            };
+            memberConnectionIds.Should().BeEquivalentTo(expectedMemberConnectionIds);
         }
 
         [Fact]

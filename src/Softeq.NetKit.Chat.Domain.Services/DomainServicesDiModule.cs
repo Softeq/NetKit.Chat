@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using Autofac;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
@@ -18,6 +19,15 @@ namespace Softeq.NetKit.Chat.Domain.Services
                 {
                     var context = x.Resolve<IComponentContext>();
                     var config = context.Resolve<IConfiguration>();
+                    return new MessagesConfiguration(
+                        Convert.ToInt32(config["Message:MessageAttachmentsLimit"]),
+                        Convert.ToInt32(config["Message:LastMessageReadCount"]));
+                }).AsSelf();
+
+            builder.Register(x =>
+                {
+                    var context = x.Resolve<IComponentContext>();
+                    var config = context.Resolve<IConfiguration>();
 
                     return new SystemMessagesConfiguration(
                         config["SystemMessagesTemplates:MemberJoined"],
@@ -27,9 +37,6 @@ namespace Softeq.NetKit.Chat.Domain.Services
                         config["SystemMessagesTemplates:ChannelIconChanged"]);
                 })
                 .As<SystemMessagesConfiguration>();
-
-            builder.RegisterType<MessagesConfiguration>()
-                .AsSelf();
 
             builder.RegisterType<ChannelService>()
                 .As<IChannelService>();

@@ -155,7 +155,74 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         }
 
         [Fact]
-        [Trait("Category", "Integration")]
+        public async Task GetChannelMembersWithMemberDetailsAsync_ShouldReturnAllChannelMembersWithMemberDetails()
+        {
+            var member1 = new Member
+            {
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online,
+                Email = "Email1",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name1",
+                PhotoName = "PhotoName1",
+                SaasUserId = "SaasUserId1"
+            };
+            var member2 = new Member
+            {
+                Id = Guid.NewGuid(),
+                Role = UserRole.User,
+                IsAfk = true,
+                IsBanned = true,
+                LastActivity = DateTimeOffset.UtcNow,
+                Status = UserStatus.Online,
+                Email = "Email2",
+                LastNudged = DateTimeOffset.UtcNow,
+                Name = "Name2",
+                PhotoName = "PhotoName2",
+                SaasUserId = "SaasUserId2"
+            };
+
+            await UnitOfWork.MemberRepository.AddMemberAsync(member1);
+            await UnitOfWork.MemberRepository.AddMemberAsync(member2);
+
+            var channelMember1 = new ChannelMember
+            {
+                MemberId = member1.Id,
+                Member = member1,
+                ChannelId = _channelId,
+                LastReadMessageId = _lastReadMessageId,
+                IsMuted = true,
+                IsPinned = false
+            };
+            var channelMember2 = new ChannelMember
+            {
+                MemberId = member2.Id,
+                Member = member2,
+                ChannelId = _channelId,
+                LastReadMessageId = _lastReadMessageId,
+                IsMuted = true,
+                IsPinned = false
+            };
+
+            var expectedMembers = new List<ChannelMember>
+            {
+                channelMember1, channelMember2
+            };
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember1);
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember2);
+
+            var channelMembersWithDetails = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(_channelId);
+
+            channelMembersWithDetails.Should().BeEquivalentTo(expectedMembers);
+        }
+
+        [Fact]
+	    [Trait("Category", "Integration")]
         public async Task MuteChannelAsync_ShouldSetMuteField()
         {
             var channelMember = new ChannelMember

@@ -128,10 +128,13 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
-            await _messageService.SetLastReadMessageAsync(request);
+            if (message.Sender.Id != member.Id)
+            {
+                await _messageService.SetLastReadMessageAsync(request);
 
-            var members = new List<Guid> { member.Id, message.Sender.Id };
-            await _messageNotificationService.OnChangeLastReadMessage(members, message);
+                var members = new List<Guid> { member.Id, message.Sender.Id };
+                await _messageNotificationService.OnChangeLastReadMessage(members, message);
+            }
         }
     }
 }

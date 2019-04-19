@@ -158,6 +158,21 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<bool> IsChannelExistsAndOpenAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT 
+                        1
+                    FROM 
+                        Channels
+                    WHERE 
+                        {nameof(Channel.Id)} = @{nameof(channelId)} AND {nameof(Channel.IsClosed)} = 0";
+                return await connection.ExecuteScalarAsync<bool>(sqlQuery, new { channelId });
+            }
+        }
+
         public async Task<Channel> GetChannelAsync(Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
@@ -381,7 +396,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         ON c.{nameof(Channel.Id)} = cm.{nameof(ChannelMember.ChannelId)}
                     WHERE
                         (cm.{nameof(ChannelMember.MemberId)} = @{nameof(member1Id)} OR cm.{nameof(ChannelMember.MemberId)} = @{nameof(member2Id)}) 
-                        AND c.{nameof(Channel.Type)} = {(int)ChannelType.Direct}
+                        AND
+                           (c.{nameof(Channel.CreatorId)} = @{nameof(member1Id)} OR c.{nameof(Channel.CreatorId)} = @{nameof(member2Id)}) 
+                        AND 
+                            c.{nameof(Channel.Type)} = {(int)ChannelType.Direct}
                     GROUP BY 
                         c.{nameof(Channel.Id)}
                     HAVING 

@@ -21,6 +21,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             var pageNumber = 1;
             var pageSize = 1;
             var nameFilter = "testFilter";
+            var saasUserId = "saasUserId";
 
             var members = new QueryResult<Member>()
             {
@@ -34,12 +35,13 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             _memberRepositoryMock.Setup(x => x.GetPagedMembersAsync(
                     It.Is<int>(pn => pn.Equals(pageNumber)),
                     It.Is<int>(ps => ps.Equals(pageSize)),
-                    It.Is<string>(nf => nf.Equals(nameFilter))))
+                    It.Is<string>(nf => nf.Equals(nameFilter)), 
+                    It.IsAny<string>()))
                 .ReturnsAsync(members)
                 .Verifiable();
 
             // Act
-            var act = await _memberService.GetPagedMembersAsync(pageNumber, pageSize, nameFilter);
+            var act = await _memberService.GetPagedMembersAsync(pageNumber, pageSize, nameFilter, saasUserId);
 
             // Assert
             act.Should().BeEquivalentTo(members);

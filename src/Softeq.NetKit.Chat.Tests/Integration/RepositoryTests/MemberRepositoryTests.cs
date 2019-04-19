@@ -59,18 +59,19 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     IsBanned = true,
                     LastActivity = DateTimeOffset.UtcNow,
                     Status = UserStatus.Online,
-                    Name = i % 2 == 0 ? $"{i}EVEN{i}" : $"{i}ODD{i}"
+                    Name = i % 2 == 0 ? $"{i}EVEN{i}" : $"{i}ODD{i}",
+                    SaasUserId = Guid.NewGuid().ToString()
                 };
                 await UnitOfWork.MemberRepository.AddMemberAsync(member);
             }
 
             const int pageSize = 10;
 
-            var evenMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "even");
-            var evenMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "even");
-            var oddMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "odd");
-            var oddMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "odd");
-            var allMembers = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 100, null);
+            var evenMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "even", "saasId");
+            var evenMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "even", "saasId");
+            var oddMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "odd", "saasId");
+            var oddMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "odd", "saasId");
+            var allMembers = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 100, null, "saasId");
 
             evenMembersFirstPage.Results.Count().Should().Be(pageSize);
             evenMembersSecondPage.Results.Count().Should().Be(1);
@@ -365,6 +366,61 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             // Act
             var membersFromChannel = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(_channelId);
+
+            // Assert
+            membersFromChannel.Should().BeEquivalentTo(expectedMembers);
+        }
+
+        [Fact]
+        public async Task GetMembersExceptProvidedAsync_ShouldReturnAllMembersExceptProvided()
+        {
+            // Arrange
+
+            // Add list of members to expected channel
+            var expectedMembers = new List<Member>();
+            for (var i = 0; i < 5; i++)
+            {
+                var member = new Member
+                {
+                    Id = Guid.NewGuid(),
+                    Role = UserRole.User,
+                    IsAfk = true,
+                    IsBanned = true,
+                    LastActivity = DateTimeOffset.UtcNow,
+                    Status = UserStatus.Online,
+                    Email = $"expectedEmail{i}",
+                    LastNudged = DateTimeOffset.UtcNow,
+                    Name = $"expectedName{i}",
+                    PhotoName = $"expectedPhotoName{i}",
+                    SaasUserId = $"expectedSaasUserId{i}"
+                };
+                await UnitOfWork.MemberRepository.AddMemberAsync(member);
+                expectedMembers.Add(member);
+            }
+
+            var notExpectedMembers = new List<Member>();
+            for (var i = 0; i < 5; i++)
+            {
+                var member = new Member
+                {
+                    Id = Guid.NewGuid(),
+                    Role = UserRole.User,
+                    IsAfk = true,
+                    IsBanned = true,
+                    LastActivity = DateTimeOffset.UtcNow,
+                    Status = UserStatus.Online,
+                    Email = $"notExpectedEmail{i}",
+                    LastNudged = DateTimeOffset.UtcNow,
+                    Name = $"notExpectedName{i}",
+                    PhotoName = $"notExpectedPhotoName{i}",
+                    SaasUserId = $"notExpectedSaasUserId{i}"
+                };
+                await UnitOfWork.MemberRepository.AddMemberAsync(member);
+                notExpectedMembers.Add(member);
+            }
+
+            // Act
+            var membersFromChannel = await UnitOfWork.MemberRepository.GetMembersExceptProvidedAsync(notExpectedMembers.Select(x => x.Id));
 
             // Assert
             membersFromChannel.Should().BeEquivalentTo(expectedMembers);

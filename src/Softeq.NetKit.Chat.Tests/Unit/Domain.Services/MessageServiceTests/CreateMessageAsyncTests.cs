@@ -25,7 +25,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 .ReturnsAsync(member)
                 .Verifiable();
 
-            _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.IsAny<Guid>()))
+            _channelRepositoryMock.Setup(x => x.IsChannelExistsAndOpenAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(false)
                 .Verifiable();
 
@@ -72,7 +72,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 ForwardedMessageId = new Guid("1325E3C3-7D3E-4502-9CE8-7D7A902C90EE")
             };
 
-            _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.IsAny<Guid>()))
+            _channelRepositoryMock.Setup(x => x.IsChannelExistsAndOpenAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(true)
                 .Verifiable();
 
@@ -109,7 +109,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 ImageUrl = "ImageUrl"
             };
 
-            _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.Is<Guid>(channelId => channelId.Equals(request.ChannelId))))
+            _channelRepositoryMock.Setup(x => x.IsChannelExistsAndOpenAsync(It.Is<Guid>(channelId => channelId.Equals(request.ChannelId))))
                 .ReturnsAsync(true)
                 .Verifiable();
 
@@ -175,7 +175,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
                 ImageUrl = "ImageUrl"
             };
 
-            _channelRepositoryMock.Setup(x => x.IsChannelExistsAsync(It.IsAny<Guid>()))
+            _channelRepositoryMock.Setup(x => x.IsChannelExistsAndOpenAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(true)
                 .Verifiable();
 

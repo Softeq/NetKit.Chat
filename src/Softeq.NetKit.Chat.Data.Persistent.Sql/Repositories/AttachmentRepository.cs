@@ -56,7 +56,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = $@"
-                    DELETE FROM Attachments 
+                    DELETE 
+                    FROM 
+                        Attachments 
                     WHERE 
                         {nameof(Attachment.Id)} = @{nameof(attachmentId)}";
 
@@ -127,7 +129,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = $@"
-                    DELETE FROM Attachments
+                    DELETE 
+                    FROM 
+                        Attachments
                     WHERE 
                         {nameof(Attachment.MessageId)} = @{nameof(messageId)}";
 

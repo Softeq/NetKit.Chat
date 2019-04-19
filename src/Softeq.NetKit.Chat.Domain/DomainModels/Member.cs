@@ -19,6 +19,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public bool IsAfk { get; set; }
 
         public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
 
         [StringLength(255)]
         public string SaasUserId { get; set; }
