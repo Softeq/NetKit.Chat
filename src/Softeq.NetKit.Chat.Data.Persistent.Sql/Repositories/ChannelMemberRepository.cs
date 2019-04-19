@@ -110,6 +110,19 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT 
+                        {nameof(Member.Id)},
+                        {nameof(Member.Email)},
+                        {nameof(Member.IsAfk)},
+                        {nameof(Member.IsBanned)},
+                        {nameof(Member.LastActivity)},
+                        {nameof(Member.LastNudged)},
+                        {nameof(Member.Name)},
+                        {nameof(Member.PhotoName)},
+                        {nameof(Member.Role)},
+                        {nameof(Member.SaasUserId)},
+                        {nameof(Member.Status)},
+                        {nameof(Member.IsActive)},
+                        {nameof(Member.IsDeleted)},
                         {nameof(ChannelMember.ChannelId)}, 
                         {nameof(ChannelMember.MemberId)}, 
                         {nameof(ChannelMember.LastReadMessageId)}, 
