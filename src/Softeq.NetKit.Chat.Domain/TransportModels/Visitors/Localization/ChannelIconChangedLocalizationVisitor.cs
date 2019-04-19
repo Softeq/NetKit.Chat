@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization
         {
             entity.Localization = new LocalizationResponse
             {
-                Key = LocalizationKeys.SystemMessageDeleted,
+                Key = LocalizationKeys.SystemChannelIconChanged,
                 Parameters = new Dictionary<string, string>
                 {
                     [nameof(_channel.PhotoUrl)] = _channel.PhotoUrl

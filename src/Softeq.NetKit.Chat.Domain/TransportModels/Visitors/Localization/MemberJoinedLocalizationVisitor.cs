@@ -22,7 +22,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization
         {
             entity.Localization = new LocalizationResponse
             {
-                Key = LocalizationKeys.SystemMessageJoined,
+                Key = LocalizationKeys.SystemMemberJoined,
                 Parameters = new Dictionary<string, string>
                 {
                     [nameof(_member.UserName)] = _member.UserName
