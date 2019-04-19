@@ -104,6 +104,48 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<IReadOnlyCollection<ChannelMember>> GetChannelMembersWithMemberDetailsAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(Member.Id)},
+                        {nameof(Member.Email)},
+                        {nameof(Member.IsAfk)},
+                        {nameof(Member.IsBanned)},
+                        {nameof(Member.LastActivity)},
+                        {nameof(Member.LastNudged)},
+                        {nameof(Member.Name)},
+                        {nameof(Member.PhotoName)},
+                        {nameof(Member.Role)},
+                        {nameof(Member.SaasUserId)},
+                        {nameof(Member.Status)},
+                        {nameof(Member.IsActive)},
+                        {nameof(Member.IsDeleted)},
+                        {nameof(ChannelMember.ChannelId)}, 
+                        {nameof(ChannelMember.MemberId)}, 
+                        {nameof(ChannelMember.LastReadMessageId)}, 
+                        {nameof(ChannelMember.IsMuted)}, 
+                        {nameof(ChannelMember.IsPinned)}
+                    FROM 
+                        ChannelMembers cm
+                    INNER JOIN Members m 
+                        ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
+                    WHERE {nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
+
+                return (await connection.QueryAsync<ChannelMember, Member, ChannelMember>(
+                    sqlQuery,
+                    (channelMember, member) =>
+                    {
+                        channelMember.Member = member;
+                        channelMember.MemberId = member.Id;
+                        return channelMember;
+                    },
+                    new {channelId})).ToList().AsReadOnly();
+            }
+        }
+
         public async Task MuteChannelAsync(Guid memberId, Guid channelId, bool isMuted)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

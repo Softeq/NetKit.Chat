@@ -87,6 +87,26 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<IReadOnlyCollection<string>> GetChannelMemberClientConnectionIdsAsync(Guid channelId, Guid memberId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT 
+                        client.{nameof(Client.ClientConnectionId)}
+                    FROM 
+                        Clients client
+                    LEFT JOIN Members member 
+                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
+                    LEFT JOIN ChannelMembers channelMember 
+                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
+                    WHERE 
+                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND channelMember.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";
+
+                return (await connection.QueryAsync<string>(sqlQuery, new { channelId, memberId })).ToList().AsReadOnly();
+            }
+        }
+
         public async Task<Client> GetClientWithMemberAsync(string clientConnectionId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
@@ -111,7 +131,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.Role)},
                         m.{nameof(Member.SaasUserId)},
                         m.{nameof(Member.Status)},
-                        m.{nameof(Member.IsActive)}
+                        m.{nameof(Member.IsActive)},
+                        m.{nameof(Member.IsDeleted)}
                     FROM 
                         Clients c 
                     INNER JOIN Members m 
@@ -217,7 +238,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.Role)},
                         m.{nameof(Member.SaasUserId)},
                         m.{nameof(Member.Status)},
-                        m.{nameof(Member.IsActive)}
+                        m.{nameof(Member.IsActive)},
+                        m.{nameof(Member.IsDeleted)}
                     FROM 
                         Clients c 
                     INNER JOIN Members m 

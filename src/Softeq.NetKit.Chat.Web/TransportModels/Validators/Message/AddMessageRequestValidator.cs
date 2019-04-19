@@ -12,7 +12,7 @@ namespace Softeq.NetKit.Chat.Web.TransportModels.Validators.Message
         public AddMessageRequestValidator()
         {
             RuleFor(x => x.ClientConnectionId).NotNull().NotEmpty();
-            RuleFor(x => x.Body).NotNull().NotEmpty().When(x => string.IsNullOrEmpty(x.ImageUrl)); ;
+            RuleFor(x => x.Body).NotNull().NotEmpty();
             RuleFor(x => x.ForwardedMessageId).NotEmpty().When(customer => customer.Type == MessageType.Forward);
         }
     }

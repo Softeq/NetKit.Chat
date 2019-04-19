@@ -54,7 +54,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = $@"
-                    DELETE FROM Notifications 
+                    DELETE 
+                    FROM 
+                        Notifications 
                     WHERE 
                         {nameof(Notification.Id)} = @{nameof(notificationId)}";
 
@@ -115,6 +117,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         me.{nameof(Member.SaasUserId)},
                         me.{nameof(Member.Status)},
                         me.{nameof(Member.IsActive)},
+                        me.{nameof(Member.IsDeleted)},
                         c.{nameof(Channel.Id)}, 
                         c.{nameof(Channel.Created)}, 
                         c.{nameof(Channel.Name)}, 

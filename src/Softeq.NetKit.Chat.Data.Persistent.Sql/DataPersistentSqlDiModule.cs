@@ -18,7 +18,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
             {
                 var context = x.Resolve<IComponentContext>();
                 var config = context.Resolve<IConfiguration>();
-                return new SqlConnectionFactory(new SqlConnectionStringBuilder(config["Database:ConnectionString"]));
+                return new SqlConnectionFactory(new SqlConnectionStringBuilder(config["ConnectionStrings:DefaultConnection"]));
             }).As<ISqlConnectionFactory>();
 
             builder.Register(x =>
@@ -38,7 +38,12 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
             builder.Register(x => new UnitOfWork(x.Resolve<ISqlConnectionFactory>(), x.Resolve<TransactionConfiguration>()))
                 .AsImplementedInterfaces();
 
-            builder.RegisterType<DatabaseConfig>()
+            builder.Register(x =>
+                {
+                    var context = x.Resolve<IComponentContext>();
+                    var config = context.Resolve<IConfiguration>();
+                    return new DatabaseConfig(config["ConnectionStrings:DefaultConnection"]);
+                })
                 .AsSelf()
                 .SingleInstance();
         }

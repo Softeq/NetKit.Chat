@@ -7,10 +7,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.Configuration
 {
     internal class MessagesConfiguration
     {
-        public MessagesConfiguration(IConfiguration configuration)
+        public MessagesConfiguration(int messageAttachmentsLimit, int lastMessageReadCount)
         {
-            MessageAttachmentsLimit = configuration.GetValue<int>("Message:MessageAttachmentsLimit");
-            LastMessageReadCount = configuration.GetValue<int>("Message:LastMessageReadCount");
+            MessageAttachmentsLimit = messageAttachmentsLimit;
+            LastMessageReadCount = lastMessageReadCount;
         }
 
         public int MessageAttachmentsLimit { get; }

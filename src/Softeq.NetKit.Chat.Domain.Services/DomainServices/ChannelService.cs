@@ -132,8 +132,17 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var exitingChannelId = await UnitOfWork.ChannelRepository.GetDirectChannelForMembersAsync(creator.Id, member.Id);
             if (exitingChannelId != default(Guid))
             {
-                throw new NetKitChatInvalidOperationException($"Unable to create direct channel. Channel with Id {exitingChannelId} already exists.");
+                // open existing direct channel
+                var existingDirectChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(exitingChannelId);
+
+                existingDirectChannel.Messages = (await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(exitingChannelId)).ToList();
+
+                existingDirectChannel.IsClosed = false;
+                await UnitOfWork.ChannelRepository.UpdateChannelAsync(existingDirectChannel);
+
+                return DomainModelsMapper.MapToDirectChannelSummaryResponse(existingDirectChannel, creator, member);
             }
+
             var newChannel = new Channel
             {
                 Id = Guid.NewGuid(),
@@ -165,6 +174,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 await UnitOfWork.ChannelRepository.AddChannelAsync(newChannel);
+
                 foreach (var channelMember in newChannel.Members)
                 {
                     await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
@@ -173,7 +183,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var channel = await UnitOfWork.ChannelRepository.GetChannelWithCreatorAsync(newChannel.Id);
 
-            return DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, creatorChannelMember, member);
+            return DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, creator, member);
         }
 
         public async Task<IReadOnlyCollection<ChannelResponse>> GetMemberChannelsAsync(string saasUserId)
@@ -268,12 +278,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to close channel. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
-            if (channel.Type == ChannelType.Direct)
-            {
-                throw new NetKitChatInvalidOperationException($"Unable to close direct channel {nameof(channelId)}:{channelId}.");
-            }
-
-            if (member.Id != channel.CreatorId)
+            if (member.Id != channel.CreatorId && channel.Type != ChannelType.Direct)
             {
                 throw new NetKitChatAccessForbiddenException($"Unable to close channel {nameof(channelId)}:{channelId}. Channel owner required.");
             }
@@ -286,33 +291,38 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<IReadOnlyCollection<ChannelSummaryResponse>> GetAllowedChannelsAsync(string saasUserId)
         {
-            var creator = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            if (creator == null)
+            var currentUser = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+            if (currentUser == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to get allowed channels. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
             var channelsResponse = new List<ChannelSummaryResponse>();
 
-            var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAndCreatorAsync(creator.Id);
+            var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAndCreatorAsync(currentUser.Id);
             foreach (var channel in channels)
             {
-                var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(creator.Id, channel.Id);
+                var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(currentUser.Id, channel.Id);
                 if (channel.Type == ChannelType.Direct)
                 {
                     //TODO: Extend existing query to make one single request to get all data for both direct and group channel
-                    var members = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(channel.Id);
-                    var directChannelMember = members.First(x => x.MemberId != creator.Id);
-                    var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(directChannelMember.MemberId);
+                    var members = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(channel.Id);
+                    var directChannelMember = members.SingleOrDefault(x => x.MemberId != currentUser.Id);
+                    if (directChannelMember == null)
+                    {
+                        throw new NetKitChatNotFoundException($"Direct channel member is not found.");
+                    }
+
+                    var member = directChannelMember.Member;
                     ChannelSummaryResponse channelSummaryResponse;
                     if (channelMember.LastReadMessageId.HasValue)
                     {
                         var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(channelMember.LastReadMessageId.Value);
-                        channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, channelMember, member, lastReadMessage);
+                        channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, currentUser, member, lastReadMessage);
                     }
                     else
                     {
-                        channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, channelMember, member);
+                        channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, currentUser, member);
                     }
                     channelsResponse.Add(channelSummaryResponse);
                 }

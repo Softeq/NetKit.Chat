@@ -1,5 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
+
 namespace Softeq.NetKit.Chat.Web.Common
 {
     public static class AttachmentsUtils

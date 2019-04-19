@@ -3,6 +3,7 @@
 
 using System;
 using Autofac;
+using Microsoft.Extensions.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
@@ -14,7 +15,14 @@ namespace Softeq.NetKit.Chat.Domain.Services
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<MessagesConfiguration>()
+            builder.Register(x =>
+                {
+                    var context = x.Resolve<IComponentContext>();
+                    var config = context.Resolve<IConfiguration>();
+                    return new MessagesConfiguration(
+                        Convert.ToInt32(config["Message:MessageAttachmentsLimit"]),
+                        Convert.ToInt32(config["Message:LastMessageReadCount"]));
+                })
                 .AsSelf();
 
             builder.RegisterType<ChannelService>()
