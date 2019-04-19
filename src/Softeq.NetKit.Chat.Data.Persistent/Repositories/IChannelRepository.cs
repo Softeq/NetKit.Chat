@@ -20,6 +20,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task IncrementChannelMembersCount(Guid channelId);
         Task DecrementChannelMembersCount(Guid channelId);
         Task<bool> IsChannelExistsAsync(Guid channelId);
+        Task<bool> IsChannelExistsAndOpenAsync(Guid channelId);
         Task<Channel> GetChannelAsync(Guid channelId);
         Task<Guid> GetDirectChannelForMembersAsync(Guid member1Id, Guid member2Id);
     }

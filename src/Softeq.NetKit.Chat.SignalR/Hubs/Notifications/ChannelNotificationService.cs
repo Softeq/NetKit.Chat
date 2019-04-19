@@ -50,6 +50,14 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
         }
 
+        public async Task OnJoinDirectChannel(MemberSummary member, ChannelSummaryResponse channel)
+        {
+            var clientIds = await GetChannelMemberClientConnectionIdsAsync(channel.Id, member.Id);
+
+            // Tell the people in this room that you've joined
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
+        }
+
         public async Task OnLeaveChannel(MemberSummary member, Guid channelId)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(channelId);

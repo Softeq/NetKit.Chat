@@ -54,8 +54,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to create message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
             }
 
-            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
-            if (!isChannelExists)
+            var isChannelOpen = await UnitOfWork.ChannelRepository.IsChannelExistsAndOpenAsync(request.ChannelId);
+            if (!isChannelOpen)
             {
                 throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
             }

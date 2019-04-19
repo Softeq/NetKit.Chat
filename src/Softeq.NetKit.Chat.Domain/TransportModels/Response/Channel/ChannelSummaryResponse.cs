@@ -26,6 +26,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel
         [JsonIgnore]
         public Guid DirectMemberId { get; set; }
         public MemberSummary DirectMember { get; set; }
+        [JsonIgnore]
         public string CreatorSaasUserId { get; set; }
         public string Description { get; set; }
         public string WelcomeMessage { get; set; }
