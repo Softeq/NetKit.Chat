@@ -19,13 +19,12 @@ namespace Softeq.NetKit.Chat.Domain.Services
                     var context = x.Resolve<IComponentContext>();
                     var config = context.Resolve<IConfiguration>();
 
-                    return new SystemMessagesConfiguration
-                    {
-                        MemberJoined = config["SystemMessagesTemplates:MemberJoined"],
-                        MemberDeleted = config["SystemMessagesTemplates:MemberDeleted"],
-                        ChannelIconChanged = config["SystemMessagesTemplates:ChannelNameChanged"],
-                        ChannelNameChanged = config["SystemMessagesTemplates:ChannelIconChanged"]
-                    };
+                    return new SystemMessagesConfiguration(
+                        config["SystemMessagesTemplates:MemberJoined"],
+                        config["SystemMessagesTemplates:MemberDeleted"],
+                        config["SystemMessagesTemplates:MemberLeft"],
+                        config["SystemMessagesTemplates:ChannelNameChanged"],
+                        config["SystemMessagesTemplates:ChannelIconChanged"]);
                 })
                 .As<SystemMessagesConfiguration>();
 

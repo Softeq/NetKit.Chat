@@ -5,9 +5,24 @@ namespace Softeq.NetKit.Chat.Domain.Services.Configuration
 {
     public class SystemMessagesConfiguration
     {
-        public string MemberJoined { get; set; }
-        public string MemberDeleted { get; set; }
-        public string ChannelNameChanged { get; set; }
-        public string ChannelIconChanged { get; set; }
+        public SystemMessagesConfiguration(
+                        string memberJoined,
+                        string memberDeleted,
+                        string memberLeft,
+                        string channelNameChanged,
+                        string channelIconChanged)
+        {
+            MemberJoined = memberJoined;
+            MemberDeleted = memberDeleted;
+            MemberLeft = memberLeft;
+            ChannelNameChanged = channelNameChanged;
+            ChannelIconChanged = channelIconChanged;
+        }
+
+        public string MemberJoined { get; }
+        public string MemberDeleted { get; }
+        public string MemberLeft { get; }
+        public string ChannelNameChanged { get; }
+        public string ChannelIconChanged { get; }
     }
 }

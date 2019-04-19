@@ -200,6 +200,8 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             await _pushNotificationService.UnsubscribeUserFromTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
 
             await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
+
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberLeftLocalizationVisitor(member), _systemMessagesConfiguration.MemberLeft, member.UserName);
         }
 
         public async Task DeleteMemberFromChannelAsync(DeleteMemberRequest request)
