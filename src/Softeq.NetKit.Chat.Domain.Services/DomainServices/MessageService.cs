@@ -164,6 +164,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
             }
 
+            if (message.Type == MessageType.System)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} update is forbidden.");
+            }
+
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
@@ -200,6 +205,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (message == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
+            }
+
+            if (message.Type == MessageType.System)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to add attachment to system message. Message {nameof(request.MessageId)}:{request.MessageId}.");
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
