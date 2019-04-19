@@ -28,8 +28,22 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Notifications(Id, IsRead, MessageId, ChannelId, MemberId) 
-                                 VALUES (@Id, @IsRead, @MessageId, @ChannelId, @MemberId)";
+                var sqlQuery = $@"
+                    INSERT INTO Notifications
+                    (
+                        {nameof(Notification.Id)}, 
+                        {nameof(Notification.IsRead)}, 
+                        {nameof(Notification.MessageId)}, 
+                        {nameof(Notification.ChannelId)}, 
+                        {nameof(Notification.MemberId)}
+                    ) VALUES 
+                    (
+                        @{nameof(Notification.Id)}, 
+                        @{nameof(Notification.IsRead)}, 
+                        @{nameof(Notification.MessageId)}, 
+                        @{nameof(Notification.ChannelId)}, 
+                        @{nameof(Notification.MemberId)}
+                    )";
 
                 await connection.ExecuteScalarAsync(sqlQuery, notification);
             }
@@ -39,8 +53,12 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"DELETE FROM Notifications 
-                                 WHERE Id = @notificationId";
+                var sqlQuery = $@"
+                    DELETE 
+                    FROM 
+                        Notifications 
+                    WHERE 
+                        {nameof(Notification.Id)} = @{nameof(notificationId)}";
 
                 await connection.ExecuteAsync(sqlQuery, new { notificationId });
             }
@@ -50,9 +68,17 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Notifications
-                                 WHERE Id = @notificationId";
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(Notification.Id)}, 
+                        {nameof(Notification.IsRead)}, 
+                        {nameof(Notification.MessageId)}, 
+                        {nameof(Notification.ChannelId)}, 
+                        {nameof(Notification.MemberId)}
+                    FROM 
+                        Notifications
+                    WHERE 
+                        {nameof(Notification.Id)} = @{nameof(notificationId)}";
 
                 return (await connection.QueryAsync<Notification>(sqlQuery, new { notificationId })).FirstOrDefault();
             }
@@ -62,12 +88,57 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT * 
-                                 FROM Notifications n
-                                 INNER JOIN Messages m ON n.MessageId = m.Id
-                                 INNER JOIN Members me ON m.OwnerId = me.Id
-                                 INNER JOIN Channels c ON n.ChannelId = c.Id
-                                 WHERE n.MemberId = @memberId";
+                var sqlQuery = $@"
+                    SELECT 
+                        n.{nameof(Notification.Id)}, 
+                        n.{nameof(Notification.IsRead)}, 
+                        n.{nameof(Notification.MessageId)}, 
+                        n.{nameof(Notification.ChannelId)}, 
+                        n.{nameof(Notification.MemberId)},
+                        m.{nameof(Message.Id)},
+                        m.{nameof(Message.Body)},
+                        m.{nameof(Message.Created)},
+                        m.{nameof(Message.ImageUrl)},
+                        m.{nameof(Message.Type)},
+                        m.{nameof(Message.ChannelId)},
+                        m.{nameof(Message.OwnerId)},
+                        m.{nameof(Message.Updated)},
+                        m.{nameof(Message.ForwardMessageId)},
+                        m.{nameof(Message.AccessibilityStatus)},
+                        me.{nameof(Member.Id)},
+                        me.{nameof(Member.Email)},
+                        me.{nameof(Member.IsAfk)},
+                        me.{nameof(Member.IsBanned)},
+                        me.{nameof(Member.LastActivity)},
+                        me.{nameof(Member.LastNudged)},
+                        me.{nameof(Member.Name)},
+                        me.{nameof(Member.PhotoName)},
+                        me.{nameof(Member.Role)},
+                        me.{nameof(Member.SaasUserId)},
+                        me.{nameof(Member.Status)},
+                        me.{nameof(Member.IsActive)},
+                        me.{nameof(Member.IsDeleted)},
+                        c.{nameof(Channel.Id)}, 
+                        c.{nameof(Channel.Created)}, 
+                        c.{nameof(Channel.Name)}, 
+                        c.{nameof(Channel.CreatorId)}, 
+                        c.{nameof(Channel.IsClosed)}, 
+                        c.{nameof(Channel.MembersCount)}, 
+                        c.{nameof(Channel.Type)}, 
+                        c.{nameof(Channel.Description)}, 
+                        c.{nameof(Channel.WelcomeMessage)}, 
+                        c.{nameof(Channel.Updated)}, 
+                        c.{nameof(Channel.PhotoUrl)}
+                    FROM 
+                        Notifications n
+                    INNER JOIN Messages m 
+                        ON n.{nameof(Notification.MessageId)} = m.{nameof(Message.Id)}
+                    INNER JOIN Members me 
+                        ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
+                    INNER JOIN Channels c 
+                        ON n.{nameof(Notification.ChannelId)} = c.{nameof(Channel.Id)}
+                    WHERE 
+                        n.{nameof(Notification.MemberId)} = @{nameof(memberId)}";
 
                 return (await connection.QueryAsync<Notification, Message, Member, Channel, Notification>(
                         sqlQuery,

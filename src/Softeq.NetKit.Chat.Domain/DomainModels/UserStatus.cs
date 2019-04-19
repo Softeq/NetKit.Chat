@@ -5,7 +5,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
     public enum UserStatus
     {
-        Offline,
-        Online
+        Offline = 0,
+        Online = 1
     }
 }

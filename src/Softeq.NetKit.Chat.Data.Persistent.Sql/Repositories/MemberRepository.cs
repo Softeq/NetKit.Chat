@@ -28,20 +28,34 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var whereCondition = !string.IsNullOrEmpty(nameFilter)
-                    ? " WHERE LOWER(Name) LIKE LOWER('%' + @nameFilter + '%') AND SaasUserId <> @currentUserSaasId AND Members.IsDeleted = 0"
-                    : " WHERE SaasUserId <> @currentUserSaasId AND Members.IsDeleted = 0";
-
-                var sqlQuery = @"SELECT *
-                                 FROM Members " +
-                                 whereCondition +
-                               @" ORDER BY Name
-                                 OFFSET @pageSize * (@pageNumber - 1) ROWS
-                                 FETCH NEXT @pageSize ROWS ONLY
-
-                                 SELECT COUNT(*)
-                                 FROM Members" +
-                                 whereCondition;
+                var sqlQuery = $@"
+                    SELECT
+                        {nameof(Member.Id)},
+                        {nameof(Member.Email)},
+                        {nameof(Member.IsAfk)},
+                        {nameof(Member.IsBanned)},
+                        {nameof(Member.LastActivity)},
+                        {nameof(Member.LastNudged)},
+                        {nameof(Member.Name)},
+                        {nameof(Member.PhotoName)},
+                        {nameof(Member.Role)},
+                        {nameof(Member.SaasUserId)},
+                        {nameof(Member.Status)},
+                        {nameof(Member.IsActive)},
+                        {nameof(Member.IsDeleted)}
+                    FROM 
+                        Members 
+                    {(!string.IsNullOrEmpty(nameFilter) ? $" WHERE LOWER({nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")} 
+                    ORDER BY 
+                        {nameof(Member.Name)}
+                    OFFSET @{nameof(pageSize)} * (@{nameof(pageNumber)} - 1) ROWS
+                    FETCH NEXT @{nameof(pageSize)} ROWS ONLY
+                    
+                    SELECT 
+                        COUNT(*)
+                    FROM 
+                        Members 
+                    {(!string.IsNullOrEmpty(nameFilter) ? $" WHERE LOWER({nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")}";
 
                 var data = await connection.QueryMultipleAsync(sqlQuery, new { pageNumber, pageSize, nameFilter, currentUserSaasId });
 
@@ -63,24 +77,54 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var whereCondition = @"WHERE Id NOT IN (
-                                        SELECT ChannelMembers.MemberId
-                                        FROM Members
-                                        INNER JOIN ChannelMembers
-                                        ON Members.Id = ChannelMembers.MemberId
-                                        WHERE ChannelMembers.ChannelId = @channelId)" +
-                                        (!string.IsNullOrEmpty(nameFilter) ? " AND LOWER(Members.Name) LIKE LOWER('%' + @nameFilter + '%') AND Members.IsDeleted = 0" : " AND Members.IsDeleted = 0");
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(Member.Id)},
+                        {nameof(Member.Email)},
+                        {nameof(Member.IsAfk)},
+                        {nameof(Member.IsBanned)},
+                        {nameof(Member.LastActivity)},
+                        {nameof(Member.LastNudged)},
+                        {nameof(Member.Name)},
+                        {nameof(Member.PhotoName)},
+                        {nameof(Member.Role)},
+                        {nameof(Member.SaasUserId)},
+                        {nameof(Member.Status)},
+                        {nameof(Member.IsActive)},
+                        {nameof(Member.IsDeleted)}
+                    FROM 
+                        Members 
+                    WHERE 
+                        {nameof(Member.Id)} NOT IN (
+                            SELECT 
+                                ChannelMembers.{nameof(ChannelMember.MemberId)}
+                            FROM 
+                                Members
+                            INNER JOIN ChannelMembers
+                                ON Members.{nameof(Member.Id)} = ChannelMembers.{nameof(ChannelMember.MemberId)}
+                            WHERE 
+                                ChannelMembers.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)})
+                                {(!string.IsNullOrEmpty(nameFilter) ? $" AND LOWER(Members.{nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")}
+                    ORDER BY 
+                        {nameof(Member.Name)}
+                    OFFSET @{nameof(pageSize)} * (@{nameof(pageNumber)} - 1) ROWS
+                    FETCH NEXT @{nameof(pageSize)} ROWS ONLY
 
-                var sqlQuery = @"SELECT *  
-                                 FROM Members " +
-                                 whereCondition +
-                               @" ORDER BY Name
-                                 OFFSET @pageSize * (@pageNumber - 1) ROWS
-                                 FETCH NEXT @pageSize ROWS ONLY
-
-                                 SELECT COUNT(*) 
-                                 FROM Members " +
-                                 whereCondition;
+                    SELECT 
+                        COUNT(*) 
+                    FROM 
+                        Members 
+                    WHERE 
+                        {nameof(Member.Id)} NOT IN (
+                            SELECT 
+                                ChannelMembers.{nameof(ChannelMember.MemberId)}
+                            FROM 
+                                Members
+                            INNER JOIN ChannelMembers
+                                ON Members.{nameof(Member.Id)} = ChannelMembers.{nameof(ChannelMember.MemberId)}
+                            WHERE 
+                                ChannelMembers.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)})
+                                {(!string.IsNullOrEmpty(nameFilter) ? $" AND LOWER(Members.{nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")}";
 
                 var data = await connection.QueryMultipleAsync(sqlQuery, new { channelId, pageNumber, pageSize, nameFilter });
 
@@ -102,9 +146,25 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT *
-                                 FROM Members
-                                 WHERE Id = @memberId";
+                var sqlQuery = $@"
+                    SELECT 
+                        {nameof(Member.Id)},
+                        {nameof(Member.Email)},
+                        {nameof(Member.IsAfk)},
+                        {nameof(Member.IsBanned)},
+                        {nameof(Member.LastActivity)},
+                        {nameof(Member.LastNudged)},
+                        {nameof(Member.Name)},
+                        {nameof(Member.PhotoName)},
+                        {nameof(Member.Role)},
+                        {nameof(Member.SaasUserId)},
+                        {nameof(Member.Status)},
+                        {nameof(Member.IsActive)},
+                        {nameof(Member.IsDeleted)}
+                    FROM 
+                        Members
+                    WHERE 
+                        {nameof(Member.Id)} = @{nameof(memberId)}";
 
                 return (await connection.QueryAsync<Member>(sqlQuery, new { memberId })).FirstOrDefault();
             }
@@ -114,8 +174,33 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"INSERT INTO Members(Id, Email, IsAfk, IsBanned, LastActivity, LastNudged, Name, PhotoName, Role, SaasUserId, Status, IsDeleted) 
-                                 VALUES (@Id, @Email, @IsAfk, @IsBanned, @LastActivity, @LastNudged, @Name, @PhotoName, @Role, @SaasUserId, @Status, @IsDeleted)";
+                var sqlQuery = $@"
+                    INSERT INTO Members
+                    (
+                        {nameof(Member.Id)}, 
+                        {nameof(Member.Email)}, 
+                        {nameof(Member.IsAfk)}, 
+                        {nameof(Member.IsBanned)}, 
+                        {nameof(Member.LastActivity)}, 
+                        {nameof(Member.LastNudged)}, 
+                        {nameof(Member.Name)}, 
+                        {nameof(Member.PhotoName)}, 
+                        {nameof(Member.Role)}, 
+                        {nameof(Member.SaasUserId)}, 
+                        {nameof(Member.Status)}
+                    ) VALUES (
+                        @{nameof(Member.Id)}, 
+                        @{nameof(Member.Email)}, 
+                        @{nameof(Member.IsAfk)}, 
+                        @{nameof(Member.IsBanned)}, 
+                        @{nameof(Member.LastActivity)}, 
+                        @{nameof(Member.LastNudged)}, 
+                        @{nameof(Member.Name)}, 
+                        @{nameof(Member.PhotoName)}, 
+                        @{nameof(Member.Role)}, 
+                        @{nameof(Member.SaasUserId)}, 
+                        @{nameof(Member.Status)}
+                    )";
 
                 await connection.ExecuteScalarAsync(sqlQuery, member);
             }
@@ -125,19 +210,22 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"UPDATE Members 
-                                 SET Email = @Email, 
-                                     IsAfk = @IsAfk, 
-                                     IsBanned = @IsBanned, 
-                                     LastActivity = @LastActivity, 
-                                     LastNudged = @LastNudged, 
-                                     Name = @Name, 
-                                     PhotoName = @PhotoName,
-                                     Role = @Role, 
-                                     SaasUserId = @SaasUserId, 
-                                     Status = @Status,
-                                     IsDeleted = @IsDeleted
-                                 WHERE Id = @Id";
+                var sqlQuery = $@"
+                    UPDATE Members 
+                    SET 
+                        {nameof(Member.Email)} = @{nameof(Member.Email)},
+                        {nameof(Member.IsAfk)} = @{nameof(Member.IsAfk)}, 
+                        {nameof(Member.IsBanned)} = @{nameof(Member.IsBanned)}, 
+                        {nameof(Member.LastActivity)} = @{nameof(Member.LastActivity)}, 
+                        {nameof(Member.LastNudged)} = @{nameof(Member.LastNudged)}, 
+                        {nameof(Member.Name)} = @{nameof(Member.Name)}, 
+                        {nameof(Member.PhotoName)} = @{nameof(Member.PhotoName)},
+                        {nameof(Member.Role)} = @{nameof(Member.Role)}, 
+                        {nameof(Member.SaasUserId)} = @{nameof(Member.SaasUserId)}, 
+                        {nameof(Member.Status)} = @{nameof(Member.Status)}
+                        {nameof(Member.IsDeleted)} = @{nameof(Member.IsDeleted)}
+                    WHERE 
+                        {nameof(Member.Id)} = @{nameof(Member.Id)}";
 
                 await connection.ExecuteScalarAsync(sqlQuery, member);
             }
@@ -147,9 +235,12 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"UPDATE Members 
-                                 SET IsActive = @IsActive
-                                 WHERE Id = @Id";
+                var sqlQuery = $@"
+                    UPDATE Members 
+                    SET 
+                        {nameof(Member.IsActive)} = @{nameof(Member.IsActive)}
+                    WHERE 
+                        {nameof(Member.Id)} = @{nameof(Member.Id)}";
 
                 await connection.ExecuteScalarAsync(sqlQuery, member);
             }
@@ -159,9 +250,25 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT * 
-                                 FROM Members
-                                 WHERE SaasUserId = @saasUserId";
+                var sqlQuery = $@"
+                    SELECT
+                        {nameof(Member.Id)},
+                        {nameof(Member.Email)},
+                        {nameof(Member.IsAfk)},
+                        {nameof(Member.IsBanned)},
+                        {nameof(Member.LastActivity)},
+                        {nameof(Member.LastNudged)},
+                        {nameof(Member.Name)},
+                        {nameof(Member.PhotoName)},
+                        {nameof(Member.Role)},
+                        {nameof(Member.SaasUserId)},
+                        {nameof(Member.Status)},
+                        {nameof(Member.IsActive)},
+                        {nameof(Member.IsDeleted)}
+                    FROM 
+                        Members
+                    WHERE 
+                        {nameof(Member.SaasUserId)} = @{nameof(saasUserId)}";
 
                 return (await connection.QueryAsync<Member>(sqlQuery, new { saasUserId })).FirstOrDefault();
             }
@@ -171,10 +278,25 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT m.Id, m.Email, m.IsAfk, m.IsBanned, m.LastActivity, m.LastNudged, m.Name, m.PhotoName, m.Role, m.SaasUserId, m.Status, m.IsDeleted  
-                                 FROM Members m
-                                 INNER JOIN ChannelMembers c ON m.Id = c.MemberId
-                                 WHERE c.ChannelId = @channelId";
+                var sqlQuery = $@"
+                    SELECT 
+                        m.{nameof(Member.Id)}, 
+                        m.{nameof(Member.Email)}, 
+                        m.{nameof(Member.IsAfk)}, 
+                        m.{nameof(Member.IsBanned)}, 
+                        m.{nameof(Member.LastActivity)}, 
+                        m.{nameof(Member.LastNudged)}, 
+                        m.{nameof(Member.Name)}, 
+                        m.{nameof(Member.PhotoName)}, 
+                        m.{nameof(Member.Role)}, 
+                        m.{nameof(Member.SaasUserId)}, 
+                        m.{nameof(Member.Status)}
+                    FROM 
+                        Members m
+                    INNER JOIN ChannelMembers c 
+                        ON m.{nameof(Member.Id)} = c.{nameof(ChannelMember.MemberId)}
+                    WHERE 
+                        c.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<Member>(sqlQuery, new { channelId })).Distinct().ToList().AsReadOnly();
             }
@@ -184,9 +306,28 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = @"SELECT m.Id, m.Email, m.IsAfk, m.IsBanned, m.LastActivity, m.LastNudged, m.Name, m.PhotoName, m.Role, m.SaasUserId, m.Status, m.IsDeleted  
-                                 FROM Members m
-                                 WHERE m.Id NOT IN (SELECT Id FROM Members WHERE Id IN @memberIds)";
+                var sqlQuery = $@"
+                    SELECT 
+                        m.{nameof(Member.Id)}, 
+                        m.{nameof(Member.Email)}, 
+                        m.{nameof(Member.IsAfk)}, 
+                        m.{nameof(Member.IsBanned)}, 
+                        m.{nameof(Member.LastActivity)}, 
+                        m.{nameof(Member.LastNudged)}, 
+                        m.{nameof(Member.Name)}, 
+                        m.{nameof(Member.PhotoName)}, 
+                        m.{nameof(Member.Role)}, 
+                        m.{nameof(Member.SaasUserId)}, 
+                        m.{nameof(Member.Status)},
+                        m.{nameof(Member.IsDeleted)}
+                    FROM Members m
+                    WHERE 
+                        m.{nameof(Member.Id)} NOT IN (
+                        SELECT 
+                            {nameof(Member.Id)} 
+                        FROM Members 
+                        WHERE 
+                            {nameof(Member.Id)} IN @{nameof(memberIds)})";
 
                 return (await connection.QueryAsync<Member>(sqlQuery, new { memberIds })).Distinct().ToList();
             }
