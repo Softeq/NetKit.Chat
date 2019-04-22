@@ -46,6 +46,29 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
+        public async Task<MessageResponse> CreateSystemMessageAsync(CreateMessageRequest request)
+        {
+            var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
+            if (!isChannelExists)
+            {
+                throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
+            }
+
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                ChannelId = request.ChannelId,
+                Body = request.Body,
+                Created = _dateTimeProvider.GetUtcNow(),
+                Type = request.Type
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+            message = await UnitOfWork.MessageRepository.GetAsync(message.Id);
+
+            return DomainModelsMapper.MapToMessageResponse(message);
+        }
+
         public async Task<MessageResponse> CreateMessageAsync(CreateMessageRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
@@ -141,6 +164,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
             }
 
+            if (message.Type == MessageType.System)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} update is forbidden.");
+            }
+
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
@@ -177,6 +205,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (message == null)
             {
                 throw new NetKitChatNotFoundException($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
+            }
+
+            if (message.Type == MessageType.System)
+            {
+                throw new NetKitChatInvalidOperationException($"Unable to add attachment to system message. Message {nameof(request.MessageId)}:{request.MessageId}.");
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);

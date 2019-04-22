@@ -33,7 +33,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService
         protected MemberServiceTestBase()
         {
             _sqlConnectionFactoryMock.Setup(x => x.CreateConnection()).Returns(It.IsAny<SqlConnection>());
-            _unitOfWorkMock = new Mock<UnitOfWork>(_sqlConnectionFactoryMock.Object).As<IUnitOfWork>();
+            _unitOfWorkMock = new Mock<UnitOfWork>(_sqlConnectionFactoryMock.Object, new TransactionConfiguration()).As<IUnitOfWork>();
             _unitOfWorkMock.CallBase = true;
 
             _unitOfWorkMock.Setup(x => x.ChannelRepository).Returns(_channelRepositoryMock.Object);
