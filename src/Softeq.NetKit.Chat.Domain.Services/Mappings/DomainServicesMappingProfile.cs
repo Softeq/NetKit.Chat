@@ -27,8 +27,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 .ForMember(d => d.Sender, opt => opt.MapFrom(s => s.Owner))
                 // This option depends on LastReadMessage and could be set by MappingHelper class
                 .ForMember(d => d.IsRead, opt => opt.Ignore())
-                .ForMember(d => d.ForwardedMessage, opt => opt.MapFrom(s => s.ForwardedMessage));
-            
+                .ForMember(d => d.ForwardedMessage, opt => opt.MapFrom(s => s.ForwardedMessage))
+                .ForMember(d => d.Localization, opt => opt.Ignore());
+
             CreateMap<DomainModels.Member, MemberSummary>()
                 .ForMember(d => d.AvatarUrl, opt => opt.MapFrom(s => s.PhotoName))
                 .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));

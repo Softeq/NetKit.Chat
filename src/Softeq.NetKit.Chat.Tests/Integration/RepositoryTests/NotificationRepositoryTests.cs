@@ -35,16 +35,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 MembersCount = 0
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
-
-            var message = new Message
-            {
-                Id = _messageId,
-                Type = MessageType.Notification,
-                ChannelId = _channelId,
-                OwnerId = _memberId,
-                Created = DateTimeOffset.UtcNow
-            };
-            UnitOfWork.MessageRepository.AddMessageAsync(message).GetAwaiter().GetResult();
         }
 
         [Fact]
