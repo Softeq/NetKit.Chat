@@ -49,7 +49,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
 
         private void CleanUpDatabase()
         {
-            var sqlConnectionFactory = new SqlConnectionFactory(new SqlConnectionStringBuilder(Configuration["ConnectionStrings:DefaultConnection"]));
+            var sqlConnectionFactory = new SqlConnectionFactory(new SqlConnectionStringBuilder(Configuration["Database:ConnectionString"]));
 
             using (var connection = sqlConnectionFactory.CreateConnection())
             {

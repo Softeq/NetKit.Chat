@@ -10,6 +10,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
 {
     public interface IMessageRepository
     {
+        Task<Message> GetAsync(Guid messageId);
         Task<IReadOnlyCollection<Message>> GetAllChannelMessagesWithOwnersAsync(Guid channelId);
         Task<IReadOnlyCollection<Message>> GetAllDirectChannelMessagesWithOwnersAsync(Guid channelId);
         Task<Message> GetMessageWithOwnerAndForwardMessageAsync(Guid messageId);

@@ -24,6 +24,31 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             _sqlConnectionFactory = sqlConnectionFactory;
         }
 
+        public async Task<Message> GetAsync(Guid messageId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT
+                       {nameof(Message.Id)},
+                       {nameof(Message.Body)},
+                       {nameof(Message.Created)},
+                       {nameof(Message.ImageUrl)},
+                       {nameof(Message.Type)},
+                       {nameof(Message.ChannelId)},
+                       {nameof(Message.OwnerId)},
+                       {nameof(Message.Updated)},
+                       {nameof(Message.ForwardMessageId)},
+                       {nameof(Message.AccessibilityStatus)}
+                    FROM 
+                        Messages
+                    WHERE 
+                        {nameof(Message.Id)} = @{nameof(messageId)}";
+
+                return await connection.QueryFirstAsync<Message>(sqlQuery, new { messageId });
+            }
+        }
+
         public async Task<IReadOnlyCollection<Message>> GetAllChannelMessagesWithOwnersAsync(Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

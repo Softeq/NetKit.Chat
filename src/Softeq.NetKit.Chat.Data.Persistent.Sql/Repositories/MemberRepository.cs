@@ -222,7 +222,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(Member.PhotoName)} = @{nameof(Member.PhotoName)},
                         {nameof(Member.Role)} = @{nameof(Member.Role)}, 
                         {nameof(Member.SaasUserId)} = @{nameof(Member.SaasUserId)}, 
-                        {nameof(Member.Status)} = @{nameof(Member.Status)}
+                        {nameof(Member.Status)} = @{nameof(Member.Status)},
                         {nameof(Member.IsDeleted)} = @{nameof(Member.IsDeleted)}
                     WHERE 
                         {nameof(Member.Id)} = @{nameof(Member.Id)}";
