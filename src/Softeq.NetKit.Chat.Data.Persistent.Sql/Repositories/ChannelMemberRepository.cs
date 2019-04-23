@@ -109,30 +109,30 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = $@"
-                    SELECT 
-                        {nameof(Member.Id)},
-                        {nameof(Member.Email)},
-                        {nameof(Member.IsAfk)},
-                        {nameof(Member.IsBanned)},
-                        {nameof(Member.LastActivity)},
-                        {nameof(Member.LastNudged)},
-                        {nameof(Member.Name)},
-                        {nameof(Member.PhotoName)},
-                        {nameof(Member.Role)},
-                        {nameof(Member.SaasUserId)},
-                        {nameof(Member.Status)},
-                        {nameof(Member.IsActive)},
-                        {nameof(Member.IsDeleted)},
-                        {nameof(ChannelMember.ChannelId)}, 
-                        {nameof(ChannelMember.MemberId)}, 
-                        {nameof(ChannelMember.LastReadMessageId)}, 
-                        {nameof(ChannelMember.IsMuted)}, 
-                        {nameof(ChannelMember.IsPinned)}
+                    SELECT
+                        cm.{nameof(ChannelMember.ChannelId)}, 
+                        cm.{nameof(ChannelMember.MemberId)}, 
+                        cm.{nameof(ChannelMember.LastReadMessageId)}, 
+                        cm.{nameof(ChannelMember.IsMuted)}, 
+                        cm.{nameof(ChannelMember.IsPinned)},
+                        m.{nameof(Member.Email)},
+                        m.{nameof(Member.Id)},
+                        m.{nameof(Member.IsAfk)},
+                        m.{nameof(Member.IsBanned)},
+                        m.{nameof(Member.LastActivity)},
+                        m.{nameof(Member.LastNudged)},
+                        m.{nameof(Member.Name)},
+                        m.{nameof(Member.PhotoName)},
+                        m.{nameof(Member.Role)},
+                        m.{nameof(Member.SaasUserId)},
+                        m.{nameof(Member.Status)},
+                        m.{nameof(Member.IsActive)},
+                        m.{nameof(Member.IsDeleted)}
                     FROM 
                         ChannelMembers cm
                     INNER JOIN Members m 
-                        ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
-                    WHERE {nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
+                        ON cm.{nameof(ChannelMember.MemberId)} = m.{nameof(Member.Id)}
+                    WHERE cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<ChannelMember, Member, ChannelMember>(
                     sqlQuery,
