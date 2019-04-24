@@ -41,7 +41,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpGet]
         [Route("/api/me/member")]
-        [ProducesResponseType(typeof(MemberSummary), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MemberSummaryResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMemberAsync()
         {
             var result = await _memberService.GetMemberBySaasUserIdAsync(GetCurrentSaasUserId());
@@ -57,7 +57,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(MemberSummary), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MemberSummaryResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddMemberAsync()
         {
             var userId = GetCurrentSaasUserId();

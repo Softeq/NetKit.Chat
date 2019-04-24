@@ -10,10 +10,10 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
     public interface IChannelNotificationService
     {
-        Task OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel);
-        Task OnJoinDirectChannel(MemberSummary member, ChannelSummaryResponse channel);
-        Task OnLeaveChannel(MemberSummary member, Guid channelId);
-        Task OnDeletedFromChannel(MemberSummary member, Guid channelId);
+        Task OnJoinChannel(MemberSummaryResponse member, ChannelSummaryResponse channel);
+        Task OnJoinDirectChannel(MemberSummaryResponse member, ChannelSummaryResponse channel);
+        Task OnLeaveChannel(MemberSummaryResponse member, Guid channelId);
+        Task OnDeletedFromChannel(MemberSummaryResponse member, Guid channelId);
         Task OnUpdateChannel(ChannelSummaryResponse channel);
         Task OnCloseChannel(ChannelSummaryResponse channel);
         Task OnAddChannel(ChannelSummaryResponse channel);

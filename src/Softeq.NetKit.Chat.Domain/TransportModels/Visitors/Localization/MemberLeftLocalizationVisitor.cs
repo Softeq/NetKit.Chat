@@ -11,9 +11,9 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization
 {
     public class MemberLeftLocalizationVisitor : ILocalizationVisitor<MessageResponse>
     {
-        private readonly MemberSummary _member;
+        private readonly MemberSummaryResponse _member;
 
-        public MemberLeftLocalizationVisitor(MemberSummary member)
+        public MemberLeftLocalizationVisitor(MemberSummaryResponse member)
         {
             _member = member;
         }

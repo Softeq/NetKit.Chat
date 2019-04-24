@@ -42,7 +42,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelClosed, channel);
         }
 
-        public async Task OnJoinChannel(MemberSummary member, ChannelSummaryResponse channel)
+        public async Task OnJoinChannel(MemberSummaryResponse member, ChannelSummaryResponse channel)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
 
@@ -50,7 +50,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
         }
 
-        public async Task OnJoinDirectChannel(MemberSummary member, ChannelSummaryResponse channel)
+        public async Task OnJoinDirectChannel(MemberSummaryResponse member, ChannelSummaryResponse channel)
         {
             var clientIds = await GetChannelMemberClientConnectionIdsAsync(channel.Id, member.Id);
 
@@ -58,7 +58,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
         }
 
-        public async Task OnLeaveChannel(MemberSummary member, Guid channelId)
+        public async Task OnLeaveChannel(MemberSummaryResponse member, Guid channelId)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(channelId);
             var senderClients = await MemberService.GetMemberClientsAsync(member.Id);
@@ -68,7 +68,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channelId);
         }
 
-        public async Task OnDeletedFromChannel(MemberSummary member, Guid channelId)
+        public async Task OnDeletedFromChannel(MemberSummaryResponse member, Guid channelId)
         {
             var channelClients = await GetChannelClientConnectionIdsAsync(channelId);
             var deletingMemberClients = (await MemberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();

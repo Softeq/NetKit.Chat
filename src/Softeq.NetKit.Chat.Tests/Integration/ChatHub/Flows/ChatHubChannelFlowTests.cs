@@ -64,9 +64,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
             _adminSignalRClient.ChannelCreated += OnChannelCreated;
 
             // Subscribe MemberJoined event
-            MemberSummary joinedMember = null;
+            MemberSummaryResponse joinedMember = null;
             ChannelSummaryResponse joinedChannel = null;
-            void OnMemberJoined(MemberSummary memberSummary, ChannelSummaryResponse channelSummaryResponse)
+            void OnMemberJoined(MemberSummaryResponse memberSummary, ChannelSummaryResponse channelSummaryResponse)
             {
                 joinedMember = memberSummary;
                 joinedChannel = channelSummaryResponse;

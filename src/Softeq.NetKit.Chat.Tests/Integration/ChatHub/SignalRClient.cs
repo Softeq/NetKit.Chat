@@ -31,7 +31,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
 
         public event Action ConnectionClosed;
         public event Action<ChannelSummaryResponse> ChannelCreated;
-        public event Action<MemberSummary, ChannelSummaryResponse> MemberJoined;
+        public event Action<MemberSummaryResponse, ChannelSummaryResponse> MemberJoined;
         public event Action<IList<ValidationFailure>, string> ValidationFailed;
         public event Action<MessageResponse> MessageAdded;
         public event Action<MessageResponse> MessageUpdated;
@@ -110,7 +110,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
         {
             _connection.On<IList<ValidationFailure>, string>(HubEvents.RequestValidationFailed, (errors, requestId) => { Execute(ValidationFailed, action => action(errors, requestId)); });
             _connection.On<ChannelSummaryResponse>(HubEvents.ChannelCreated, channel => { Execute(ChannelCreated, action => action(channel)); });
-            _connection.On<MemberSummary, ChannelSummaryResponse>(HubEvents.MemberJoined, (member, channel) => { Execute(MemberJoined, action => action(member, channel)); });
+            _connection.On<MemberSummaryResponse, ChannelSummaryResponse>(HubEvents.MemberJoined, (member, channel) => { Execute(MemberJoined, action => action(member, channel)); });
             _connection.On<MessageResponse>(HubEvents.MessageAdded, response => { Execute(MessageAdded, action => action(response)); });
             _connection.On<MessageResponse>(HubEvents.MessageUpdated, response => { Execute(MessageUpdated, action => action(response)); });
             _connection.On<Guid, ChannelSummaryResponse>(HubEvents.MessageDeleted, (id, response) => { Execute(MessageDeleted, action => action(id, response)); });

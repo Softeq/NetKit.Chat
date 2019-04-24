@@ -39,7 +39,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
         [Fact]
         [Trait("Category", "Unit")]
-        public async Task ShouldReturnMemberSummaryCollection()
+        public async Task ShouldReturnMemberSummaryResponseCollection()
         {
             // Arrange
             var channelId = new Guid("BE5C68F1-5983-4C08-B57B-FD4EFD7295B8");
@@ -53,11 +53,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 .ReturnsAsync(members)
                 .Verifiable();
 
-            List<MemberSummary> memberSummaries = new List<MemberSummary>();
+            List<MemberSummaryResponse> memberSummaries = new List<MemberSummaryResponse>();
             foreach (var member in members)
             {
-                var memberSummary = new MemberSummary();
-                _domainModelsMapperMock.Setup(x => x.MapToMemberSummary(It.Is<Member>(m => m.Equals(member))))
+                var memberSummary = new MemberSummaryResponse();
+                _domainModelsMapperMock.Setup(x => x.MapToMemberSummaryResponse(It.Is<Member>(m => m.Equals(member))))
                     .Returns(memberSummary)
                     .Verifiable();
 

@@ -85,13 +85,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             if (currentUser != null)
             {
                 response.CreatorId = currentUser.Id;
-                response.Creator = MapToMemberSummary(currentUser);
+                response.Creator = MapToMemberSummaryResponse(currentUser);
             }
 
             if (directMember != null)
             {
                 response.DirectMemberId = directMember.Id;
-                response.DirectMember = MapToMemberSummary(directMember);
+                response.DirectMember = MapToMemberSummaryResponse(directMember);
             }
 
             return response;
@@ -99,8 +99,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         
         public DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, DomainModels.Member owner, DomainModels.Member member)
         {
-            var firstMember = owner != null ? _mapper.Map<MemberSummary>(owner) : new MemberSummary();
-            var secondMember = owner != null ? _mapper.Map<MemberSummary>(member) : new MemberSummary();
+            var firstMember = owner != null ? _mapper.Map<MemberSummaryResponse>(owner) : new MemberSummaryResponse();
+            var secondMember = owner != null ? _mapper.Map<MemberSummaryResponse>(member) : new MemberSummaryResponse();
 
             return new DirectChannelResponse
             {
@@ -130,9 +130,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return client != null ? _mapper.Map<ClientResponse>(client) : new ClientResponse();
         }
 
-        public MemberSummary MapToMemberSummary(DomainModels.Member member)
+        public MemberSummaryResponse MapToMemberSummaryResponse(DomainModels.Member member)
         {
-            return member != null ? _mapper.Map<MemberSummary>(member) : new MemberSummary();
+            return member != null ? _mapper.Map<MemberSummaryResponse>(member) : new MemberSummaryResponse();
         }
 
         public ForwardMessage MapToForwardMessage(Message message)

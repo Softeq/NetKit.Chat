@@ -13,7 +13,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
     {
         public Guid Id { get; set; }
         public Guid ChannelId { get; set; }
-        public MemberSummary Sender { get; set; }
+        public MemberSummaryResponse Sender { get; set; }
         public string Body { get; set; }
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset? Updated { get; set; }

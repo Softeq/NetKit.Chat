@@ -60,14 +60,14 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 
         [Fact]
         [Trait("Category", "Unit")]
-        public void MapToMemberSummary_ShouldMapMemberToMemberSummary()
+        public void MapToMemberSummaryResponse_ShouldMapMemberToMemberSummaryResponse()
         {
             var member = new Member
             {
                 PhotoName = "photoName",
                 Name = "Name"
             };
-            var summary = _domainModelsMapper.MapToMemberSummary(member);
+            var summary = _domainModelsMapper.MapToMemberSummaryResponse(member);
 
             summary.AvatarUrl.Should().Contain(member.PhotoName);
             summary.UserName.Should().Be(member.Name);

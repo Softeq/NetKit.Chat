@@ -26,7 +26,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             DomainModels.Member directMember, Message lastReadMessage = null);
         ClientResponse MapToClientResponse(Client client);
         ForwardMessage MapToForwardMessage(Message message);
-        MemberSummary MapToMemberSummary(DomainModels.Member member);
+        MemberSummaryResponse MapToMemberSummaryResponse(DomainModels.Member member);
         MessageResponse MapToMessageResponse(Message message, DateTimeOffset? lastReadMessageCreated = null);
         SettingsResponse MapToSettingsResponse(Settings settings);
         DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, DomainModels.Member owner, DomainModels.Member member);
