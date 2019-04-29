@@ -40,7 +40,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
         [Fact]
         [Trait("Category", "Unit")]
-        public async Task ShouldThrowIfMemberSummaryDoesNotExist()
+        public async Task ShouldThrowIfMemberSummaryResponseDoesNotExist()
         {
             // Arrange
             var allowedChannel = new Channel { Id = new Guid("4C13BEC1-2979-4822-9AAC-520B474214FD") };
@@ -51,7 +51,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .Verifiable();
 
             _memberServiceMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
-                .ReturnsAsync((MemberSummary)null)
+                .ReturnsAsync((MemberSummaryResponse)null)
                 .Verifiable();
 
             // Act
@@ -76,7 +76,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(allowedChannel)
                 .Verifiable();
 
-            var member = new MemberSummary();
+            var member = new MemberSummaryResponse();
             _memberServiceMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(member)
                 .Verifiable();

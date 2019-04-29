@@ -8,7 +8,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member
 {
-    public class MemberSummary
+    public class MemberSummaryResponse
     {
         public Guid Id { get; set; }
 

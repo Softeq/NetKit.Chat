@@ -14,7 +14,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
         public Guid ChannelId { get; set; }
         public Guid? OwnerId { get; set; }
         public ChannelSummaryResponse Channel { get; set; }
-        public MemberSummary Owner { get; set; }
+        public MemberSummaryResponse Owner { get; set; }
         public DateTimeOffset Created { get; set; }
     }
 }

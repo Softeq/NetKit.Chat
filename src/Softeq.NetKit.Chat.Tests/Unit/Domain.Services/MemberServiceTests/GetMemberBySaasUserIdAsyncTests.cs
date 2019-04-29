@@ -38,7 +38,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
 
         [Fact]
         [Trait("Category", "Unit")]
-        public async Task ShouldReturnMemberSummary()
+        public async Task ShouldReturnMemberSummaryResponse()
         {
             // Arrange
             var saasUserId = "9190FEB0-FDF0-4DDD-AC92-750D8AA33DC2";
@@ -48,8 +48,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 .ReturnsAsync(member)
                 .Verifiable();
 
-            MemberSummary memberSummary = new MemberSummary();
-            _domainModelsMapperMock.Setup(x => x.MapToMemberSummary(It.Is<Member>(m => m.Equals(member))))
+            MemberSummaryResponse memberSummary = new MemberSummaryResponse();
+            _domainModelsMapperMock.Setup(x => x.MapToMemberSummaryResponse(It.Is<Member>(m => m.Equals(member))))
                 .Returns(memberSummary)
                 .Verifiable();
 

@@ -126,7 +126,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyCollection<MemberSummary>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IReadOnlyCollection<MemberSummaryResponse>), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/participant")]
         public async Task<IActionResult> GetChannelParticipantsAsync(Guid channelId)
         {

@@ -33,7 +33,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<MemberSummary> GetMemberBySaasUserIdAsync(string saasUserId)
+        public async Task<MemberSummaryResponse> GetMemberBySaasUserIdAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
@@ -41,10 +41,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
-            return DomainModelsMapper.MapToMemberSummary(member);
+            return DomainModelsMapper.MapToMemberSummaryResponse(member);
         }
 
-        public async Task<MemberSummary> GetMemberByIdAsync(Guid memberId)
+        public async Task<MemberSummaryResponse> GetMemberByIdAsync(Guid memberId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
@@ -52,10 +52,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} is not found.");
             }
 
-            return DomainModelsMapper.MapToMemberSummary(member);
+            return DomainModelsMapper.MapToMemberSummaryResponse(member);
         }
 
-        public async Task<IReadOnlyCollection<MemberSummary>> GetChannelMembersAsync(Guid channelId)
+        public async Task<IReadOnlyCollection<MemberSummaryResponse>> GetChannelMembersAsync(Guid channelId)
         {
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
             if (!isChannelExists)
@@ -64,7 +64,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
 
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);
-            return members.Select(member => DomainModelsMapper.MapToMemberSummary(member)).ToList().AsReadOnly();
+            return members.Select(member => DomainModelsMapper.MapToMemberSummaryResponse(member)).ToList().AsReadOnly();
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(Guid memberId, Guid channelId)
@@ -128,7 +128,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
         }
 
-        public async Task<MemberSummary> AddMemberAsync(string saasUserId, string email)
+        public async Task<MemberSummaryResponse> AddMemberAsync(string saasUserId, string email)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member != null)
@@ -150,7 +150,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(newMember);
 
-            return DomainModelsMapper.MapToMemberSummary(newMember);
+            return DomainModelsMapper.MapToMemberSummaryResponse(newMember);
         }
 
         public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
@@ -190,7 +190,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var response = new PagedMembersResponse
             {
-                Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummary(member)),
+                Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummaryResponse(member)),
                 TotalNumberOfItems = members.TotalNumberOfItems,
                 TotalNumberOfPages = members.TotalNumberOfPages,
                 PageNumber = members.PageNumber,
@@ -206,7 +206,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var response = new PagedMembersResponse
             {
-                Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummary(member)),
+                Results = members.Results.Select(member => DomainModelsMapper.MapToMemberSummaryResponse(member)),
                 TotalNumberOfItems = members.TotalNumberOfItems,
                 TotalNumberOfPages = members.TotalNumberOfPages,
                 PageNumber = members.PageNumber,
