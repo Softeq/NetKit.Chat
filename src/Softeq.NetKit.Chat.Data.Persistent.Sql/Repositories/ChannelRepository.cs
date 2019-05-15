@@ -244,6 +244,76 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<Channel> GetChannelWithMessagesAndCreatorAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT
+                       c.{nameof(Channel.Id)}, 
+                       c.{nameof(Channel.Created)}, 
+                       c.{nameof(Channel.Name)}, 
+                       c.{nameof(Channel.CreatorId)}, 
+                       c.{nameof(Channel.IsClosed)}, 
+                       c.{nameof(Channel.MembersCount)}, 
+                       c.{nameof(Channel.Type)}, 
+                       c.{nameof(Channel.Description)}, 
+                       c.{nameof(Channel.WelcomeMessage)}, 
+                       c.{nameof(Channel.Updated)}, 
+                       c.{nameof(Channel.PhotoUrl)},
+                       msg.{nameof(Message.Id)}, 
+                       msg.{nameof(Message.ChannelId)}, 
+                       msg.{nameof(Message.Created)}, 
+                       msg.{nameof(Message.Body)}, 
+                       msg.{nameof(Message.ImageUrl)}, 
+                       msg.{nameof(Message.Type)}, 
+                       msg.{nameof(Message.OwnerId)}, 
+                       msg.{nameof(Message.Updated)}, 
+                       msg.{nameof(Message.AccessibilityStatus)},
+                       m.{nameof(Member.Id)}, 
+                       m.{nameof(Member.SaasUserId)}, 
+                       m.{nameof(Member.Name)}, 
+                       m.{nameof(Member.Status)},
+                       m.{nameof(Member.Role)}, 
+                       m.{nameof(Member.IsAfk)}, 
+                       m.{nameof(Member.Email)}, 
+                       m.{nameof(Member.LastActivity)}
+                    FROM 
+                       Channels c
+                    LEFT JOIN 
+                       Messages msg ON c.Id = msg.ChannelId
+                    LEFT JOIN 
+                       Members m ON c.CreatorId = m.Id
+                    WHERE 
+                       c.{nameof(Channel.Id)} = @{nameof(channelId)} AND msg.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)}";
+
+                Channel channelEntry = null;
+
+                return (await connection.QueryAsync<Channel, Message, Member, Channel>(
+                        sqlQuery,
+                        (channel, message, member) =>
+                        {
+                            if (channelEntry == null)
+                            {
+                                channelEntry = channel;
+                                channelEntry.Messages = new List<Message>();
+                            }
+
+                            channelEntry.Creator = member;
+                            channelEntry.CreatorId = member.Id;
+
+                            if (message != null)
+                            {
+                                channelEntry.Messages.Add(message);
+                            }
+
+                            return channelEntry;
+                        },
+                        new {channelId, AccessibilityStatus = AccessibilityStatus.Present}))
+                    .FirstOrDefault();
+            }
+        }
+
         public async Task<bool> IsMemberExistsInChannelAsync(Guid memberId, Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

@@ -18,7 +18,10 @@ namespace Softeq.NetKit.Chat.Notifications
 
             builder.RegisterType<AzureNotificationHubSender>().As<IPushNotificationSender>();
             builder.RegisterType<AzureNotificationHubSubscriber>().As<IPushNotificationSubscriber>();
-            
+
+            builder.RegisterType<AzureNotificationHubSender>().As<IPushNotificationSender>();
+            builder.RegisterType<AzureNotificationHubSubscriber>().As<IPushNotificationSubscriber>();
+
             builder.Register((context) =>
             {
                 var configuration = context.Resolve<IConfiguration>();

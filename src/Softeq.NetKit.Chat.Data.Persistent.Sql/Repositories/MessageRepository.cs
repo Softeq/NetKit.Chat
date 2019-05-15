@@ -524,7 +524,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         AND m.{nameof(Message.Created)} < @{nameof(created)} 
                         AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
 		            ORDER BY
-                        {nameof(Message.Created)} ASC";
+                        {nameof(Message.Created)} DESC";
 
                 return (await connection.QueryAsync<Message, Member, Message>(
                         sqlQuery,
@@ -678,7 +678,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             return message;
                         },
                         new { memberId, channelId, accessibilityStatus = AccessibilityStatus.Present },
-                        splitOn: "Id, ChannelId, Id"))
+                        splitOn: "Id, Id, Id"))
                     .FirstOrDefault();
             }
         }

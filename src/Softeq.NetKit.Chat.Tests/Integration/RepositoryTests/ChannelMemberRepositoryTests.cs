@@ -104,6 +104,29 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
         [Fact]
         [Trait("Category", "Integration")]
+        public async Task GetChannelMemberWithMemberDetailsAsync_ShouldReturnChannelMemberWithMemberDetails()
+        {
+            var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(_memberId);
+
+            var channelMember = new ChannelMember
+            {
+                MemberId = _memberId,
+                Member = member,
+                ChannelId = _channelId,
+                LastReadMessageId = _lastReadMessageId,
+                IsMuted = true,
+                IsPinned = true
+            };
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
+
+            var newChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberWithMemberDetailsAsync(channelMember.MemberId, channelMember.ChannelId);
+
+            newChannelMember.Should().BeEquivalentTo(channelMember);
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task DeleteChannelMemberAsync_ShouldDeleteChannelMember()
         {
             var channelMember = new ChannelMember
@@ -165,7 +188,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Online,
-                Email = "Email1",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name1",
                 PhotoName = "PhotoName1",
@@ -179,7 +201,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Online,
-                Email = "Email2",
                 LastNudged = DateTimeOffset.UtcNow,
                 Name = "Name2",
                 PhotoName = "PhotoName2",
@@ -189,12 +210,23 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             await UnitOfWork.MemberRepository.AddMemberAsync(member1);
             await UnitOfWork.MemberRepository.AddMemberAsync(member2);
 
+            var channelId = Guid.NewGuid();
+
+            var channel = new Channel
+            {
+                Id = channelId,
+                CreatorId = member1.Id,
+                Name = "testChannelMember",
+                MembersCount = 0,
+                Type = ChannelType.Public
+            };
+            UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
+
             var channelMember1 = new ChannelMember
             {
                 MemberId = member1.Id,
                 Member = member1,
-                ChannelId = _channelId,
-                LastReadMessageId = _lastReadMessageId,
+                ChannelId = channelId,
                 IsMuted = true,
                 IsPinned = false
             };
@@ -202,8 +234,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 MemberId = member2.Id,
                 Member = member2,
-                ChannelId = _channelId,
-                LastReadMessageId = _lastReadMessageId,
+                ChannelId = channelId,
                 IsMuted = true,
                 IsPinned = false
             };
@@ -216,7 +247,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember1);
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember2);
 
-            var channelMembersWithDetails = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(_channelId);
+            var channelMembersWithDetails = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(channelId);
 
             channelMembersWithDetails.Should().BeEquivalentTo(expectedMembers);
         }
