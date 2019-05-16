@@ -417,8 +417,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
 
-            var prevForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage.ChannelId, firstMessage.OwnerId, firstMessage.Created);
-            var prevForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage.ChannelId, secondMessage.OwnerId, secondMessage.Created);
+            var prevForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage.ChannelId, firstMessage.Created);
+            var prevForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage.ChannelId, secondMessage.Created);
 
             prevForFirstMessage.Should().BeNull();
             prevForSecondMessage.Should().BeEquivalentTo(firstMessage);
