@@ -486,7 +486,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<Message> GetPreviousMessageAsync(Guid? channelId, Guid? ownerId, DateTimeOffset created)
+        public async Task<Message> GetPreviousMessageAsync(Guid? channelId, DateTimeOffset created)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -520,7 +520,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         ON mem.{nameof(Member.Id)} = m.{nameof(Message.OwnerId)}
 		            WHERE 
                         m.{nameof(Message.ChannelId)} = @{nameof(channelId)} 
-                        AND {nameof(Message.OwnerId)} = @{nameof(ownerId)} 
                         AND m.{nameof(Message.Created)} < @{nameof(created)} 
                         AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
 		            ORDER BY
@@ -534,7 +533,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             msg.OwnerId = member.Id;
                             return msg;
                         },
-                        new { channelId, ownerId, created, accessibilityStatus = AccessibilityStatus.Present }))
+                        new { channelId, created, accessibilityStatus = AccessibilityStatus.Present }))
                     .FirstOrDefault();
             }
         }

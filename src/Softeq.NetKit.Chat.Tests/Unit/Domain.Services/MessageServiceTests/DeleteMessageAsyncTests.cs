@@ -110,7 +110,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests
 
             _messageRepositoryMock.Setup(x => x.GetPreviousMessageAsync(
                     It.Is<Guid?>(channelId => channelId.Equals(message.ChannelId)), 
-                    It.Is<Guid?>(ownerId => ownerId.Equals(message.OwnerId)),
                     It.Is<DateTimeOffset>(d => d.Equals(message.Created))))
                 .ReturnsAsync(previousMessage)
                 .Verifiable();
