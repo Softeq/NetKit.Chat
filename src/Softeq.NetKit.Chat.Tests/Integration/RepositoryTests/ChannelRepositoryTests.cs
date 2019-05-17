@@ -452,7 +452,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
 
-            await UnitOfWork.ChannelRepository.IncrementChannelMembersCount(channel.Id);
+            await UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(channel.Id);
 
             var incrementedChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
 
@@ -474,7 +474,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
 
-            await UnitOfWork.ChannelRepository.DecrementChannelMembersCount(channel.Id);
+            await UnitOfWork.ChannelRepository.DecrementChannelMembersCountAsync(channel.Id);
 
             var incrementedChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
 

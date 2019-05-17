@@ -94,7 +94,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(channel)
                 .Verifiable();
 
-            _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCount(It.Is<Guid>(c => c.Equals(channelId))))
+            _channelRepositoryMock.Setup(x => x.DecrementChannelMembersCountAsync(It.Is<Guid>(c => c.Equals(channelId))))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
