@@ -281,9 +281,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     FROM 
                        Channels c
                     LEFT JOIN 
-                       Messages msg ON c.Id = msg.ChannelId
+                       Messages msg ON c.{nameof(Channel.Id)} = msg.{nameof(Message.ChannelId)}
                     LEFT JOIN 
-                       Members m ON c.CreatorId = m.Id
+                       Members m ON c.{nameof(Channel.CreatorId)} = m.{nameof(Member.Id)}
                     WHERE 
                        c.{nameof(Channel.Id)} = @{nameof(channelId)} AND msg.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)}";
 

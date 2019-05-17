@@ -157,30 +157,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #endregion
 
-        #region Message Attachment Hub Commands
-
-        public async Task AddMessageAttachmentAsync(SignalRRequest.MessageAttachment.AddMessageAttachmentRequest request)
-        {
-            await ValidateAndExecuteAsync(request, new AddMessageAttachmentRequestValidator(), new TaskReference(async () =>
-            {
-                var addMessageAttachmentRequest = new DomainRequest.MessageAttachment.AddMessageAttachmentRequest(Context.GetSaasUserId(), request.MessageId, request.Content, request.Extension, request.ContentType, request.Size);
-                await _messageSocketService.AddMessageAttachmentAsync(addMessageAttachmentRequest);
-            }),
-            request.RequestId);
-        }
-
-        public async Task DeleteMessageAttachmentAsync(SignalRRequest.MessageAttachment.DeleteMessageAttachmentRequest request)
-        {
-            await ValidateAndExecuteAsync(request, new DeleteMessageAttachmentRequestValidator(), new TaskReference(async () =>
-            {
-                var deleteMessageAttachmentRequest = new DomainRequest.MessageAttachment.DeleteMessageAttachmentRequest(Context.GetSaasUserId(), request.MessageId, request.AttachmentId);
-                await _messageSocketService.DeleteMessageAttachmentAsync(deleteMessageAttachmentRequest);
-            }),
-            request.RequestId);
-        }
-
-        #endregion
-
         #region Member Hub Commands
 
         public async Task InviteMemberAsync(SignalRRequest.Member.InviteMemberRequest request)

@@ -74,10 +74,31 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
-                var sqlQuery = $@"SELECT *
-                                 FROM ChannelMembers cm
-                                 INNER JOIN Members m ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
-                                 WHERE {nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND {nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";
+                var sqlQuery = $@"SELECT                         
+                                    cm.{nameof(ChannelMember.ChannelId)}, 
+                                    cm.{nameof(ChannelMember.MemberId)}, 
+                                    cm.{nameof(ChannelMember.LastReadMessageId)}, 
+                                    cm.{nameof(ChannelMember.IsMuted)}, 
+                                    cm.{nameof(ChannelMember.IsPinned)},
+                                    m.{nameof(Member.Email)},
+                                    m.{nameof(Member.Id)},
+                                    m.{nameof(Member.IsAfk)},
+                                    m.{nameof(Member.IsBanned)},
+                                    m.{nameof(Member.LastActivity)},
+                                    m.{nameof(Member.LastNudged)},
+                                    m.{nameof(Member.Name)},
+                                    m.{nameof(Member.PhotoName)},
+                                    m.{nameof(Member.Role)},
+                                    m.{nameof(Member.SaasUserId)},
+                                    m.{nameof(Member.Status)},
+                                    m.{nameof(Member.IsActive)},
+                                    m.{nameof(Member.IsDeleted)}
+                                 FROM 
+                                    ChannelMembers cm
+                                 INNER JOIN 
+                                    Members m ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
+                                 WHERE 
+                                    cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";
 
                 return (await connection.QueryAsync<ChannelMember, Member, ChannelMember>(sqlQuery, (channelMember, member) =>
                 {
