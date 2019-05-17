@@ -37,6 +37,34 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
         [Fact]
         [Trait("Category", "Integration")]
+        public async Task GetMessageAsync_ShouldReturnMessage()
+        {
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                Body = "Body",
+                Created = DateTimeOffset.Now,
+                ImageUrl = "ImageUrl",
+                Type = MessageType.Default,
+                ChannelId = _channelId,
+                OwnerId = _member.Id,
+                Updated = DateTimeOffset.Now,
+                AccessibilityStatus = AccessibilityStatus.Present
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+            var messageId = (await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(_channelId)).First().Id;
+
+            // Act
+            var channelMessage = await UnitOfWork.MessageRepository.GetAsync(messageId);
+
+            // Assert
+            channelMessage.Should().BeEquivalentTo(message);
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task GetAllChannelMessagesWithOwnersAsync_ShouldReturnAllChannelMessages()
         {
             // Arrange
@@ -389,8 +417,8 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.MessageRepository.AddMessageAsync(secondMessage);
 
-            var prevForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage.ChannelId, firstMessage.OwnerId, firstMessage.Created);
-            var prevForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage.ChannelId, secondMessage.OwnerId, secondMessage.Created);
+            var prevForFirstMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(firstMessage.ChannelId, firstMessage.Created);
+            var prevForSecondMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(secondMessage.ChannelId, secondMessage.Created);
 
             prevForFirstMessage.Should().BeNull();
             prevForSecondMessage.Should().BeEquivalentTo(firstMessage);

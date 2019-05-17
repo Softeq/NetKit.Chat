@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
@@ -302,22 +303,19 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAndCreatorAsync(currentUser.Id);
             foreach (var channel in channels)
             {
-                var channelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberAsync(currentUser.Id, channel.Id);
+                channel.Messages = channel.Messages?.Where(x => x.AccessibilityStatus == AccessibilityStatus.Present).ToList();
                 if (channel.Type == ChannelType.Direct)
                 {
-                    //TODO: Extend existing query to make one single request to get all data for both direct and group channel
                     var members = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(channel.Id);
-                    var directChannelMember = members.SingleOrDefault(x => x.MemberId != currentUser.Id);
-                    if (directChannelMember == null)
-                    {
-                        throw new NetKitChatNotFoundException($"Direct channel member is not found.");
-                    }
+                    var existingUserChannelMember = members.First(x => x.MemberId == currentUser.Id);
 
+                    //TODO: Extend existing query to make one single request to get all data for both direct and group channel                    
+                    var directChannelMember = members.First(x => x.MemberId != currentUser.Id);
                     var member = directChannelMember.Member;
                     ChannelSummaryResponse channelSummaryResponse;
-                    if (channelMember.LastReadMessageId.HasValue)
+                    if (existingUserChannelMember.LastReadMessageId.HasValue)
                     {
-                        var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(channelMember.LastReadMessageId.Value);
+                        var lastReadMessage = await UnitOfWork.MessageRepository.GetAsync(existingUserChannelMember.LastReadMessageId.Value);
                         channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, currentUser, member, lastReadMessage);
                     }
                     else
@@ -328,14 +326,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 }
                 else
                 {
-                    if (channelMember.LastReadMessageId.HasValue)
+                    var existingUserChannelMember = await UnitOfWork.ChannelMemberRepository.GetChannelMemberWithMemberDetailsAsync(currentUser.Id, channel.Id);
+
+                    if (existingUserChannelMember.LastReadMessageId.HasValue)
                     {
-                        var lastReadMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(channelMember.LastReadMessageId.Value);
-                        channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, channelMember, lastReadMessage));
+                        var lastReadMessage = await UnitOfWork.MessageRepository.GetAsync(existingUserChannelMember.LastReadMessageId.Value);
+                        channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, existingUserChannelMember, lastReadMessage));
                     }
                     else
                     {
-                        channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, channelMember));
+                        channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, existingUserChannelMember));
                     }
                 }
             }

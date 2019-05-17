@@ -14,12 +14,13 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
     public class MemberRepositoryTests : BaseTest
     {
         private readonly Guid _memberId = new Guid("1a0781d2-f3d8-418a-810c-33e78b457678");
+        private Member Member;
         private readonly Guid _channelId = new Guid("0af706fa-d820-4cde-9ccd-c189ed2561da");
         private readonly int _initialTestMembersCount;
 
         public MemberRepositoryTests()
         {
-            var member = new Member
+            Member = new Member
             {
                 Id = _memberId,
                 Email = "test",
@@ -32,14 +33,14 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 SaasUserId = "test",
                 Status = UserStatus.Offline
             };
-            UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
+            UnitOfWork.MemberRepository.AddMemberAsync(Member).GetAwaiter().GetResult();
 
             _initialTestMembersCount = 1;
 
             var channel = new Channel
             {
                 Id = _channelId,
-                CreatorId = member.Id
+                CreatorId = Member.Id
             };
             UnitOfWork.ChannelRepository.AddChannelAsync(channel).GetAwaiter().GetResult();
         }
@@ -398,7 +399,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 expectedMembers.Add(member);
             }
 
-            var notExpectedMembers = new List<Member>();
+            var notExpectedMembers = new List<Member>(){ Member };
             for (var i = 0; i < 5; i++)
             {
                 var member = new Member
