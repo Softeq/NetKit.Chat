@@ -486,7 +486,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<Message> GetPreviousMessageAsync(Guid? channelId, Guid? ownerId, DateTimeOffset created)
+        public async Task<Message> GetPreviousMessageAsync(Guid? channelId, DateTimeOffset created)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -520,11 +520,10 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         ON mem.{nameof(Member.Id)} = m.{nameof(Message.OwnerId)}
 		            WHERE 
                         m.{nameof(Message.ChannelId)} = @{nameof(channelId)} 
-                        AND {nameof(Message.OwnerId)} = @{nameof(ownerId)} 
                         AND m.{nameof(Message.Created)} < @{nameof(created)} 
                         AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
 		            ORDER BY
-                        {nameof(Message.Created)} ASC";
+                        {nameof(Message.Created)} DESC";
 
                 return (await connection.QueryAsync<Message, Member, Message>(
                         sqlQuery,
@@ -534,7 +533,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             msg.OwnerId = member.Id;
                             return msg;
                         },
-                        new { channelId, ownerId, created, accessibilityStatus = AccessibilityStatus.Present }))
+                        new { channelId, created, accessibilityStatus = AccessibilityStatus.Present }))
                     .FirstOrDefault();
             }
         }
@@ -678,7 +677,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             return message;
                         },
                         new { memberId, channelId, accessibilityStatus = AccessibilityStatus.Present },
-                        splitOn: "Id, ChannelId, Id"))
+                        splitOn: "Id, Id, Id"))
                     .FirstOrDefault();
             }
         }

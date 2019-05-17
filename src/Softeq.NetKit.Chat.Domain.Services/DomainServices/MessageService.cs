@@ -148,7 +148,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 //TODO: [ek] Get previous message for direct channel
-                var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message.ChannelId, message.OwnerId, message.Created);
+                var previousMessage = await UnitOfWork.MessageRepository.GetPreviousMessageAsync(message.ChannelId, message.Created);
                 //TODO: [ek]: Save last read message for direct members
                 await UnitOfWork.ChannelMemberRepository.UpdateLastReadMessageAsync(message.Id, previousMessage?.Id);
 
