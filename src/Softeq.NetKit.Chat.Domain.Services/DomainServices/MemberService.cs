@@ -107,7 +107,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-                await UnitOfWork.ChannelRepository.IncrementChannelMembersCount(channel.Id);
+                await UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(channel.Id);
             });
 
             channel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);

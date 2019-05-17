@@ -353,7 +353,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task IncrementChannelMembersCount(Guid channelId)
+        public async Task IncrementChannelMembersCountAsync(Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -368,7 +368,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task DecrementChannelMembersCount(Guid channelId)
+        public async Task DecrementChannelMembersCountAsync(Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {

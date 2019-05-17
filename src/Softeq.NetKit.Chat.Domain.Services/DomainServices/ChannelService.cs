@@ -107,7 +107,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 foreach (var channelMember in channelMembers)
                 {
                     await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-                    await UnitOfWork.ChannelRepository.IncrementChannelMembersCount(newChannel.Id);
+                    await UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(newChannel.Id);
                 }
             });
 
@@ -412,7 +412,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-                await UnitOfWork.ChannelRepository.IncrementChannelMembersCount(channel.Id);
+                await UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(channel.Id);
             });
         }
 
@@ -443,7 +443,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 await UnitOfWork.ChannelMemberRepository.DeleteChannelMemberAsync(member.Id, channelId);
-                await UnitOfWork.ChannelRepository.DecrementChannelMembersCount(channelId);
+                await UnitOfWork.ChannelRepository.DecrementChannelMembersCountAsync(channelId);
             });
         }
 
@@ -484,7 +484,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
                 await UnitOfWork.ChannelMemberRepository.DeleteChannelMemberAsync(memberToDeleteId, channelId);
-                await UnitOfWork.ChannelRepository.DecrementChannelMembersCount(channelId);
+                await UnitOfWork.ChannelRepository.DecrementChannelMembersCountAsync(channelId);
             });
         }
 
