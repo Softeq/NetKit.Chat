@@ -13,13 +13,21 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure
 {
     public class DataCloudAzureDiModule : Module
     {
+        private const string ConnectionString = "AzureStorage:ConnectionString";
+        private const string ContentStorageHost = "AzureStorage:ContentStorageHost";
+        private const string MessageAttachmentsContainer = "AzureStorage:MessageAttachmentsContainer";
+        private const string MemberAvatarsContainer = "AzureStorage:MemberAvatarsContainer";
+        private const string ChannelImagesContainer = "AzureStorage:ChannelImagesContainer";
+        private const string TempContainerName = "AzureStorage:TempContainerName";
+        private const string MessagePhotoSize = "AzureStorage:MessagePhotoSize";
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.Register(x =>
                 {
                     var context = x.Resolve<IComponentContext>();
                     var config = context.Resolve<IConfiguration>();
-                    return new AzureCloudStorage(config["AzureStorage:ConnectionString"]);
+                    return new AzureCloudStorage(config[ConnectionString]);
                 })
                 .As<IContentStorage>();
 
@@ -28,12 +36,12 @@ namespace Softeq.NetKit.Chat.Data.Cloud.Azure
                 var context = x.Resolve<IComponentContext>();
                 var config = context.Resolve<IConfiguration>();
                 var cfg = new AzureStorageConfiguration(
-                    config["AzureStorage:ContentStorageHost"],
-                    config["AzureStorage:MessageAttachmentsContainer"],
-                    config["AzureStorage:MemberAvatarsContainer"],
-                    config["AzureStorage:ChannelImagesContainer"],
-                    config["AzureStorage:TempContainerName"],
-                    Convert.ToInt32(config["AzureStorage:MessagePhotoSize"]));
+                    config[ContentStorageHost],
+                    config[MessageAttachmentsContainer],
+                    config[MemberAvatarsContainer],
+                    config[ChannelImagesContainer],
+                    config[TempContainerName],
+                    Convert.ToInt32(config[MessagePhotoSize]));
                 return cfg;
 
             }).AsSelf();
