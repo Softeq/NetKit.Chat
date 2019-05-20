@@ -1,10 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Cloud.DataProviders;
 using Softeq.NetKit.Chat.Data.Persistent;
@@ -17,6 +13,10 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -51,7 +51,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(request.ChannelId);
             if (!isChannelExists)
             {
-                throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableCreateMessageCauseNoChannel, $"{nameof(request.ChannelId)}:{request.ChannelId}");
             }
 
             var message = new Message
@@ -74,13 +74,14 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to create message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableCreateMessageNoMember, $"{nameof(request.SaasUserId)}:{request.SaasUserId}");
             }
 
             var isChannelOpen = await UnitOfWork.ChannelRepository.IsChannelExistsAndOpenAsync(request.ChannelId);
             if (!isChannelOpen)
             {
-                throw new NetKitChatNotFoundException($"Unable to create message. Channel {nameof(request.ChannelId)}:{request.ChannelId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableCreateMessageCauseNoChannel, $"{nameof(request.ChannelId)}:{request.ChannelId}");
             }
 
             // move image to persistent container
@@ -108,7 +109,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     var forwardedMessage = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.ForwardedMessageId);
                     if (forwardedMessage == null)
                     {
-                        throw new NetKitChatNotFoundException($"Unable to create message. Forward message {nameof(request.ForwardedMessageId)}:{request.ForwardedMessageId} is not found.");
+                        throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableCreateMessageCauseNoForwardMessasge, $"{nameof(request.ForwardedMessageId)}:{request.ForwardedMessageId}");
                     }
 
                     var forwardMessage = DomainModelsMapper.MapToForwardMessage(forwardedMessage);
@@ -131,13 +132,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.MessageId);
             if (message == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete message. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableDeleteMessage, $"{nameof(request.MessageId)}:{request.MessageId}");
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableDeleteMessageCauseNoMember, $"{nameof(request.SaasUserId)}:{request.SaasUserId}");
             }
 
             if (member.Id != message.OwnerId)
@@ -161,7 +162,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.MessageId);
             if (message == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update message. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableUpdateMessage, $"{nameof(request.MessageId)}:{request.MessageId}");
             }
 
             if (message.Type == MessageType.System)
@@ -172,7 +173,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update message. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableUpdateMessageCauseNoMember, $"{nameof(request.SaasUserId)}:{request.SaasUserId}");
             }
 
             if (member.Id != message.OwnerId)
@@ -193,7 +194,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(messageId);
             if (message == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get message by {nameof(messageId)}. Message {nameof(messageId)}:{messageId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableGetMessage, $"{nameof(messageId)}", $"{nameof(messageId)}:{messageId}");
             }
 
             return DomainModelsMapper.MapToMessageResponse(message);
@@ -204,7 +205,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.MessageId);
             if (message == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to add message attachment. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableAddMessageAttachmentCauseNoMessage, $"{nameof(request.MessageId)}:{request.MessageId}");
             }
 
             if (message.Type == MessageType.System)
@@ -215,7 +216,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to add message attachment. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableAddMessageAttachmentCauseNoMember, $"{nameof(request.SaasUserId)}:{request.SaasUserId}");
             }
 
             if (member.Id != message.OwnerId)
@@ -253,13 +254,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var message = await UnitOfWork.MessageRepository.GetMessageWithOwnerAndForwardMessageAsync(request.MessageId);
             if (message == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete message attachment. Message {nameof(request.MessageId)}:{request.MessageId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableDeleteMessageAttachmentCauseNoMessage, $"{nameof(request.MessageId)}:{request.MessageId}");
             }
 
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete message attachment. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableDeleteMessageAttachmentCauseNoMember, $"{nameof(request.SaasUserId)}:{request.SaasUserId}");
             }
 
             if (member.Id != message.OwnerId)
@@ -270,7 +271,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var attachment = await UnitOfWork.AttachmentRepository.GetAttachmentAsync(request.AttachmentId);
             if (attachment == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to delete message attachment. Attachment {nameof(request.AttachmentId)}:{request.AttachmentId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableDeleteMessageAttachment, $"{nameof(request.AttachmentId)}:{request.AttachmentId}");
             }
 
             if (attachment.MessageId != message.Id)

@@ -1,10 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -15,6 +11,10 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -38,7 +38,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(saasUserId)}. Member {nameof(saasUserId)}:{saasUserId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableGetMember, $"{nameof(saasUserId)}", $"{nameof(saasUserId)}:{saasUserId}");
             }
 
             return DomainModelsMapper.MapToMemberSummaryResponse(member);
@@ -49,7 +49,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member by {nameof(memberId)}. Member {nameof(memberId)}:{memberId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableGetMember, $"{ nameof(memberId) }", $"{nameof(memberId)}:{memberId}");
             }
 
             return DomainModelsMapper.MapToMemberSummaryResponse(member);
@@ -60,7 +60,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
             if (!isChannelExists)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableGetMembersCauseNoChannel, $"{nameof(channelId)}:{channelId}");
             }
 
             var members = await UnitOfWork.MemberRepository.GetAllMembersByChannelIdAsync(channelId);
@@ -72,7 +72,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var channel = await UnitOfWork.ChannelRepository.GetChannelAsync(channelId);
             if (channel == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to invite member. Channel {nameof(channelId)}:{channelId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableInviteMemberCauseNoChannel, $"{nameof(channelId)}:{channelId}");
             }
 
             if (channel.Type == ChannelType.Direct)
@@ -88,7 +88,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to invite member. Member {nameof(memberId)}:{memberId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableInviteMember, $"{nameof(memberId)}:{memberId}");
             }
 
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(member.Id, channel.Id);
@@ -158,7 +158,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to get member clients. Member {nameof(memberId)}:{memberId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableGetMemberClients, $"{nameof(memberId)}:{memberId}");
             }
 
             var clients = await UnitOfWork.ClientRepository.GetMemberClientsAsync(member.Id);
@@ -170,7 +170,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update member status. Member {nameof(saasUserId)}:{saasUserId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableUpdateMemberStatus, $"{nameof(saasUserId)}:{saasUserId}");
             }
 
             member.Status = status;
@@ -221,7 +221,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableUpdateActivityCauseNoMember, $"{nameof(request.SaasUserId)}:{request.SaasUserId}");
             }
             member.Status = UserStatus.Online;
             member.LastActivity = _dateTimeProvider.GetUtcNow();
@@ -231,7 +231,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ConnectionId);
             if (client == null)
             {
-                throw new NetKitChatNotFoundException($"Unable to update activity. Client {nameof(request.ConnectionId)}:{request.ConnectionId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableUpdateActivityCauseNoClient, $"{nameof(request.ConnectionId)}:{request.ConnectionId}");
             }
             client.UserAgent = request.UserAgent;
             client.LastActivity = member.LastActivity;

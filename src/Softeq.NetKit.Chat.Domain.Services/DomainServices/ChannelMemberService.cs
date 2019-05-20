@@ -1,14 +1,14 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -24,7 +24,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var isChannelExists = await UnitOfWork.ChannelRepository.IsChannelExistsAsync(channelId);
             if (!isChannelExists)
             {
-                throw new NetKitChatNotFoundException($"Unable to get channel members. Channel {nameof(channelId)}:{channelId} is not found.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.UnableGetMembersCauseNoChannel, $"{ nameof(channelId) }:{ channelId}");
             }
 
             var channelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersAsync(channelId);

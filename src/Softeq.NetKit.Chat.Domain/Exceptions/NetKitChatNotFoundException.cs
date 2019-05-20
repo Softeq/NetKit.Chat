@@ -18,6 +18,11 @@ namespace Softeq.NetKit.Chat.Domain.Exceptions
         {
         }
 
+        public NetKitChatNotFoundException(string message, params string[] info)
+        : base(NetKitChatErrorCode.NotFound, ModifyMessage(message, info))
+        {
+        } 
+
         public NetKitChatNotFoundException(string message, Exception innerException)
             : base(NetKitChatErrorCode.NotFound, message, innerException)
         {

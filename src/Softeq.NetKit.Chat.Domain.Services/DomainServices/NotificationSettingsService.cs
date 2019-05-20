@@ -36,7 +36,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await _memberService.GetMemberBySaasUserIdAsync(notificationSettingRequest.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException("Requested member does not exist.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.NoRequestedMember);
             }
 
             var existingNotificationSettings = await UnitOfWork.NotificationSettingRepository.GetSettingsByMemberIdAsync(member.Id);
@@ -84,7 +84,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var member = await _memberService.GetMemberBySaasUserIdAsync(userRequest.SaasUserId);
             if (member == null)
             {
-                throw new NetKitChatNotFoundException("Requested member does not exist.");
+                throw new NetKitChatNotFoundException(NetKitChatNotFoundErrorMessages.NoRequestedMember);
             }
 
             var userNotificationSettings = await UnitOfWork.NotificationSettingRepository.GetSettingsByMemberIdAsync(member.Id);

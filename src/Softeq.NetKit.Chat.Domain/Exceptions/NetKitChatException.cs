@@ -26,5 +26,10 @@ namespace Softeq.NetKit.Chat.Domain.Exceptions
         }
 
         public string ErrorCode { get; }
+
+        protected static string ModifyMessage(string message, params string[] info)
+        {
+            return string.Format(message, info);
+        }
     }
 }
