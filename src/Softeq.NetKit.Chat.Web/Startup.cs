@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CorrelationId;
@@ -118,7 +119,7 @@ namespace Softeq.NetKit.Chat.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IDatabaseManager databaseManager, IApplicationLifetime applicationLifetime, ILogger logger)
+        public async Task Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IDatabaseManager databaseManager, IApplicationLifetime applicationLifetime, ILogger logger)
         {
             applicationLifetime.ApplicationStopping.Register(OnShutdown, app);
 
@@ -130,7 +131,7 @@ namespace Softeq.NetKit.Chat.Web
             {
                 if (!env.IsStaging() && !env.IsProduction())
                 {
-                    databaseManager.CreateEmptyDatabaseIfNotExistsAsync().GetAwaiter().GetResult();
+                    await databaseManager.CreateEmptyDatabaseIfNotExistsAsync();
                 }
                 databaseManager.MigrateToLatestVersion();
             }
