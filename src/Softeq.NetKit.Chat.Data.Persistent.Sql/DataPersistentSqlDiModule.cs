@@ -12,13 +12,16 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 {
     public class DataPersistentSqlDiModule : Module
     {
+        private const string ConnectionString = "Database:ConnectionString";
+        private const string TransactionTimeoutInMinutes ="Database:TransactionConfiguration:TransactionTimeoutInMinutes";
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.Register(x =>
             {
                 var context = x.Resolve<IComponentContext>();
                 var config = context.Resolve<IConfiguration>();
-                return new SqlConnectionFactory(new SqlConnectionStringBuilder(config["Database:ConnectionString"]));
+                return new SqlConnectionFactory(new SqlConnectionStringBuilder(config[ConnectionString]));
             }).As<ISqlConnectionFactory>();
 
             builder.Register(x =>
@@ -28,7 +31,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
 
                 return new TransactionConfiguration
                 {
-                    TransactionTimeoutInMinutes = Convert.ToInt32(config["Database:TransactionConfiguration:TransactionTimeoutInMinutes"])
+                    TransactionTimeoutInMinutes = Convert.ToInt32(config[TransactionTimeoutInMinutes])
                 };
             }).As<TransactionConfiguration>();
 
@@ -42,7 +45,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql
                 {
                     var context = x.Resolve<IComponentContext>();
                     var config = context.Resolve<IConfiguration>();
-                    return new DatabaseConfig(config["Database:ConnectionString"]);
+                    return new DatabaseConfig(config[ConnectionString]);
                 })
                 .AsSelf()
                 .SingleInstance();

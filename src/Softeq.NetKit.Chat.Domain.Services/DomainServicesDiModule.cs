@@ -13,6 +13,14 @@ namespace Softeq.NetKit.Chat.Domain.Services
 {
     public class DomainServicesDiModule : Module
     {
+        private const string MessageAttachmentsLimit = "Message:MessageAttachmentsLimit";
+        private const string LastMessageReadCount = "Message:LastMessageReadCount";
+        private const string MemberJoined = "SystemMessagesTemplates:MemberJoined";
+        private const string MemberDeleted = "SystemMessagesTemplates:MemberDeleted";
+        private const string MemberLeft = "SystemMessagesTemplates:MemberLeft";
+        private const string ChannelNameChanged = "SystemMessagesTemplates:ChannelNameChanged";
+        private const string ChannelIconChanged = "SystemMessagesTemplates:ChannelIconChanged";
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.Register(x =>
@@ -20,8 +28,8 @@ namespace Softeq.NetKit.Chat.Domain.Services
                     var context = x.Resolve<IComponentContext>();
                     var config = context.Resolve<IConfiguration>();
                     return new MessagesConfiguration(
-                        Convert.ToInt32(config["Message:MessageAttachmentsLimit"]),
-                        Convert.ToInt32(config["Message:LastMessageReadCount"]));
+                        Convert.ToInt32(config[MessageAttachmentsLimit]),
+                        Convert.ToInt32(config[LastMessageReadCount]));
                 }).AsSelf();
 
             builder.Register(x =>
@@ -30,11 +38,11 @@ namespace Softeq.NetKit.Chat.Domain.Services
                     var config = context.Resolve<IConfiguration>();
 
                     return new SystemMessagesConfiguration(
-                        config["SystemMessagesTemplates:MemberJoined"],
-                        config["SystemMessagesTemplates:MemberDeleted"],
-                        config["SystemMessagesTemplates:MemberLeft"],
-                        config["SystemMessagesTemplates:ChannelNameChanged"],
-                        config["SystemMessagesTemplates:ChannelIconChanged"]);
+                        config[MemberJoined],
+                        config[MemberDeleted],
+                        config[MemberLeft],
+                        config[ChannelNameChanged],
+                        config[ChannelIconChanged]);
                 })
                 .As<SystemMessagesConfiguration>();
 
