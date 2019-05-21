@@ -3,7 +3,6 @@
 
 using System;
 using Dapper;
-using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -13,15 +12,10 @@ using System.Threading.Tasks;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    internal class MessageRepository : IMessageRepository
+    internal class MessageRepository : BaseRepository, IMessageRepository
     {
-        private readonly ISqlConnectionFactory _sqlConnectionFactory;
-
-        public MessageRepository(ISqlConnectionFactory sqlConnectionFactory)
+        public MessageRepository(ISqlConnectionFactory sqlConnectionFactory) : base(sqlConnectionFactory)
         {
-            Ensure.That(sqlConnectionFactory).IsNotNull();
-
-            _sqlConnectionFactory = sqlConnectionFactory;
         }
 
         public async Task<Message> GetAsync(Guid messageId)

@@ -6,22 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    internal class MemberRepository : IMemberRepository
+    internal class MemberRepository : BaseRepository, IMemberRepository
     {
-        private readonly ISqlConnectionFactory _sqlConnectionFactory;
-
-        public MemberRepository(ISqlConnectionFactory sqlConnectionFactory)
+        public MemberRepository(ISqlConnectionFactory sqlConnectionFactory) : base(sqlConnectionFactory)
         {
-            Ensure.That(sqlConnectionFactory).IsNotNull();
-
-            _sqlConnectionFactory = sqlConnectionFactory;
         }
 
         public async Task<QueryResult<Member>> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter, string currentUserSaasId)

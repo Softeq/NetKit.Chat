@@ -12,15 +12,10 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    internal class ForwardMessageRepository : IForwardMessageRepository
+    internal class ForwardMessageRepository : BaseRepository, IForwardMessageRepository
     {
-        private readonly ISqlConnectionFactory _sqlConnectionFactory;
-
-        public ForwardMessageRepository(ISqlConnectionFactory sqlConnectionFactory)
+        public ForwardMessageRepository(ISqlConnectionFactory sqlConnectionFactory) : base(sqlConnectionFactory)
         {
-            Ensure.That(sqlConnectionFactory).IsNotNull();
-
-            _sqlConnectionFactory = sqlConnectionFactory;
         }
 
         public async Task AddForwardMessageAsync(ForwardMessage message)
