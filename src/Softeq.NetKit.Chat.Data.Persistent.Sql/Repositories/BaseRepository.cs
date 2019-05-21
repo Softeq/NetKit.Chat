@@ -6,7 +6,7 @@ using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    public abstract class BaseRepository
+    public class BaseRepository
     {
         protected readonly ISqlConnectionFactory _sqlConnectionFactory;
 

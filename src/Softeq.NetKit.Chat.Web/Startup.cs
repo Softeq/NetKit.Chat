@@ -132,7 +132,7 @@ namespace Softeq.NetKit.Chat.Web
                 {
                     databaseManager.CreateEmptyDatabaseIfNotExistsAsync().GetAwaiter().GetResult();
                 }
-                databaseManager.MigrateToLatestVersion();
+                databaseManager.MigrateToLatestVersionAsync();
             }
             catch (Exception ex)
             {

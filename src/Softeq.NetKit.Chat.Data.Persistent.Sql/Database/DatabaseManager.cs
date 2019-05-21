@@ -43,7 +43,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Database
             }
         }
 
-        public async Task MigrateToLatestVersion()
+        public async Task MigrateToLatestVersionAsync()
         {
             using (var connection = new SqlConnection(_sqlConnectionString))
             {
