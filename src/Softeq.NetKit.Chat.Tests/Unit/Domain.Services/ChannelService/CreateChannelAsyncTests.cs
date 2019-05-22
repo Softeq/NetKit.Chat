@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCount(It.IsAny<Guid>()))
+            _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCountAsync(It.IsAny<Guid>()))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -104,7 +104,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             channelToAdd.Members.Should().BeEquivalentTo(new List<ChannelMember> { channelMemberToAdd });
 
             _channelMemberRepositoryMock.Verify(prov => prov.AddChannelMemberAsync(It.IsAny<ChannelMember>()), Times.Once);
-            _channelRepositoryMock.Verify(prov => prov.IncrementChannelMembersCount(It.Is<Guid>(channelId => channelId.Equals(channelToAdd.Id))), Times.Once);
+            _channelRepositoryMock.Verify(prov => prov.IncrementChannelMembersCountAsync(It.Is<Guid>(channelId => channelId.Equals(channelToAdd.Id))), Times.Once);
 
             result.Should().BeEquivalentTo(channelSummaryResponse);
         }
@@ -158,7 +158,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(allowedMember)
                 .Verifiable();
 
-            _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCount(It.IsAny<Guid>()))
+            _channelRepositoryMock.Setup(x => x.IncrementChannelMembersCountAsync(It.IsAny<Guid>()))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -191,7 +191,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
             channelToAdd.Members.Should().BeEquivalentTo(channelMembersToAdd);
 
             _channelMemberRepositoryMock.Verify(prov => prov.AddChannelMemberAsync(It.IsAny<ChannelMember>()), Times.Exactly(2));
-            _channelRepositoryMock.Verify(prov => prov.IncrementChannelMembersCount(It.Is<Guid>(channelId => channelId.Equals(channelToAdd.Id))), Times.Exactly(2));
+            _channelRepositoryMock.Verify(prov => prov.IncrementChannelMembersCountAsync(It.Is<Guid>(channelId => channelId.Equals(channelToAdd.Id))), Times.Exactly(2));
             _memberRepositoryMock.Verify(prov => prov.GetMemberBySaasUserIdAsync(It.IsAny<string>()), Times.Exactly(1));
 
             result.Should().BeEquivalentTo(channelSummaryResponse);
