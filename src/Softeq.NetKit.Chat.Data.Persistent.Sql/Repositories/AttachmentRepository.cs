@@ -6,22 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using EnsureThat;
 using Softeq.NetKit.Chat.Data.Persistent.Repositories;
 using Softeq.NetKit.Chat.Data.Persistent.Sql.Database;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 
 namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 {
-    internal class AttachmentRepository : IAttachmentRepository
+    internal class AttachmentRepository : BaseRepository, IAttachmentRepository
     {
-        private readonly ISqlConnectionFactory _sqlConnectionFactory;
-
-        public AttachmentRepository(ISqlConnectionFactory sqlConnectionFactory)
+        public AttachmentRepository(ISqlConnectionFactory sqlConnectionFactory) : base(sqlConnectionFactory)
         {
-            Ensure.That(sqlConnectionFactory).IsNotNull();
-
-            _sqlConnectionFactory = sqlConnectionFactory;
         }
 
         public async Task AddAttachmentAsync(Attachment attachment)

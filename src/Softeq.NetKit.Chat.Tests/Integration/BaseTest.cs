@@ -43,7 +43,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration
 
             var databaseManager = LifetimeScope.Resolve<IDatabaseManager>();
             databaseManager.CreateEmptyDatabaseIfNotExistsAsync();
-            databaseManager.MigrateToLatestVersion();
+            databaseManager.MigrateToLatestVersionAsync();
 
             CleanUpDatabase(LifetimeScope).GetAwaiter().GetResult();
         }

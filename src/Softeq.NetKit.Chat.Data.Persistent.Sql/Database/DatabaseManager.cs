@@ -34,7 +34,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Database
         {
             using (var connection = new SqlConnection(_masterSqlConnectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 var isDatabaseExists = await IsDatabaseExistsAsync(connection);
                 if (!isDatabaseExists)
                 {
@@ -43,11 +43,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Database
             }
         }
 
-        public void MigrateToLatestVersion()
+        public async Task MigrateToLatestVersionAsync()
         {
             using (var connection = new SqlConnection(_sqlConnectionString))
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 var migrationsAssembly = typeof(DatabaseManager).Assembly;
                 var databaseProvider = new MssqlDatabaseProvider(connection);

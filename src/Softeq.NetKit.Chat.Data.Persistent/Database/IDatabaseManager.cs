@@ -8,6 +8,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Database
     public interface IDatabaseManager
     {
         Task CreateEmptyDatabaseIfNotExistsAsync();
-        void MigrateToLatestVersion();
+        Task MigrateToLatestVersionAsync();
     }
 }
