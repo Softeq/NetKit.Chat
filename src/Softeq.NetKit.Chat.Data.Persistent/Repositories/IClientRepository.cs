@@ -14,6 +14,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task AddClientAsync(Client client);
         Task UpdateClientAsync(Client client);
         Task DeleteClientAsync(Guid clientId);
+        Task DeleteOverThresholdMemberClientsAsync(Guid memberId, int inactiveMinutesThreshold);
+        Task<bool> DoesMemberHasClientsAsync(Guid memberId);
         Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId);
         Task<IReadOnlyCollection<Client>> GetClientsWithMembersAsync(List<Guid> memberIds);
         Task<bool> IsClientExistsAsync(string clientConnectionId);

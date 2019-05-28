@@ -18,6 +18,22 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
         }
 
+        public async Task<bool> DoesMemberHasClientsAsync(Guid memberId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT 
+                        1
+                    FROM 
+                        Clients
+                    WHERE 
+                        {nameof(Client.MemberId)} = @{nameof(memberId)}";
+
+                return await connection.ExecuteScalarAsync<bool>(sqlQuery, new { memberId });
+            }
+        }
+
         public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
@@ -205,6 +221,19 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(Client.Id)} = @{nameof(clientId)}";
 
                 await connection.ExecuteAsync(sqlQuery, new { clientId });
+            }
+        }
+
+        public async Task DeleteOverThresholdMemberClientsAsync(Guid memberId, int inactiveMinutesThreshold)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    DELETE FROM Clients 
+                    WHERE 
+                        {nameof(Client.MemberId)} = @{nameof(memberId)} AND DATEDIFF(MINUTE, {nameof(Client.LastClientActivity)}, GETUTCDATE()) > @{nameof(inactiveMinutesThreshold)}";
+
+                await connection.ExecuteAsync(sqlQuery, new { memberId, inactiveMinutesThreshold });
             }
         }
 
