@@ -11,6 +11,9 @@ namespace Softeq.NetKit.Chat.Notifications
 {
     public class NotificationServicesDiModule : Module
     {
+        private const string ConnectionString = "AzureNotificationHub:ConnectionString";
+        private const string HubName = "AzureNotificationHub:HubName";
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<PushNotificationService>()
@@ -23,8 +26,8 @@ namespace Softeq.NetKit.Chat.Notifications
             {
                 var configuration = context.Resolve<IConfiguration>();
                 return new AzureNotificationHubConfiguration(
-                    configuration["AzureNotificationHub:ConnectionString"],
-                    configuration["AzureNotificationHub:HubName"]);
+                    configuration[ConnectionString],
+                    configuration[HubName]);
             }).SingleInstance();
         }
     }
