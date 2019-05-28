@@ -92,7 +92,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             //TODO made for remove broken or not closed connections
             await RemoveInactiveConnectionsAsync(client.MemberId);
 
-            var memberHasClients = await UnitOfWork.ClientRepository.MemberHasClientsAsync(client.MemberId);
+            var memberHasClients = await UnitOfWork.ClientRepository.DoesMemberHasClientsAsync(client.MemberId);
             if (!memberHasClients)
             {
                 await _memberService.UpdateMemberStatusAsync(client.Member.SaasUserId, UserStatus.Offline);
@@ -101,8 +101,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         private async Task RemoveInactiveConnectionsAsync(Guid memberId)
         {
-            const int inactiveHoursThreshold = 1;
-            await UnitOfWork.ClientRepository.DeleteMemberClientsWithThresholdAsync(memberId, inactiveHoursThreshold);
+            const int inactiveMinutesThreshold = 60;
+            await UnitOfWork.ClientRepository.DeleteOverThresholdMemberClientsAsync(memberId, inactiveMinutesThreshold);
         }
 
         public async Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)

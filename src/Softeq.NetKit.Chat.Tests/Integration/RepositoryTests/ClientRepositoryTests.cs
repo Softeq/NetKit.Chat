@@ -507,5 +507,53 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             exists = await UnitOfWork.ClientRepository.IsClientExistsAsync(client.ClientConnectionId);
             exists.Should().BeTrue();
         }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task DoesMemberHasClientsAsync_ShouldReturnTrueIfMemberHasClients()
+        {
+            var client = new Client
+            {
+                Id = Guid.NewGuid(),
+                ClientConnectionId = Guid.NewGuid().ToString(),
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow,
+                Name = "test",
+                MemberId = _memberId,
+                UserAgent = "test"
+            };
+
+            var exists = await UnitOfWork.ClientRepository.DoesMemberHasClientsAsync(client.MemberId);
+            exists.Should().BeFalse();
+
+            await UnitOfWork.ClientRepository.AddClientAsync(client);
+
+            exists = await UnitOfWork.ClientRepository.DoesMemberHasClientsAsync(client.MemberId);
+            exists.Should().BeTrue();
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task DeleteOverThresholdMemberClientsAsync_ShouldDeleteMemberClientsOverThreshold()
+        {
+            const int inactiveMinutesThreshold = 60;
+            const int overInactiveMinutesThreshold = 61;
+            var client = new Client
+            {
+                Id = Guid.NewGuid(),
+                ClientConnectionId = Guid.NewGuid().ToString(),
+                LastActivity = DateTimeOffset.UtcNow,
+                LastClientActivity = DateTimeOffset.UtcNow.AddMinutes(-overInactiveMinutesThreshold),
+                Name = "test",
+                MemberId = _memberId,
+                UserAgent = "test"
+            };
+            await UnitOfWork.ClientRepository.AddClientAsync(client);
+
+            await UnitOfWork.ClientRepository.DeleteOverThresholdMemberClientsAsync(client.MemberId, inactiveMinutesThreshold);
+            var exists = await UnitOfWork.ClientRepository.IsClientExistsAsync(client.ClientConnectionId);
+
+            exists.Should().BeFalse();
+        }
     }
 }
