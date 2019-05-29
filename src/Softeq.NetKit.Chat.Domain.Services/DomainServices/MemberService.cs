@@ -123,9 +123,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatInvalidOperationException($"Unable to activate member. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
-            member.IsActive = true;
-
-            await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
+            if (!member.IsActive)
+            {
+                member.IsActive = true;
+                await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
+            }
         }
 
         public async Task<MemberSummaryResponse> AddMemberAsync(string saasUserId, string email)
