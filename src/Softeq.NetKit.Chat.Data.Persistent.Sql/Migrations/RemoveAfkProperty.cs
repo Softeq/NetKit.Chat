@@ -12,11 +12,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         {
             Execute(@"
                 declare @constraint nvarchar(100)
-                select @constraint = [name] from sys.objects where type = 'D' and name like 'DF__Members__IsAfk%'
-                if (@constraint is not null)
-                begin
-                    exec ('alter table [dbo].[Members] drop constraint [' + @constraint +']')
-                end
+                select @constraint = [name] FROM sys.objects WHERE type = 'D' AND name LIKE 'DF__Members__IsAfk%'
+                IF (@constraint is not null)
+                BEGIN
+                    EXEC ('ALTER TABLE [dbo].[Members] DROP CONSTRAINT [' + @constraint +']')
+                END
 
                 ALTER TABLE [dbo].[Members] DROP  COLUMN [IsAfk]
             ");
