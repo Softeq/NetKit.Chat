@@ -101,7 +101,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Message.AccessibilityStatus)},
                         me.{nameof(Member.Id)},
                         me.{nameof(Member.Email)},
-                        me.{nameof(Member.IsAfk)},
                         me.{nameof(Member.IsBanned)},
                         me.{nameof(Member.LastActivity)},
                         me.{nameof(Member.LastNudged)},

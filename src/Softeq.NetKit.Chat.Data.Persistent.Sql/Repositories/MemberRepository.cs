@@ -26,7 +26,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     SELECT
                         {nameof(Member.Id)},
                         {nameof(Member.Email)},
-                        {nameof(Member.IsAfk)},
                         {nameof(Member.IsBanned)},
                         {nameof(Member.LastActivity)},
                         {nameof(Member.LastNudged)},
@@ -75,7 +74,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     SELECT 
                         {nameof(Member.Id)},
                         {nameof(Member.Email)},
-                        {nameof(Member.IsAfk)},
                         {nameof(Member.IsBanned)},
                         {nameof(Member.LastActivity)},
                         {nameof(Member.LastNudged)},
@@ -144,7 +142,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     SELECT 
                         {nameof(Member.Id)},
                         {nameof(Member.Email)},
-                        {nameof(Member.IsAfk)},
                         {nameof(Member.IsBanned)},
                         {nameof(Member.LastActivity)},
                         {nameof(Member.LastNudged)},
@@ -173,7 +170,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     (
                         {nameof(Member.Id)}, 
                         {nameof(Member.Email)}, 
-                        {nameof(Member.IsAfk)}, 
                         {nameof(Member.IsBanned)}, 
                         {nameof(Member.LastActivity)}, 
                         {nameof(Member.LastNudged)}, 
@@ -185,7 +181,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     ) VALUES (
                         @{nameof(Member.Id)}, 
                         @{nameof(Member.Email)}, 
-                        @{nameof(Member.IsAfk)}, 
                         @{nameof(Member.IsBanned)}, 
                         @{nameof(Member.LastActivity)}, 
                         @{nameof(Member.LastNudged)}, 
@@ -207,8 +202,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = $@"
                     UPDATE Members 
                     SET 
-                        {nameof(Member.Email)} = @{nameof(Member.Email)},
-                        {nameof(Member.IsAfk)} = @{nameof(Member.IsAfk)}, 
+                        {nameof(Member.Email)} = @{nameof(Member.Email)}, 
                         {nameof(Member.IsBanned)} = @{nameof(Member.IsBanned)}, 
                         {nameof(Member.LastActivity)} = @{nameof(Member.LastActivity)}, 
                         {nameof(Member.LastNudged)} = @{nameof(Member.LastNudged)}, 
@@ -247,8 +241,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = $@"
                     SELECT
                         {nameof(Member.Id)},
-                        {nameof(Member.Email)},
-                        {nameof(Member.IsAfk)},
+                        {nameof(Member.Email)}, 
                         {nameof(Member.IsBanned)},
                         {nameof(Member.LastActivity)},
                         {nameof(Member.LastNudged)},
@@ -275,8 +268,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = $@"
                     SELECT 
                         m.{nameof(Member.Id)}, 
-                        m.{nameof(Member.Email)}, 
-                        m.{nameof(Member.IsAfk)}, 
+                        m.{nameof(Member.Email)},  
                         m.{nameof(Member.IsBanned)}, 
                         m.{nameof(Member.LastActivity)}, 
                         m.{nameof(Member.LastNudged)}, 
@@ -304,7 +296,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     SELECT 
                         m.{nameof(Member.Id)}, 
                         m.{nameof(Member.Email)}, 
-                        m.{nameof(Member.IsAfk)}, 
                         m.{nameof(Member.IsBanned)}, 
                         m.{nameof(Member.LastActivity)}, 
                         m.{nameof(Member.LastNudged)}, 

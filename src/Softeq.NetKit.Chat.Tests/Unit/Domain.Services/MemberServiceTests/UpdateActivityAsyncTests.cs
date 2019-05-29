@@ -59,7 +59,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             var member = new Member
             {
                 Status = UserStatus.Online,
-                IsAfk = false,
                 LastActivity = utcNow
             };
 

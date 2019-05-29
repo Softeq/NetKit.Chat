@@ -19,7 +19,6 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member
         [JsonConverter(typeof(StringEnumConverter))]
         public UserStatus Status { get; set; }
 
-        public bool IsAfk { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public DateTimeOffset LastActivity { get; set; }
