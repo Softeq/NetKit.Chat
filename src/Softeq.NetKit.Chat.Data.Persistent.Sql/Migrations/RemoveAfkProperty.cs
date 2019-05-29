@@ -11,14 +11,14 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         protected override void Up()
         {
             Execute(@"
-                declare @constraint nvarchar(100)
-                select @constraint = [name] FROM sys.objects WHERE type = 'D' AND name LIKE 'DF__Members__IsAfk%'
-                IF (@constraint is not null)
+                DECLARE @constraint NVARCHAR(100)
+                SELECT @constraint = [name] FROM sys.objects WHERE name LIKE 'DF__Members__IsAfk%'
+                IF (@constraint IS NOT NULL)
                 BEGIN
-                    EXEC ('ALTER TABLE [dbo].[Members] DROP CONSTRAINT [' + @constraint +']')
+                    EXEC ('ALTER TABLE [dbo].[Members] DROP CONSTRAINT ['+ @constraint +']')
                 END
 
-                ALTER TABLE [dbo].[Members] DROP  COLUMN [IsAfk]
+                ALTER TABLE [dbo].[Members] DROP COLUMN [IsAfk]
             ");
         }
 
