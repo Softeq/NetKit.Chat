@@ -189,7 +189,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             var response = _domainModelsMapper.MapToClientResponse(client);
 
             response.ConnectionClientId.Should().Be(client.ClientConnectionId);
-            response.SaasUserId.Should().Be(client.Member.SaasUserId);
             response.UserName.Should().Be(client.Name);
         }
 
