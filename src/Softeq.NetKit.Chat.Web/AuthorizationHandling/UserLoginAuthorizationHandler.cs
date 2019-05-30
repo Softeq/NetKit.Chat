@@ -13,15 +13,15 @@ namespace Softeq.NetKit.Chat.Web.AuthorizationHandling
     {
         private readonly IMemberService _memberService;
 
-        public UserLoginAuthorizationHandler(IMemberService componentContext)
+        public UserLoginAuthorizationHandler(IMemberService memberService)
         {
-            _memberService = componentContext;
+            _memberService = memberService;
         }
 
         public async Task HandleAsync(AuthorizationHandlerContext context)
         {
-            const string saasUserIdType = "sub";
-            var saasUserIdClaim = context.User?.Claims.FirstOrDefault(x => x.Type == saasUserIdType);
+            const string claimType = "sub";
+            var saasUserIdClaim = context.User?.Claims.FirstOrDefault(x => x.Type == claimType);
 
             if (saasUserIdClaim == null)
             {
