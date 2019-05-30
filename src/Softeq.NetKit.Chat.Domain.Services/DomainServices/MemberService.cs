@@ -140,7 +140,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 Id = Guid.NewGuid(),
                 Role = UserRole.User,
-                IsAfk = false,
                 IsBanned = false,
                 Status = UserStatus.Online,
                 SaasUserId = saasUserId,
@@ -225,7 +224,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
             member.Status = UserStatus.Online;
             member.LastActivity = _dateTimeProvider.GetUtcNow();
-            member.IsAfk = false;
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
 
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ConnectionId);

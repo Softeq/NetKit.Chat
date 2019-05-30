@@ -64,7 +64,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 SaasUserId = "8DCBF4A0-4490-45A2-B932-CEB71D19E9BD",
                 Email = email,
                 Role = UserRole.User,
-                IsAfk = false,
                 IsBanned = false,
                 Status = UserStatus.Online,
                 LastActivity = utcNow,

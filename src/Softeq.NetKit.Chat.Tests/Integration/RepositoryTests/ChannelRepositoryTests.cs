@@ -357,7 +357,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                 SaasUserId = "SaasUserId",
                 Name = "Name",
                 Role = UserRole.User,
-                IsAfk = true,
                 Email = "Email"
             };
 

@@ -184,7 +184,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = Guid.NewGuid(),
                 Role = UserRole.User,
-                IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Online,
@@ -197,7 +196,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             {
                 Id = Guid.NewGuid(),
                 Role = UserRole.User,
-                IsAfk = true,
                 IsBanned = true,
                 LastActivity = DateTimeOffset.UtcNow,
                 Status = UserStatus.Online,
