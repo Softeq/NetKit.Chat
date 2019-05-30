@@ -11,7 +11,8 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member
     public class MemberSummaryResponse
     {
         public Guid Id { get; set; }
-
+        //TODO rework model to avoid using ignore attribute
+        [JsonIgnore]
         public string SaasUserId { get; set; }
         public string UserName { get; set; }
         public UserRole Role { get; set; }
