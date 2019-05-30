@@ -9,6 +9,7 @@ using Autofac.Extensions.DependencyInjection;
 using CorrelationId;
 using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ using Serilog;
 using Softeq.NetKit.Chat.Data.Persistent.Database;
 using Softeq.NetKit.Chat.SignalR.Hubs;
 using Softeq.NetKit.Chat.Web.App.Versioning;
+using Softeq.NetKit.Chat.Web.AuthorizationHandling;
 using Softeq.NetKit.Chat.Web.Configuration;
 using Softeq.NetKit.Chat.Web.ExceptionHandling;
 using Softeq.NetKit.Chat.Web.Extensions;
@@ -65,6 +67,8 @@ namespace Softeq.NetKit.Chat.Web
 
                     options.ApiName = authenticationsConfiguration.Bearer.ApiName;
                 });
+            
+            services.AddSingleton<IAuthorizationHandler, UserLoginAuthorizationHandler>();
 
             services.AddApiVersioning(options =>
             {
