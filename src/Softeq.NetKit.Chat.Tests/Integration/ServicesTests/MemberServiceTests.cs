@@ -104,7 +104,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             var newClient = await _clientService.AddClientAsync(addClientRequest);
 
             Assert.NotNull(newClient);
-            Assert.Equal(addClientRequest.SaasUserId, newClient.SaasUserId);
             Assert.Equal(addClientRequest.ConnectionId, newClient.ConnectionClientId);
             Assert.Equal(addClientRequest.UserName, newClient.UserName);
         }
@@ -115,12 +114,12 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         {
             var addClientRequest = new AddClientRequest(SaasUserId, "user@test.test", "7F97D474-3CBA-45E8-A90C-3955A3CBF59D", "user agent1", "user@test.test");
             var addedClient = await _clientService.AddClientAsync(addClientRequest);
-            var createdMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
+            var createdMember = await _memberService.GetMemberByIdAsync(addedClient.MemberId);
 
             Assert.Equal(UserStatus.Online, createdMember.Status);
 
             await _memberService.UpdateMemberStatusAsync(createdMember.SaasUserId, UserStatus.Offline);
-            var changedMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
+            var changedMember = await _memberService.GetMemberByIdAsync(addedClient.MemberId);
 
             Assert.Equal(UserStatus.Offline, changedMember.Status);
         }
@@ -131,7 +130,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
         {
             var addClientRequest = new AddClientRequest(SaasUserId, "user@test.test", "7F97D474-3CBA-45E8-A90C-3955A3CBF59D", "user agent1", "user@test.test");
             var addedClient = await _clientService.AddClientAsync(addClientRequest);
-            var member = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
+            var member = await _memberService.GetMemberByIdAsync(addedClient.MemberId);
 
             Assert.Equal(UserStatus.Online, member.Status);
 
@@ -141,7 +140,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
                 await _clientService.DeleteClientAsync(new DeleteClientRequest(client.ClientConnectionId));
             }
 
-            var offlineMember = await _memberService.GetMemberBySaasUserIdAsync(addedClient.SaasUserId);
+            var offlineMember = await _memberService.GetMemberByIdAsync(addedClient.MemberId);
             Assert.Equal(UserStatus.Offline, offlineMember.Status);
         }
     }

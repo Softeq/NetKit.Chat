@@ -65,7 +65,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         creator.{nameof(Member.Name)}, 
                         creator.{nameof(Member.Status)}, 
                         creator.{nameof(Member.Role)}, 
-                        creator.{nameof(Member.IsAfk)}, 
                         creator.{nameof(Member.Email)}, 
                         creator.{nameof(Member.LastActivity)},
                         m.{nameof(Message.Id)}, 
@@ -81,7 +80,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         mem.{nameof(Member.Name)}, 
                         mem.{nameof(Member.Status)}, 
                         mem.{nameof(Member.Role)}, 
-                        mem.{nameof(Member.IsAfk)}, 
                         mem.{nameof(Member.Email)}, 
                         mem.{nameof(Member.LastActivity)}
                     FROM 
@@ -215,7 +213,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.Name)}, 
                         m.{nameof(Member.Status)}, 
                         m.{nameof(Member.Role)}, 
-                        m.{nameof(Member.IsAfk)}, 
                         m.{nameof(Member.Email)}, 
                         m.{nameof(Member.LastActivity)}
                     FROM 
@@ -268,8 +265,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                        m.{nameof(Member.SaasUserId)}, 
                        m.{nameof(Member.Name)}, 
                        m.{nameof(Member.Status)},
-                       m.{nameof(Member.Role)}, 
-                       m.{nameof(Member.IsAfk)}, 
+                       m.{nameof(Member.Role)},                       
                        m.{nameof(Member.Email)}, 
                        m.{nameof(Member.LastActivity)}
                     FROM 

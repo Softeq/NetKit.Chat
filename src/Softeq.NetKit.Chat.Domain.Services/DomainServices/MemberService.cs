@@ -123,9 +123,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatInvalidOperationException($"Unable to activate member. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
-            member.IsActive = true;
-
-            await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
+            if (!member.IsActive)
+            {
+                member.IsActive = true;
+                await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
+            }
         }
 
         public async Task<MemberSummaryResponse> AddMemberAsync(string saasUserId, string email)
@@ -140,7 +142,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 Id = Guid.NewGuid(),
                 Role = UserRole.User,
-                IsAfk = false,
                 IsBanned = false,
                 Status = UserStatus.Online,
                 SaasUserId = saasUserId,
@@ -225,7 +226,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             }
             member.Status = UserStatus.Online;
             member.LastActivity = _dateTimeProvider.GetUtcNow();
-            member.IsAfk = false;
             await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
 
             var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ConnectionId);

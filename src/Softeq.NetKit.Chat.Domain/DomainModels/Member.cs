@@ -15,9 +15,6 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public DateTimeOffset? LastNudged { get; set; }
         public UserStatus Status { get; set; }
 
-        // TODO [az]: do we need both Status and IsAfk?
-        public bool IsAfk { get; set; }
-
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
 
