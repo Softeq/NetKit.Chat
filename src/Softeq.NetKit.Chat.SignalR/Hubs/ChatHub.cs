@@ -253,7 +253,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         public async Task CloseChannelAsync(SignalRRequest<Model.ChannelRequest> request)
         {
-            await ValidateAndExecuteAsync<>(request, new ChannelRequestValidator(), new TaskReference(async () =>
+            await ValidateAndExecuteAsync<Model.ChannelRequest>(request, new ChannelRequestValidator(), new TaskReference(async () =>
             {
                 var closeChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), request.Request.ChannelId);
                 await _channelSocketService.CloseChannelAsync(closeChannelRequest);
