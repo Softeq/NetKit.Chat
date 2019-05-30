@@ -1,16 +1,13 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using EnsureThat;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
-using Softeq.NetKit.Chat.Client.SDK.REST.Models.SignalRModels;
+using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
@@ -23,14 +20,15 @@ using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Channel;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Member;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Message;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.MessageAttachment;
 using Softeq.Serilog.Extension;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using DomainRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request;
+using Model = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Channel;
 using SignalRRequest = Softeq.NetKit.Chat.SignalR.TransportModels.Request;
-using Model = Softeq.NetKit.Chat.Client.SDK.REST.Models.CommonModels.Request.Channel;
-//using SignalRRequest Softeq.NetKit.Chat.Client.SDK.REST.Models.SignalRModels
-
-
+using Request = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs
 {
@@ -86,14 +84,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #region Client Hub Commands
 
-        public async Task<ClientResponse> GetClientAsync()
-        {
-            return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
-            {
-                var getClientRequest = new GetClientRequest(Context.ConnectionId);
-                return await _clientService.GetClientAsync(getClientRequest);
-            }));
-        }
 
         public async Task<ClientResponse> AddClientAsync()
         {
@@ -198,26 +188,39 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #region Channel Hub Commands
 
-        public async Task JoinToChannelAsync(SignalRRequest<ChannelRequest> request)
+        public async Task JoinToChannelAsync(SignalRRequest<Model.ChannelRequest> request)
         {
-            await ValidateAndExecuteAsync(request, new ChannelRequestValidator(), new TaskReference(async () =>
+            var channelRequest = new ChannelRequest { ChannelId = request.Request.ChannelId, RequestId = request.RequestId };
+
+            await ValidateAndExecuteAsync(channelRequest, new ChannelRequestValidator(), new TaskReference(async () =>
             {
-                var joinToChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), request.ChannelId);
+                var joinToChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), channelRequest.ChannelId);
                 await _channelSocketService.JoinToChannelAsync(joinToChannelRequest);
             }),
             request.RequestId);
         }
 
-        public async Task<ChannelSummaryResponse> CreateChannelAsync(CreateChannelRequest request)
+        public async Task<ChannelSummaryResponse> CreateChannelAsync(SignalRRequest<Model.CreateChannelRequest> request)
         {
-            return await ValidateAndExecuteAsync(request, new CreateChannelRequestValidator(), new TaskReference<ChannelSummaryResponse>(async () =>
+            var channelRequest = new CreateChannelRequest()
             {
-                var createChannelRequest = new DomainRequest.Channel.CreateChannelRequest(Context.GetSaasUserId(), request.Name, request.Type)
+                AllowedMembers =  request.Request.AllowedMembers,
+                Description = request.Request.Description,
+                Name = request.Request.Name,
+                PhotoUrl = request.Request.PhotoUrl,
+                RequestId = request.RequestId,
+                Type = ChannelTypeConvertor.Convert(request.Request.Type),
+                WelcomeMessage = request.Request.WelcomeMessage
+            };
+
+            return await ValidateAndExecuteAsync(channelRequest, new CreateChannelRequestValidator(), new TaskReference<ChannelSummaryResponse>(async () =>
+            {
+                var createChannelRequest = new DomainRequest.Channel.CreateChannelRequest(Context.GetSaasUserId(), channelRequest.Name, channelRequest.Type)
                 {
-                    AllowedMembers = request.AllowedMembers,
-                    Description = request.Description,
-                    PhotoUrl = request.PhotoUrl,
-                    WelcomeMessage = request.WelcomeMessage
+                    AllowedMembers = channelRequest.AllowedMembers,
+                    Description = channelRequest.Description,
+                    PhotoUrl = channelRequest.PhotoUrl,
+                    WelcomeMessage = channelRequest.WelcomeMessage
                 };
                 return await _channelSocketService.CreateChannelAsync(createChannelRequest);
             }),
@@ -253,19 +256,23 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         public async Task CloseChannelAsync(SignalRRequest<Model.ChannelRequest> request)
         {
-            await ValidateAndExecuteAsync<Model.ChannelRequest>(request, new ChannelRequestValidator(), new TaskReference(async () =>
+            var channelRequest = new ChannelRequest { ChannelId = request.Request.ChannelId, RequestId = request.RequestId };
+
+            await ValidateAndExecuteAsync(channelRequest, new ChannelRequestValidator(), new TaskReference(async () =>
             {
-                var closeChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), request.Request.ChannelId);
+                var closeChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), channelRequest.ChannelId);
                 await _channelSocketService.CloseChannelAsync(closeChannelRequest);
             }),
             request.RequestId);
         }
 
-        public async Task LeaveChannelAsync(ChannelRequest request)
+        public async Task LeaveChannelAsync(SignalRRequest<Model.ChannelRequest> request)
         {
-            await ValidateAndExecuteAsync(request, new ChannelRequestValidator(), new TaskReference(async () =>
+            var channelRequest = new ChannelRequest { ChannelId = request.Request.ChannelId, RequestId = request.RequestId };
+
+            await ValidateAndExecuteAsync(channelRequest, new ChannelRequestValidator(), new TaskReference(async () =>
             {
-                var closeChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), request.ChannelId);
+                var closeChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), channelRequest.ChannelId);
                 await _channelSocketService.LeaveChannelAsync(closeChannelRequest);
             }),
             request.RequestId);
@@ -291,7 +298,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #endregion
 
-        private async Task ValidateAndExecuteAsync<TRequest>(SignalRRequest<TRequest> request, IValidator<TRequest> requestValidator, TaskReference funcRequest, string requestId = null)
+        private async Task ValidateAndExecuteAsync<TRequest>(TRequest request, IValidator<TRequest> requestValidator, TaskReference funcRequest, string requestId = null)
         {
             if (requestValidator != null)
             {

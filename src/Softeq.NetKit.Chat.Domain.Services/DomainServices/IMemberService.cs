@@ -20,7 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<ChannelResponse> InviteMemberAsync(Guid memberId, Guid channelId);
         Task ActivateMemberAsync(string saasUserId);
         Task UpdateActivityAsync(UpdateMemberActivityRequest request);
-        Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId);
+        Task<IReadOnlyCollection<DomainModels.Client>> GetMemberClientsAsync(Guid memberId);
         Task<MemberSummaryResponse> AddMemberAsync(string saasUserId, string email);
         Task UpdateMemberStatusAsync(string saasUserId, UserStatus status);
         Task<IReadOnlyCollection<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds);

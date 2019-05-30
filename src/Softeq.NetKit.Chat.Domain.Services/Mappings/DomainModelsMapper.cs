@@ -125,7 +125,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return channelMember != null ? _mapper.Map<ChannelMemberResponse>(channelMember) : new ChannelMemberResponse();
         }
 
-        public ClientResponse MapToClientResponse(Client client)
+        public ClientResponse MapToClientResponse(DomainModels.Client client)
         {
             return client != null ? _mapper.Map<ClientResponse>(client) : new ClientResponse();
         }

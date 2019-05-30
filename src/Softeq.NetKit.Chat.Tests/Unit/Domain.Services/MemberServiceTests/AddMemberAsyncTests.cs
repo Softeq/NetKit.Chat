@@ -73,7 +73,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 PhotoName = string.Empty,
                 OwnedChannels = new List<Channel>(),
                 Messages = new List<Message>(),
-                ConnectedClients = new List<Client>(),
+                ConnectedClients = new List<Chat.Domain.DomainModels.Client>(),
                 Channels = new List<ChannelMember>(),
                 Notifications = new List<Notification>()
             };

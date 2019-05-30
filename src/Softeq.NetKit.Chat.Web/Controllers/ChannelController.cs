@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
@@ -17,7 +18,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using WebRequest = Softeq.NetKit.Chat.Web.TransportModels.Request;
-using Model = Softeq.NetKit.Chat.Client.SDK.REST.Models.CommonModels.Request.Channel;
+using Model = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Channel;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -53,15 +54,16 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateChannelAsync([FromBody] TransportModels.Request.Channel.CreateChannelRequest request)
+        public async Task<IActionResult> CreateChannelAsync([FromBody] Model.CreateChannelRequest request)
         {
-            var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.Name, request.Type)
+            var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.Name, ChannelTypeConvertor.Convert(request.Type))
             {
                 AllowedMembers = request.AllowedMembers,
                 Description = request.Description,
                 PhotoUrl = request.PhotoUrl,
                 WelcomeMessage = request.WelcomeMessage
             };
+
             var channel = await _channelSocketService.CreateChannelAsync(createChannelRequest);
             return Ok(channel);
         }
@@ -195,9 +197,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/leave")]
-        public async Task<IActionResult> LeaveChannelAsync(Guid channelId)
+        public async Task<IActionResult> LeaveChannelAsync(Model.ChannelRequest request)
         {
-            await _channelSocketService.LeaveChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
+            var channelRequest = new ChannelRequest(GetCurrentSaasUserId(), request.ChannelId);
+
+            await _channelSocketService.LeaveChannelAsync(channelRequest);
             return Ok();
         }
 

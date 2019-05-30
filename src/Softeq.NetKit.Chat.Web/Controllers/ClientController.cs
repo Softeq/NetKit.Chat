@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
+using Model = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Client;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -25,24 +26,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             Ensure.That(clientService).IsNotNull();
 
             _clientService = clientService;
-        }
-
-        [HttpGet]
-        [ProducesResponseType(typeof(ClientResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetClientAsync(string connectionId)
-        {
-            var getClientRequest = new GetClientRequest(connectionId);
-            var result = await _clientService.GetClientAsync(getClientRequest);
-            return Ok(result);
-        }
-
-        [HttpPost]
-        [ProducesResponseType(typeof(ClientResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> AddClientAsync(string connectionId)
-        {
-            var addClientRequest = new AddClientRequest(GetCurrentSaasUserId(), GetCurrentUserName(), connectionId, null, GetCurrentUserEmail());
-            var result = await _clientService.AddClientAsync(addClientRequest);
-            return Ok(result);
         }
 
         [HttpDelete]

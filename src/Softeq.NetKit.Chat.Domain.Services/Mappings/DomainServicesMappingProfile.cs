@@ -70,7 +70,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             CreateMap<ChannelMember, ChannelMemberResponse>();
 
-            CreateMap<Client, ClientResponse>()
+            CreateMap<DomainModels.Client, ClientResponse>()
                 .ForMember(d => d.MemberId, opt => opt.MapFrom(s => s.MemberId))
                 .ForMember(d => d.ConnectionClientId, opt => opt.MapFrom(s => s.ClientConnectionId))
                 .ForMember(d => d.SaasUserId, opt => opt.MapFrom(s => s.Member.SaasUserId))

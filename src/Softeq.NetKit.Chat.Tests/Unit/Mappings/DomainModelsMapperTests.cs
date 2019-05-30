@@ -176,7 +176,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         [Trait("Category", "Unit")]
         public void MapToClientResponse_ShouldMapClientToClientResponse()
         {
-            var client = new Client
+            var client = new Chat.Domain.DomainModels.Client
             {
                 ClientConnectionId = "2A4C5F69-0464-4F6C-97F4-7E6D8FF93CA8",
                 Member = new Member

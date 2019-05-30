@@ -48,7 +48,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 .ReturnsAsync(member)
                 .Verifiable();
 
-            var clients = new List<Client>();
+            var clients = new List<Chat.Domain.DomainModels.Client>();
 
             _clientRepositoryMock.Setup(x => x.GetMemberClientsAsync(It.Is<Guid>(m => m.Equals(member.Id))))
                 .ReturnsAsync(clients)
