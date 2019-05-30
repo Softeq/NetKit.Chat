@@ -186,7 +186,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<PagedMembersResponse> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter, string currentUserSaasId)
         {
-            var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(pageNumber, pageSize, nameFilter, currentUserSaasId);
+            var members = await UnitOfWork.MemberRepository.GetPagedMembersExceptCurrentAsync(pageNumber, pageSize, nameFilter, currentUserSaasId);
 
             var response = new PagedMembersResponse
             {

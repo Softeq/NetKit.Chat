@@ -18,7 +18,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
         {
         }
 
-        public async Task<QueryResult<Member>> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter, string currentUserSaasId)
+        public async Task<QueryResult<Member>> GetPagedMembersExceptCurrentAsync(int pageNumber, int pageSize, string nameFilter, string currentUserSaasId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -38,8 +38,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(Member.IsActive)},
                         {nameof(Member.IsDeleted)}
                     FROM 
-                        Members 
-                    {(!string.IsNullOrEmpty(nameFilter) ? $" WHERE LOWER({nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")} 
+                        Members WHERE {nameof(Member.SaasUserId)} <> @{nameof(currentUserSaasId)}
+                    {(!string.IsNullOrEmpty(nameFilter) ? $" AND LOWER({nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")} 
                     ORDER BY 
                         {nameof(Member.Name)}
                     OFFSET @{nameof(pageSize)} * (@{nameof(pageNumber)} - 1) ROWS
@@ -48,8 +48,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     SELECT 
                         COUNT(*)
                     FROM 
-                        Members 
-                    {(!string.IsNullOrEmpty(nameFilter) ? $" WHERE LOWER({nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")}";
+                        Members  WHERE {nameof(Member.SaasUserId)} <> @{nameof(currentUserSaasId)}
+                    {(!string.IsNullOrEmpty(nameFilter) ? $" AND LOWER({nameof(Member.Name)}) LIKE LOWER('%' + @{nameof(nameFilter)} + '%')" : "")}";
 
                 var data = await connection.QueryMultipleAsync(sqlQuery, new { pageNumber, pageSize, nameFilter, currentUserSaasId });
 
