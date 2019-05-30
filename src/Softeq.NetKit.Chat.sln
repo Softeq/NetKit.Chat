@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{58C74733-7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Notifications", "Softeq.NetKit.Chat.Notifications\Softeq.NetKit.Chat.Notifications.csproj", "{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetKit.Chat.Client.SDK.REST", "..\..\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST.csproj", "{EAC65BA0-BAEE-4C56-A6E8-440E9A11AC48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC65BA0-BAEE-4C56-A6E8-440E9A11AC48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC65BA0-BAEE-4C56-A6E8-440E9A11AC48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC65BA0-BAEE-4C56-A6E8-440E9A11AC48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC65BA0-BAEE-4C56-A6E8-440E9A11AC48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
