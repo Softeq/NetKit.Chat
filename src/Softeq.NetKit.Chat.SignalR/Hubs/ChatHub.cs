@@ -10,6 +10,7 @@ using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
+using Softeq.NetKit.Chat.Client.SDK.REST.Models.SignalRModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
@@ -26,6 +27,10 @@ using Softeq.NetKit.Chat.SignalR.TransportModels.Validators.MessageAttachment;
 using Softeq.Serilog.Extension;
 using DomainRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using SignalRRequest = Softeq.NetKit.Chat.SignalR.TransportModels.Request;
+using Model = Softeq.NetKit.Chat.Client.SDK.REST.Models.CommonModels.Request.Channel;
+//using SignalRRequest Softeq.NetKit.Chat.Client.SDK.REST.Models.SignalRModels
+
+
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs
 {
@@ -193,7 +198,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #region Channel Hub Commands
 
-        public async Task JoinToChannelAsync(SignalRRequest.Channel.ChannelRequest request)
+        public async Task JoinToChannelAsync(SignalRRequest<ChannelRequest> request)
         {
             await ValidateAndExecuteAsync(request, new ChannelRequestValidator(), new TaskReference(async () =>
             {
@@ -246,11 +251,11 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             request.RequestId);
         }
 
-        public async Task CloseChannelAsync(ChannelRequest request)
+        public async Task CloseChannelAsync(SignalRRequest<Model.ChannelRequest> request)
         {
-            await ValidateAndExecuteAsync(request, new ChannelRequestValidator(), new TaskReference(async () =>
+            await ValidateAndExecuteAsync<>(request, new ChannelRequestValidator(), new TaskReference(async () =>
             {
-                var closeChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), request.ChannelId);
+                var closeChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), request.Request.ChannelId);
                 await _channelSocketService.CloseChannelAsync(closeChannelRequest);
             }),
             request.RequestId);
@@ -286,7 +291,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #endregion
 
-        private async Task ValidateAndExecuteAsync<TRequest>(TRequest request, IValidator<TRequest> requestValidator, TaskReference funcRequest, string requestId = null)
+        private async Task ValidateAndExecuteAsync<TRequest>(SignalRRequest<TRequest> request, IValidator<TRequest> requestValidator, TaskReference funcRequest, string requestId = null)
         {
             if (requestValidator != null)
             {

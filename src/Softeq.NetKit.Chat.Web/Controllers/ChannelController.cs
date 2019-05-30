@@ -8,6 +8,7 @@ using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
@@ -16,6 +17,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using WebRequest = Softeq.NetKit.Chat.Web.TransportModels.Request;
+using Model = Softeq.NetKit.Chat.Client.SDK.REST.Models.CommonModels.Request.Channel;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -119,9 +121,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/close")]
-        public async Task<IActionResult> CloseChannelAsync(Guid channelId)
+        public async Task<IActionResult> CloseChannelAsync(Model.ChannelRequest channelRequest)
         {
-            await _channelSocketService.CloseChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
+            var request = new ChannelRequest(GetCurrentSaasUserId(), channelRequest.ChannelId);
+            await _channelSocketService.CloseChannelAsync(request);
+
             return Ok();
         }
 
@@ -180,9 +184,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/join")]
-        public async Task<IActionResult> JoinToChannelAsync(Guid channelId)
+        public async Task<IActionResult> JoinToChannelAsync(Model.ChannelRequest request)
         {
-            await _channelSocketService.JoinToChannelAsync(new ChannelRequest(GetCurrentSaasUserId(), channelId));
+            var channelRequest = new ChannelRequest(GetCurrentSaasUserId(), request.ChannelId);
+            await _channelSocketService.JoinToChannelAsync(channelRequest);
+
             return Ok();
         }
 
