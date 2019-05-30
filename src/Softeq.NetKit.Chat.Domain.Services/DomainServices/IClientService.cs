@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
-using Model = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Client;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
