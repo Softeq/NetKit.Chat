@@ -118,12 +118,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task ActivateMemberAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            if (member == null)
-            {
-                throw new NetKitChatInvalidOperationException($"Unable to activate member. Member {nameof(saasUserId)}:{saasUserId} is not found.");
-            }
-
-            if (!member.IsActive)
+            if (member != null && !member.IsActive)
             {
                 member.IsActive = true;
                 await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
