@@ -1,0 +1,20 @@
+﻿// Developed by Softeq Development Corporation
+// http://www.softeq.com
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Domain.DomainModels;
+
+namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
+{
+    public interface IAttachmentRepository
+    {
+        Task AddAttachmentAsync(Attachment attachment);
+        Task DeleteAttachmentAsync(Guid attachmentId);
+        Task<Attachment> GetAttachmentAsync(Guid attachmentId);
+        Task<IReadOnlyCollection<Attachment>> GetMessageAttachmentsAsync(Guid messageId);
+        Task DeleteMessageAttachmentsAsync(Guid messageId);
+        Task<int> GetMessageAttachmentsCountAsync(Guid messageId);
+    }
+}

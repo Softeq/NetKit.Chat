@@ -1,0 +1,87 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Web", "Softeq.NetKit.Chat.Web\Softeq.NetKit.Chat.Web.csproj", "{A8ABD055-ACDC-4533-822C-8662A58B2333}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Domain", "Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj", "{F384D557-EE76-42C5-8DBA-990C74920E6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Domain.Services", "Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj", "{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Tests", "Softeq.NetKit.Chat.Tests\Softeq.NetKit.Chat.Tests.csproj", "{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.SignalR", "Softeq.NetKit.Chat.SignalR\Softeq.NetKit.Chat.SignalR.csproj", "{A54D2056-8B81-4427-9FB6-76A43AE7501B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Persistent", "Softeq.NetKit.Chat.Data.Persistent\Softeq.NetKit.Chat.Data.Persistent.csproj", "{237A38F9-4B6E-4B79-995A-5B8F979A578F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Persistent.Sql", "Softeq.NetKit.Chat.Data.Persistent.Sql\Softeq.NetKit.Chat.Data.Persistent.Sql.csproj", "{2992A718-8F02-4E84-A5D3-95D8D5EE010F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Cloud", "Softeq.NetKit.Chat.Data.Cloud\Softeq.NetKit.Chat.Data.Cloud.csproj", "{521E3BC0-D287-493C-924F-E50B616CCD0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Data.Cloud.Azure", "Softeq.NetKit.Chat.Data.Cloud.Azure\Softeq.NetKit.Chat.Data.Cloud.Azure.csproj", "{3B1C566E-0BC7-484C-B524-163BB025DB77}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{58C74733-7241-4E60-9C3B-90172584C151}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Softeq.NetKit.Chat.Notifications", "Softeq.NetKit.Chat.Notifications\Softeq.NetKit.Chat.Notifications.csproj", "{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8ABD055-ACDC-4533-822C-8662A58B2333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8ABD055-ACDC-4533-822C-8662A58B2333}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8ABD055-ACDC-4533-822C-8662A58B2333}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8ABD055-ACDC-4533-822C-8662A58B2333}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F384D557-EE76-42C5-8DBA-990C74920E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A83C9ABB-9E9E-4EDB-8B3F-B893F0DB0F64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD0BAE9B-2235-4072-9E17-A5BDF08C6F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A54D2056-8B81-4427-9FB6-76A43AE7501B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{237A38F9-4B6E-4B79-995A-5B8F979A578F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{237A38F9-4B6E-4B79-995A-5B8F979A578F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{237A38F9-4B6E-4B79-995A-5B8F979A578F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{237A38F9-4B6E-4B79-995A-5B8F979A578F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2992A718-8F02-4E84-A5D3-95D8D5EE010F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2992A718-8F02-4E84-A5D3-95D8D5EE010F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2992A718-8F02-4E84-A5D3-95D8D5EE010F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2992A718-8F02-4E84-A5D3-95D8D5EE010F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{521E3BC0-D287-493C-924F-E50B616CCD0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B1C566E-0BC7-484C-B524-163BB025DB77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A6EDD5E-76EB-4D6A-BB2F-C47805EA8440}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{237A38F9-4B6E-4B79-995A-5B8F979A578F} = {58C74733-7241-4E60-9C3B-90172584C151}
+		{2992A718-8F02-4E84-A5D3-95D8D5EE010F} = {58C74733-7241-4E60-9C3B-90172584C151}
+		{521E3BC0-D287-493C-924F-E50B616CCD0C} = {58C74733-7241-4E60-9C3B-90172584C151}
+		{3B1C566E-0BC7-484C-B524-163BB025DB77} = {58C74733-7241-4E60-9C3B-90172584C151}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A7ECDD6F-6F42-4C9D-B11E-CD136511A56E}
+	EndGlobalSection
+EndGlobal
