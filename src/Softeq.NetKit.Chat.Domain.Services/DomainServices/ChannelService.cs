@@ -323,6 +323,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     if (existingUserChannelMember.LastReadMessageId.HasValue)
                     {
                         var lastReadMessage = await UnitOfWork.MessageRepository.GetAsync(existingUserChannelMember.LastReadMessageId.Value);
+                        //only present message may be last
+                        lastReadMessage = lastReadMessage?.AccessibilityStatus == AccessibilityStatus.Present ? lastReadMessage : null;
+
                         channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, currentUser, member, lastReadMessage);
                     }
                     else
@@ -338,6 +341,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     if (existingUserChannelMember.LastReadMessageId.HasValue)
                     {
                         var lastReadMessage = await UnitOfWork.MessageRepository.GetAsync(existingUserChannelMember.LastReadMessageId.Value);
+                        //only present message may be last
+                        lastReadMessage = lastReadMessage?.AccessibilityStatus == AccessibilityStatus.Present ? lastReadMessage : null;
                         channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, existingUserChannelMember, lastReadMessage));
                     }
                     else
