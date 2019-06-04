@@ -127,7 +127,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [HttpPost]
         [Route("push-token/subscribe")]
-        public async Task<IActionResult> SubscribePushToken([FromBody]PushTokenRequest model)
+        public async Task<IActionResult> SubscribePushTokenAsync([FromBody]PushTokenRequest model)
         {
             var userId = GetCurrentSaasUserId();
 
@@ -145,7 +145,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("push-token/unsubscribe")]
         [HttpPost]
-        public async Task<IActionResult> UnsubscribePushToken([FromBody]PushTokenRequest model)
+        public async Task<IActionResult> UnsubscribePushTokenAsync([FromBody]PushTokenRequest model)
         {
             var userId = GetCurrentSaasUserId();
 
