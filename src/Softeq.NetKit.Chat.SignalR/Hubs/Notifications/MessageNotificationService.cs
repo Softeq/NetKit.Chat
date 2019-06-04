@@ -84,11 +84,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         {
             var exceptList = Enumerable.Empty<string>().ToList();
 
-            if (recipientType == RecipientType.AllChannelConnections)
-            {
-                exceptList = await GetChannelClientConnectionIdsAsync(channelId);
-            }
-            else if (recipientType == RecipientType.AllExceptMemberConnections)
+            if (recipientType == RecipientType.AllExceptMemberConnections)
             {
                 var memberClientIds = await GetChannelMemberClientConnectionIdsAsync(channelId, memberId);
                 exceptList.AddRange(memberClientIds);
