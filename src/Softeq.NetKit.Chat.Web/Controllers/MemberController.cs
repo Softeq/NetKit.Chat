@@ -151,9 +151,11 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
             if (model != null)
             {
+                var token = model.Token.Trim().Replace(" ", string.Empty);
+
                 await _pushNotificationService.UnsubscribeDeviceFromPushAsync(new CreatePushTokenRequest(userId)
                 {
-                    Token = model.Token,
+                    Token = token,
                     DevicePlatform = model.DevicePlatform
                 });
             }
