@@ -116,11 +116,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             if (updatingChannel.Name != request.Name)
             {
-                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelNameChangedLocalizationVisitor(updatedChannel), RecipientType.AllChanelConnections, _systemMessagesConfiguration.ChannelNameChanged);
+                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelNameChangedLocalizationVisitor(updatedChannel), RecipientType.AllChannelConnections, _systemMessagesConfiguration.ChannelNameChanged);
             }
             else if (updatingChannel.PhotoUrl != request.PhotoUrl)
             {
-                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelIconChangedLocalizationVisitor(updatedChannel), RecipientType.AllChanelConnections, _systemMessagesConfiguration.ChannelIconChanged);
+                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelIconChangedLocalizationVisitor(updatedChannel), RecipientType.AllChannelConnections, _systemMessagesConfiguration.ChannelIconChanged);
             }
 
             return updatedChannel;
