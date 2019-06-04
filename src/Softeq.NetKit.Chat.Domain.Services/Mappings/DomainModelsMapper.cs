@@ -52,6 +52,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             if (channel != null)
             {
                 response = _mapper.Map(channel, response);
+
+                if (channel.Messages == null)
+                {
+                    response.UnreadMessagesCount = 0;
+                    return response;
+                }
+
                 var lastMessage = channel.Messages.OrderBy(o => o.Created).LastOrDefault();
                 if (lastMessage != null)
                 {

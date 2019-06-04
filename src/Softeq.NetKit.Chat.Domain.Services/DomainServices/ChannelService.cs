@@ -141,7 +141,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 existingDirectChannel.IsClosed = false;
                 await UnitOfWork.ChannelRepository.UpdateChannelAsync(existingDirectChannel);
 
-                return DomainModelsMapper.MapToDirectChannelSummaryResponse(existingDirectChannel, creator, member);
+                var channelSummary = DomainModelsMapper.MapToDirectChannelSummaryResponse(existingDirectChannel, creator, member);
+
+                //TODO need to send channel summary specific for every user
+                channelSummary.LastMessage = null;
+                return channelSummary;
             }
 
             var newChannel = new Channel
@@ -236,6 +240,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new NetKitChatNotFoundException($"Unable to get channel summary. Channel {nameof(channelId)}:{channelId} is not found.");
             }
+
+            var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(channel.Id);
+            channel.Messages = messages.ToList();
 
             var member = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
