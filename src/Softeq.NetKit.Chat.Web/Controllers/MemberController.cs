@@ -14,6 +14,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.Notifications.Services;
+using Softeq.NetKit.Chat.Notifications.TransportModels.Notification.Request;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -117,6 +118,47 @@ namespace Softeq.NetKit.Chat.Web.Controllers
                 Value = value
             });
             return Ok(res);
+        }
+
+        #endregion
+
+        #region Notifications
+        
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [HttpPost]
+        [Route("push-token/subscribe")]
+        public async Task<IActionResult> SubscribePushToken([FromBody]PushTokenRequest model)
+        {
+            var userId = GetCurrentSaasUserId();
+
+            var token = model.Token.Trim().Replace(" ", string.Empty);
+
+            await _pushNotificationService.CreateOrUpdatePushSubscriptionAsync(new CreatePushTokenRequest(userId)
+            {
+                Token = token,
+                DevicePlatform = model.DevicePlatform
+            });
+
+            return Ok();
+        }
+
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route("push-token/unsubscribe")]
+        [HttpPost]
+        public async Task<IActionResult> UnsubscribePushToken([FromBody]PushTokenRequest model)
+        {
+            var userId = GetCurrentSaasUserId();
+
+            if (model != null)
+            {
+                await _pushNotificationService.UnsubscribeDeviceFromPushAsync(new CreatePushTokenRequest(userId)
+                {
+                    Token = model.Token,
+                    DevicePlatform = model.DevicePlatform
+                });
+            }
+
+            return Ok();
         }
 
         #endregion
