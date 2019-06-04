@@ -118,6 +118,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task ActivateMemberAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
+
             if (member != null && !member.IsActive)
             {
                 member.IsActive = true;

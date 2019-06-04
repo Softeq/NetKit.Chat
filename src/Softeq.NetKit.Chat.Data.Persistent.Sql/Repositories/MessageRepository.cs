@@ -76,7 +76,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
                     WHERE 
                         m.{nameof(Message.ChannelId)} = @{nameof(channelId)}
-                        AND m.{nameof(Message.AccessibilityStatus)} = accessibilityStatus
+                        AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
                     ORDER BY 
                         m.{nameof(Message.Created)} DESC";
 
