@@ -130,8 +130,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         {
             await _channelService.CloseChannelAsync(request.SaasUserId, request.ChannelId);
 
-            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
-
             await _channelNotificationService.OnCloseChannel(request.ChannelId);
 
             var channelMembers = await _memberService.GetChannelMembersAsync(request.ChannelId);
