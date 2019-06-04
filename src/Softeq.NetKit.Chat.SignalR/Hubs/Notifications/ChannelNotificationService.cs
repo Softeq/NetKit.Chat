@@ -42,7 +42,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelClosed, channelId);
         }
 
-        public async Task OnJoinChannel(ChannelSummaryResponse channel, MemberSummaryResponse member)
+        public async Task OnJoinChannel(ChannelSummaryResponse channel)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
 

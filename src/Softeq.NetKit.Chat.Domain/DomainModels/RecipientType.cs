@@ -6,6 +6,7 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
     public enum RecipientType
     {
         AllExceptMemberConnections = 0,
-        AllExceptCallerConnectionId = 1
+        AllExceptCallerConnectionId = 1,
+        AllChanelConnections = 2
     }
 }

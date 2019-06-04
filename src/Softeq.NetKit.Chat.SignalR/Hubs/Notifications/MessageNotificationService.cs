@@ -32,17 +32,9 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         public async Task OnAddMessage(MessageResponse message, RecipientType recipientType, string callerConnectionId = null)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
-            var exceptList = new List<string> {callerConnectionId};
+            var exceptList = await GetExceptConnectionIdsListAsync(recipientType, message.ChannelId, message.Sender.Id, callerConnectionId ?? string.Empty);
 
-            if (recipientType == RecipientType.AllExceptMemberConnections)
-            {
-                var memberClientIds = await GetChannelMemberClientConnectionIdsAsync(message.ChannelId, message.Sender.Id);
-                exceptList.AddRange(memberClientIds);
-            }
-
-            var clientIdsExceptCaller = callerConnectionId != null
-                            ? clientIds.Except(exceptList).ToList()
-                            : clientIds;
+            var clientIdsExceptCaller = clientIds.Except(exceptList).ToList();
 
             await HubContext.Clients.Clients(clientIdsExceptCaller).SendAsync(HubEvents.MessageAdded, message);
         }
@@ -86,6 +78,27 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelId, notifyMemberIds);
 
             await HubContext.Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Id);
+        }
+
+        private async Task<IEnumerable<string>> GetExceptConnectionIdsListAsync(RecipientType recipientType, Guid channelId, Guid memberId, string callerConnectionId)
+        {
+            var exceptList = Enumerable.Empty<string>().ToList();
+
+            if (recipientType == RecipientType.AllChanelConnections)
+            {
+                exceptList = await GetChannelClientConnectionIdsAsync(channelId);
+            }
+            else if (recipientType == RecipientType.AllExceptMemberConnections)
+            {
+                var memberClientIds = await GetChannelMemberClientConnectionIdsAsync(channelId, memberId);
+                exceptList.AddRange(memberClientIds);
+            }
+            else if (recipientType == RecipientType.AllExceptCallerConnectionId)
+            {
+                 exceptList.Add(callerConnectionId);
+            }
+
+            return exceptList;
         }
     }
 }
