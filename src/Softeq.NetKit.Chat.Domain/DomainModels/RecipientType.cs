@@ -7,6 +7,6 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
     {
         AllExceptMemberConnections = 0,
         AllExceptCallerConnectionId = 1,
-        AllChanelConnections = 2
+        AllChannelConnections = 2
     }
 }
