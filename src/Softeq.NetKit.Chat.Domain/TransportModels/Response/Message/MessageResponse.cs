@@ -2,7 +2,7 @@
 // http://www.softeq.com
 
 using System;
-using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization;
 using Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Message;
@@ -29,3 +29,4 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
         }
     }
 }
+

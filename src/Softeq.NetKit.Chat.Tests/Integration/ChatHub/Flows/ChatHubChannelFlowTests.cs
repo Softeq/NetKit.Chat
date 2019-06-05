@@ -3,13 +3,13 @@
 
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
-using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows

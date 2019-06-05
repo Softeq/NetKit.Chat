@@ -4,15 +4,15 @@
 using System;
 using System.Threading.Tasks;
 using EnsureThat;
-using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Configuration;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization;
 using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.Notifications.Services;
@@ -232,7 +232,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         private async Task SendSystemMessageAsync(
                         string saasUserId,
                         Guid channelId,
-                        ILocalizationVisitor<MessageResponse> localizationVisitor,
+                        Client.SDK.Models.Visitors.Localization.ILocalizationVisitor<MessageResponse> localizationVisitor,
                         string localizationFallback = "",
                         params object[] localizationFallbackArgs)
         {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
+
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

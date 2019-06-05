@@ -5,10 +5,10 @@ using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests

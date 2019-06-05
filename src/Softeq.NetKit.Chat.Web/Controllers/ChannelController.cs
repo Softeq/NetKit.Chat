@@ -8,7 +8,6 @@ using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
@@ -18,7 +17,8 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using WebRequest = Softeq.NetKit.Chat.Web.TransportModels.Request;
-using Model = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Channel;
+using Channel = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Channel;
+using Member = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Member;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
@@ -54,7 +54,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateChannelAsync([FromBody] Model.CreateChannelRequest request)
+        public async Task<IActionResult> CreateChannelAsync([FromBody] Channel.CreateChannelRequest request)
         {
             var createChannelRequest = new CreateChannelRequest(GetCurrentSaasUserId(), request.Name, ChannelTypeConvertor.Convert(request.Type))
             {
@@ -68,11 +68,10 @@ namespace Softeq.NetKit.Chat.Web.Controllers
             return Ok(channel);
         }
 
-
         [HttpPost]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         [Route("direct")]
-        public async Task<IActionResult> CreateDirectChannelAsync([FromBody] CreateDirectChannelRequest request)
+        public async Task<IActionResult> CreateDirectChannelAsync(Channel.CreateDirectChannelRequest request)
         {
             var channel = await _channelSocketService.CreateDirectChannelAsync(new CreateDirectChannelRequest(GetCurrentSaasUserId(), request.MemberId));
             return Ok(channel);
@@ -81,9 +80,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(ChannelSummaryResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}")]
-        public async Task<IActionResult> UpdateChannelAsync(Guid channelId, [FromBody] TransportModels.Request.Channel.UpdateChannelRequest request)
+        public async Task<IActionResult> UpdateChannelAsync(Channel.UpdateChannelRequest request)
         {
-            var updateChannelRequest = new UpdateChannelRequest(GetCurrentSaasUserId(), channelId, request.Name)
+            var updateChannelRequest = new UpdateChannelRequest(GetCurrentSaasUserId(), request.ChannelId, request.Name)
             {
                 PhotoUrl = request.PhotoUrl,
                 Description = request.Description,
@@ -123,7 +122,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/close")]
-        public async Task<IActionResult> CloseChannelAsync(Model.ChannelRequest channelRequest)
+        public async Task<IActionResult> CloseChannelAsync(Channel.ChannelRequest channelRequest)
         {
             var request = new ChannelRequest(GetCurrentSaasUserId(), channelRequest.ChannelId);
             await _channelSocketService.CloseChannelAsync(request);
@@ -143,13 +142,13 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PagedMembersResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/user")]
-        public async Task<IActionResult> GetPotentialChannelMembersAsync(Guid channelId, int pageNumber, int pageSize, string nameFilter)
+        public async Task<IActionResult> GetPotentialChannelMembersAsync(Member.GetPotentialChannelMembersRequest request)
         {
-            var result = await _memberService.GetPotentialChannelMembersAsync(channelId, new GetPotentialChannelMembersRequest
+            var result = await _memberService.GetPotentialChannelMembersAsync(request.ChannelId, new GetPotentialChannelMembersRequest
             {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                NameFilter = nameFilter
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                NameFilter = request.NameFilter
             });
 
             return Ok(result);
@@ -158,18 +157,18 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/{memberId:guid}")]
-        public async Task<IActionResult> InviteMemberAsync(Guid channelId, Guid memberId)
+        public async Task<IActionResult> InviteMemberAsync(Member.InviteMemberRequest request)
         {
-            var response = await _channelSocketService.InviteMemberAsync(new InviteMemberRequest(GetCurrentSaasUserId(), channelId, memberId));
+            var response = await _channelSocketService.InviteMemberAsync(new InviteMemberRequest(GetCurrentSaasUserId(), request.ChannelId, request.MemberId));
             return Ok(response);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(ChannelResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/member")]
-        public async Task<IActionResult> InviteMultipleMembersAsync(Guid channelId, [FromBody] TransportModels.Request.Member.InviteMultipleMembersRequest request)
+        public async Task<IActionResult> InviteMultipleMembersAsync(Member.InviteMultipleMembersRequest request)
         {
-            var inviteMultipleMembersRequest = new InviteMultipleMembersRequest(GetCurrentSaasUserId(), channelId, request.InvitedMembersIds);
+            var inviteMultipleMembersRequest = new InviteMultipleMembersRequest(GetCurrentSaasUserId(), request.ChannelId, request.InvitedMembersIds);
             var channel = await _channelSocketService.InviteMultipleMembersAsync(inviteMultipleMembersRequest);
             return Ok(channel);
         }
@@ -186,7 +185,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/join")]
-        public async Task<IActionResult> JoinToChannelAsync(Model.ChannelRequest request)
+        public async Task<IActionResult> JoinToChannelAsync(Channel.ChannelRequest request)
         {
             var channelRequest = new ChannelRequest(GetCurrentSaasUserId(), request.ChannelId);
             await _channelSocketService.JoinToChannelAsync(channelRequest);
@@ -197,7 +196,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/leave")]
-        public async Task<IActionResult> LeaveChannelAsync(Model.ChannelRequest request)
+        public async Task<IActionResult> LeaveChannelAsync(Channel.ChannelRequest request)
         {
             var channelRequest = new ChannelRequest(GetCurrentSaasUserId(), request.ChannelId);
 
@@ -208,9 +207,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/delete/{memberId:guid}")]
-        public async Task<IActionResult> DeleteMemberFromChannelAsync(Guid channelId, Guid memberId)
+        public async Task<IActionResult> DeleteMemberFromChannelAsync(Member.DeleteMemberRequest request)
         {
-            await _channelSocketService.DeleteMemberFromChannelAsync(new DeleteMemberRequest(GetCurrentSaasUserId(), channelId, memberId));
+            await _channelSocketService.DeleteMemberFromChannelAsync(new DeleteMemberRequest(GetCurrentSaasUserId(), request.ChannelId, request.MemberId));
             return Ok();
         }
 

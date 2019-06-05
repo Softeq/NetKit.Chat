@@ -2,14 +2,14 @@
 // http://www.softeq.com
 
 using System.Collections.Generic;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Localization;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.DomainModels.Constants;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Localization;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization
 {
-    public class ChannelIconChangedLocalizationVisitor : ILocalizationVisitor<MessageResponse>
+    public class ChannelIconChangedLocalizationVisitor : Client.SDK.Models.Visitors.Localization.ILocalizationVisitor<MessageResponse>
     {
         private readonly ChannelSummaryResponse _channel;
 

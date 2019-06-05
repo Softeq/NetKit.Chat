@@ -1,8 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using Microsoft.Extensions.Configuration;
-
 namespace Softeq.NetKit.Chat.Domain.Services.Configuration
 {
     internal class MessagesConfiguration

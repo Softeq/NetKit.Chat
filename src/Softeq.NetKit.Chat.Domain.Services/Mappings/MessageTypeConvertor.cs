@@ -5,11 +5,11 @@ using Softeq.NetKit.Chat.Client.SDK.Enums;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
-   public static class ChannelTypeConvertor
+   public static class MessageTypeConvertor
     {
-        public static ChannelType Convert(ChannelType type)
+        public static MessageType Convert(Client.SDK.Enums.MessageType type)
         {
-            return (ChannelType) type;
+            return (MessageType)type;
         }
     }
 }

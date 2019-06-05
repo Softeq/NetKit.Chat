@@ -1,7 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using FluentValidation;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
 

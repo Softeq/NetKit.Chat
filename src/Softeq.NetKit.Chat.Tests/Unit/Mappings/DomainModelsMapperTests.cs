@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Autofac;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -190,36 +191,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 
             response.ConnectionClientId.Should().Be(client.ClientConnectionId);
             response.UserName.Should().Be(client.Name);
-        }
-
-        [Fact]
-        [Trait("Category", "Unit")]
-        public void MapToDirectChannelResponse_ShouldMapTwoMembersToDirectChannelResponse()
-        {
-            // Arrange
-            var channelId = new Guid("6CCC3DD2-826C-4523-AB2C-A3839BB166CB");
-
-            var owner = new Member
-            {
-                PhotoName = "firstPhotoName",
-                Name = "FirstName"
-            };
-
-            var member = new Member
-            {
-                PhotoName = "secondPhotoName",
-                Name = "SecondName"
-            };
-
-            // Act
-            var response = _domainModelsMapper.MapToDirectChannelResponse(channelId, owner, member);
-
-            // Assert
-            response.DirectChannelId.Should().Be(channelId);
-            response.Owner.AvatarUrl.Should().Contain(owner.PhotoName);
-            response.Member.AvatarUrl.Should().Contain(member.PhotoName);
-            response.Owner.UserName.Should().Be(owner.Name);
-            response.Member.UserName.Should().Be(member.Name);
         }
 
         [Fact]

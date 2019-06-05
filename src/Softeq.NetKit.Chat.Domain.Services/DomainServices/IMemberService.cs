@@ -4,11 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
+
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using MemberSummaryResponse = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member.MemberSummaryResponse;
+
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

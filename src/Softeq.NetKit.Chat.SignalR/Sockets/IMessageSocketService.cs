@@ -2,10 +2,10 @@
 // http://www.softeq.com
 
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {

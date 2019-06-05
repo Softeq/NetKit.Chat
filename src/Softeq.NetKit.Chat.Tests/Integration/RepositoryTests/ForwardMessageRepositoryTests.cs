@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Xunit;
 

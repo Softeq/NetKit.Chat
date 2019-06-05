@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.ChannelMember;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

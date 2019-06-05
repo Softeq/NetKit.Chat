@@ -4,16 +4,15 @@
 using AutoMapper;
 using EnsureThat;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using System;
 using System.Linq;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.DirectMessage;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.ChannelMember;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.MessageAttachment;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Settings;
+using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
@@ -97,19 +96,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return response;
         }
         
-        public DirectChannelResponse MapToDirectChannelResponse(Guid directChannelId, DomainModels.Member owner, DomainModels.Member member)
-        {
-            var firstMember = owner != null ? _mapper.Map<MemberSummaryResponse>(owner) : new MemberSummaryResponse();
-            var secondMember = owner != null ? _mapper.Map<MemberSummaryResponse>(member) : new MemberSummaryResponse();
-
-            return new DirectChannelResponse
-            {
-                DirectChannelId = directChannelId,
-                Owner = firstMember,
-                Member = secondMember
-            };
-        }
-
         public AttachmentResponse MapToAttachmentResponse(Attachment attachment)
         {
             return attachment != null ? _mapper.Map<AttachmentResponse>(attachment) : new AttachmentResponse();

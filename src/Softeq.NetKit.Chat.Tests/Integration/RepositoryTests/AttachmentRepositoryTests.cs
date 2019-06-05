@@ -6,6 +6,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests

@@ -2,7 +2,7 @@
 // http://www.softeq.com
 
 using FluentValidation;
-using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Softeq.NetKit.Chat.Web.TransportModels.Request.Message;
 
 namespace Softeq.NetKit.Chat.Web.TransportModels.Validators.Message
