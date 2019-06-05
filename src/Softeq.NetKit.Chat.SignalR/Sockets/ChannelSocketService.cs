@@ -141,20 +141,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             }
         }
 
-        public async Task JoinToChannelAsync(ChannelRequest request)
-        {
-            // Locate the room, does NOT have to be open
-            await _channelService.JoinToChannelAsync(request.SaasUserId, request.ChannelId);
-
-            var channel = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-            await _pushNotificationService.SubscribeUserOnTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
-            await _channelNotificationService.OnJoinChannel(channel);
-
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberJoinedLocalizationVisitor(member), RecipientType.AllExceptCallerConnectionId, _systemMessagesConfiguration.MemberJoined, member.UserName);
-        }
-
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
         {
             var inviteMemberResponse = await _memberService.InviteMemberAsync(request.MemberId, request.ChannelId);
