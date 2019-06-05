@@ -82,7 +82,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnAddChannel(channel);
             //todo filter creator connection id on join channel
-            await _channelNotificationService.OnJoinChannel(member, channel);
+            await _channelNotificationService.OnJoinChannel(channel);
 
             return channel;
         }
@@ -99,7 +99,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnAddChannel(channel);
             //todo filter creator connection id on join channel
-            await _channelNotificationService.OnJoinChannel(member, channel);
+            await _channelNotificationService.OnJoinChannel(channel);
 
             return channel;
         }
@@ -116,11 +116,11 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             if (updatingChannel.Name != request.Name)
             {
-                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelNameChangedLocalizationVisitor(updatedChannel), _systemMessagesConfiguration.ChannelNameChanged);
+                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelNameChangedLocalizationVisitor(updatedChannel), RecipientType.AllChannelConnections, _systemMessagesConfiguration.ChannelNameChanged);
             }
             else if (updatingChannel.PhotoUrl != request.PhotoUrl)
             {
-                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelIconChangedLocalizationVisitor(updatedChannel), _systemMessagesConfiguration.ChannelIconChanged);
+                await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new ChannelIconChangedLocalizationVisitor(updatedChannel), RecipientType.AllChannelConnections, _systemMessagesConfiguration.ChannelIconChanged);
             }
 
             return updatedChannel;
@@ -130,9 +130,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
         {
             await _channelService.CloseChannelAsync(request.SaasUserId, request.ChannelId);
 
-            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
-
-            await _channelNotificationService.OnCloseChannel(channelSummary);
+            await _channelNotificationService.OnCloseChannel(request.ChannelId);
 
             var channelMembers = await _memberService.GetChannelMembersAsync(request.ChannelId);
 
@@ -141,23 +139,6 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 // unsubscribe user from channel
                 await _pushNotificationService.UnsubscribeUserFromTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
             }
-
-            // TODO [az]: do we need this notification?
-            await _channelNotificationService.OnUpdateChannel(channelSummary);
-        }
-
-        public async Task JoinToChannelAsync(ChannelRequest request)
-        {
-            // Locate the room, does NOT have to be open
-            await _channelService.JoinToChannelAsync(request.SaasUserId, request.ChannelId);
-
-            var channel = await _channelService.GetChannelSummaryAsync(request.SaasUserId, request.ChannelId);
-            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
-
-            await _pushNotificationService.SubscribeUserOnTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
-            await _channelNotificationService.OnJoinChannel(member, channel);
-
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberJoinedLocalizationVisitor(member), _systemMessagesConfiguration.MemberJoined, member.UserName);
         }
 
         public async Task<ChannelResponse> InviteMemberAsync(InviteMemberRequest request)
@@ -173,7 +154,8 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 await _pushNotificationService.SubscribeUserOnTagAsync(invitedMember.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
             }
 
-            await _channelNotificationService.OnJoinChannel(invitedMember, channel);
+            await _channelNotificationService.OnJoinChannel(channel);
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberJoinedLocalizationVisitor(invitedMember), RecipientType.AllExceptCallerConnectionId);
 
             return inviteMemberResponse;
         }
@@ -201,7 +183,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
 
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberLeftLocalizationVisitor(member), _systemMessagesConfiguration.MemberLeft, member.UserName);
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberLeftLocalizationVisitor(member), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberLeft, member.UserName);
         }
 
         public async Task DeleteMemberFromChannelAsync(DeleteMemberRequest request)
@@ -212,7 +194,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             await _pushNotificationService.UnsubscribeUserFromTagAsync(memberToDelete.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
             await _channelNotificationService.OnDeletedFromChannel(memberToDelete, request.ChannelId);
 
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberDeletedLocalizationVisitor(memberToDelete), _systemMessagesConfiguration.MemberDeleted, memberToDelete.UserName);
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberDeletedLocalizationVisitor(memberToDelete), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberDeleted, memberToDelete.UserName);
         }
 
         public async Task MuteChannelAsync(MuteChannelRequest request)
@@ -233,14 +215,16 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                         string saasUserId,
                         Guid channelId,
                         ILocalizationVisitor<MessageResponse> localizationVisitor,
+                        RecipientType recipientType,
                         string localizationFallback = "",
                         params object[] localizationFallbackArgs)
         {
             var systemMessage = await _messageService.CreateSystemMessageAsync(
                 new CreateMessageRequest(saasUserId, channelId, MessageType.System, string.Format(localizationFallback, localizationFallbackArgs)));
-
+            systemMessage.Sender = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
             systemMessage.Accept(localizationVisitor);
-            await _messageNotificationService.OnAddMessage(systemMessage);
+            // TODO we should pass callerConnectionId into OnAddMessage to except it in case we are using RecipientType.AllExceptCallerConnectionId
+            await _messageNotificationService.OnAddMessage(systemMessage, recipientType);
         }
     }
 }

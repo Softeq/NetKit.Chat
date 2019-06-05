@@ -34,20 +34,20 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelUpdated, channel);
         }
 
-        public async Task OnCloseChannel(ChannelSummaryResponse channel)
+        public async Task OnCloseChannel(Guid channelId)
         {
-            var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
+            var clientIds = await GetChannelClientConnectionIdsAsync(channelId);
 
             // Tell the people in this room that you've joined
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelClosed, channel);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelClosed, channelId);
         }
 
-        public async Task OnJoinChannel(MemberSummaryResponse member, ChannelSummaryResponse channel)
+        public async Task OnJoinChannel(ChannelSummaryResponse channel)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(channel.Id);
 
             // Tell the people in this room that you've joined
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, member, channel);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberJoined, channel);
         }
 
         public async Task OnJoinDirectChannel(MemberSummaryResponse member, ChannelSummaryResponse channel)
@@ -60,21 +60,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         public async Task OnLeaveChannel(MemberSummaryResponse member, Guid channelId)
         {
-            var clientIds = await GetChannelClientConnectionIdsAsync(channelId);
-            var senderClients = await MemberService.GetMemberClientsAsync(member.Id);
-            clientIds.AddRange(senderClients.Select(x => x.ClientConnectionId));
-
-            // Tell the people in this room that you've leaved
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MemberLeft, member, channelId);
+            var senderClientsIds = (await MemberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();
+ 
+            await HubContext.Clients.Clients(senderClientsIds).SendAsync(HubEvents.MemberLeft, channelId);
         }
 
         public async Task OnDeletedFromChannel(MemberSummaryResponse member, Guid channelId)
         {
-            var channelClients = await GetChannelClientConnectionIdsAsync(channelId);
             var deletingMemberClients = (await MemberService.GetMemberClientsAsync(member.Id)).Select(client => client.ClientConnectionId).ToList();
 
-            await HubContext.Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, member, channelId);
-            await HubContext.Clients.Clients(channelClients).SendAsync(HubEvents.MemberDeleted, member, channelId);
+            await HubContext.Clients.Clients(deletingMemberClients).SendAsync(HubEvents.YouAreDeleted, channelId);
         }
     }
 }
