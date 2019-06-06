@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 using Message = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Message;
 using MessageAttachment = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.MessageAttachment;
 using UpdateMessageRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Message.UpdateMessageRequest;

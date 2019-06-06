@@ -249,17 +249,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #region Channel Hub Commands
 
-        public async Task JoinToChannelAsync(SignalRRequest<Channel.ChannelRequest> request)
-        {
-            var channelRequest = new ChannelRequest { ChannelId = request.Request.ChannelId, RequestId = request.RequestId };
-
-            await ValidateAndExecuteAsync(channelRequest, new ChannelRequestValidator(), new TaskReference(async () =>
-            {
-                var joinToChannelRequest = new DomainRequest.Channel.ChannelRequest(Context.GetSaasUserId(), channelRequest.ChannelId);
-                await _channelSocketService.JoinToChannelAsync(joinToChannelRequest);
-            }),
-            request.RequestId);
-        }
         public async Task<ChannelSummaryResponse> CreateChannelAsync(SignalRRequest<Channel.CreateChannelRequest> request)
         {
             var channelRequest = new CreateChannelRequest()
