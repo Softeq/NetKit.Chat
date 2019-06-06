@@ -9,16 +9,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.SignalR.Sockets;
-using WebRequest = Softeq.NetKit.Chat.Web.TransportModels.Request;
 using Channel = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Channel;
 using Member = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Member;
+using PagedMembersResponse = Softeq.NetKit.Chat.Domain.TransportModels.Response.Member.PagedMembersResponse;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {

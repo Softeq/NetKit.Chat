@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
 using Xunit;

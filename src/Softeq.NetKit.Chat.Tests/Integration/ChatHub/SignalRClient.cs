@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
 
