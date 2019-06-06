@@ -9,7 +9,9 @@ using EnsureThat;
 using Microsoft.AspNetCore.SignalR;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
@@ -29,21 +31,21 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             _channelService = channelService;
         }
 
-        public async Task OnAddMessage(MessageResponse message, string callerConnectionId = null)
+        public async Task OnAddMessage(MessageResponse message, RecipientType recipientType, string callerConnectionId = null)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
-            var clientIdsExceptCaller = callerConnectionId != null
-                            ? clientIds.Except(new[] { callerConnectionId }).ToList()
-                            : clientIds;
+            var exceptList = await GetExceptConnectionIdsListAsync(recipientType, message.ChannelId, message.Sender.Id, callerConnectionId ?? string.Empty);
+
+            var clientIdsExceptCaller = clientIds.Except(exceptList).ToList();
 
             await HubContext.Clients.Clients(clientIdsExceptCaller).SendAsync(HubEvents.MessageAdded, message);
         }
 
-        public async Task OnDeleteMessage(ChannelSummaryResponse channelSummary, MessageResponse message)
+        public async Task OnDeleteMessage(MessageResponse message)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
 
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageDeleted, message.Id, channelSummary);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageDeleted, message.Id);
         }
 
         public async Task OnUpdateMessage(MessageResponse message)
@@ -71,13 +73,30 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.AttachmentDeleted, channel.Id);
         }
 
-        public async Task OnChangeLastReadMessage(List<Guid> notifyMemberIds, MessageResponse message)
+        public async Task OnChangeLastReadMessage(List<Guid> notifyMemberIds, Guid channelId)
         {
-            var channel = await _channelService.GetChannelByIdAsync(message.ChannelId);
+            var channel = await _channelService.GetChannelByIdAsync(channelId);
 
-            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(message.ChannelId, notifyMemberIds);
+            var connectionIds = await GetNotMutedChannelMembersConnectionsAsync(channelId, notifyMemberIds);
 
             await HubContext.Clients.Clients(connectionIds).SendAsync(HubEvents.LastReadMessageChanged, channel.Id);
+        }
+
+        private async Task<IEnumerable<string>> GetExceptConnectionIdsListAsync(RecipientType recipientType, Guid channelId, Guid memberId, string callerConnectionId)
+        {
+            var exceptList = Enumerable.Empty<string>().ToList();
+
+            if (recipientType == RecipientType.AllExceptMemberConnections)
+            {
+                var memberClientIds = await GetChannelMemberClientConnectionIdsAsync(channelId, memberId);
+                exceptList.AddRange(memberClientIds);
+            }
+            else if (recipientType == RecipientType.AllExceptCallerConnectionId)
+            {
+                 exceptList.Add(callerConnectionId);
+            }
+
+            return exceptList;
         }
     }
 }

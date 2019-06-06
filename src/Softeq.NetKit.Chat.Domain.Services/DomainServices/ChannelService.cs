@@ -141,7 +141,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 existingDirectChannel.IsClosed = false;
                 await UnitOfWork.ChannelRepository.UpdateChannelAsync(existingDirectChannel);
 
-                return DomainModelsMapper.MapToDirectChannelSummaryResponse(existingDirectChannel, creator, member);
+                var channelSummary = DomainModelsMapper.MapToDirectChannelSummaryResponse(existingDirectChannel, creator, member);
+
+                //TODO need to send channel summary specific for every user
+                channelSummary.LastMessage = null;
+                return channelSummary;
             }
 
             var newChannel = new Channel
@@ -237,6 +241,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get channel summary. Channel {nameof(channelId)}:{channelId} is not found.");
             }
 
+            var messages = await UnitOfWork.MessageRepository.GetAllChannelMessagesWithOwnersAsync(channel.Id);
+            channel.Messages = messages.ToList();
+
             var member = await _memberService.GetMemberBySaasUserIdAsync(saasUserId);
             if (member == null)
             {
@@ -316,6 +323,9 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     if (existingUserChannelMember.LastReadMessageId.HasValue)
                     {
                         var lastReadMessage = await UnitOfWork.MessageRepository.GetAsync(existingUserChannelMember.LastReadMessageId.Value);
+                        //only present message may be last
+                        lastReadMessage = lastReadMessage?.AccessibilityStatus == AccessibilityStatus.Present ? lastReadMessage : null;
+
                         channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channel, currentUser, member, lastReadMessage);
                     }
                     else
@@ -331,6 +341,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                     if (existingUserChannelMember.LastReadMessageId.HasValue)
                     {
                         var lastReadMessage = await UnitOfWork.MessageRepository.GetAsync(existingUserChannelMember.LastReadMessageId.Value);
+                        //only present message may be last
+                        lastReadMessage = lastReadMessage?.AccessibilityStatus == AccessibilityStatus.Present ? lastReadMessage : null;
                         channelsResponse.Add(DomainModelsMapper.MapToChannelSummaryResponse(channel, existingUserChannelMember, lastReadMessage));
                     }
                     else

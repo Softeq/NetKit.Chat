@@ -2,7 +2,7 @@
 // http://www.softeq.com
 
 using System;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message

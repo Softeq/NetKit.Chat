@@ -32,7 +32,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 TotalNumberOfPages = 1
             };
 
-            _memberRepositoryMock.Setup(x => x.GetPagedMembersAsync(
+            _memberRepositoryMock.Setup(x => x.GetPagedMembersExceptCurrentAsync(
                     It.Is<int>(pn => pn.Equals(pageNumber)),
                     It.Is<int>(ps => ps.Equals(pageSize)),
                     It.Is<string>(nf => nf.Equals(nameFilter)), 

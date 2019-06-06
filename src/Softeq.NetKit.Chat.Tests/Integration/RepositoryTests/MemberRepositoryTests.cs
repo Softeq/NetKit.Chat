@@ -67,11 +67,11 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             const int pageSize = 10;
 
-            var evenMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "even", "saasId");
-            var evenMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "even", "saasId");
-            var oddMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, pageSize, "odd", "saasId");
-            var oddMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersAsync(2, pageSize, "odd", "saasId");
-            var allMembers = await UnitOfWork.MemberRepository.GetPagedMembersAsync(1, 100, null, "saasId");
+            var evenMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersExceptCurrentAsync(1, pageSize, "even", "saasId");
+            var evenMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersExceptCurrentAsync(2, pageSize, "even", "saasId");
+            var oddMembersFirstPage = await UnitOfWork.MemberRepository.GetPagedMembersExceptCurrentAsync(1, pageSize, "odd", "saasId");
+            var oddMembersSecondPage = await UnitOfWork.MemberRepository.GetPagedMembersExceptCurrentAsync(2, pageSize, "odd", "saasId");
+            var allMembers = await UnitOfWork.MemberRepository.GetPagedMembersExceptCurrentAsync(1, 100, null, "saasId");
 
             evenMembersFirstPage.Results.Count().Should().Be(pageSize);
             evenMembersSecondPage.Results.Count().Should().Be(1);

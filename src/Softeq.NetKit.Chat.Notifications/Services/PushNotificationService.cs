@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnsureThat;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.Notifications.TransportModels.Notification.Request;
 using Softeq.NetKit.Services.PushNotifications.Abstractions;
 using Softeq.NetKit.Services.PushNotifications.Models;
 
@@ -8,15 +11,42 @@ namespace Softeq.NetKit.Chat.Notifications.Services
 {
     public class PushNotificationService : IPushNotificationService
     {
+        private readonly IMemberService _memberService;
+        private readonly IChannelService _channelService;
         private readonly IPushNotificationSender _pushNotificationSender;
         private readonly IPushNotificationSubscriber _pushNotificationSubscriber;
 
         public PushNotificationService(
+            IMemberService memberService,
+            IChannelService channelService,
             IPushNotificationSender pushNotificationSender,
             IPushNotificationSubscriber pushNotificationSubscriber)
         {
+            _memberService = memberService;
+            _channelService = channelService;
             _pushNotificationSender = pushNotificationSender;
             _pushNotificationSubscriber = pushNotificationSubscriber;
+        }
+
+        public async Task UnsubscribeDeviceFromPushAsync(CreatePushTokenRequest model)
+        {
+            Ensure.That(model, nameof(model)).IsNotNull();
+            await _pushNotificationSubscriber.UnsubscribeDeviceAsync(model.Token);
+        }
+
+        public async Task CreateOrUpdatePushSubscriptionAsync(CreatePushTokenRequest request)
+        {
+            Ensure.That(request, nameof(request)).IsNotNull();
+
+            var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
+
+            var subscribedChannels = await _channelService.GetAllowedChannelsAsync(request.SaasUserId);
+
+            var tags = new List<string> { PushNotificationsTagTemplates.GetMemberSubscriptionTag(member.SaasUserId) };
+            // add user subscribed channels tags
+            tags.AddRange(subscribedChannels.Select(x => PushNotificationsTagTemplates.GetChatChannelTag(x.Id.ToString())));
+
+            await _pushNotificationSubscriber.CreateOrUpdatePushSubscriptionAsync(new PushSubscriptionRequest(request.Token, request.DevicePlatform, tags));
         }
 
         public async Task SubscribeUserOnTagsAsync(string userId, IEnumerable<string> tagNames)

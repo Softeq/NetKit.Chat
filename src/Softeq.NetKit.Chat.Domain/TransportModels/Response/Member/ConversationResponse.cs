@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using Softeq.NetKit.Chat.Client.SDK.Enums;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member

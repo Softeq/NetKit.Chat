@@ -119,12 +119,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         public async Task ActivateMemberAsync(string saasUserId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(saasUserId);
-            if (member == null)
-            {
-                throw new NetKitChatInvalidOperationException($"Unable to activate member. Member {nameof(saasUserId)}:{saasUserId} is not found.");
-            }
 
-            if (!member.IsActive)
+            if (member != null && !member.IsActive)
             {
                 member.IsActive = true;
                 await UnitOfWork.MemberRepository.ActivateMemberAsync(member);
@@ -188,7 +184,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<PagedMembersResponse> GetPagedMembersAsync(int pageNumber, int pageSize, string nameFilter, string currentUserSaasId)
         {
-            var members = await UnitOfWork.MemberRepository.GetPagedMembersAsync(pageNumber, pageSize, nameFilter, currentUserSaasId);
+            var members = await UnitOfWork.MemberRepository.GetPagedMembersExceptCurrentAsync(pageNumber, pageSize, nameFilter, currentUserSaasId);
 
             var response = new PagedMembersResponse
             {

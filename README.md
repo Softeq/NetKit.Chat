@@ -1,4 +1,4 @@
-﻿![Azure DevOps builds](https://img.shields.io/azure-devops/build/SofteqDevelopment/NetKit/23.svg)
+﻿![Azure DevOps builds](https://dev.azure.com/SofteqDevelopment/NetKit/_apis/build/status/Chat/Chat-CI-Stage-Build)
 
 # NetKit.Chat
 

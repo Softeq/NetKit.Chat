@@ -6,6 +6,7 @@ using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
@@ -52,6 +53,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
 
             _memberServiceMock.Setup(x => x.GetMemberBySaasUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync((MemberSummaryResponse)null)
+                .Verifiable();
+
+            var messages = new List<Message>();
+            _messageRepositoryMock.Setup(x => x.GetAllChannelMessagesWithOwnersAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(messages)
                 .Verifiable();
 
             // Act
@@ -101,6 +107,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                     It.Is<ChannelMember>(channelMember => channelMember.Equals(allowedChannelMember)),
                     It.Is<Message>(message => message.Equals(lastReadMessage))))
                 .Returns(channelSummaryResponse)
+                .Verifiable();
+
+            var messages = new List<Message>();
+            _messageRepositoryMock.Setup(x => x.GetAllChannelMessagesWithOwnersAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(messages)
                 .Verifiable();
 
             // Act

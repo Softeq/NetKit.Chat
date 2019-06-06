@@ -86,6 +86,14 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
 
         #region Client Hub Commands
 
+        public async Task<ClientResponse> GetClientAsync()
+        {
+            return await SafeExecuteAsync(new TaskReference<ClientResponse>(async () =>
+            {
+                var getClientRequest = new GetClientRequest(Context.ConnectionId);
+                return await _clientService.GetClientAsync(getClientRequest);
+            }));
+        }
 
         public async Task<ClientResponse> AddClientAsync()
         {
@@ -252,7 +260,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
             }),
             request.RequestId);
         }
-
         public async Task<ChannelSummaryResponse> CreateChannelAsync(SignalRRequest<Channel.CreateChannelRequest> request)
         {
             var channelRequest = new CreateChannelRequest()

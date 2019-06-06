@@ -76,6 +76,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Message.Type)}, 
                         m.{nameof(Message.OwnerId)}, 
                         m.{nameof(Message.Updated)}, 
+                        m.{nameof(Message.AccessibilityStatus)}, 
                         mem.{nameof(Member.Id)}, 
                         mem.{nameof(Member.SaasUserId)}, 
                         mem.{nameof(Member.Name)}, 
