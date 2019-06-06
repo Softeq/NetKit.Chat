@@ -3,10 +3,8 @@
 
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using System;
@@ -16,6 +14,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Softeq.NetKit.Chat.Client.SDK.Enums;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows

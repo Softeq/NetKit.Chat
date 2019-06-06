@@ -2,11 +2,9 @@
 // http://www.softeq.com
 
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications

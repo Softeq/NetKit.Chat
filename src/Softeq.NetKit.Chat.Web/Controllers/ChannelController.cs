@@ -184,17 +184,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [Route("{channelId:guid}/join")]
-        public async Task<IActionResult> JoinToChannelAsync(Channel.ChannelRequest request)
-        {
-            var channelRequest = new ChannelRequest(GetCurrentSaasUserId(), request.ChannelId);
-            await _channelSocketService.JoinToChannelAsync(channelRequest);
-
-            return Ok();
-        }
-
-        [HttpPost]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/leave")]
         public async Task<IActionResult> LeaveChannelAsync(Channel.ChannelRequest request)
         {
