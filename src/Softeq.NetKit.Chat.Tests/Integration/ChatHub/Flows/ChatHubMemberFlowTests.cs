@@ -3,7 +3,6 @@
 
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using System;

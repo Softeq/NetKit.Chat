@@ -4,7 +4,6 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.SignalR.Hubs;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
