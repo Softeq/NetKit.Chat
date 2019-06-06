@@ -4,7 +4,6 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.SignalR.Hubs;
 using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
@@ -15,6 +14,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
 {
