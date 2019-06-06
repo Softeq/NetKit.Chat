@@ -45,7 +45,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("")]
-        public async Task<IActionResult> AddMessageAsync(Message.AddMessageRequest request)
+        public async Task<IActionResult> AddMessageAsync([FromBody] Message.AddMessageRequest request)
         {
             var createMessageRequest = new CreateMessageRequest(GetCurrentSaasUserId(), request.ChannelId, MessageTypeConvertor.Convert(request.Type), request.Body)
             {
@@ -59,7 +59,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
-        public async Task<IActionResult> DeleteMessageAsync(Message.DeleteMessageRequest request)
+        public async Task<IActionResult> DeleteMessageAsync([FromBody] Message.DeleteMessageRequest request)
         {
             await _messageSocketService.ArchiveMessageAsync(new ArchiveMessageRequest(GetCurrentSaasUserId(), request.MessageId));
             return Ok();
@@ -69,7 +69,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
-        public async Task<IActionResult> UpdateMessageAsync(Message.UpdateMessageRequest request)
+        public async Task<IActionResult> UpdateMessageAsync([FromBody] Message.UpdateMessageRequest request)
         {
             var result = await _messageSocketService.UpdateMessageAsync(new UpdateMessageRequest(GetCurrentSaasUserId(), request.MessageId, request.Body));
             return Ok(result);
@@ -106,7 +106,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}/attachment/{attachmentId:guid}")]
-        public async Task<IActionResult> DeleteMessageAttachmentAsync(MessageAttachment.DeleteMessageAttachmentRequest request)
+        public async Task<IActionResult> DeleteMessageAttachmentAsync([FromBody] MessageAttachment.DeleteMessageAttachmentRequest request)
         {
             var deleteMessageAttachmentRequest = new DeleteMessageAttachmentRequest(GetCurrentSaasUserId(), request.MessageId, request.AttachmentId);
             await _messageSocketService.DeleteMessageAttachmentAsync(deleteMessageAttachmentRequest);
@@ -116,7 +116,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}/mark-as-read")]
-        public async Task<IActionResult> MarkAsReadMessageAsync(Message.SetLastReadMessageRequest request)
+        public async Task<IActionResult> MarkAsReadMessageAsync([FromBody] Message.SetLastReadMessageRequest request)
         {
             await _messageSocketService.SetLastReadMessageAsync(new SetLastReadMessageRequest(GetCurrentSaasUserId(), request.ChannelId, request.MessageId));
             return Ok();

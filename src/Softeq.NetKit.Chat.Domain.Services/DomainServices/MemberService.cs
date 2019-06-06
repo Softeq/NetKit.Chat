@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
 using Softeq.NetKit.Chat.Client.SDK.Enums;
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Member;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
 using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
