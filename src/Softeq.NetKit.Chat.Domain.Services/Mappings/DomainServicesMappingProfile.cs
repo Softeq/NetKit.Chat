@@ -10,7 +10,6 @@ using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.MessageAttachme
 using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Settings;
 using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using ForwardMessageResponse = Softeq.NetKit.Chat.Domain.TransportModels.Response.Message.ForwardMessageResponse;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
