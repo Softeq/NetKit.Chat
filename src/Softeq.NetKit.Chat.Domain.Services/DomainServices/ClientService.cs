@@ -34,6 +34,17 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             _dateTimeProvider = dateTimeProvider;
         }
 
+        public async Task<ClientResponse> GetClientAsync(GetClientRequest request)
+        {
+            var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ClientConnectionId);
+            if (client == null)
+            {
+                throw new NetKitChatNotFoundException($"Unable to get client. Client {nameof(request.ClientConnectionId)}:{request.ClientConnectionId} is not found.");
+            }
+
+            return DomainModelsMapper.MapToClientResponse(client);
+        }
+
         public async Task<ClientResponse> AddClientAsync(AddClientRequest request)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
