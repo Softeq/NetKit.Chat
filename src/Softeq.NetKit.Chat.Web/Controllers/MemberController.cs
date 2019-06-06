@@ -16,7 +16,6 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.Notifications.Services;
 using Softeq.NetKit.Chat.Notifications.TransportModels.Notification.Request;
-using PagedMembersResponse = Softeq.NetKit.Chat.Domain.TransportModels.Response.Member.PagedMembersResponse;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {

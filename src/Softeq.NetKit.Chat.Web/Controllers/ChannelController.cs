@@ -18,7 +18,6 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
 using Softeq.NetKit.Chat.SignalR.Sockets;
 using Channel = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Channel;
 using Member = Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Member;
-using PagedMembersResponse = Softeq.NetKit.Chat.Domain.TransportModels.Response.Member.PagedMembersResponse;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {
