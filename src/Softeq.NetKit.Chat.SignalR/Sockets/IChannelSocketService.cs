@@ -6,7 +6,6 @@ using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 
-
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {
     public interface IChannelSocketService
