@@ -11,7 +11,6 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
 using ForwardMessageResponse = Softeq.NetKit.Chat.Domain.TransportModels.Response.Message.ForwardMessageResponse;
-using NotificationSettingResponse = Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings.NotificationSettingResponse;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
