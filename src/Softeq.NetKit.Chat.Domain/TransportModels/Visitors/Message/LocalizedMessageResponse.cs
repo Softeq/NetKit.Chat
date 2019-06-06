@@ -1,8 +1,8 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Localization;
 using Softeq.NetKit.Chat.Client.SDK.Models.Visitors.Localization;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Localization;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Message
 {
