@@ -105,11 +105,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             await UnitOfWork.ClientRepository.DeleteOverThresholdMemberClientsAsync(memberId, inactiveMinutesThreshold);
         }
 
-        public async Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
-        {
-            return await UnitOfWork.ClientRepository.GetNotMutedChannelClientConnectionIdsAsync(channelId);
-        }
-
         public async Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId)
         {
             return await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channelId);

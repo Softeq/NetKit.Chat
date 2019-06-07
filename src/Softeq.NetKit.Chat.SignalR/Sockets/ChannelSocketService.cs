@@ -77,12 +77,12 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                     }
 
                     await _pushNotificationService.SubscribeUserOnTagAsync(chatMember.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
+
+                    // SignalR personalized notification
+                    var personalizedChannelSummary = await _channelService.GetChannelSummaryAsync(member.SaasUserId, channel.Id);
+                    await _channelNotificationService.OnJoinChannel(personalizedChannelSummary, chatMember.Id);
                 }
             }
-
-            await _channelNotificationService.OnAddChannel(channel);
-            //todo filter creator connection id on join channel
-            await _channelNotificationService.OnJoinChannel(channel);
 
             return channel;
         }
@@ -97,10 +97,10 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             // subscribe member on channel
             await _pushNotificationService.SubscribeUserOnTagAsync(member.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
 
-            await _channelNotificationService.OnAddChannel(channel);
-            //todo filter creator connection id on join channel
-            await _channelNotificationService.OnJoinChannel(channel);
-
+            // SignalR personalized notification
+            var personalizedChannelSummary = await _channelService.GetChannelSummaryAsync(member.SaasUserId, channel.Id);
+            await _channelNotificationService.OnJoinChannel(personalizedChannelSummary, member.Id);
+            
             return channel;
         }
 

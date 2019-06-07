@@ -56,27 +56,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
-        {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
-            {
-                var sqlQuery = $@"
-                    SELECT 
-                        client.{nameof(Client.ClientConnectionId)}
-                    FROM 
-                        Clients client
-                    LEFT JOIN Members member 
-                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
-                    LEFT JOIN ChannelMembers channelMember 
-                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
-                    WHERE
-                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}
-                        AND channelMember.{nameof(ChannelMember.IsMuted)} = 0";
-
-                return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
-            }
-        }
-
         public async Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
