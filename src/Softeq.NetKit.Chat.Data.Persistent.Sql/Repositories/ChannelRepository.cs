@@ -42,6 +42,80 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<IReadOnlyCollection<Channel>> GetAllowedChannelsWithLastMessageAsync(Guid memberId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    DECLARE @Temp TABLE (
+	                    Id uniqueidentifier,
+	                    Body nvarchar(1000),
+	                    Created datetimeoffset(7),
+	                    ImageUrl nvarchar(250),
+	                    Type int,
+                        ChannelId uniqueidentifier, 
+	                    OwnerId uniqueidentifier,
+	                    Updated datetimeoffset(7),
+	                    ForwardMessageId uniqueidentifier,
+	                    AccessibilityStatus int,
+	                    ChannelType int
+                    )
+
+                    INSERT INTO @Temp
+                    EXEC GetChannelsLastMessage
+
+                    SELECT 
+                        c.{nameof(Channel.Id)}, 
+                        c.{nameof(Channel.Created)}, 
+                        c.{nameof(Channel.Name)}, 
+                        c.{nameof(Channel.CreatorId)}, 
+                        c.{nameof(Channel.IsClosed)}, 
+                        c.{nameof(Channel.MembersCount)}, 
+                        c.{nameof(Channel.Type)}, 
+                        c.{nameof(Channel.Description)}, 
+                        c.{nameof(Channel.WelcomeMessage)}, 
+                        c.{nameof(Channel.Updated)}, 
+                        c.{nameof(Channel.PhotoUrl)},
+                        m.{nameof(Message.Id)}, 
+                        m.{nameof(Message.ChannelId)}, 
+                        m.{nameof(Message.Created)}, 
+                        m.{nameof(Message.Body)}, 
+                        m.{nameof(Message.ImageUrl)}, 
+                        m.{nameof(Message.Type)}, 
+                        m.{nameof(Message.OwnerId)}, 
+                        m.{nameof(Message.Updated)}, 
+                        m.{nameof(Message.AccessibilityStatus)}
+                    FROM 
+                        Channels c
+                    LEFT JOIN @Temp m 
+                        ON c.{nameof(Channel.Id)} = m.{nameof(Message.ChannelId)}
+                    WHERE 
+                        (c.{nameof(Channel.Id)} IN 
+                            (SELECT 
+                                cm.{nameof(ChannelMember.ChannelId)}
+                            FROM 
+                                ChannelMembers cm 
+                            WHERE 
+                                cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)})) 
+                        AND c.{nameof(Channel.IsClosed)} <> 1
+                    ORDER BY 
+                        m.{nameof(Message.Created)} DESC";
+
+
+                return (await connection.QueryAsync<Channel, Message, Channel>(sqlQuery, (channel, message) =>
+                {
+                    if (message != null)
+                    {
+                        channel.Messages = new List<Message> {message};
+                    }
+
+                    return channel;
+                }, new { memberId }))
+                .ToList()
+                .AsReadOnly();
+            }
+        }
+
         // TODO: Improve performance or split this method
         public async Task<IReadOnlyCollection<Channel>> GetAllowedChannelsWithMessagesAndCreatorAsync(Guid memberId)
         {
@@ -64,7 +138,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         creator.{nameof(Member.SaasUserId)}, 
                         creator.{nameof(Member.Name)}, 
                         creator.{nameof(Member.Status)}, 
-                        creator.{nameof(Member.Role)}, 
                         creator.{nameof(Member.Email)}, 
                         creator.{nameof(Member.LastActivity)},
                         m.{nameof(Message.Id)}, 
@@ -79,8 +152,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         mem.{nameof(Member.Id)}, 
                         mem.{nameof(Member.SaasUserId)}, 
                         mem.{nameof(Member.Name)}, 
-                        mem.{nameof(Member.Status)}, 
-                        mem.{nameof(Member.Role)}, 
+                        mem.{nameof(Member.Status)},
                         mem.{nameof(Member.Email)}, 
                         mem.{nameof(Member.LastActivity)}
                     FROM 
@@ -213,7 +285,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.SaasUserId)}, 
                         m.{nameof(Member.Name)}, 
                         m.{nameof(Member.Status)}, 
-                        m.{nameof(Member.Role)}, 
                         m.{nameof(Member.Email)}, 
                         m.{nameof(Member.LastActivity)}
                     FROM 
@@ -265,8 +336,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                        m.{nameof(Member.Id)}, 
                        m.{nameof(Member.SaasUserId)}, 
                        m.{nameof(Member.Name)}, 
-                       m.{nameof(Member.Status)},
-                       m.{nameof(Member.Role)},                       
+                       m.{nameof(Member.Status)},                   
                        m.{nameof(Member.Email)}, 
                        m.{nameof(Member.LastActivity)}
                     FROM 
@@ -410,7 +480,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                 cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)})) 
                     AND c.{nameof(Channel.IsClosed)} <> 1";
 
-                return (await connection.QueryAsync<Channel>(sqlQuery, new { memberId })).ToList().AsReadOnly();
+                return (await connection.QueryAsync<Channel>(sqlQuery, new { memberId }))
+                    .ToList()
+                    .AsReadOnly();
             }
         }
 

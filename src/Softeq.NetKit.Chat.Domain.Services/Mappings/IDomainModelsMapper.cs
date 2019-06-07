@@ -2,7 +2,6 @@
 // http://www.softeq.com
 
 using System;
-using System.Collections.Generic;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
@@ -21,7 +20,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         ChannelMemberResponse MapToChannelMemberResponse(ChannelMember channelMember);
         ChannelResponse MapToChannelResponse(Channel channel);
         ChannelSummaryResponse MapToChannelSummaryResponse(Channel channel, ChannelMember channelMember, Message lastReadMessage = null);
-
+        ChannelSummaryResponse MapToChannelSummaryResponse(ChannelMemberAggregate channelMemberAggregate, Channel channel);
         ChannelSummaryResponse MapToDirectChannelSummaryResponse(Channel channel, DomainModels.Member currentUser,
             DomainModels.Member directMember, Message lastReadMessage = null);
         ClientResponse MapToClientResponse(Client client);

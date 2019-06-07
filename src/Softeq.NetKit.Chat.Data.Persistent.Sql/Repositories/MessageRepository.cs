@@ -66,7 +66,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         me.{nameof(Member.LastNudged)},
                         me.{nameof(Member.Name)},
                         me.{nameof(Member.PhotoName)},
-                        me.{nameof(Member.Role)},
                         me.{nameof(Member.SaasUserId)},
                         me.{nameof(Member.Status)},
                         me.{nameof(Member.IsActive)}
@@ -76,59 +75,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
                     WHERE 
                         m.{nameof(Message.ChannelId)} = @{nameof(channelId)}
-                        AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
-                    ORDER BY 
-                        m.{nameof(Message.Created)} DESC";
-
-                return (await connection.QueryAsync<Message, Member, Message>(
-                        sqlQuery,
-                        (message, member) =>
-                        {
-                            message.OwnerId = member.Id;
-                            message.Owner = member;
-                            message.AccessibilityStatus = AccessibilityStatus.Present;
-                            return message;
-                        },
-                        new { channelId, accessibilityStatus = AccessibilityStatus.Present }))
-                    .Distinct()
-                    .ToList()
-                    .AsReadOnly();
-            }
-        }
-
-        public async Task<IReadOnlyCollection<Message>> GetAllDirectChannelMessagesWithOwnersAsync(Guid channelId)
-        {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
-            {
-                var sqlQuery = $@"
-                    SELECT
-                        m.{nameof(Message.Id)},
-                        m.{nameof(Message.Body)},
-                        m.{nameof(Message.Created)},
-                        m.{nameof(Message.ImageUrl)},
-                        m.{nameof(Message.Type)},
-                        m.{nameof(Message.ChannelId)},
-                        m.{nameof(Message.OwnerId)},
-                        m.{nameof(Message.Updated)},
-                        m.{nameof(Message.ForwardMessageId)},
-                        m.{nameof(Message.AccessibilityStatus)},
-                        me.{nameof(Member.Id)},
-                        me.{nameof(Member.Email)}, 
-                        me.{nameof(Member.IsBanned)},
-                        me.{nameof(Member.LastActivity)},
-                        me.{nameof(Member.LastNudged)},
-                        me.{nameof(Member.Name)},
-                        me.{nameof(Member.PhotoName)},
-                        me.{nameof(Member.Role)},
-                        me.{nameof(Member.SaasUserId)},
-                        me.{nameof(Member.Status)},
-                        me.{nameof(Member.IsActive)}
-                    FROM 
-                        Messages m
-                    INNER JOIN Members me 
-                        ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
-                    WHERE 
-                        m.DirectChannelId = @{nameof(channelId)}
                         AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
                     ORDER BY 
                         m.{nameof(Message.Created)} DESC";
@@ -194,7 +140,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         member.{nameof(Member.LastNudged)},
                         member.{nameof(Member.Name)},
                         member.{nameof(Member.PhotoName)},
-                        member.{nameof(Member.Role)},
                         member.{nameof(Member.SaasUserId)},
                         member.{nameof(Member.Status)},
                         member.{nameof(Member.IsActive)}
@@ -251,7 +196,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         member.{nameof(Member.LastNudged)},
                         member.{nameof(Member.Name)},
                         member.{nameof(Member.PhotoName)},
-                        member.{nameof(Member.Role)},
                         member.{nameof(Member.SaasUserId)},
                         member.{nameof(Member.Status)},
                         member.{nameof(Member.IsActive)}
@@ -303,7 +247,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(Member.LastNudged)}, 
                         {nameof(Member.Name)}, 
                         {nameof(Member.PhotoName)}, 
-                        {nameof(Member.Role)}, 
                         {nameof(Member.SaasUserId)}, 
                         {nameof(Member.Status)}
                     FROM 
@@ -323,7 +266,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             me.{nameof(Member.LastNudged)}, 
                             me.{nameof(Member.Name)}, 
                             me.{nameof(Member.PhotoName)}, 
-                            me.{nameof(Member.Role)}, 
                             me.{nameof(Member.SaasUserId)}, 
                             me.{nameof(Member.Status)}
                         FROM 
@@ -356,7 +298,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(Member.LastNudged)}, 
                         {nameof(Member.Name)}, 
                         {nameof(Member.PhotoName)}, 
-                        {nameof(Member.Role)}, 
                         {nameof(Member.SaasUserId)}, 
                         {nameof(Member.Status)}
                     FROM 
@@ -376,7 +317,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             me.{nameof(Member.LastNudged)}, 
                             me.{nameof(Member.Name)}, 
                             me.{nameof(Member.PhotoName)}, 
-                            me.{nameof(Member.Role)}, 
                             me.{nameof(Member.SaasUserId)}, 
                             me.{nameof(Member.Status)}
                         FROM Messages m  
@@ -434,7 +374,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         Members.{nameof(Member.LastNudged)},
                         Members.{nameof(Member.Name)},
                         Members.{nameof(Member.PhotoName)},
-                        Members.{nameof(Member.Role)},
                         Members.{nameof(Member.SaasUserId)},
                         Members.{nameof(Member.Status)},
                         Members.{nameof(Member.IsActive)},
@@ -494,7 +433,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         mem.{nameof(Member.LastNudged)},
                         mem.{nameof(Member.Name)},
                         mem.{nameof(Member.PhotoName)},
-                        mem.{nameof(Member.Role)},
                         mem.{nameof(Member.SaasUserId)},
                         mem.{nameof(Member.Status)},
                         mem.{nameof(Member.IsActive)}
@@ -628,7 +566,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         mem.{nameof(Member.LastNudged)},
                         mem.{nameof(Member.Name)},
                         mem.{nameof(Member.PhotoName)},
-                        mem.{nameof(Member.Role)},
                         mem.{nameof(Member.SaasUserId)},
                         mem.{nameof(Member.Status)},
                         mem.{nameof(Member.IsActive)},

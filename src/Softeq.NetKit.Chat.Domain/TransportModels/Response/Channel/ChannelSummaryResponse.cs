@@ -2,7 +2,7 @@
 // http://www.softeq.com
 
 using System;
-using Newtonsoft.Json;
+using System.Collections.Generic;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
@@ -19,15 +19,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel
         public bool IsClosed { get; set; }
         public bool IsMuted { get; set; }
         public bool IsPinned { get; set; }
-        [JsonIgnore]
-        public Guid CreatorId { get; set; }
-
-        public MemberSummaryResponse Creator { get; set; }
-        [JsonIgnore]
-        public Guid DirectMemberId { get; set; }
-        public MemberSummaryResponse DirectMember { get; set; }
-        [JsonIgnore]
-        public string CreatorSaasUserId { get; set; }
+        public List<MemberSummaryResponse> Members { get; set; }
         public string Description { get; set; }
         public string WelcomeMessage { get; set; }
         public ChannelType Type { get; set; }

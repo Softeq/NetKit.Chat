@@ -13,6 +13,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
         Task AddChannelMemberAsync(ChannelMember channelMember);
         Task DeleteChannelMemberAsync(Guid memberId, Guid channelId);
         Task<IReadOnlyCollection<ChannelMember>> GetChannelMembersAsync(Guid channelId);
+        Task<ChannelMemberAggregate> GetChannelMemberWithLastReadMessageAndCounterAsync(Guid channelId, Guid memberId);
         Task<ChannelMember> GetChannelMemberWithMemberDetailsAsync(Guid memberId, Guid channelId);
         Task<IReadOnlyCollection<ChannelMember>> GetChannelMembersWithMemberDetailsAsync(Guid channelId);
         Task MuteChannelAsync(Guid memberId, Guid channelId, bool isMuted);

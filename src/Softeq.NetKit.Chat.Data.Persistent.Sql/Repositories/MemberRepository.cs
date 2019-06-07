@@ -31,7 +31,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(Member.LastNudged)},
                         {nameof(Member.Name)},
                         {nameof(Member.PhotoName)},
-                        {nameof(Member.Role)},
                         {nameof(Member.SaasUserId)},
                         {nameof(Member.Status)},
                         {nameof(Member.IsActive)},
@@ -79,7 +78,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(Member.LastNudged)},
                         {nameof(Member.Name)},
                         {nameof(Member.PhotoName)},
-                        {nameof(Member.Role)},
                         {nameof(Member.SaasUserId)},
                         {nameof(Member.Status)},
                         {nameof(Member.IsActive)},
@@ -274,7 +272,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.LastNudged)}, 
                         m.{nameof(Member.Name)}, 
                         m.{nameof(Member.PhotoName)}, 
-                        m.{nameof(Member.Role)}, 
                         m.{nameof(Member.SaasUserId)}, 
                         m.{nameof(Member.Status)}
                     FROM 

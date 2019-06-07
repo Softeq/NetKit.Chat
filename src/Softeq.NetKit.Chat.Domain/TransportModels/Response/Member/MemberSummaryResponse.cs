@@ -21,7 +21,6 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Member
         public UserStatus Status { get; set; }
 
         public bool IsActive { get; set; }
-        public bool IsDeleted { get; set; }
         public DateTimeOffset LastActivity { get; set; }
         public string Email { get; set; }
         public string AvatarUrl { get; set; }

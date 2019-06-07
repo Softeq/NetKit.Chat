@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -478,6 +479,55 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             var incrementedChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
 
             incrementedChannel.MembersCount.Should().Be(channel.MembersCount - 1);
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task GetAllowedChannelsWithLastMessageAsync_ShouldGetAllowedChannelsWithLastMessageAsync()
+        {
+            var channel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = false,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 1
+            };
+
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                AccessibilityStatus = AccessibilityStatus.Present,
+                Created = DateTimeOffset.UtcNow,
+                Body = "sample body",
+                OwnerId = _memberId,
+                Type = MessageType.Default,
+                ChannelId = channel.Id
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+            channel.Messages = new List<Message>
+            {
+                message
+            };
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
+            {
+                ChannelId = channel.Id,
+                MemberId = _memberId,
+                LastReadMessageId = message.Id,
+                Role = UserRole.Admin
+            });
+
+            var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithLastMessageAsync(_memberId);
+
+            channels.Should().NotBeNull();
+            channels.Count.Should().Be(1);
+            channels.ToList()[0].Should().BeEquivalentTo(channel);
         }
     }
 }

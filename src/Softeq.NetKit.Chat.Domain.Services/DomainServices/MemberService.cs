@@ -137,7 +137,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             var newMember = new DomainModels.Member
             {
                 Id = Guid.NewGuid(),
-                Role = UserRole.User,
                 IsBanned = false,
                 Status = UserStatus.Online,
                 SaasUserId = saasUserId,

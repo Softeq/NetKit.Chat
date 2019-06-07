@@ -12,7 +12,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Repositories
     {
         Task<Message> GetAsync(Guid messageId);
         Task<IReadOnlyCollection<Message>> GetAllChannelMessagesWithOwnersAsync(Guid channelId);
-        Task<IReadOnlyCollection<Message>> GetAllDirectChannelMessagesWithOwnersAsync(Guid channelId);
         Task<Message> GetMessageWithOwnerAndForwardMessageAsync(Guid messageId);
         Task<Message> GetPreviousMessageAsync(Guid? channelId, DateTimeOffset created);
         Task AddMessageAsync(Message message);
