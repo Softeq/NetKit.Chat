@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,11 +107,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 await UnitOfWork.ChannelRepository.AddChannelAsync(newChannel);
 
+                var tasks = new HashSet<Task>();
+
                 foreach (var channelMember in channelMembers)
                 {
-                    await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
-                    await UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(newChannel.Id);
+                    tasks.Add(UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember));
+                    tasks.Add(UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(newChannel.Id));
                 }
+
+                await Task.WhenAll(tasks);
             });
 
             var channel = await UnitOfWork.ChannelRepository.GetChannelWithCreatorAsync(newChannel.Id);
@@ -302,20 +307,26 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 throw new NetKitChatNotFoundException($"Unable to get allowed channels. Member {nameof(saasUserId)}:{saasUserId} is not found.");
             }
 
-            var channelsResponse = new List<ChannelSummaryResponse>();
-
             var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithLastMessageAsync(currentUser.Id);
+            
+            var getChannelSummaryTasks = new HashSet<Task>();
+            var channelSummaryResponses = new ConcurrentBag<ChannelSummaryResponse>();
 
             foreach (var allowedChannel in allowedChannels)
             {
-                var channelMemberAggregate = await UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(allowedChannel.Id, currentUser.Id);
+                var task = Task.Run(() =>
+                {
+                    var channelMemberAggregate = UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(allowedChannel.Id, currentUser.Id);
+                    var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate.Result, allowedChannel);
+                    channelSummaryResponses.Add(channelSummaryResponse);
+                });
 
-                var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate, allowedChannel);
-
-                channelsResponse.Add(channelSummaryResponse);
+                getChannelSummaryTasks.Add(task);
             }
 
-            var sortedChannels = channelsResponse.Select(channel => new
+            await Task.WhenAll(getChannelSummaryTasks);
+
+            var sortedChannels = channelSummaryResponses.Select(channel => new
             {
                 Channel = channel,
                 SortedDate = channel.LastMessage?.Created ?? channel.Created

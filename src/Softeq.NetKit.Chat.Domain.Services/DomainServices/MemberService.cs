@@ -214,24 +214,27 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task UpdateActivityAsync(UpdateMemberActivityRequest request)
         {
-            var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
-            if (member == null)
+            await UnitOfWork.ExecuteTransactionAsync(async () =>
             {
-                throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
-            }
-            member.Status = UserStatus.Online;
-            member.LastActivity = _dateTimeProvider.GetUtcNow();
-            await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
+                var member = await UnitOfWork.MemberRepository.GetMemberBySaasUserIdAsync(request.SaasUserId);
+                if (member == null)
+                {
+                    throw new NetKitChatNotFoundException($"Unable to update activity. Member {nameof(request.SaasUserId)}:{request.SaasUserId} is not found.");
+                }
+                member.Status = UserStatus.Online;
+                member.LastActivity = _dateTimeProvider.GetUtcNow();
+                await UnitOfWork.MemberRepository.UpdateMemberAsync(member);
 
-            var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ConnectionId);
-            if (client == null)
-            {
-                throw new NetKitChatNotFoundException($"Unable to update activity. Client {nameof(request.ConnectionId)}:{request.ConnectionId} is not found.");
-            }
-            client.UserAgent = request.UserAgent;
-            client.LastActivity = member.LastActivity;
-            client.LastClientActivity = _dateTimeProvider.GetUtcNow();
-            await UnitOfWork.ClientRepository.UpdateClientAsync(client);
+                var client = await UnitOfWork.ClientRepository.GetClientWithMemberAsync(request.ConnectionId);
+                if (client == null)
+                {
+                    throw new NetKitChatNotFoundException($"Unable to update activity. Client {nameof(request.ConnectionId)}:{request.ConnectionId} is not found.");
+                }
+                client.UserAgent = request.UserAgent;
+                client.LastActivity = member.LastActivity;
+                client.LastClientActivity = _dateTimeProvider.GetUtcNow();
+                await UnitOfWork.ClientRepository.UpdateClientAsync(client);
+            });
         }
     }
 }
