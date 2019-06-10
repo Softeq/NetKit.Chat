@@ -62,15 +62,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT
-                        client.{nameof(Client.ClientConnectionId)}
+                        c.{nameof(Client.ClientConnectionId)}
                     FROM
-                        Clients client
-                    LEFT JOIN Members member
-                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
-                    LEFT JOIN ChannelMembers channelMember
-                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
+                        Clients c
+                    LEFT JOIN Members m
+                        ON c.{nameof(Client.MemberId)} = m.{nameof(Member.Id)}
+                    LEFT JOIN ChannelMembers cm
+                        ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
                     WHERE
-                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
+                        cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
             }
@@ -82,15 +82,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT 
-                        client.{nameof(Client.ClientConnectionId)}
+                        c.{nameof(Client.ClientConnectionId)}
                     FROM 
-                        Clients client
-                    LEFT JOIN Members member 
-                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
-                    LEFT JOIN ChannelMembers channelMember 
-                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
+                        Clients c
+                    LEFT JOIN Members m 
+                        ON c.{nameof(Client.MemberId)} = m.{nameof(Member.Id)}
+                    LEFT JOIN ChannelMembers cm 
+                        ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
                     WHERE 
-                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND channelMember.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";
+                        cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";
 
                 return (await connection.QueryAsync<string>(sqlQuery, new { channelId, memberId })).ToList().AsReadOnly();
             }

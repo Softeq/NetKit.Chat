@@ -270,7 +270,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = $@"
                     UPDATE ChannelMembers
                     SET
-                         {nameof(ChannelMember.IsPinned)} = @{nameof(isPinned)}
+                        {nameof(ChannelMember.IsPinned)} = @{nameof(isPinned)}
                     WHERE 
                         {nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}
                         AND {nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";

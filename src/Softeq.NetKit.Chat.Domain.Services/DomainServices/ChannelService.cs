@@ -67,7 +67,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 MembersCount = 0,
                 PhotoUrl = permanentChannelImageUrl
             };
-            //TODO: [ek] Make creator as nullable. Do not set creator for direct chat. Disable close functionality
+
             var creator = new ChannelMember
             {
                 ChannelId = newChannel.Id,
@@ -149,8 +149,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
                 var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate, existingDirectChannel);
 
-                //TODO need to send channel summary specific for every user
-                channelSummaryResponse.LastMessage = null;
                 return channelSummaryResponse;
             }
 
@@ -458,7 +456,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 throw new NetKitChatAccessForbiddenException($"Unable to delete member from channel. Channel {nameof(channelId)}:{channelId} owner required.");
             }
-
 
             var isMemberExistsInChannel = await UnitOfWork.ChannelRepository.IsMemberExistsInChannelAsync(memberToDeleteId, channelId);
             if (!isMemberExistsInChannel)

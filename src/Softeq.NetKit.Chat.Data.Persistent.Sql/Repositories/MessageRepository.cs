@@ -123,34 +123,34 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT {(pageSize.HasValue ? $"TOP(@{nameof(pageSize)})" : "")} 
-                        message.{nameof(Message.Id)},
-                        message.{nameof(Message.Body)},
-                        message.{nameof(Message.Created)},
-                        message.{nameof(Message.ImageUrl)},
-                        message.{nameof(Message.Type)},
-                        message.{nameof(Message.ChannelId)},
-                        message.{nameof(Message.OwnerId)},
-                        message.{nameof(Message.Updated)},
-                        message.{nameof(Message.ForwardMessageId)},
-                        message.{nameof(Message.AccessibilityStatus)},
-                        member.{nameof(Member.Id)},
-                        member.{nameof(Member.Email)},
-                        member.{nameof(Member.IsBanned)},
-                        member.{nameof(Member.LastActivity)},
-                        member.{nameof(Member.LastNudged)},
-                        member.{nameof(Member.Name)},
-                        member.{nameof(Member.PhotoName)},
-                        member.{nameof(Member.SaasUserId)},
-                        member.{nameof(Member.Status)},
-                        member.{nameof(Member.IsActive)}
+                        ms.{nameof(Message.Id)},
+                        ms.{nameof(Message.Body)},
+                        ms.{nameof(Message.Created)},
+                        ms.{nameof(Message.ImageUrl)},
+                        ms.{nameof(Message.Type)},
+                        ms.{nameof(Message.ChannelId)},
+                        ms.{nameof(Message.OwnerId)},
+                        ms.{nameof(Message.Updated)},
+                        ms.{nameof(Message.ForwardMessageId)},
+                        ms.{nameof(Message.AccessibilityStatus)},
+                        m.{nameof(Member.Id)},
+                        m.{nameof(Member.Email)},
+                        m.{nameof(Member.IsBanned)},
+                        m.{nameof(Member.LastActivity)},
+                        m.{nameof(Member.LastNudged)},
+                        m.{nameof(Member.Name)},
+                        m.{nameof(Member.PhotoName)},
+                        m.{nameof(Member.SaasUserId)},
+                        m.{nameof(Member.Status)},
+                        m.{nameof(Member.IsActive)}
                     FROM 
-                        Messages message
-                    INNER JOIN Members member 
-                        ON message.{nameof(Message.OwnerId)} = member.{nameof(Member.Id)}
+                        Messages ms
+                    INNER JOIN Members m 
+                        ON ms.{nameof(Message.OwnerId)} = m.{nameof(Member.Id)}
                     WHERE 
                         {nameof(Message.ChannelId)} = @{nameof(channelId)} 
                         AND {nameof(Message.Created)} < @{nameof(lastReadMessageCreated)} 
-                        AND message.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
+                        AND ms.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
                     ORDER BY 
                         {nameof(Message.Created)} {(pageSize.HasValue ? "DESC" : "")}";
 
@@ -179,34 +179,34 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT {(pageSize.HasValue ? $"TOP(@{nameof(pageSize)})" : "")} 
-                        message.{nameof(Message.Id)},
-                        message.{nameof(Message.Body)},
-                        message.{nameof(Message.Created)},
-                        message.{nameof(Message.ImageUrl)},
-                        message.{nameof(Message.Type)},
-                        message.{nameof(Message.ChannelId)},
-                        message.{nameof(Message.OwnerId)},
-                        message.{nameof(Message.Updated)},
-                        message.{nameof(Message.ForwardMessageId)},
-                        message.{nameof(Message.AccessibilityStatus)},
-                        member.{nameof(Member.Id)},
-                        member.{nameof(Member.Email)},
-                        member.{nameof(Member.IsBanned)},
-                        member.{nameof(Member.LastActivity)},
-                        member.{nameof(Member.LastNudged)},
-                        member.{nameof(Member.Name)},
-                        member.{nameof(Member.PhotoName)},
-                        member.{nameof(Member.SaasUserId)},
-                        member.{nameof(Member.Status)},
-                        member.{nameof(Member.IsActive)}
+                        ms.{nameof(Message.Id)},
+                        ms.{nameof(Message.Body)},
+                        ms.{nameof(Message.Created)},
+                        ms.{nameof(Message.ImageUrl)},
+                        ms.{nameof(Message.Type)},
+                        ms.{nameof(Message.ChannelId)},
+                        ms.{nameof(Message.OwnerId)},
+                        ms.{nameof(Message.Updated)},
+                        ms.{nameof(Message.ForwardMessageId)},
+                        ms.{nameof(Message.AccessibilityStatus)},
+                        m.{nameof(Member.Id)},
+                        m.{nameof(Member.Email)},
+                        m.{nameof(Member.IsBanned)},
+                        m.{nameof(Member.LastActivity)},
+                        m.{nameof(Member.LastNudged)},
+                        m.{nameof(Member.Name)},
+                        m.{nameof(Member.PhotoName)},
+                        m.{nameof(Member.SaasUserId)},
+                        m.{nameof(Member.Status)},
+                        m.{nameof(Member.IsActive)}
                     FROM 
-                        Messages message
-                    INNER JOIN Members member 
-                        ON message.{nameof(Message.OwnerId)} = member.{nameof(Member.Id)}
+                        Messages ms
+                    INNER JOIN Members m 
+                        ON ms.{nameof(Message.OwnerId)} = m.{nameof(Member.Id)}
                     WHERE
                         {nameof(Message.Created)} >= @{nameof(lastReadMessageCreated)}
                         AND {nameof(Message.ChannelId)} = @{nameof(channelId)} 
-                        AND message.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
+                        AND ms.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus
                     ORDER BY 
                         {nameof(Message.Created)}";
 
