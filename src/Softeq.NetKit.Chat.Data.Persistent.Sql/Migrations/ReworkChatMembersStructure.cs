@@ -30,7 +30,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Migrations
         protected override void Down()
         {
             Execute(@"DROP PROCEDURE dbo.GetChannelsLastMessage");
-            Execute(@"ALTER TABLE [dbo].[ChannelMembers] DROP Role");
+            Execute(@"ALTER TABLE [dbo].[ChannelMembers] DROP COLUMN Role");
         }
     }
 }
