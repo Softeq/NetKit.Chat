@@ -14,4 +14,8 @@
     <ProjectReference Include="..\..\..\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\Softeq.NetKit.Chat.Client.SDK.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TransportModels\Request\Channel\" />
+  </ItemGroup>
+
 </Project>
