@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.ChannelMember;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

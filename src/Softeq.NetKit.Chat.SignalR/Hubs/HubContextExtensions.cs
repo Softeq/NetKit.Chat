@@ -1,7 +1,6 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 

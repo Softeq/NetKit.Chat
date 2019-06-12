@@ -1,4 +1,5 @@
 ﻿using System;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 
 namespace Softeq.NetKit.Chat.Domain.DomainModels
 {

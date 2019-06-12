@@ -2,16 +2,17 @@
 // http://www.softeq.com
 
 using FluentValidation;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels;
 
 namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Member
 {
-    public class InviteMemberRequestValidator : BaseRequestValidator<InviteMemberRequest>
+    public class InviteMemberRequestValidator : BaseRequestValidator<SignalRRequest<InviteMemberRequest>, InviteMemberRequest>
     {
         public InviteMemberRequestValidator()
         {
-            RuleFor(x => x.ChannelId).NotEmpty();
-            RuleFor(x => x.MemberId).NotEmpty();
+            RuleFor(x => x.Request.ChannelId).NotEmpty();
+            RuleFor(x => x.Request.MemberId).NotEmpty();
         }
     }
 }

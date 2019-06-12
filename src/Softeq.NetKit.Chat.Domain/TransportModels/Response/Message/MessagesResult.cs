@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System.Collections.Generic;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Response.Message
 {

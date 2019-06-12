@@ -1,4 +1,4 @@
-﻿namespace Softeq.NetKit.Chat.Domain.Member.TransportModels.Request
+﻿namespace Softeq.NetKit.Chat.Domain.DomainModels.TransportModels.Request
 {
     public class GetPotentialChannelMembers
     {

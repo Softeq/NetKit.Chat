@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 
 namespace Softeq.NetKit.Chat.Domain.DomainModels
 {

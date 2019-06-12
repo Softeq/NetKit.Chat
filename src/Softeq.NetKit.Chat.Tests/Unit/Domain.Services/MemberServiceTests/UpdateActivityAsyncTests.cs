@@ -9,6 +9,7 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
@@ -71,7 +72,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 .Verifiable();
 
             _clientRepositoryMock.Setup(x => x.GetClientWithMemberAsync(It.IsAny<string>()))
-                .ReturnsAsync((Client)null)
+                .ReturnsAsync((Chat.Domain.DomainModels.Client)null)
                 .Verifiable();
 
             // Act

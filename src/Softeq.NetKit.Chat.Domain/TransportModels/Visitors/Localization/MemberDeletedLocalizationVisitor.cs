@@ -3,9 +3,10 @@
 
 using System.Collections.Generic;
 using Softeq.NetKit.Chat.Domain.DomainModels.Constants;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Localization;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Localization;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.Visitors.Localization;
 
 namespace Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization
 {

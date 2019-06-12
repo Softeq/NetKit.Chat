@@ -1,15 +1,15 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using EnsureThat;
-using Microsoft.AspNetCore.SignalR;
-using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.Services.DomainServices;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnsureThat;
+using Microsoft.AspNetCore.SignalR;
+using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Domain.Services.DomainServices;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {

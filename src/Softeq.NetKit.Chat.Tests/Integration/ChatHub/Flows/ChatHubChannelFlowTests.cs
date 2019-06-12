@@ -1,15 +1,15 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
-using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FluentAssertions;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
@@ -79,7 +79,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 Description = "channel description",
                 WelcomeMessage = "welcome message",
                 Type = ChannelType.Private,
-                RequestId = "3433E3F8-E363-4A07-8CAA-8F759340F769",
                 AllowedMembers = new List<string>
                 {
                     admin.MemberId.ToString(),
@@ -114,7 +113,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 ChannelId = _testChannel.Id,
                 Name = $"new_{_testChannel.Name}",
                 Description = $"new_{_testChannel.Description}",
-                RequestId = "EA701C57-477D-42E3-B660-E510F7F8C72F",
                 WelcomeMessage = $"new_{_testChannel.WelcomeMessage}"
             };
 
@@ -146,7 +144,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
             // Arrange
             var channelRequest = new ChannelRequest
             {
-                RequestId = "623AE57B-9917-4DED-BFFC-44F09C906F10",
                 ChannelId = _testChannel.Id
             };
 

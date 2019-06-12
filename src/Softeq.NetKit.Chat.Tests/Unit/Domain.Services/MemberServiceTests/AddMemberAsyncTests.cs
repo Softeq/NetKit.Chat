@@ -5,11 +5,12 @@ using FluentAssertions;
 using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
 using Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
@@ -71,7 +72,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 LastNudged = utcNow,
                 PhotoName = string.Empty,
                 Messages = new List<Message>(),
-                ConnectedClients = new List<Client>(),
+                ConnectedClients = new List<Chat.Domain.DomainModels.Client>(),
                 Channels = new List<ChannelMember>(),
                 Notifications = new List<Notification>()
             };

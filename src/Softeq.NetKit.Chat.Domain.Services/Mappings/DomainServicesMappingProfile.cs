@@ -3,13 +3,13 @@
 
 using AutoMapper;
 using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.ChannelMember;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.ChannelMember;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.MessageAttachment;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Settings;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {
@@ -32,7 +32,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             CreateMap<DomainModels.Member, MemberSummaryResponse>()
                 .ForMember(d => d.AvatarUrl, opt => opt.MapFrom(s => s.PhotoName))
-                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));
+                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name))
+                .ForMember(d => d.IsAfk, opt => opt.Ignore());
 
             CreateMap<Channel, ChannelResponse>();
 
@@ -63,10 +64,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             CreateMap<ChannelMember, ChannelMemberResponse>();
 
-            CreateMap<Client, ClientResponse>()
+            CreateMap<DomainModels.Client, ClientResponse>()
                 .ForMember(d => d.MemberId, opt => opt.MapFrom(s => s.MemberId))
                 .ForMember(d => d.ConnectionClientId, opt => opt.MapFrom(s => s.ClientConnectionId))
-                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));
+                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name))
+                .ForMember(d =>d.SaasUserId, opt => opt.Ignore());
 
             CreateMap<ForwardMessage, ForwardMessageResponse>()
                 .ForMember(d => d.Body, opt => opt.MapFrom(s => s.Body))

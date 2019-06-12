@@ -4,11 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
+
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {
@@ -20,7 +22,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
         Task<ChannelResponse> InviteMemberAsync(Guid memberId, Guid channelId);
         Task ActivateMemberAsync(string saasUserId);
         Task UpdateActivityAsync(UpdateMemberActivityRequest request);
-        Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId);
+        Task<IReadOnlyCollection<DomainModels.Client>> GetMemberClientsAsync(Guid memberId);
         Task<MemberSummaryResponse> AddMemberAsync(string saasUserId, string email);
         Task UpdateMemberStatusAsync(string saasUserId, UserStatus status);
         Task<IReadOnlyCollection<ClientResponse>> GetClientsByMemberIds(List<Guid> memberIds);
