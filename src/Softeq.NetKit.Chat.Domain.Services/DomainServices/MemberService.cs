@@ -153,7 +153,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return DomainModelsMapper.MapToMemberSummaryResponse(newMember);
         }
 
-        public async Task<IReadOnlyCollection<DomainModels.Client>> GetMemberClientsAsync(Guid memberId)
+        public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
         {
             var member = await UnitOfWork.MemberRepository.GetMemberByIdAsync(memberId);
             if (member == null)

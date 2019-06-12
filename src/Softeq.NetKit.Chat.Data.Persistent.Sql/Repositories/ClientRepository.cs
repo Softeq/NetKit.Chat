@@ -34,25 +34,25 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<IReadOnlyCollection<Domain.DomainModels.Client>> GetMemberClientsAsync(Guid memberId)
+        public async Task<IReadOnlyCollection<Client>> GetMemberClientsAsync(Guid memberId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = $@"
                     SELECT 
-                        {nameof(Domain.DomainModels.Client.Id)},
-                        {nameof(Domain.DomainModels.Client.ClientConnectionId)},
-                        {nameof(Domain.DomainModels.Client.LastActivity)},
-                        {nameof(Domain.DomainModels.Client.LastClientActivity)},
-                        {nameof(Domain.DomainModels.Client.Name)},
-                        {nameof(Domain.DomainModels.Client.UserAgent)},
-                        {nameof(Domain.DomainModels.Client.MemberId)}
+                        {nameof(Client.Id)},
+                        {nameof(Client.ClientConnectionId)},
+                        {nameof(Client.LastActivity)},
+                        {nameof(Client.LastClientActivity)},
+                        {nameof(Client.Name)},
+                        {nameof(Client.UserAgent)},
+                        {nameof(Client.MemberId)}
                     FROM 
                         Clients
                     WHERE 
-                        {nameof(Domain.DomainModels.Client.MemberId)} = @{nameof(memberId)}";
+                        {nameof(Client.MemberId)} = @{nameof(memberId)}";
 
-                return (await connection.QueryAsync<Domain.DomainModels.Client>(sqlQuery, new { memberId })).ToList().AsReadOnly();
+                return (await connection.QueryAsync<Client>(sqlQuery, new { memberId })).ToList().AsReadOnly();
             }
         }
 
@@ -62,11 +62,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT 
-                        client.{nameof(Domain.DomainModels.Client.ClientConnectionId)}
+                        client.{nameof(Client.ClientConnectionId)}
                     FROM 
                         Clients client
                     LEFT JOIN Members member 
-                        ON client.{nameof(Domain.DomainModels.Client.MemberId)} = member.{nameof(Member.Id)}
+                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
                     LEFT JOIN ChannelMembers channelMember 
                         ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
                     WHERE
@@ -83,11 +83,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT
-                        client.{nameof(Domain.DomainModels.Client.ClientConnectionId)}
+                        client.{nameof(Client.ClientConnectionId)}
                     FROM
                         Clients client
                     LEFT JOIN Members member
-                        ON client.{nameof(Domain.DomainModels.Client.MemberId)} = member.{nameof(Member.Id)}
+                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
                     LEFT JOIN ChannelMembers channelMember
                         ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
                     WHERE
@@ -103,11 +103,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT 
-                        client.{nameof(Domain.DomainModels.Client.ClientConnectionId)}
+                        client.{nameof(Client.ClientConnectionId)}
                     FROM 
                         Clients client
                     LEFT JOIN Members member 
-                        ON client.{nameof(Domain.DomainModels.Client.MemberId)} = member.{nameof(Member.Id)}
+                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
                     LEFT JOIN ChannelMembers channelMember 
                         ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
                     WHERE 
@@ -117,19 +117,19 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<Domain.DomainModels.Client> GetClientWithMemberAsync(string clientConnectionId)
+        public async Task<Client> GetClientWithMemberAsync(string clientConnectionId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = $@"
                     SELECT 
-                        c.{nameof(Domain.DomainModels.Client.Id)},
-                        c.{nameof(Domain.DomainModels.Client.ClientConnectionId)},
-                        c.{nameof(Domain.DomainModels.Client.LastActivity)},
-                        c.{nameof(Domain.DomainModels.Client.LastClientActivity)},
-                        c.{nameof(Domain.DomainModels.Client.Name)},
-                        c.{nameof(Domain.DomainModels.Client.UserAgent)},
-                        c.{nameof(Domain.DomainModels.Client.MemberId)},
+                        c.{nameof(Client.Id)},
+                        c.{nameof(Client.ClientConnectionId)},
+                        c.{nameof(Client.LastActivity)},
+                        c.{nameof(Client.LastClientActivity)},
+                        c.{nameof(Client.Name)},
+                        c.{nameof(Client.UserAgent)},
+                        c.{nameof(Client.MemberId)},
                         m.{nameof(Member.Id)},
                         m.{nameof(Member.Email)}, 
                         m.{nameof(Member.IsBanned)},
@@ -145,11 +145,11 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     FROM 
                         Clients c 
                     INNER JOIN Members m 
-                        ON c.{nameof(Domain.DomainModels.Client.MemberId)} = m.{nameof(Member.Id)}
+                        ON c.{nameof(Client.MemberId)} = m.{nameof(Member.Id)}
                     WHERE 
-                        c.{nameof(Domain.DomainModels.Client.ClientConnectionId)} = @{nameof(clientConnectionId)}";
+                        c.{nameof(Client.ClientConnectionId)} = @{nameof(clientConnectionId)}";
 
-                return (await connection.QueryAsync<Domain.DomainModels.Client, Member, Domain.DomainModels.Client>(sqlQuery,
+                return (await connection.QueryAsync<Client, Member, Client>(sqlQuery,
                         (client, member) =>
                         {
                             client.Member = member;
@@ -160,7 +160,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task AddClientAsync(Domain.DomainModels.Client client)
+        public async Task AddClientAsync(Client client)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
@@ -236,7 +236,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<IReadOnlyCollection<Domain.DomainModels.Client>> GetClientsWithMembersAsync(List<Guid> memberIds)
+        public async Task<IReadOnlyCollection<Client>> GetClientsWithMembersAsync(List<Guid> memberIds)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
