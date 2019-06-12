@@ -2,16 +2,17 @@
 // http://www.softeq.com
 
 using FluentValidation;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels;
 
 namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Message
 {
-    public class UpdateMessageRequestValidator : BaseRequestValidator<UpdateMessageRequest>
+    public class UpdateMessageRequestValidator : BaseRequestValidator<SignalRRequest<UpdateMessageRequest>, UpdateMessageRequest>
     {
         public UpdateMessageRequestValidator()
         {
-            RuleFor(x => x.MessageId).NotEmpty();
-            RuleFor(x => x.Body).NotNull().NotEmpty();
+            RuleFor(x => x.Request.MessageId).NotEmpty();
+            RuleFor(x => x.Request.Body).NotNull().NotEmpty();
         }
     }
 }

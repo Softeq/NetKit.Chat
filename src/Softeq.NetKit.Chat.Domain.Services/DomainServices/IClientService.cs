@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Client;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
+using AddClientRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Client.AddClientRequest;
+
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

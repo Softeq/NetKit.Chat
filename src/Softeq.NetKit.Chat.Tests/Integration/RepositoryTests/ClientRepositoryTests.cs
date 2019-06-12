@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Xunit;
+using ChannelType = Softeq.NetKit.Chat.Domain.DomainModels.ChannelType;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 {
@@ -29,9 +31,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         [Trait("Category", "Integration")]
         public async Task GetMemberClientsAsync_ShouldReturnAllMemberClients()
         {
-            var clients = new List<Client>
+            var clients = new List<Domain.DomainModels.Client>
             {
-                new Client
+                new Domain.DomainModels.Client
                 {
                     Id = Guid.Parse("0258E264-A593-43AE-8344-000681FB7FDA"),
                     ClientConnectionId = Guid.NewGuid().ToString(),
@@ -41,7 +43,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
                     MemberId = _memberId,
                     UserAgent = "test"
                 },
-                new Client
+                new Domain.DomainModels.Client
                 {
                     Id = Guid.Parse("0258E264-A593-43AE-8344-000681FB7FDB"),
                     ClientConnectionId = Guid.NewGuid().ToString(),
@@ -129,7 +131,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(mutedChannelMember);
 
 
-            var firstNotMutedMemberClient1 = new Client
+            var firstNotMutedMemberClient1 = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("89C0A79E-DAF2-4180-80A2-9FB0CBCBC1F9"),
                 ClientConnectionId = "B7426717-F49E-4788-97AD-62DCCC123590",
@@ -139,7 +141,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(firstNotMutedMemberClient1);
 
-            var firstNotMutedMemberClient2 = new Client
+            var firstNotMutedMemberClient2 = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("B92A9753-D19F-489B-AC15-FD8EAF1AC85F"),
                 ClientConnectionId = "D9C276A1-597A-40F3-9C21-6967CF42FF26",
@@ -149,7 +151,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(firstNotMutedMemberClient2);
 
-            var secondNotMutedMemberClient = new Client
+            var secondNotMutedMemberClient = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("D1F29BBA-AFF1-4780-8714-CE21237C4F76"),
                 ClientConnectionId = "2708C531-4903-42D1-9B90-384F4B0E4AE6",
@@ -159,7 +161,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(secondNotMutedMemberClient);
 
-            var mutedMemberClient = new Client
+            var mutedMemberClient = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("396DBB59-545F-4948-AB89-5875C1EB2894"),
                 ClientConnectionId = "461A3EC9-ABC0-4AA1-9652-A9B762785A5E",
@@ -248,7 +250,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(mutedChannelMember);
 
-            var firstNotMutedMemberClient1 = new Client
+            var firstNotMutedMemberClient1 = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("89C0A79E-DAF2-4180-80A2-9FB0CBCBC1F9"),
                 ClientConnectionId = "B7426717-F49E-4788-97AD-62DCCC123590",
@@ -258,7 +260,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(firstNotMutedMemberClient1);
 
-            var firstNotMutedMemberClient2 = new Client
+            var firstNotMutedMemberClient2 = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("B92A9753-D19F-489B-AC15-FD8EAF1AC85F"),
                 ClientConnectionId = "D9C276A1-597A-40F3-9C21-6967CF42FF26",
@@ -268,7 +270,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(firstNotMutedMemberClient2);
 
-            var secondNotMutedMemberClient = new Client
+            var secondNotMutedMemberClient = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("D1F29BBA-AFF1-4780-8714-CE21237C4F76"),
                 ClientConnectionId = "2708C531-4903-42D1-9B90-384F4B0E4AE6",
@@ -278,7 +280,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(secondNotMutedMemberClient);
 
-            var mutedMemberClient = new Client
+            var mutedMemberClient = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("396DBB59-545F-4948-AB89-5875C1EB2894"),
                 ClientConnectionId = "461A3EC9-ABC0-4AA1-9652-A9B762785A5E",
@@ -322,7 +324,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.MemberRepository.AddMemberAsync(member);
 
-            var client = new Client
+            var client = new Domain.DomainModels.Client
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = "80784772-35AA-416D-9D47-79621CBADE74",
@@ -344,7 +346,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         [Trait("Category", "Integration")]
         public async Task AddClientAsync_ShouldAddClient()
         {
-            var client = new Client
+            var client = new Domain.DomainModels.Client
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),
@@ -366,7 +368,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         [Trait("Category", "Integration")]
         public async Task UpdateClientAsync_ShouldUpdateClient()
         {
-            var originalClient = new Client
+            var originalClient = new Softeq.NetKit.Chat.Domain.DomainModels.Client
             {
                 Id = new Guid("9AC1494F-DA85-41E7-9D4F-CEC9ED4E3CE8"),
                 ClientConnectionId = "EAD90FAF-D0F7-4C8E-80AE-84A6E9CE08DD",
@@ -378,7 +380,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(originalClient);
 
-            var changedClient = new Client
+            var changedClient = new Domain.DomainModels.Client
             {
                 Id = originalClient.Id,
                 ClientConnectionId = "5E8841DC-630C-44AC-B434-B43205ED2D00",
@@ -400,7 +402,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         [Trait("Category", "Integration")]
         public async Task DeleteClientAsync_ShouldDeleteClient()
         {
-            var client = new Client
+            var client = new Domain.DomainModels.Client
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),
@@ -440,7 +442,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             await UnitOfWork.MemberRepository.AddMemberAsync(member2);
 
 
-            var member1Client1 = new Client
+            var member1Client1 = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("98484744-61CC-45F0-811C-BEE6C5CB3058"),
                 LastActivity = DateTimeOffset.UtcNow,
@@ -450,7 +452,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(member1Client1);
 
-            var member1Client2 = new Client
+            var member1Client2 = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("48B7799C-8228-416E-89E5-CA7F0B473FB7"),
                 LastActivity = DateTimeOffset.UtcNow,
@@ -460,7 +462,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             };
             await UnitOfWork.ClientRepository.AddClientAsync(member1Client2);
 
-            var member2Client = new Client
+            var member2Client = new Domain.DomainModels.Client
             {
                 Id = Guid.Parse("4621684F-173E-42FB-BF16-64091C2B4BB4"),
                 LastActivity = DateTimeOffset.UtcNow,
@@ -475,7 +477,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             var clients = await UnitOfWork.ClientRepository.GetClientsWithMembersAsync(memberIds);
 
 
-            var expectedClients = new List<Client>
+            var expectedClients = new List<Domain.DomainModels.Client>
             {
                 member1Client1,
                 member1Client2,
@@ -488,7 +490,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         [Trait("Category", "Integration")]
         public async Task IsClientExistsAsync_ShouldReturnTrueIfClientExists()
         {
-            var client = new Client
+            var client = new Domain.DomainModels.Client
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),
@@ -512,7 +514,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         [Trait("Category", "Integration")]
         public async Task DoesMemberHasClientsAsync_ShouldReturnTrueIfMemberHasClients()
         {
-            var client = new Client
+            var client = new Domain.DomainModels.Client
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),
@@ -538,7 +540,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
         {
             const int inactiveMinutesThreshold = 60;
             const int overInactiveMinutesThreshold = 61;
-            var client = new Client
+            var client = new Domain.DomainModels.Client
             {
                 Id = Guid.NewGuid(),
                 ClientConnectionId = Guid.NewGuid().ToString(),

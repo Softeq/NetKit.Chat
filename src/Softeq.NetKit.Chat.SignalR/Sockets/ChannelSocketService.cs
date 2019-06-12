@@ -11,14 +11,16 @@ using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Channel;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Visitors.Localization;
 using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.Notifications.Services;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.Visitors.Localization;
 using ChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.ChannelRequest;
-using CreateChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.CreateChannelRequest;
+using MessageType = Softeq.NetKit.Chat.Domain.DomainModels.MessageType;
 using UpdateChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.UpdateChannelRequest;
 using MuteChannelRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel.MuteChannelRequest;
 
@@ -183,7 +185,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
 
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberLeftLocalizationVisitor(member), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberLeft, member.UserName);
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, (ILocalizationVisitor<MessageResponse>) new MemberLeftLocalizationVisitor(member), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberLeft, member.UserName);
         }
 
         public async Task DeleteMemberFromChannelAsync(DeleteMemberRequest request)

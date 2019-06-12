@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.Domain.Services.Converters;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Xunit;
+using ChannelType = Softeq.NetKit.Chat.Domain.DomainModels.ChannelType;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
 {
@@ -58,7 +61,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.Equal(request.Name, channel.Name);
             Assert.Equal(request.Description, channel.Description);
             Assert.Equal(request.WelcomeMessage, channel.WelcomeMessage);
-            Assert.Equal(request.Type, channel.Type);
+            Assert.Equal(request.Type, ChannelTypeConverter.Convert(channel.Type));
             Assert.True(channelMessagesCount == 0);
         }
 
@@ -84,7 +87,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.Equal(request.Name, channels.First().Name);
             Assert.Equal(request.Description, channels.First().Description);
             Assert.Equal(request.WelcomeMessage, channels.First().WelcomeMessage);
-            Assert.Equal(request.Type, channels.First().Type);
+            Assert.Equal(request.Type, ChannelTypeConverter.Convert(channels.First().Type));
             Assert.Equal(_memberId, channels.First().CreatorId);
         }
 
@@ -148,7 +151,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.Equal(request.Name, newChannel.Name);
             Assert.Equal(request.Description, newChannel.Description);
             Assert.Equal(request.WelcomeMessage, newChannel.WelcomeMessage);
-            Assert.Equal(request.Type, newChannel.Type);
+            Assert.Equal(request.Type, ChannelTypeConverter.Convert(newChannel.Type));
             Assert.True(channelMessagesCount == 0);
         }
 
@@ -198,7 +201,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ServicesTests
             Assert.Equal(request.Name, channels.First().Name);
             Assert.Equal(request.Description, channels.First().Description);
             Assert.Equal(request.WelcomeMessage, channels.First().WelcomeMessage);
-            Assert.Equal(request.Type, channels.First().Type);
+            Assert.Equal(request.Type, ChannelTypeConverter.Convert(channels.First().Type));
             Assert.Equal(_memberId, channels.First().CreatorId);
             Assert.True(channelMessagesCount == 0);
             Assert.True(channels.First().MembersCount == 1);

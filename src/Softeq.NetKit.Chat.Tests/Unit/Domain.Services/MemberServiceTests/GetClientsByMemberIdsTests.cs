@@ -3,12 +3,11 @@
 
 using FluentAssertions;
 using Moq;
-using Softeq.NetKit.Chat.Domain.DomainModels;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Client;
 using Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
@@ -27,7 +26,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 new Guid("924EB81E-2F26-49BB-97CD-C65FEDC9EF05")
             };
 
-            var clients = new List<Client>();
+            var clients = new List<Chat.Domain.DomainModels.Client>();
             _clientRepositoryMock.Setup(x => x.GetClientsWithMembersAsync(It.Is<List<Guid>>(ids => ids.Equals(memberIds))))
                 .ReturnsAsync(clients)
                 .Verifiable();
@@ -37,7 +36,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
             {
                 var clientResponse = new ClientResponse();
 
-                _domainModelsMapperMock.Setup(x => x.MapToClientResponse(It.Is<Client>(c => c.Equals(client))))
+                _domainModelsMapperMock.Setup(x => x.MapToClientResponse(It.Is<Chat.Domain.DomainModels.Client>(c => c.Equals(client))))
                     .Returns(clientResponse)
                     .Verifiable();
 

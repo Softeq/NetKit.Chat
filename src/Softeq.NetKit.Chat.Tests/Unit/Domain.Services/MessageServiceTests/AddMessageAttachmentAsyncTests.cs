@@ -9,7 +9,7 @@ using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.MessageAttachment;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests

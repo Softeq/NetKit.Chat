@@ -8,6 +8,7 @@ using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberService;
 using System;
 using System.Threading.Tasks;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests

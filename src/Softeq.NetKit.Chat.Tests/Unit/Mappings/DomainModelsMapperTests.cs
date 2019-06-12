@@ -10,9 +10,12 @@ using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services;
+using Softeq.NetKit.Chat.Domain.Services.Converters;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Softeq.NetKit.Chat.Web;
 using Xunit;
+using ChannelType = Softeq.NetKit.Chat.Domain.DomainModels.ChannelType;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 {
@@ -141,7 +144,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.CreatorSaasUserId.Should().Be(channel.Creator.SaasUserId);
             response.Description.Should().Be(channel.Description);
             response.WelcomeMessage.Should().Be(channel.WelcomeMessage);
-            response.Type.Should().Be(channel.Type);
+            ChannelTypeConverter.Convert(response.Type).Should().Be(channel.Type);
             response.PhotoUrl.Should().Be(channel.PhotoUrl);
 
             response.UnreadMessagesCount.Should().Be(1);
@@ -176,7 +179,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
         [Trait("Category", "Unit")]
         public void MapToClientResponse_ShouldMapClientToClientResponse()
         {
-            var client = new Client
+            var client = new Chat.Domain.DomainModels.Client
             {
                 ClientConnectionId = "2A4C5F69-0464-4F6C-97F4-7E6D8FF93CA8",
                 Member = new Member
@@ -190,36 +193,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 
             response.ConnectionClientId.Should().Be(client.ClientConnectionId);
             response.UserName.Should().Be(client.Name);
-        }
-
-        [Fact]
-        [Trait("Category", "Unit")]
-        public void MapToDirectChannelResponse_ShouldMapTwoMembersToDirectChannelResponse()
-        {
-            // Arrange
-            var channelId = new Guid("6CCC3DD2-826C-4523-AB2C-A3839BB166CB");
-
-            var owner = new Member
-            {
-                PhotoName = "firstPhotoName",
-                Name = "FirstName"
-            };
-
-            var member = new Member
-            {
-                PhotoName = "secondPhotoName",
-                Name = "SecondName"
-            };
-
-            // Act
-            var response = _domainModelsMapper.MapToDirectChannelResponse(channelId, owner, member);
-
-            // Assert
-            response.DirectChannelId.Should().Be(channelId);
-            response.Owner.AvatarUrl.Should().Contain(owner.PhotoName);
-            response.Member.AvatarUrl.Should().Contain(member.PhotoName);
-            response.Owner.UserName.Should().Be(owner.Name);
-            response.Member.UserName.Should().Be(member.Name);
         }
 
         [Fact]

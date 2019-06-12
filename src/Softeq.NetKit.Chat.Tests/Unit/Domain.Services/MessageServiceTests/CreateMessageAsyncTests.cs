@@ -8,7 +8,7 @@ using Moq;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests

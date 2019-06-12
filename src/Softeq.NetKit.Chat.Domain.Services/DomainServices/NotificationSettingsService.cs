@@ -8,7 +8,8 @@ using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Settings;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Settings;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Settings;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

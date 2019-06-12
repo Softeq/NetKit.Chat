@@ -15,8 +15,10 @@ using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Message;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.Message;
-using Softeq.NetKit.Chat.Domain.TransportModels.Response.MessageAttachment;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.MessageAttachment;
+using MessageType = Softeq.NetKit.Chat.Domain.DomainModels.MessageType;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

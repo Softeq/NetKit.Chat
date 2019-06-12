@@ -1,18 +1,19 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using FluentValidation;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels;
 
 namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Channel
 {
-    public class UpdateChannelRequestValidator : BaseRequestValidator<UpdateChannelRequest>
+    public class UpdateChannelRequestValidator : BaseRequestValidator<SignalRRequest<UpdateChannelRequest>, UpdateChannelRequest>
     {
         public UpdateChannelRequestValidator()
         {
-            RuleFor(x => x.ChannelId).NotEmpty();
-            RuleFor(x => x.Name).NotNull().NotEmpty();
+            RuleFor(x => x.Request).NotNull();
+            RuleFor(x => x.Request.ChannelId).NotEmpty();
+            RuleFor(x => x.Request.Name).NotNull().NotEmpty();
         }
     }
 }
