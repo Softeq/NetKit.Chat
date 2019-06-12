@@ -8,8 +8,8 @@ using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
 using Xunit;
 using Channel = Softeq.NetKit.Chat.Domain.DomainModels.Channel;
 

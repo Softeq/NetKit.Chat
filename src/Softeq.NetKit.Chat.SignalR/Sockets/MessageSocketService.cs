@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnsureThat;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Member;
@@ -17,6 +15,8 @@ using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.Notifications.PushNotifications;
 using Softeq.NetKit.Chat.Notifications.Services;
 using Softeq.NetKit.Chat.SignalR.Hubs.Notifications;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.MessageAttachment;
 
 namespace Softeq.NetKit.Chat.SignalR.Sockets
 {

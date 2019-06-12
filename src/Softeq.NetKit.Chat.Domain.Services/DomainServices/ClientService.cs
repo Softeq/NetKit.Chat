@@ -5,14 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EnsureThat;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Request.Client;
-using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
 using Softeq.NetKit.Chat.Data.Persistent;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
 using Softeq.NetKit.Chat.Domain.Services.Utility;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Client;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Client;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
 using AddClientRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Client.AddClientRequest;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices

@@ -6,8 +6,10 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Xunit;
+using ChannelType = Softeq.NetKit.Chat.Domain.DomainModels.ChannelType;
+using MessageType = Softeq.NetKit.Chat.Domain.DomainModels.MessageType;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 {

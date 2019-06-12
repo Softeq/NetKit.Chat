@@ -6,10 +6,10 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.MessageAttachment;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.MessageAttachment;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.MessageAttachment;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MessageServiceTests

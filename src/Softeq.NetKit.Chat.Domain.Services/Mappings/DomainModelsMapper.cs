@@ -6,13 +6,13 @@ using EnsureThat;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using System;
 using System.Linq;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.ChannelMember;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.MessageAttachment;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Settings;
-using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.ChannelMember;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.MessageAttachment;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Settings;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
 
 namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 {

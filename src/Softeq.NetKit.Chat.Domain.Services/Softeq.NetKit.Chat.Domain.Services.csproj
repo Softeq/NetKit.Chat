@@ -9,10 +9,10 @@
     <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="Ensure.That" Version="8.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
+    <PackageReference Include="Softeq.NetKit.Chat.SignalRClient" Version="1.0.5-alpha" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\Softeq.NetKit.Chat.Client.SDK.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Cloud\Softeq.NetKit.Chat.Data.Cloud.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Persistent\Softeq.NetKit.Chat.Data.Persistent.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain\Softeq.NetKit.Chat.Domain.csproj" />

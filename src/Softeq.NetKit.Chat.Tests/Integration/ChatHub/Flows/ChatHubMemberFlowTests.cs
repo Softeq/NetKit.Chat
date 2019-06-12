@@ -1,21 +1,22 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Newtonsoft.Json;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
-using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
@@ -77,7 +78,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 Description = "channel description",
                 WelcomeMessage = "welcome message",
                 Type = ChannelType.Private,
-                RequestId = "3433E3F8-E363-4A07-8CAA-8F759340F769",
                 AllowedMembers = new List<string>
                 {
                     _admin.MemberId.ToString(),
@@ -115,10 +115,9 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
             await newMemberSignalRClient.ConnectAsync(userToken, _server.CreateHandler());
             var newUser = await newMemberSignalRClient.AddClientAsync();
 
-            var inviteMultipleMembersRequest = new SignalR.TransportModels.Request.Member.InviteMultipleMembersRequest
+            var inviteMultipleMembersRequest = new InviteMultipleMembersRequest
             {
                 ChannelId = _testChannel.Id,
-                RequestId = "A372A27B-4860-44AB-9915-27B8CAFB68A3",
                 InvitedMembersIds = new List<Guid> { new Guid(newUser.MemberId.ToString()) }
             };
 
@@ -148,7 +147,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 ChannelId = _testChannel.Id,
                 Body = "test_body",
                 ImageUrl = string.Empty,
-                RequestId = "82EEC70D-D808-492C-98E3-6A5B47276990",
                 Type = MessageType.Default
             };
 
@@ -168,8 +166,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
             // Arrange
             var channelRequest = new ChannelRequest
             {
-                ChannelId = _testChannel.Id,
-                RequestId = "48033741-F54F-46A4-8AB4-3BFF5EACDBAC"
+                ChannelId = _testChannel.Id
             };
 
             // Subscribe event

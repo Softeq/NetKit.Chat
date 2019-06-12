@@ -7,7 +7,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Exceptions;
 using System;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService

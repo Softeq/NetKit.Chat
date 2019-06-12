@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.ChannelMember;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.ChannelMember;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

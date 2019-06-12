@@ -27,7 +27,6 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\Softeq.NetKit.Chat.Client.SDK.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Cloud.Azure\Softeq.NetKit.Chat.Data.Cloud.Azure.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Data.Persistent.Sql\Softeq.NetKit.Chat.Data.Persistent.Sql.csproj" />
     <ProjectReference Include="..\Softeq.NetKit.Chat.Domain.Services\Softeq.NetKit.Chat.Domain.Services.csproj" />

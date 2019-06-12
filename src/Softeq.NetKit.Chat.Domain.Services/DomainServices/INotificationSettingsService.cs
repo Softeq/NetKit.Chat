@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Settings;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request.Settings;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Settings;
 
 namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 {

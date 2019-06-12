@@ -3,8 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
 
 namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {

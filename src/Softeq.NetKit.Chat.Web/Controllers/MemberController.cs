@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Settings;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services.DomainServices;
 using Softeq.NetKit.Chat.Domain.TransportModels.Request;
@@ -16,6 +13,9 @@ using Softeq.NetKit.Chat.Domain.TransportModels.Request.Settings;
 using Softeq.NetKit.Chat.Notifications;
 using Softeq.NetKit.Chat.Notifications.Services;
 using Softeq.NetKit.Chat.Notifications.TransportModels.Notification.Request;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Settings;
 
 namespace Softeq.NetKit.Chat.Web.Controllers
 {

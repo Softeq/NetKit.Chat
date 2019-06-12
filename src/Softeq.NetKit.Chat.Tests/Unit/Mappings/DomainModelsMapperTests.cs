@@ -6,14 +6,16 @@ using System.Collections.Generic;
 using Autofac;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Softeq.NetKit.Chat.Data.Cloud.Azure;
 using Softeq.NetKit.Chat.Data.Persistent.Sql;
 using Softeq.NetKit.Chat.Domain.DomainModels;
 using Softeq.NetKit.Chat.Domain.Services;
+using Softeq.NetKit.Chat.Domain.Services.Converters;
 using Softeq.NetKit.Chat.Domain.Services.Mappings;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Softeq.NetKit.Chat.Web;
 using Xunit;
+using ChannelType = Softeq.NetKit.Chat.Domain.DomainModels.ChannelType;
 
 namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
 {
@@ -142,7 +144,7 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.CreatorSaasUserId.Should().Be(channel.Creator.SaasUserId);
             response.Description.Should().Be(channel.Description);
             response.WelcomeMessage.Should().Be(channel.WelcomeMessage);
-            response.Type.Should().Be(channel.Type);
+            ChannelTypeConverter.Convert(response.Type).Should().Be(channel.Type);
             response.PhotoUrl.Should().Be(channel.PhotoUrl);
 
             response.UnreadMessagesCount.Should().Be(1);

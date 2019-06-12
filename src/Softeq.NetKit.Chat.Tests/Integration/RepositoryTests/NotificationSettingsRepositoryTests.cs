@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
 using Softeq.NetKit.Chat.Domain.DomainModels;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Xunit;
+using ChannelType = Softeq.NetKit.Chat.Domain.DomainModels.ChannelType;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 {

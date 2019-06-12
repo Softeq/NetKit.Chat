@@ -5,16 +5,17 @@ using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Softeq.NetKit.Chat.SignalR.Hubs;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
-using Softeq.NetKit.Chat.Client.SDK.Models.SignalRModels.Client;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels.Client;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
 {
@@ -96,7 +97,7 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub
             return await _connection.InvokeAsync<MessageResponse>("DeleteMessageAsync", model);
         }
 
-        public async Task InviteMultipleMembersAsync(SignalR.TransportModels.Request.Member.InviteMultipleMembersRequest model)
+        public async Task InviteMultipleMembersAsync(InviteMultipleMembersRequest model)
         {
             await _connection.InvokeAsync("InviteMultipleMembersAsync", model);
         }

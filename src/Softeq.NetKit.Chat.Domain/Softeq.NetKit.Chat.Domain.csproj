@@ -6,12 +6,9 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Softeq.NetKit.Chat.SignalRClient" Version="1.0.5-alpha" />
     <PackageReference Include="Softeq.QueryUtils" Version="1.0.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\NetKit.Chat.Client.SDK.REST\Softeq.NetKit.Chat.Client.SDK.csproj" />
   </ItemGroup>
 
   <ItemGroup>

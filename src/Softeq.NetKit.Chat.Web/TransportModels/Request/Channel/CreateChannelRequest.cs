@@ -2,7 +2,7 @@
 // http://www.softeq.com
 
 using System.Collections.Generic;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 
 namespace Softeq.NetKit.Chat.Web.TransportModels.Request.Channel
 {

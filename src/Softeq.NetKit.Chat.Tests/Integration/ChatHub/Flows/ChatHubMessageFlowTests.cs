@@ -3,15 +3,15 @@
 
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Channel;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Channel;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Member;
-using Softeq.NetKit.Chat.Client.SDK.Models.CommonModels.Response.Message;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
 using Xunit;
 
 namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
@@ -80,7 +80,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 Description = "channel description",
                 WelcomeMessage = "welcome message",
                 Type = ChannelType.Private,
-                RequestId = "3433E3F8-E363-4A07-8CAA-8F759340F769",
                 AllowedMembers = new List<string>
                 {
                     admin.MemberId.ToString(),
@@ -116,7 +115,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
                 ChannelId = _testChannel.Id,
                 Body = "test_body",
                 ImageUrl = string.Empty,
-                RequestId = "82EEC70D-D808-492C-98E3-6A5B47276990",
                 Type = MessageType.Default
             };
 
@@ -143,7 +141,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
             var updatedMessageRequest = new UpdateMessageRequest
             {
                 Body = $"new_{messageResponse.Body}",
-                RequestId = "8992BCD7-630E-4F22-92BF-1A3AA4B7D11E",
                 MessageId = messageResponse.Id
             };
 
@@ -168,7 +165,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.ChatHub.Flows
             // Arrange
             var deleteMessageRequest = new DeleteMessageRequest
             {
-                RequestId = "47AF87B2-C39F-4814-AD62-3BC078E2A9BA",
                 MessageId = messageResponse.Id
             };
 

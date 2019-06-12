@@ -2,18 +2,20 @@
 // http://www.softeq.com
 
 using FluentValidation;
-using Softeq.NetKit.Chat.Client.SDK.Enums;
-using Softeq.NetKit.Chat.SignalR.TransportModels.Request.Message;
+using Softeq.NetKit.Chat.TransportModels.Enums;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Message;
+using Softeq.NetKit.Chat.TransportModels.Models.SignalRModels;
 
 namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Message
 {
-    public class AddMessageRequestValidator : BaseRequestValidator<AddMessageRequest>
+    public class AddMessageRequestValidator : BaseRequestValidator<SignalRRequest<AddMessageRequest>, AddMessageRequest>
     {
         public AddMessageRequestValidator()
         {
-            RuleFor(x => x.ChannelId).NotEmpty();
-            RuleFor(x => x.Body).NotNull().NotEmpty().When(x => string.IsNullOrEmpty(x.ImageUrl));
-            RuleFor(x => x.ForwardedMessageId).NotEmpty().When(x => x.Type == MessageType.Forward);
+            RuleFor(x => x.Request).NotNull();
+            RuleFor(x => x.Request.ChannelId).NotEmpty();
+            RuleFor(x => x.Request.Body).NotNull().NotEmpty().When(x => string.IsNullOrEmpty(x.Request.ImageUrl));
+            RuleFor(x => x.Request.ForwardedMessageId).NotEmpty().When(x => x.Request.Type == MessageType.Forward);
         }
     }
 }
