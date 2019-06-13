@@ -139,12 +139,12 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Message.AccessibilityStatus)},
                         (SELECT COUNT(*)
                          FROM Messages m
-                         WHERE m.{nameof(Message.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus AND m.{nameof(Message.Created)} < (
+                         WHERE m.{nameof(Message.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)} AND m.{nameof(Message.Created)} < (
                              SELECT m.{nameof(Message.Created)}
 	                         FROM ChannelMembers cm
 	                         LEFT JOIN Messages m
 	                         ON m.{nameof(Message.Id)} = cm.{nameof(ChannelMember.LastReadMessageId)}
-	                         WHERE cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)} AND cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @accessibilityStatus)) as {nameof(ChannelMemberAggregate.UnreadMessagesCount)}
+	                         WHERE cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)} AND cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)})) as {nameof(ChannelMemberAggregate.UnreadMessagesCount)}
                    FROM ChannelMembers cm
                    INNER JOIN Members mm
                    ON mm.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
@@ -166,7 +166,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
 
                         return cmAggregate;
 
-                    }, new { channelId, memberId, accessibilityStatus = AccessibilityStatus.Present }, null, true, "Id, Id, UnreadMessagesCount"
+                    }, new { channelId, memberId, AccessibilityStatus = AccessibilityStatus.Present }, null, true, "Id, Id, UnreadMessagesCount"
                 )).FirstOrDefault();
             }
         }
