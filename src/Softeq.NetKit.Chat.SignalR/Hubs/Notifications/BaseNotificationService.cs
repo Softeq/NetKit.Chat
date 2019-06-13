@@ -33,11 +33,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 
         protected IMemberService MemberService { get; }
 
-        protected async Task<List<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
-        {
-            return (await _clientService.GetNotMutedChannelClientConnectionIdsAsync(channelId)).ToList();
-        }
-
         protected async Task<List<string>> GetChannelClientConnectionIdsAsync(Guid channelId)
         {
             return (await _clientService.GetChannelClientConnectionIdsAsync(channelId)).ToList();

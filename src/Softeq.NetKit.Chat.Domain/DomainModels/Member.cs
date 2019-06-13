@@ -24,11 +24,11 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
 
         public string Email { get; set; }
 
+        //global chat role
         public UserRole Role { get; set; }
         public bool IsBanned { get; set; }
 
         public string PhotoName { get; set; }
-        public List<Channel> OwnedChannels { get; set; }
 
         public List<Message> Messages { get; set; }
 

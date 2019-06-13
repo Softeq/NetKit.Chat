@@ -71,7 +71,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.MemberServiceTests
                 Name = email,
                 LastNudged = utcNow,
                 PhotoName = string.Empty,
-                OwnedChannels = new List<Channel>(),
                 Messages = new List<Message>(),
                 ConnectedClients = new List<Chat.Domain.DomainModels.Client>(),
                 Channels = new List<ChannelMember>(),

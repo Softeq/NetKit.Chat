@@ -453,5 +453,33 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
 
             saasUserIds.Count.Should().Be(2);
         }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task GetChannelMemberWithLastReadMessageAndCounterAsync_ShouldGetChannelMemberWithLastReadMessageAndCounterAsync()
+        {
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                AccessibilityStatus = AccessibilityStatus.Present,
+                Created = DateTimeOffset.UtcNow,
+                Body = "sample body",
+                OwnerId = _memberId
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
+            {
+                ChannelId = _channelId,
+                MemberId = _memberId,
+                LastReadMessageId = message.Id
+            });
+
+            var channelMemberAggregate = await UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(_channelId, _memberId);
+
+            channelMemberAggregate.Should().NotBeNull();
+            channelMemberAggregate.Message.Should().BeEquivalentTo(message);
+        }
     }
 }

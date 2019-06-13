@@ -140,8 +140,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.Updated.Should().Be(channel.Updated);
             response.Name.Should().Be(channel.Name);
             response.IsClosed.Should().Be(channel.IsClosed);
-            response.CreatorId.Should().Be(channel.CreatorId);
-            response.CreatorSaasUserId.Should().Be(channel.Creator.SaasUserId);
             response.Description.Should().Be(channel.Description);
             response.WelcomeMessage.Should().Be(channel.WelcomeMessage);
             ChannelTypeConverter.Convert(response.Type).Should().Be(channel.Type);
@@ -150,7 +148,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Mappings
             response.UnreadMessagesCount.Should().Be(1);
             response.LastMessage.Body.Should().Be(lastChannelMessage.Body);
             response.LastMessage.IsRead.Should().Be(false);
-            response.Creator.Id.Should().Be(channel.Creator.Id);
         }
 
         [Fact]

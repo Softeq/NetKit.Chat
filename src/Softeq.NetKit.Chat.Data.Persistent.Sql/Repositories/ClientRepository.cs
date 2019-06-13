@@ -56,42 +56,21 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
-        public async Task<IReadOnlyCollection<string>> GetNotMutedChannelClientConnectionIdsAsync(Guid channelId)
-        {
-            using (var connection = _sqlConnectionFactory.CreateConnection())
-            {
-                var sqlQuery = $@"
-                    SELECT 
-                        client.{nameof(Client.ClientConnectionId)}
-                    FROM 
-                        Clients client
-                    LEFT JOIN Members member 
-                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
-                    LEFT JOIN ChannelMembers channelMember 
-                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
-                    WHERE
-                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}
-                        AND channelMember.{nameof(ChannelMember.IsMuted)} = 0";
-
-                return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
-            }
-        }
-
         public async Task<IReadOnlyCollection<string>> GetChannelClientConnectionIdsAsync(Guid channelId)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())
             {
                 var sqlQuery = $@"
                     SELECT
-                        client.{nameof(Client.ClientConnectionId)}
+                        c.{nameof(Client.ClientConnectionId)}
                     FROM
-                        Clients client
-                    LEFT JOIN Members member
-                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
-                    LEFT JOIN ChannelMembers channelMember
-                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
+                        Clients c
+                    LEFT JOIN Members m
+                        ON c.{nameof(Client.MemberId)} = m.{nameof(Member.Id)}
+                    LEFT JOIN ChannelMembers cm
+                        ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
                     WHERE
-                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
+                        cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
 
                 return (await connection.QueryAsync<string>(sqlQuery, new { channelId })).ToList().AsReadOnly();
             }
@@ -103,15 +82,15 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             {
                 var sqlQuery = $@"
                     SELECT 
-                        client.{nameof(Client.ClientConnectionId)}
+                        c.{nameof(Client.ClientConnectionId)}
                     FROM 
-                        Clients client
-                    LEFT JOIN Members member 
-                        ON client.{nameof(Client.MemberId)} = member.{nameof(Member.Id)}
-                    LEFT JOIN ChannelMembers channelMember 
-                        ON member.{nameof(Member.Id)} = channelMember.{nameof(ChannelMember.MemberId)}
+                        Clients c
+                    LEFT JOIN Members m 
+                        ON c.{nameof(Client.MemberId)} = m.{nameof(Member.Id)}
+                    LEFT JOIN ChannelMembers cm 
+                        ON m.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
                     WHERE 
-                        channelMember.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND channelMember.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";
+                        cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";
 
                 return (await connection.QueryAsync<string>(sqlQuery, new { channelId, memberId })).ToList().AsReadOnly();
             }
@@ -137,7 +116,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.LastNudged)},
                         m.{nameof(Member.Name)},
                         m.{nameof(Member.PhotoName)},
-                        m.{nameof(Member.Role)},
                         m.{nameof(Member.SaasUserId)},
                         m.{nameof(Member.Status)},
                         m.{nameof(Member.IsActive)},
@@ -256,7 +234,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.LastNudged)},
                         m.{nameof(Member.Name)},
                         m.{nameof(Member.PhotoName)},
-                        m.{nameof(Member.Role)},
                         m.{nameof(Member.SaasUserId)},
                         m.{nameof(Member.Status)},
                         m.{nameof(Member.IsActive)},

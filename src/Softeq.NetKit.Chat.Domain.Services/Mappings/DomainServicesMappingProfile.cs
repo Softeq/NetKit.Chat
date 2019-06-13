@@ -32,21 +32,17 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             CreateMap<DomainModels.Member, MemberSummaryResponse>()
                 .ForMember(d => d.AvatarUrl, opt => opt.MapFrom(s => s.PhotoName))
-                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name))
-                .ForMember(d => d.IsAfk, opt => opt.Ignore());
+                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));
 
             CreateMap<Channel, ChannelResponse>();
 
             CreateMap<Channel, ChannelSummaryResponse>()
-                .ForMember(d => d.CreatorSaasUserId, opt => opt.MapFrom(s => s.Creator.SaasUserId))
                 // These options depend on LastReadMessage and could be set by MappingHelper class
                 .ForMember(d => d.LastMessage, opt => opt.Ignore())
                 .ForMember(d => d.UnreadMessagesCount, opt => opt.Ignore())
                 // These option should be mapped from ChannelMember class. Could be done by MappingHelper class
                 .ForMember(d => d.IsMuted, opt => opt.Ignore())
-                .ForMember(d => d.IsPinned, opt => opt.Ignore())
-                .ForMember(d => d.DirectMemberId, opt => opt.Ignore())
-                .ForMember(d => d.DirectMember, opt => opt.Ignore());
+                .ForMember(d => d.IsPinned, opt => opt.Ignore());
 
             CreateMap<ChannelMember, ChannelSummaryResponse>()
                 // These option should be mapped from Channel class. Could be done by MappingHelper class
@@ -56,16 +52,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
                 .ForMember(d => d.UnreadMessagesCount, opt => opt.Ignore())
                 .ForMember(d => d.Name, opt => opt.Ignore())
                 .ForMember(d => d.IsClosed, opt => opt.Ignore())
-                .ForMember(d => d.CreatorId, opt => opt.Ignore())
-                .ForMember(d => d.Creator, opt => opt.Ignore())
-                .ForMember(d => d.CreatorSaasUserId, opt => opt.Ignore())
                 .ForMember(d => d.Description, opt => opt.Ignore())
                 .ForMember(d => d.WelcomeMessage, opt => opt.Ignore())
                 .ForMember(d => d.Type, opt => opt.Ignore())
                 .ForMember(d => d.LastMessage, opt => opt.Ignore())
                 .ForMember(d => d.PhotoUrl, opt => opt.Ignore())
-                .ForMember(d => d.DirectMemberId, opt => opt.Ignore())
-                .ForMember(d => d.DirectMember, opt => opt.Ignore());
+                .ForMember(d => d.Members, opt => opt.Ignore());
 
             CreateMap<Attachment, AttachmentResponse>();
 

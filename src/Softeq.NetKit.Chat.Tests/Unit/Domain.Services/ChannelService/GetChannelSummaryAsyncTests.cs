@@ -55,11 +55,6 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync((MemberSummaryResponse)null)
                 .Verifiable();
 
-            var messages = new List<Message>();
-            _messageRepositoryMock.Setup(x => x.GetAllChannelMessagesWithOwnersAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(messages)
-                .Verifiable();
-
             // Act
             Func<Task> result = async () => { await _channelService.GetChannelSummaryAsync(saasUserId, allowedChannel.Id); };
 
@@ -87,31 +82,24 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(member)
                 .Verifiable();
 
-            var allowedChannelMember = new ChannelMember();
-            _channelMemberRepositoryMock.Setup(x => x.GetChannelMemberAsync(
-                    It.Is<Guid>(memberId => memberId.Equals(member.Id)),
-                    It.Is<Guid>(channelId => channelId.Equals(allowedChannel.Id))))
-                .ReturnsAsync(allowedChannelMember)
-                .Verifiable();
-
-            var lastReadMessage = new Message();
-            _messageRepositoryMock.Setup(x => x.GetLastReadMessageAsync(
-                    It.Is<Guid>(memberId => memberId.Equals(member.Id)),
-                    It.Is<Guid>(channelId => channelId.Equals(allowedChannel.Id))))
-                .ReturnsAsync(lastReadMessage)
+            var channelMemberAggregate = new ChannelMemberAggregate
+            {
+                ChannelMember = new ChannelMember
+                {
+                    Channel = allowedChannel
+                }
+            };
+            _channelMemberRepositoryMock.Setup(x => x.GetChannelMemberWithLastReadMessageAndCounterAsync(
+                    It.Is<Guid>(channelId => channelId.Equals(allowedChannel.Id)),
+                    It.Is<Guid>(memberId => memberId.Equals(member.Id))))
+                .ReturnsAsync(channelMemberAggregate)
                 .Verifiable();
 
             var channelSummaryResponse = new ChannelSummaryResponse();
             _domainModelsMapperMock.Setup(x => x.MapToChannelSummaryResponse(
-                    It.Is<Channel>(channel => channel.Equals(allowedChannel)),
-                    It.Is<ChannelMember>(channelMember => channelMember.Equals(allowedChannelMember)),
-                    It.Is<Message>(message => message.Equals(lastReadMessage))))
+                    It.Is<ChannelMemberAggregate>(channel => channel.Equals(channelMemberAggregate)),
+                    It.Is<Channel>(channel => channel.Equals(allowedChannel))))
                 .Returns(channelSummaryResponse)
-                .Verifiable();
-
-            var messages = new List<Message>();
-            _messageRepositoryMock.Setup(x => x.GetAllChannelMessagesWithOwnersAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(messages)
                 .Verifiable();
 
             // Act

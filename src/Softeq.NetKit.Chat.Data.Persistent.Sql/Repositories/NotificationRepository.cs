@@ -106,7 +106,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         me.{nameof(Member.LastNudged)},
                         me.{nameof(Member.Name)},
                         me.{nameof(Member.PhotoName)},
-                        me.{nameof(Member.Role)},
                         me.{nameof(Member.SaasUserId)},
                         me.{nameof(Member.Status)},
                         me.{nameof(Member.IsActive)},

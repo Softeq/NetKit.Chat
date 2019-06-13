@@ -28,6 +28,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(ChannelMember.ChannelId)}, 
                         {nameof(ChannelMember.MemberId)}, 
                         {nameof(ChannelMember.LastReadMessageId)}, 
+                        {nameof(ChannelMember.Role)},
                         {nameof(ChannelMember.IsMuted)}, 
                         {nameof(ChannelMember.IsPinned)}
                     ) VALUES 
@@ -35,6 +36,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         @{nameof(ChannelMember.ChannelId)}, 
                         @{nameof(ChannelMember.MemberId)}, 
                         @{nameof(ChannelMember.LastReadMessageId)}, 
+                        @{nameof(ChannelMember.Role)},
                         @{nameof(ChannelMember.IsMuted)}, 
                         @{nameof(ChannelMember.IsPinned)}
                     )";
@@ -52,6 +54,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(ChannelMember.ChannelId)}, 
                         {nameof(ChannelMember.MemberId)}, 
                         {nameof(ChannelMember.LastReadMessageId)}, 
+                        {nameof(ChannelMember.Role)},
                         {nameof(ChannelMember.IsMuted)}, 
                         {nameof(ChannelMember.IsPinned)}
                     FROM 
@@ -72,6 +75,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                     cm.{nameof(ChannelMember.ChannelId)}, 
                                     cm.{nameof(ChannelMember.MemberId)}, 
                                     cm.{nameof(ChannelMember.LastReadMessageId)}, 
+                                    cm.{nameof(ChannelMember.Role)}, 
                                     cm.{nameof(ChannelMember.IsMuted)}, 
                                     cm.{nameof(ChannelMember.IsPinned)},
                                     m.{nameof(Member.Email)},
@@ -81,7 +85,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                     m.{nameof(Member.LastNudged)},
                                     m.{nameof(Member.Name)},
                                     m.{nameof(Member.PhotoName)},
-                                    m.{nameof(Member.Role)},
                                     m.{nameof(Member.SaasUserId)},
                                     m.{nameof(Member.Status)},
                                     m.{nameof(Member.IsActive)},
@@ -99,6 +102,72 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                     channelMember.MemberId = member.Id;
                     return channelMember;
                 }, new { memberId, channelId })).FirstOrDefault();
+            }
+        }
+
+        public async Task<ChannelMemberAggregate> GetChannelMemberWithLastReadMessageAndCounterAsync(Guid channelId, Guid memberId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT 
+                        cm.{nameof(ChannelMember.ChannelId)}, 
+                        cm.{nameof(ChannelMember.MemberId)}, 
+                        cm.{nameof(ChannelMember.LastReadMessageId)}, 
+                        cm.{nameof(ChannelMember.Role)}, 
+                        cm.{nameof(ChannelMember.IsMuted)}, 
+                        cm.{nameof(ChannelMember.IsPinned)},
+                        mm.{nameof(Member.Id)}, 
+                        mm.{nameof(Member.Email)},       
+                        mm.{nameof(Member.IsBanned)},
+                        mm.{nameof(Member.LastActivity)},
+                        mm.{nameof(Member.LastNudged)},
+                        mm.{nameof(Member.Name)},
+                        mm.{nameof(Member.PhotoName)},
+                        mm.{nameof(Member.SaasUserId)},
+                        mm.{nameof(Member.Status)},
+                        mm.{nameof(Member.IsActive)},
+                        mm.{nameof(Member.IsDeleted)},
+                        m.{nameof(Message.Id)}, 
+                        m.{nameof(Message.ChannelId)}, 
+                        m.{nameof(Message.Created)}, 
+                        m.{nameof(Message.Body)}, 
+                        m.{nameof(Message.ImageUrl)}, 
+                        m.{nameof(Message.Type)}, 
+                        m.{nameof(Message.OwnerId)}, 
+                        m.{nameof(Message.Updated)}, 
+                        m.{nameof(Message.AccessibilityStatus)},
+                        (SELECT COUNT(*)
+                         FROM Messages m
+                         WHERE m.{nameof(Message.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)} AND m.{nameof(Message.Created)} < (
+                             SELECT m.{nameof(Message.Created)}
+	                         FROM ChannelMembers cm
+	                         LEFT JOIN Messages m
+	                         ON m.{nameof(Message.Id)} = cm.{nameof(ChannelMember.LastReadMessageId)}
+	                         WHERE cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)} AND cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)})) as {nameof(ChannelMemberAggregate.UnreadMessagesCount)}
+                   FROM ChannelMembers cm
+                   INNER JOIN Members mm
+                   ON mm.{nameof(Member.Id)} = cm.{nameof(ChannelMember.MemberId)}
+                   LEFT JOIN Messages m
+                   ON m.{nameof(Message.Id)} = cm.{nameof(ChannelMember.LastReadMessageId)}
+                   WHERE cm.{nameof(ChannelMember.MemberId)} = @{nameof(memberId)} AND cm.{nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}";
+
+                return (await connection.QueryAsync<ChannelMember, Member, Message, int, ChannelMemberAggregate>(sqlQuery,
+                    (channelMember, member, message, unreadCount) =>
+                    {
+                        channelMember.Member = member;
+
+                        var cmAggregate = new ChannelMemberAggregate
+                        {
+                            ChannelMember = channelMember,
+                            Message = message,
+                            UnreadMessagesCount = unreadCount
+                        };
+
+                        return cmAggregate;
+
+                    }, new { channelId, memberId, AccessibilityStatus = AccessibilityStatus.Present }, null, true, "Id, Id, UnreadMessagesCount"
+                )).FirstOrDefault();
             }
         }
 
@@ -125,6 +194,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {nameof(ChannelMember.ChannelId)}, 
                         {nameof(ChannelMember.MemberId)}, 
                         {nameof(ChannelMember.LastReadMessageId)}, 
+                        {nameof(ChannelMember.Role)}, 
                         {nameof(ChannelMember.IsMuted)}, 
                         {nameof(ChannelMember.IsPinned)}
                     FROM 
@@ -145,6 +215,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         cm.{nameof(ChannelMember.ChannelId)}, 
                         cm.{nameof(ChannelMember.MemberId)}, 
                         cm.{nameof(ChannelMember.LastReadMessageId)}, 
+                        cm.{nameof(ChannelMember.Role)}, 
                         cm.{nameof(ChannelMember.IsMuted)}, 
                         cm.{nameof(ChannelMember.IsPinned)},
                         m.{nameof(Member.Email)},
@@ -154,7 +225,6 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.LastNudged)},
                         m.{nameof(Member.Name)},
                         m.{nameof(Member.PhotoName)},
-                        m.{nameof(Member.Role)},
                         m.{nameof(Member.SaasUserId)},
                         m.{nameof(Member.Status)},
                         m.{nameof(Member.IsActive)},
@@ -200,7 +270,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                 var sqlQuery = $@"
                     UPDATE ChannelMembers
                     SET
-                         {nameof(ChannelMember.IsPinned)} = @{nameof(isPinned)}
+                        {nameof(ChannelMember.IsPinned)} = @{nameof(isPinned)}
                     WHERE 
                         {nameof(ChannelMember.ChannelId)} = @{nameof(channelId)}
                         AND {nameof(ChannelMember.MemberId)} = @{nameof(memberId)}";

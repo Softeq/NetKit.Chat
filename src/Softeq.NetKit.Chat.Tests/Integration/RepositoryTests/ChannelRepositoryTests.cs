@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Softeq.NetKit.Chat.Domain.DomainModels;
@@ -139,101 +140,6 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             var newChannels = await UnitOfWork.ChannelRepository.GetAllChannelsAsync();
 
             newChannels.Should().BeEquivalentTo(channels);
-        }
-
-        [Fact]
-        [Trait("Category", "Integration")]
-        public async Task GetAllowedChannelsWithMessagesAndCreatorAsync_ShouldReturnAllOpenChannelsWhereMemberParticipateWithMessages()
-        {
-            // Arrange
-            var member = new Member
-            {
-                Id = new Guid("78D80247-DD60-49AB-821C-069D47130DF9"),
-                LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Online
-            };
-            UnitOfWork.MemberRepository.AddMemberAsync(member).GetAwaiter().GetResult();
-
-            var member2 = new Member
-            {
-                Id = new Guid("401907DC-802D-4673-BA84-74096369F958"),
-                LastActivity = DateTimeOffset.UtcNow,
-                Status = UserStatus.Online
-            };
-            UnitOfWork.MemberRepository.AddMemberAsync(member2).GetAwaiter().GetResult();
-
-            var participatedChannels = new List<Channel>
-            {
-                new Channel
-                {
-                    Id = Guid.NewGuid(),
-                    IsClosed = false,
-                    CreatorId = member.Id,
-                    Creator = member,
-                    Created = DateTimeOffset.UtcNow,
-                    Type = ChannelType.Public,
-                    MembersCount = 10
-                },
-                new Channel
-                {
-                    Id = Guid.NewGuid(),
-                    IsClosed = false,
-                    CreatorId = member2.Id,
-                    Creator = member2,
-                    Created = DateTimeOffset.UtcNow,
-                    Type = ChannelType.Private,
-                    MembersCount = 10
-                }
-            };
-            foreach (var channel in participatedChannels)
-            {
-                await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
-                await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = member.Id, ChannelId = channel.Id });
-
-                var message = new Message
-                {
-                    Id = Guid.NewGuid(),
-                    Body = "Body",
-                    Created = DateTimeOffset.Now,
-                    ImageUrl = "ImageUrl",
-                    Type = MessageType.Default,
-                    ChannelId = channel.Id,
-                    OwnerId = member.Id,
-                    Owner = member
-                };
-                await UnitOfWork.MessageRepository.AddMessageAsync(message);
-                channel.Messages = new List<Message> { message };
-            }
-
-            var closedChannel = new Channel
-            {
-                Id = Guid.NewGuid(),
-                IsClosed = true,
-                CreatorId = member.Id,
-                Created = DateTimeOffset.UtcNow,
-                Type = ChannelType.Public,
-                MembersCount = 10
-            };
-            await UnitOfWork.ChannelRepository.AddChannelAsync(closedChannel);
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = member.Id, ChannelId = closedChannel.Id });
-
-            var notParticipatedChannel = new Channel
-            {
-                Id = Guid.NewGuid(),
-                IsClosed = false,
-                CreatorId = member2.Id,
-                Created = DateTimeOffset.UtcNow,
-                Type = ChannelType.Private,
-                MembersCount = 10
-            };
-            await UnitOfWork.ChannelRepository.AddChannelAsync(notParticipatedChannel);
-            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember { MemberId = member2.Id, ChannelId = notParticipatedChannel.Id });
-
-            // Act
-            var allowedChannels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithMessagesAndCreatorAsync(member.Id);
-
-            // Assert
-            allowedChannels.Should().BeEquivalentTo(participatedChannels);
         }
 
         [Fact]
@@ -481,6 +387,55 @@ namespace Softeq.NetKit.Chat.Tests.Integration.RepositoryTests
             var incrementedChannel = await UnitOfWork.ChannelRepository.GetChannelAsync(channel.Id);
 
             incrementedChannel.MembersCount.Should().Be(channel.MembersCount - 1);
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task GetAllowedChannelsWithLastMessageAsync_ShouldGetAllowedChannelsWithLastMessageAsync()
+        {
+            var channel = new Channel
+            {
+                Id = Guid.NewGuid(),
+                IsClosed = false,
+                CreatorId = _memberId,
+                Created = DateTimeOffset.UtcNow,
+                Type = ChannelType.Public,
+                MembersCount = 1
+            };
+
+            await UnitOfWork.ChannelRepository.AddChannelAsync(channel);
+
+            var message = new Message
+            {
+                Id = Guid.NewGuid(),
+                AccessibilityStatus = AccessibilityStatus.Present,
+                Created = DateTimeOffset.UtcNow,
+                Body = "sample body",
+                OwnerId = _memberId,
+                Type = MessageType.Default,
+                ChannelId = channel.Id
+            };
+
+            await UnitOfWork.MessageRepository.AddMessageAsync(message);
+
+            channel.Messages = new List<Message>
+            {
+                message
+            };
+
+            await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(new ChannelMember
+            {
+                ChannelId = channel.Id,
+                MemberId = _memberId,
+                LastReadMessageId = message.Id,
+                Role = UserRole.Admin
+            });
+
+            var channels = await UnitOfWork.ChannelRepository.GetAllowedChannelsWithLastMessageAsync(_memberId);
+
+            channels.Should().NotBeNull();
+            channels.Count.Should().Be(1);
+            channels.ToList()[0].Should().BeEquivalentTo(channel);
         }
     }
 }

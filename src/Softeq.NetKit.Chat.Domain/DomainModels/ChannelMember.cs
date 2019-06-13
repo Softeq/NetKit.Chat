@@ -2,6 +2,7 @@
 // http://www.softeq.com
 
 using System;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 
 namespace Softeq.NetKit.Chat.Domain.DomainModels
 {
@@ -15,6 +16,8 @@ namespace Softeq.NetKit.Chat.Domain.DomainModels
         public Channel Channel { get; set; }
         public bool IsMuted { get; set; }
         public bool IsPinned { get; set; }
+        // concrete chat role
+        public UserRole Role { get; set; }
 
         // Last channel message info
         public Guid? LastReadMessageId { get; set; }
