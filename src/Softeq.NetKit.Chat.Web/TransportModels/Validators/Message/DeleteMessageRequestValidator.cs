@@ -6,11 +6,11 @@ using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Message;
 
 namespace Softeq.NetKit.Chat.Web.TransportModels.Validators.Message
 {
-    public class UpdateMessageRequestValidator : AbstractValidator<UpdateMessageRequest>
+    public class DeleteMessageRequestValidator : AbstractValidator<DeleteMessageRequest>
     {
-        public UpdateMessageRequestValidator()
+        public DeleteMessageRequestValidator()
         {
-            RuleFor(x => x.Body).NotNull().NotEmpty();
+            RuleFor(x => x.MessageId).NotEmpty();
         }
     }
 }

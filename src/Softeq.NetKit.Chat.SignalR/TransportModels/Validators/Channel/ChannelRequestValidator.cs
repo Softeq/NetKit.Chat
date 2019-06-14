@@ -11,7 +11,7 @@ namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Channel
     {
         public ChannelRequestValidator()
         {
-            RuleFor(x => x.Request).NotNull(); RuleFor(x => x.Request).NotNull();
+            RuleFor(x => x.Request).NotNull();
             RuleFor(x => x.Request.ChannelId).NotEmpty();
         }
     }

@@ -6,12 +6,11 @@ using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Channel;
 
 namespace Softeq.NetKit.Chat.Web.TransportModels.Validators.Channel
 {
-    public class UpdateChannelRequestValidator : AbstractValidator<UpdateChannelRequest>
+    public class ChannelRequestValidator : AbstractValidator<ChannelRequest>
     {
-        public UpdateChannelRequestValidator()
+        public ChannelRequestValidator()
         {
             RuleFor(x => x.ChannelId).NotEmpty();
-            RuleFor(x => x.Name).NotNull().NotEmpty();
         }
     }
 }

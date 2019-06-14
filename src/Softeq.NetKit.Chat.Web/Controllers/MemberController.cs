@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +34,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         public MemberController(IMemberService memberService,
             IChannelService channelService,
             IPushNotificationService pushNotificationService,
-            INotificationSettingsService notificationSettingsService)
+            INotificationSettingsService notificationSettingsService, IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _memberService = memberService;
             _channelService = channelService;

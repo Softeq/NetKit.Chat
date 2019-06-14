@@ -1,6 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
+using System;
 using System.Threading.Tasks;
 using EnsureThat;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         private readonly ICloudTokenProvider _cloudTokenProvider;
 
-        public FileController(ICloudTokenProvider cloudTokenProvider)
+        public FileController(ICloudTokenProvider cloudTokenProvider, IServiceProvider serviceProvider) : base(serviceProvider)
         {
             Ensure.That(cloudTokenProvider).IsNotNull();
 
