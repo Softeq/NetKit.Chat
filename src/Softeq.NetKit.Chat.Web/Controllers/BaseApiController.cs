@@ -39,27 +39,5 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         {
             return User.FindFirstValue(JwtClaimTypes.Email);
         }
-
-        protected void ValidateAndThrow<T>(T model)
-        {
-            var validator = (IValidator<T>)_serviceProvider.GetService(typeof(IValidator<T>));
-            if (validator == null)
-            {
-                throw new InvalidOperationException($"Could not resolve validator for specified model. Model type: {typeof(T)}");
-            }
-
-            var result = validator.Validate(model);
-            if (!result.IsValid)
-            {
-                var resultExceptionMessage = string.Empty;
-
-                foreach (var error in result.Errors)
-                {
-                    resultExceptionMessage += $"{error.ErrorMessage}: {error.PropertyName}";
-                }
-
-                throw new ValidationException($"Validation error in {model}. {resultExceptionMessage}");
-            }
-        }
     }
 }

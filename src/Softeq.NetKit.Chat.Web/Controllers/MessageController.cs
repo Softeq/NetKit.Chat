@@ -20,7 +20,6 @@ using Softeq.NetKit.Chat.Domain.Services.Converters;
 using Message = Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Message;
 using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Message;
 using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.MessageAttachment;
-using DeleteMessageRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Message.DeleteMessageRequest;
 using SetLastReadMessageRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Message.SetLastReadMessageRequest;
 using UpdateMessageRequest = Softeq.NetKit.Chat.Domain.TransportModels.Request.Message.UpdateMessageRequest;
 
@@ -49,8 +48,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("")]
         public async Task<IActionResult> AddMessageAsync([FromBody] Message.AddMessageRequest request)
         {
-            ValidateAndThrow(request);
-
             var createMessageRequest = new CreateMessageRequest(GetCurrentSaasUserId(), request.ChannelId, MessageTypeConverter.Convert(request.Type), request.Body)
             {
                 ForwardedMessageId = request.ForwardedMessageId,
@@ -63,11 +60,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [Route("{messageId:guid}")]
-        public async Task<IActionResult> DeleteMessageAsync([FromBody] Message.DeleteMessageRequest request)
+        public async Task<IActionResult> DeleteMessageAsync([FromBody] Guid request)
         {
-            ValidateAndThrow(request);
-
-            await _messageSocketService.ArchiveMessageAsync(new ArchiveMessageRequest(GetCurrentSaasUserId(), request.MessageId));
+            await _messageSocketService.ArchiveMessageAsync(new ArchiveMessageRequest(GetCurrentSaasUserId(), request));
             return Ok();
         }
 
@@ -77,8 +72,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}")]
         public async Task<IActionResult> UpdateMessageAsync([FromBody] Message.UpdateMessageRequest request)
         {
-            ValidateAndThrow(request);
-
             var result = await _messageSocketService.UpdateMessageAsync(new UpdateMessageRequest(GetCurrentSaasUserId(), request.MessageId, request.Body));
             return Ok(result);
         }
@@ -116,8 +109,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}/attachment/{attachmentId:guid}")]
         public async Task<IActionResult> DeleteMessageAttachmentAsync([FromBody] Chat.TransportModels.Models.CommonModels.Request.MessageAttachment.DeleteMessageAttachmentRequest request)
         {
-            ValidateAndThrow(request);
-
             var deleteMessageAttachmentRequest = new DeleteMessageAttachmentRequest(GetCurrentSaasUserId(), request.MessageId, request.AttachmentId);
             await _messageSocketService.DeleteMessageAttachmentAsync(deleteMessageAttachmentRequest);
             return Ok();
@@ -128,8 +119,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [Route("{messageId:guid}/mark-as-read")]
         public async Task<IActionResult> MarkAsReadMessageAsync([FromBody] Message.SetLastReadMessageRequest request)
         {
-            ValidateAndThrow(request);
-
             await _messageSocketService.SetLastReadMessageAsync(new SetLastReadMessageRequest(GetCurrentSaasUserId(), request.ChannelId, request.MessageId));
             return Ok();
         }

@@ -2,7 +2,7 @@
 // http://www.softeq.com
 
 using FluentValidation;
-using Softeq.NetKit.Chat.Web.TransportModels.Request.Channel;
+using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Request.Channel;
 
 namespace Softeq.NetKit.Chat.Web.TransportModels.Validators.Channel
 {
