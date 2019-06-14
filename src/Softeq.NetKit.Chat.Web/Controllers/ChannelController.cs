@@ -33,8 +33,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         private readonly IChannelSocketService _channelSocketService;
         private readonly IMemberService _memberService;
 
-        public ChannelController(IChannelService channelService, IChannelSocketService channelSocketService, IMemberService memberService, IServiceProvider serviceProvider) :
-            base(serviceProvider)
+        public ChannelController(IChannelService channelService, IChannelSocketService channelSocketService, IMemberService memberService)
         {
             Ensure.That(channelService).IsNotNull();
             Ensure.That(channelSocketService).IsNotNull();

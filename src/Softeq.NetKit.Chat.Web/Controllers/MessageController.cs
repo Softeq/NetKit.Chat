@@ -34,7 +34,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         private readonly IMessageService _messageService;
         private readonly IMessageSocketService _messageSocketService;
 
-        public MessageController(IMessageService messageService, IMessageSocketService messageSocketService, IServiceProvider serviceProvider) : base(serviceProvider)
+        public MessageController(IMessageService messageService, IMessageSocketService messageSocketService)
         {
             Ensure.That(messageService).IsNotNull();
             Ensure.That(messageSocketService).IsNotNull();

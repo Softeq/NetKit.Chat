@@ -1,9 +1,7 @@
 ﻿// Developed by Softeq Development Corporation
 // http://www.softeq.com
 
-using System;
 using System.Security.Claims;
-using FluentValidation;
 using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +16,6 @@ namespace Softeq.NetKit.Chat.Web.Controllers
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class BaseApiController : Controller
     {
-        protected readonly IServiceProvider _serviceProvider;
-
-        public BaseApiController(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
         protected string GetCurrentSaasUserId()
         {
             return User.FindFirstValue(JwtClaimTypes.Subject);

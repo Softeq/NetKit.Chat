@@ -34,7 +34,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         public MemberController(IMemberService memberService,
             IChannelService channelService,
             IPushNotificationService pushNotificationService,
-            INotificationSettingsService notificationSettingsService, IServiceProvider serviceProvider) : base(serviceProvider)
+            INotificationSettingsService notificationSettingsService)
         {
             _memberService = memberService;
             _channelService = channelService;

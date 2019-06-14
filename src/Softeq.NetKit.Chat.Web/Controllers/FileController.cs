@@ -21,7 +21,7 @@ namespace Softeq.NetKit.Chat.Web.Controllers
 
         private readonly ICloudTokenProvider _cloudTokenProvider;
 
-        public FileController(ICloudTokenProvider cloudTokenProvider, IServiceProvider serviceProvider) : base(serviceProvider)
+        public FileController(ICloudTokenProvider cloudTokenProvider)
         {
             Ensure.That(cloudTokenProvider).IsNotNull();
 
