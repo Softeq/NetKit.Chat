@@ -1,653 +1,844 @@
 # Hub Commands
-## Add Client (AddClientAsync)
 
-#### Request:
-	{
-	 "UserName": "string",
-	 "ConnectionId": "string",
-	 "UserAgent": "string"
-	}
-#### Response:
-	{
-	 "Id" : "Guid",
-	 "ConnectionClientId": "string",
-	 "UserName": "string",
-	 "SaasUserId": "string"
-	}
+## Add Client (AddClientAsync)
+###### Request:
+
+```json 
+NODATA
+```
+	
+###### Response:
+
+```json 
+{
+  "Id" : "Guid",
+  "MemberId" : "Guid",
+  "ConnectionClientId": "string",
+  "UserName": "string",
+  "SaasUserId": "string"
+}
+```
 	
 ## Delete Client (DeleteClientAsync)
-#### Request:
-	{
-	 "ClientConnectionId": "string"
-	}
+###### Request:
+
+```json 
+NODATA
+```
+
+###### Response:
+
+```json 
+NODATA
+```
 
 ## Add Message (AddMessageAsync)
-#### Request:
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "ClientConnectionId": "string",
+  "Body": "string",
+  "ChannelId": "Guid",
+  "Type": "MessageType" (Enum: [Default, Forward]),
+  "ImageUrl": "string",
+  "ForwardedMessageId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+{
+  "Id": "Guid",
+  "ChannelId": "Guid",
+  "Sender": "MemberSummary"
 	{
-	 "Body": "string",
-	 "ChannelId": "Guid",
-	 "Type": "MessageType" (Enum: [Default, Notification]),
-	 "ImageUrl": "string"
-	}
-#### Response:
+	  "Id": "Guid",
+	  "SaasUserId": "string",
+	  "UserName": "string",
+	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
+	  "Status": "UserStatus" (Enum: [Offline = 0, Online = 1]),
+	  "IsActive": "bool",
+	  "LastActivity": "DateTimeOffset",
+	  "Email": "string",
+	  "AvatarUrl": "string"
+	},
+  "Body": "string",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "Type": "MessageType" (Enum: [Default, Forward, System]),
+  "IsRead": "bool",
+  "ImageUrl": "string",
+  "ForwardedMessage": "ForwardMessageResponse"
 	{
-	 "Id": "Guid",
-	 "ChannelId": "Guid",
-	 "Sender": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId": "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	 "Body": "string",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "Type": "MessageType" (Enum: [Default, Notification]),
-	 "IsRead": "bool",
-	 "ImageUrl": "string"
+	  "Id": "Guid",
+	  "Body": "string",
+	  "ChannelId": "Guid",
+	  "OwnerId": "Guid",
+	  "Channel": "ChannelSummaryResponse"
+	   {
+	     ...
+	   },
+	  "Owner": "MemberSummaryResponse"
+	   {
+	     ...
+	   },
+	  "Created": "DateTimeOffset"
 	}
+}
+```
 
 ## Delete Message (DeleteMessageAsync)
-#### Request:
-	{
-	 "MessageId": "Guid"
-	}
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "MessageId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
 
 ## Update Message (UpdateMessageAsync)
-#### Request:
-	{
-	 "MessageId": "Guid",
-	 "Body": "string"
-	}
+###### Request:
 
-## Add Message Attachment (AddMessageAttachmentAsync)
-#### Request:
-	{
-	 "MessageId": "Guid",
-	 "Content": "Stream",
-	 "Extension": "string",
-	 "ContentType": "string",
-	 "Size": "long"
-	}
+```json 
+{
+  "RequestId": "string",
+  "MessageId": "Guid",
+  "Body": "string"
+}
+```
 
-## Delete Message Attachment (DeleteMessageAttachmentAsync)
-#### Request:
-	{
-	 "MessageId": "Guid",
-	 "AttachmentId": "Guid"
-	}
+###### Response:
+
+```json 
+NODATA
+```
 
 ## Mark As Read Message (MarkAsReadMessageAsync)
-#### Request:
-	{
-	 "ChannelId": "Guid",
-	 "MessageId": "Guid"
-	}
+###### Request:
 
-## Join To Channel (JoinToChannelAsync)
-#### Request:
-	{
-	 "ChannelId": "Guid"
-	}
-	
+```json 
+{
+  "RequestId": "string",
+  "ChannelId": "Guid",
+  "MessageId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
+
 ## Invite Member (InviteMemberAsync)
-#### Request:
-	{
-	 "ChannelId": "Guid",
-	 "MemberId": "Guid"
-	}
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "ChannelId": "Guid",
+  "MemberId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
 	
 ## Invite Multiple Members (InviteMultipleMembersAsync)
-#### Request:
-	{
-	 "ChannelId": "Guid",
-	 "InvitedMembers": "Array[string]"
-	}
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "ChannelId": "Guid",
+  "InvitedMembersIds": "Array[string]"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
+
+## Delete Member (DeleteMemberAsync)
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "ChannelId": "Guid",
+  "MemberId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
 
 ## Create Channel (CreateChannelAsync)
-#### Request:
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "Name": "string",
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "Type": "ChannelType" (Enum: [Public, Private]),
+  "AllowedMembers": "Array[string]",
+  "PhotoUrl": "string"
+}
+```
+
+###### Response:
+
+```json 
+{
+  "Id": "Guid",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "UnreadMessagesCount": "int",
+  "Name": "string",
+  "IsClosed": "bool",
+  "IsMuted": "bool",
+  "IsPinned": "bool",
+  "Members": "Array[MemberSummaryResponse]"
+  {
+    [0]: 
 	{
-	 "Name": "string",
-	 "Description": "string",
-	 "WelcomeMessage": "string",
-	 "Type": "ChannelType" (Enum: [Public,Private]),
-	 "AllowedMembers": "Array[string]",
-	 "PhotoUrl": "string"
-	}
-#### Response:
+	  "Id": "Guid",
+	  "SaasUserId": "string",
+	  "UserName": "string",
+	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
+	  "Status": "UserStatus" (Enum: [Offline = 0, Online = 1]),
+	  "IsActive": "bool",
+	  "LastActivity": "DateTimeOffset",
+	  "Email": "string",
+	  "AvatarUrl": "string"
+	},
+	...
+  },
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "Type": "ChannelType" (Enum: [Public, Private]),
+  "LastMessage": "MessageResponse"
 	{
 	 "Id": "Guid",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "UnreadMessagesCount": "int",
-	 "Name": "string",
-	 "IsClosed": "bool",
-	 "IsMuted": "bool",
-	 "CreatorId": "Guid",
-	 "Creator": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId", "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserStatus" (Enum: [Active, Inactive, Offline]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	"CreatorSaasUserId": "string",
-	"Description": "string",
-	"WelcomeMessage": "string",
-	"Type": "ChannelType" (Enum: [Public,Private]),
-	"LastMessage": "MessageResponse"
-		{
-		 "Id": "Guid",
-		 "ChannelId": "Guid",
-		 "Sender": "MemberSummary"
-			 {
-			  Id: Guid,
-			  "SaasUserId", "string",
-			  "UserName": "string",
-			  "Role: UserRole" (Enum: [User = 0, Admin = 1]),	
-			  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-			  "IsAfk": "bool",
-			  "LastActivity": "DateTimeOffset",
-			  "Email": "string",
-			  "AvatarUrl": "string"
-			 },
-		 "Body": "string",
-		 "Created": "DateTimeOffset",
-		 "Updated": "DateTimeOffset",
-		 "Type": "MessageType" (Enum: [Default, Notification]),
-		 "IsRead": "Bool",
-		 "ImageUrl": "string"
-		},
-	"PhotoUrl": "string"
-	}
+	 "ChannelId": "Guid",
+	 "Sender": "MemberSummary"
+	  {
+        ...
+	  },
+     "Body": "string",
+     "Created": "DateTimeOffset",
+     "Updated": "DateTimeOffset",
+     "Type": "MessageType" (Enum: [Default, Forward, System]),
+     "IsRead": "bool",
+     "ImageUrl": "string",
+     "ForwardedMessage": "ForwardMessageResponse"
+	  {
+	    "Id": "Guid",
+	    "Body": "string",
+	    "ChannelId": "Guid",
+	    "OwnerId": "Guid",
+	    "Channel": "ChannelSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Owner": "MemberSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Created": "DateTimeOffset"
+	  }
+	},
+  "PhotoUrl": "string"
+}
+```
+
+## Create Direct Channel (CreateDirectChannelAsync)
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "MemberId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+{
+  "Id": "Guid",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "UnreadMessagesCount": "int",
+  "Name": "string",
+  "IsClosed": "bool",
+  "IsMuted": "bool",
+  "IsPinned": "bool",
+  "Members": "Array[MemberSummaryResponse]"
+  {
+    [0]: 
+	{
+	  "Id": "Guid",
+	  "SaasUserId": "string",
+	  "UserName": "string",
+	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
+	  "Status": "UserStatus" (Enum: [Offline = 0, Online = 1]),
+	  "IsActive": "bool",
+	  "LastActivity": "DateTimeOffset",
+	  "Email": "string",
+	  "AvatarUrl": "string"
+	},
+	...
+  },
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "Type": "ChannelType" (Enum: [Public, Private]),
+  "LastMessage": "MessageResponse"
+	{
+	 "Id": "Guid",
+	 "ChannelId": "Guid",
+	 "Sender": "MemberSummary"
+	  {
+        ...
+	  },
+     "Body": "string",
+     "Created": "DateTimeOffset",
+     "Updated": "DateTimeOffset",
+     "Type": "MessageType" (Enum: [Default, Forward, System]),
+     "IsRead": "bool",
+     "ImageUrl": "string",
+     "ForwardedMessage": "ForwardMessageResponse"
+	  {
+	    "Id": "Guid",
+	    "Body": "string",
+	    "ChannelId": "Guid",
+	    "OwnerId": "Guid",
+	    "Channel": "ChannelSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Owner": "MemberSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Created": "DateTimeOffset"
+	  }
+	},
+  "PhotoUrl": "string"
+}
+```
+
 
 ## Update Channel (UpdateChannelAsync)
-#### Request:
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "ChannelId": "Guid",
+  "Name": "string",
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "PhotoUrl": "string"
+}
+```
+
+###### Response:
+
+```json 
+{
+  "Id": "Guid",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "UnreadMessagesCount": "int",
+  "Name": "string",
+  "IsClosed": "bool",
+  "IsMuted": "bool",
+  "IsPinned": "bool",
+  "Members": "Array[MemberSummaryResponse]"
+  {
+    [0]: 
 	{
-	 "ChannelId": "Guid",
-	 "Name": "string",
-	 "Topic": "string",
-	 "WelcomeMessage": "string",	
-	 "PhotoUrl": "string"
-	}
-#### Response:
+	  "Id": "Guid",
+	  "SaasUserId": "string",
+	  "UserName": "string",
+	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
+	  "Status": "UserStatus" (Enum: [Offline = 0, Online = 1]),
+	  "IsActive": "bool",
+	  "LastActivity": "DateTimeOffset",
+	  "Email": "string",
+	  "AvatarUrl": "string"
+	},
+	...
+  },
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "Type": "ChannelType" (Enum: [Public, Private]),
+  "LastMessage": "MessageResponse"
 	{
 	 "Id": "Guid",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "UnreadMessagesCount": "int",
-	 "Name": "string",
-	 "IsClosed": "bool",
-	 "IsMuted": "bool",
-	 "CreatorId": "Guid",
-	 "Creator": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId", "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	"CreatorSaasUserId": "string",
-	"Description": "string",
-	"WelcomeMessage": "string",
-	"Type": "ChannelType" (Enum: [Public, Private]),
-	"LastMessage": "MessageResponse"
-		{
-		 "Id": "Guid",
-		 "ChannelId": "Guid",
-		 "Sender": "MemberSummary"
-			 {
-			  "Id": "Guid",
-			  "SaasUserId", "string",
-			  "UserName": "string",
-			  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),	
-			  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-			  "IsAfk": "bool",
-			  "LastActivity": "DateTimeOffset",
-			  "Email": "string",
-			  "AvatarUrl": "string"
-			 },
-		 "Body": "string",
-		 "Created": "DateTimeOffset",
-		 "Updated": "DateTimeOffset",
-		 "Type": "MessageType" (Enum: [Default, Notification]),
-		 "IsRead": "bool",
-		 "ImageUrl": "string"
-		},
-	"PhotoUrl": "string"
-	}
+	 "ChannelId": "Guid",
+	 "Sender": "MemberSummary"
+	  {
+        ...
+	  },
+     "Body": "string",
+     "Created": "DateTimeOffset",
+     "Updated": "DateTimeOffset",
+     "Type": "MessageType" (Enum: [Default, Forward, System]),
+     "IsRead": "bool",
+     "ImageUrl": "string",
+     "ForwardedMessage": "ForwardMessageResponse"
+	  {
+	    "Id": "Guid",
+	    "Body": "string",
+	    "ChannelId": "Guid",
+	    "OwnerId": "Guid",
+	    "Channel": "ChannelSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Owner": "MemberSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Created": "DateTimeOffset"
+	  }
+	},
+  "PhotoUrl": "string"
+}
+```
 
 ## Close Channel (CloseChannelAsync)
-#### Request:
-	{
-	 "ChannelId": Guid
-	}
+###### Request:
+
+```json 
+{
+  "RequestId": "string",
+  "ChannelId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
+
 ## Leave Channel (LeaveChannelAsync)
-#### Request:
-	{
-	 "ChannelId": Guid
-	}
+###### Request:
+
+```json
+{
+  "RequestId": "string",
+  "ChannelId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
 
 ## Mute Channel (MuteChannelAsync)
-#### Request:
-	{
-	 "ChannelId": Guid
-	}
+###### Request:
+
+```json
+{
+  "RequestId": "string",
+  "IsMuted": "bool",
+  "ChannelId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
 	
 ## Pin Channel (PinChannelAsync)
-#### Request:
-	{
-	 "ChannelId": Guid,
-	 "SaasUserId": String 
-	}
-	
+###### Request:
+
+```json
+{
+  "ChannelId": Guid,
+  "IsPinned": "bool",
+  "ChannelId": "Guid"
+}
+```
+
+###### Response:
+
+```json 
+NODATA
+```
+
 # Hub Events
 
-## Channel Added (ChannelAdded)
-#### Response:
-##### Channel:
+## Channel Added (MemberJoined)
+###### Response:
+###### ChannelSummaryResponse:
+
+```json 
+{
+  "Id": "Guid",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "UnreadMessagesCount": "int",
+  "Name": "string",
+  "IsClosed": "bool",
+  "IsMuted": "bool",
+  "IsPinned": "bool",
+  "Members": "Array[MemberSummaryResponse]"
+  {
+    [0]: 
+	{
+	  "Id": "Guid",
+	  "SaasUserId": "string",
+	  "UserName": "string",
+	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
+	  "Status": "UserStatus" (Enum: [Offline = 0, Online = 1]),
+	  "IsActive": "bool",
+	  "LastActivity": "DateTimeOffset",
+	  "Email": "string",
+	  "AvatarUrl": "string"
+	},
+	...
+  },
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "Type": "ChannelType" (Enum: [Public, Private]),
+  "LastMessage": "MessageResponse"
 	{
 	 "Id": "Guid",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "UnreadMessagesCount": "int",
-	 "Name": "string",
-	 "IsClosed": "bool",
-	 "IsMuted": "bool",
-	 "CreatorId": "Guid",
-	 "Creator": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId", "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	"CreatorSaasUserId": "string",
-	"Description": "string",
-	"WelcomeMessage": "string",
-	"Type": "ChannelType" (Enum: [Public, Private]),
-	"LastMessage": "MessageResponse"
-		{
-		 "Id": "Guid",
-		 "ChannelId": "Guid",
-		 "Sender": "MemberSummary"
-			 {
-			  "Id": "Guid",
-			  "SaasUserId", "string",
-			  "UserName": "string",
-			  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),	
-			  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-			  "IsAfk": "bool",
-			  "LastActivity": "DateTimeOffset",
-			  "Email": "string",
-			  "AvatarUrl": "string"
-			 },
-		 "Body": "string",
-		 "Created": "DateTimeOffset",
-		 "Updated": "DateTimeOffset",
-		 "Type": "MessageType" (Enum: [Default, Notification]),
-		 "IsRead": "bool",
-		 "ImageUrl": "string"
-		},
-	"PhotoUrl": "string"
-	}
+	 "ChannelId": "Guid",
+	 "Sender": "MemberSummary"
+	  {
+        ...
+	  },
+     "Body": "string",
+     "Created": "DateTimeOffset",
+     "Updated": "DateTimeOffset",
+     "Type": "MessageType" (Enum: [Default, Forward, System]),
+     "IsRead": "bool",
+     "ImageUrl": "string",
+     "ForwardedMessage": "ForwardMessageResponse"
+	  {
+	    "Id": "Guid",
+	    "Body": "string",
+	    "ChannelId": "Guid",
+	    "OwnerId": "Guid",
+	    "Channel": "ChannelSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Owner": "MemberSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Created": "DateTimeOffset"
+	  }
+	},
+  "PhotoUrl": "string"
+}
+```
+
 ## Channel Updated (ChannelUpdated)
-#### Response:
-##### Channel:
+###### Response:
+###### ChannelSummaryResponse:
+
+```json 
+{
+  "Id": "Guid",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "UnreadMessagesCount": "int",
+  "Name": "string",
+  "IsClosed": "bool",
+  "IsMuted": "bool",
+  "IsPinned": "bool",
+  "Members": "Array[MemberSummaryResponse]"
+  {
+    [0]: 
+	{
+	  "Id": "Guid",
+	  "SaasUserId": "string",
+	  "UserName": "string",
+	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
+	  "Status": "UserStatus" (Enum: [Offline = 0, Online = 1]),
+	  "IsActive": "bool",
+	  "LastActivity": "DateTimeOffset",
+	  "Email": "string",
+	  "AvatarUrl": "string"
+	},
+	...
+  },
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "Type": "ChannelType" (Enum: [Public, Private]),
+  "LastMessage": "MessageResponse"
 	{
 	 "Id": "Guid",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "UnreadMessagesCount": "int",
-	 "Name": "string",
-	 "IsClosed": "bool",
-	 "IsMuted": "bool",
-	 "CreatorId": "Guid",
-	 "Creator": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId", "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	"CreatorSaasUserId": "string",
-	"Description": "string",
-	"WelcomeMessage": "string",
-	"Type": "ChannelType" (Enum: [Public, Private]),
-	"LastMessage": "MessageResponse"
-		{
-		 "Id": "Guid",
-		 "ChannelId": "Guid",
-		 "Sender": "MemberSummary"
-			 {
-			  "Id": "Guid",
-			  "SaasUserId", "string",
-			  "UserName": "string",
-			  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),	
-			  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-			  "IsAfk": "bool",
-			  "LastActivity": "DateTimeOffset",
-			  "Email": "string",
-			  "AvatarUrl": "string"
-			 },
-		 "Body": "string",
-		 "Created": "DateTimeOffset",
-		 "Updated": "DateTimeOffset",
-		 "Type": "MessageType" (Enum: [Default, Notification]),
-		 "IsRead": "bool",
-		 "ImageUrl": "string"
-		},
-	"PhotoUrl": "string"
-	}
+	 "ChannelId": "Guid",
+	 "Sender": "MemberSummary"
+	  {
+        ...
+	  },
+     "Body": "string",
+     "Created": "DateTimeOffset",
+     "Updated": "DateTimeOffset",
+     "Type": "MessageType" (Enum: [Default, Forward, System]),
+     "IsRead": "bool",
+     "ImageUrl": "string",
+     "ForwardedMessage": "ForwardMessageResponse"
+	  {
+	    "Id": "Guid",
+	    "Body": "string",
+	    "ChannelId": "Guid",
+	    "OwnerId": "Guid",
+	    "Channel": "ChannelSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Owner": "MemberSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Created": "DateTimeOffset"
+	  }
+	},
+  "PhotoUrl": "string"
+}
+```
+
 ## Channel Closed (ChannelClosed)
-#### Response:
-###### Channel:
-	{
-	 "Id": "Guid",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "UnreadMessagesCount": "int",
-	 "Name": "string",
-	 "IsClosed": "bool",
-	 "IsMuted": "bool",
-	 "CreatorId": "Guid",
-	 "Creator": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId", "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	"CreatorSaasUserId": "string",
-	"Description": "string",
-	"WelcomeMessage": "string",
-	"Type": "ChannelType" (Enum: [Public, Private]),
-	"LastMessage": "MessageResponse"
-		{
-		 "Id": "Guid",
-		 "ChannelId": "Guid",
-		 "Sender": "MemberSummary"
-			 {
-			  "Id": "Guid",
-			  "SaasUserId", "string",
-			  "UserName": "string",
-			  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),	
-			  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-			  "IsAfk": "bool",
-			  "LastActivity": "DateTimeOffset",
-			  "Email": "string",
-			  "AvatarUrl": "string"
-			 },
-		 "Body": "string",
-		 "Created": "DateTimeOffset",
-		 "Updated": "DateTimeOffset",
-		 "Type": "MessageType" (Enum: [Default, Notification]),
-		 "IsRead": "bool",
-		 "ImageUrl": "string"
-		},
-	"PhotoUrl": "string"
-	}
+###### Response:
+
+```json
+"ChannelId" : "Guid"
+```
 
 ## Member Joined (MemberJoined)
-#### Response:
-###### Channel:
+###### Response:
+###### ChannelSummaryResponse:
+	
+```json 
+{
+  "Id": "Guid",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "UnreadMessagesCount": "int",
+  "Name": "string",
+  "IsClosed": "bool",
+  "IsMuted": "bool",
+  "IsPinned": "bool",
+  "Members": "Array[MemberSummaryResponse]"
+  {
+    [0]: 
 	{
-	 "Id": "Guid",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "UnreadMessagesCount": "int",
-	 "Name": "string",
-	 "IsClosed": "bool",
-	 "IsMuted": "bool",
-	 "CreatorId": "Guid",
-	 "Creator": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId", "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	"CreatorSaasUserId": "string",
-	"Description": "string",
-	"WelcomeMessage": "string",
-	"Type": "ChannelType" (Enum: [Public, Private]),
-	"LastMessage": "MessageResponse"
-		{
-		 "Id": "Guid",
-		 "ChannelId": "Guid",
-		 "Sender": "MemberSummary"
-			 {
-			  "Id": "Guid",
-			  "SaasUserId", "string",
-			  "UserName": "string",
-			  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),	
-			  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-			  "IsAfk": "bool",
-			  "LastActivity": "DateTimeOffset",
-			  "Email": "string",
-			  "AvatarUrl": "string"
-			 },
-		 "Body": "string",
-		 "Created": "DateTimeOffset",
-		 "Updated": "DateTimeOffset",
-		 "Type": "MessageType" (Enum: [Default, Notification]),
-		 "IsRead": "bool",
-		 "ImageUrl": "string"
-		},
-	"PhotoUrl": "string"
-	}
-###### Member:
-	 {
 	  "Id": "Guid",
 	  "SaasUserId": "string",
 	  "UserName": "string",
 	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-	  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-	  "IsAfk": "bool",
+	  "Status": "UserStatus" (Enum: [Offline = 0, Online = 1]),
+	  "IsActive": "bool",
 	  "LastActivity": "DateTimeOffset",
 	  "Email": "string",
 	  "AvatarUrl": "string"
-	 }
+	},
+	...
+  },
+  "Description": "string",
+  "WelcomeMessage": "string",
+  "Type": "ChannelType" (Enum: [Public, Private]),
+  "LastMessage": "MessageResponse"
+	{
+	 "Id": "Guid",
+	 "ChannelId": "Guid",
+	 "Sender": "MemberSummary"
+	  {
+        ...
+	  },
+     "Body": "string",
+     "Created": "DateTimeOffset",
+     "Updated": "DateTimeOffset",
+     "Type": "MessageType" (Enum: [Default, Forward, System]),
+     "IsRead": "bool",
+     "ImageUrl": "string",
+     "ForwardedMessage": "ForwardMessageResponse"
+	  {
+	    "Id": "Guid",
+	    "Body": "string",
+	    "ChannelId": "Guid",
+	    "OwnerId": "Guid",
+	    "Channel": "ChannelSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Owner": "MemberSummaryResponse"
+	     {
+	       ...
+	     },
+	    "Created": "DateTimeOffset"
+	  }
+	},
+  "PhotoUrl": "string"
+}
+```
 
 ## Member Left (MemberLeft)
-#### Response:
-###### Member:
-	 {
-	  "Id": "Guid",
-	  "SaasUserId": "string",
-	  "UserName": "string",
-	  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-	  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-	  "IsAfk": "bool",
-	  "LastActivity": "DateTimeOffset",
-	  "Email": "string",
-	  "AvatarUrl": "string"
-	 }
-###### Channel_Id:
-	{
-	 "Id": "Guid",
-	}
+###### Response:
+
+```json
+"ChannelId" : "Guid"
+```
+
 ## Message Added (MessageAdded)
-#### Response:
-###### Message:
-	{
-	 "Id": "Guid",
-	 "ChannelId": "Guid",
-	 "Sender": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId": "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	 "Body": "string",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "Type": "MessageType" (Enum: [Default, Notification]),
-	 "IsRead": "bool",
-	 "ImageUrl": "string"
-	}
+###### Response:
+###### MessageResponse:
+
+```json
+{
+  "Id": "Guid",
+  "ChannelId": "Guid",
+  "Sender": "MemberSummary"
+   {
+	 ...
+   },
+  "Body": "string",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "Type": "MessageType" (Enum: [Default, Forward, System]),
+  "IsRead": "bool",
+  "ImageUrl": "string",
+  "ForwardedMessage": "ForwardMessageResponse"
+  {
+	"Id": "Guid",
+	"Body": "string",
+	"ChannelId": "Guid",
+	"OwnerId": "Guid",
+	"Channel": "ChannelSummaryResponse"
+	 {
+	   ...
+	 },
+	"Owner": "MemberSummaryResponse"
+	 {
+	   ...
+	 },
+	"Created": "DateTimeOffset"
+  }
+}
+```
 
 ## Message Deleted (MessageDeleted)
-#### Response:
-###### Message_Id
-	{
-	 "Id": "Guid",
-	}
-###### Channel:
-	{
-	 "Id": "Guid",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "UnreadMessagesCount": "int",
-	 "Name": "string",
-	 "IsClosed": "bool",
-	 "IsMuted": "bool",
-	 "CreatorId": "Guid",
-	 "Creator": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId", "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	"CreatorSaasUserId": "string",
-	"Description": "string",
-	"WelcomeMessage": "string",
-	"Type": "ChannelType" (Enum: [Public, Private]),
-	"LastMessage": "MessageResponse"
-		{
-		 "Id": "Guid",
-		 "ChannelId": "Guid",
-		 "Sender": "MemberSummary"
-			 {
-			  "Id": "Guid",
-			  "SaasUserId", "string",
-			  "UserName": "string",
-			  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),	
-			  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-			  "IsAfk": "bool",
-			  "LastActivity": "DateTimeOffset",
-			  "Email": "string",
-			  "AvatarUrl": "string"
-			 },
-		 "Body": "string",
-		 "Created": "DateTimeOffset",
-		 "Updated": "DateTimeOffset",
-		 "Type": "MessageType" (Enum: [Default, Notification]),
-		 "IsRead": "bool",
-		 "ImageUrl": "string"
-		},
-	"PhotoUrl": "string"
-	}
-	
-## Message Updated (MessageUpdated)
-#### Response:
-###### Message:
-	{
-	 "Id": "Guid",
-	 "ChannelId": "Guid",
-	 "Sender": "MemberSummary"
-		 {
-		  "Id": "Guid",
-		  "SaasUserId": "string",
-		  "UserName": "string",
-		  "Role": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "Status": "UserRole" (Enum: [User = 0, Admin = 1]),
-		  "IsAfk": "bool",
-		  "LastActivity": "DateTimeOffset",
-		  "Email": "string",
-		  "AvatarUrl": "string"
-		 },
-	 "Body": "string",
-	 "Created": "DateTimeOffset",
-	 "Updated": "DateTimeOffset",
-	 "Type": "MessageType" (Enum: [Default, Notification]),
-	 "IsRead": "bool",
-	 "ImageUrl": "string"
-	}
+###### Response:
 
-## Attachment Added (AttachmentAdded)
-#### Response:
-###### Channel_Name
-	{
-	 "Name": "string"
-	}
-## Attachment Deleted (AttachmentDeleted)
-#### Response:
-###### Channel_Name
-	{
-	 "Name": "string"
-	}
+```json
+"MessageId" : "Guid"
+```
+
+```json
+"ChannelId" : "Guid"
+```
+
+## Message Updated (MessageUpdated)
+###### Response:
+###### MessageResponse:
+
+```json
+{
+  "Id": "Guid",
+  "ChannelId": "Guid",
+  "Sender": "MemberSummary"
+   {
+	 ...
+   },
+  "Body": "string",
+  "Created": "DateTimeOffset",
+  "Updated": "DateTimeOffset",
+  "Type": "MessageType" (Enum: [Default, Forward, System]),
+  "IsRead": "bool",
+  "ImageUrl": "string",
+  "ForwardedMessage": "ForwardMessageResponse"
+  {
+	"Id": "Guid",
+	"Body": "string",
+	"ChannelId": "Guid",
+	"OwnerId": "Guid",
+	"Channel": "ChannelSummaryResponse"
+	 {
+	   ...
+	 },
+	"Owner": "MemberSummaryResponse"
+	 {
+	   ...
+	 },
+	"Created": "DateTimeOffset"
+  }
+}
+```
+
 ## Last Read Message Changed (LastReadMessageChanged)
-#### Response:
-###### Channel_Name
-	{
-	 "Name": "string"
-	}
+###### Response:
+
+```json
+"ChannelId" : "Guid"
+```
+
+## Add Message Attachment (AttachmentAdded)
+###### Response:
+
+```json
+"ChannelId" : "Guid"
+```
+
+## Delete Message Attachment (AttachmentDeleted)
+###### Response:
+
+```json
+"ChannelId" : "Guid"
+```
 
 ## Request Success (RequestSuccess)
-#### Response:
-###### Request_Id:
-	{
-         "RequestId": "string"
-	}
+###### Response:
+
+```json
+"RequestId": "string"
+```
+
 ## Exception Occurred (ExceptionOccurred)
-#### Response:
-###### Request_Id:
-	{
-         "RequestId": "string"
-	}
+###### Response:
+
+```json
+"RequestId": "string"
+```
+
 ## Access Token Expired (AccessTokenExpired)
-#### Response:
-###### Request_Id:
-	{
-         "RequestId": "string"
-	}
+###### Response:
+
+```json
+"RequestId": "string"
+```
 	
