@@ -9,7 +9,7 @@
     <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="Ensure.That" Version="8.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
-    <PackageReference Include="Softeq.NetKit.Chat.SignalRClient" Version="1.0.5-alpha2" />
+    <PackageReference Include="Softeq.NetKit.Chat.SignalRClient" Version="1.0.5-alpha3" />
   </ItemGroup>
 
   <ItemGroup>

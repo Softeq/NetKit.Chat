@@ -111,7 +111,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             return await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channelId);
         }
 
-        public async Task<IReadOnlyCollection<string>> GetChannelMemberClientConnectionIdsAsync(Guid channelId, Guid mermberId)
+        public async Task<IReadOnlyCollection<string>> GetChannelMemberClientConnectionIdsAsync(Guid channelId, Guid memberId)
         {
             return await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channelId);
         }

@@ -16,6 +16,7 @@ namespace Softeq.NetKit.Chat.SignalR.TransportModels.Validators.Message
             RuleFor(x => x.Request.ChannelId).NotEmpty();
             RuleFor(x => x.Request.Body).NotNull().NotEmpty().When(x => string.IsNullOrEmpty(x.Request.ImageUrl));
             RuleFor(x => x.Request.ForwardedMessageId).NotEmpty().When(x => x.Request.Type == MessageType.Forward);
+            RuleFor(x => x.Request.Type).Must(x =>x != MessageType.System);
         }
     }
 }

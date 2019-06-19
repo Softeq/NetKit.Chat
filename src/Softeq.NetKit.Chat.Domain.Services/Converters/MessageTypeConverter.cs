@@ -16,6 +16,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Converters
                     return MessageType.Default;
                 case Chat.TransportModels.Enums.MessageType.Forward:
                     return MessageType.Forward;
+                case Chat.TransportModels.Enums.MessageType.System:
+                    return MessageType.System;
                 default: throw new ArgumentOutOfRangeException($"Message type {messageType} not found");
             }
         }
