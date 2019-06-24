@@ -143,15 +143,9 @@ namespace Softeq.NetKit.Chat.Web.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(PagedMembersResponse), StatusCodes.Status200OK)]
         [Route("{channelId:guid}/invite/user")]
-        public async Task<IActionResult> GetPotentialChannelMembersAsync([FromBody] GetPotentialChannelMembersRequest request)
+        public async Task<IActionResult> GetPotentialChannelMembersAsync([FromRoute] Guid channelId, [FromBody] GetPotentialChannelMembersRequest request)
         {
-            var result = await _memberService.GetPotentialChannelMembersAsync(request.ChannelId, new GetPotentialChannelMembersRequest
-            {
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                NameFilter = request.NameFilter
-            });
-
+            var result = await _memberService.GetPotentialChannelMembersAsync(channelId, request);
             return Ok(result);
         }
 

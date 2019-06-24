@@ -113,7 +113,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
         public async Task<IReadOnlyCollection<string>> GetChannelMemberClientConnectionIdsAsync(Guid channelId, Guid memberId)
         {
-            return await UnitOfWork.ClientRepository.GetChannelClientConnectionIdsAsync(channelId);
+            return await UnitOfWork.ClientRepository.GetChannelMemberClientConnectionIdsAsync(channelId, memberId);
         }
     }
 }

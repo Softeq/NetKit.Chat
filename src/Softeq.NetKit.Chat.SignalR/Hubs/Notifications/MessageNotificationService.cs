@@ -43,7 +43,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(message.ChannelId);
 
-            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageDeleted, message.Id);
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.MessageDeleted, message.Id, message.ChannelId);
         }
 
         public async Task OnUpdateMessage(MessageResponse message)

@@ -81,10 +81,13 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                     await _pushNotificationService.SubscribeUserOnTagAsync(chatMember.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
 
                     // SignalR personalized notification
-                    var personalizedChannelSummary = await _channelService.GetChannelSummaryAsync(member.SaasUserId, channel.Id);
-                    await _channelNotificationService.OnJoinChannel(personalizedChannelSummary, chatMember.Id);
+                    var personalizedChannelSummary = await _channelService.GetChannelSummaryAsync(chatMember.SaasUserId, channel.Id);
+
+                    await _channelNotificationService.OnJoinChannelPersonalized(personalizedChannelSummary, chatMember.Id);
                 }
             }
+
+            await _channelNotificationService.OnJoinChannelPersonalized(channel, member.Id, request.CurrentConnectionId);
 
             return channel;
         }
@@ -101,7 +104,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             // SignalR personalized notification
             var personalizedChannelSummary = await _channelService.GetChannelSummaryAsync(member.SaasUserId, channel.Id);
-            await _channelNotificationService.OnJoinChannel(personalizedChannelSummary, member.Id);
+            await _channelNotificationService.OnJoinChannelPersonalized(personalizedChannelSummary, member.Id);
             
             return channel;
         }
@@ -156,8 +159,10 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
                 await _pushNotificationService.SubscribeUserOnTagAsync(invitedMember.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(channel.Id.ToString()));
             }
 
-            await _channelNotificationService.OnJoinChannel(channel);
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberJoinedLocalizationVisitor(invitedMember), RecipientType.AllExceptCallerConnectionId);
+            var personalizedChannelSummary = await _channelService.GetChannelSummaryAsync(invitedMember.SaasUserId, channel.Id);
+            await _channelNotificationService.OnJoinChannelPersonalized(personalizedChannelSummary, invitedMember.Id);
+
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberJoinedLocalizationVisitor(invitedMember), RecipientType.AllExceptCallerConnectionId, _systemMessagesConfiguration.MemberJoined, invitedMember.UserName);
 
             return inviteMemberResponse;
         }
@@ -185,7 +190,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelNotificationService.OnLeaveChannel(member, request.ChannelId);
 
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, (ILocalizationVisitor<MessageResponse>) new MemberLeftLocalizationVisitor(member), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberLeft, member.UserName);
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberLeftLocalizationVisitor(member), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberLeft, member.UserName);
         }
 
         public async Task DeleteMemberFromChannelAsync(DeleteMemberRequest request)
@@ -194,7 +199,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _channelService.DeleteMemberFromChannelAsync(request.SaasUserId, request.ChannelId, memberToDelete.Id);
             await _pushNotificationService.UnsubscribeUserFromTagAsync(memberToDelete.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
-            await _channelNotificationService.OnDeletedFromChannel(memberToDelete, request.ChannelId);
+            await _channelNotificationService.OnLeaveChannel(memberToDelete, request.ChannelId);
 
             await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberDeletedLocalizationVisitor(memberToDelete), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberDeleted, memberToDelete.UserName);
         }

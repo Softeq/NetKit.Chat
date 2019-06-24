@@ -109,15 +109,11 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             {
                 await UnitOfWork.ChannelRepository.AddChannelAsync(newChannel);
 
-                var tasks = new HashSet<Task>();
-
                 foreach (var channelMember in channelMembers)
                 {
-                    tasks.Add(UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember));
-                    tasks.Add(UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(newChannel.Id));
+                    await UnitOfWork.ChannelMemberRepository.AddChannelMemberAsync(channelMember);
+                    await UnitOfWork.ChannelRepository.IncrementChannelMembersCountAsync(newChannel.Id);
                 }
-
-                await Task.WhenAll(tasks);
             });
 
             var channel = await UnitOfWork.ChannelRepository.GetChannelWithCreatorAsync(newChannel.Id);
@@ -149,7 +145,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
                 var channelMemberAggregate = await UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(exitingChannelId, creator.Id);
 
-                var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate, existingDirectChannel);
+                var channelSummaryResponse = DomainModelsMapper.MapToDirectChannelSummaryResponse(channelMemberAggregate, existingDirectChannel, member);
 
                 return channelSummaryResponse;
             }
@@ -255,7 +251,22 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var channelMemberAggregate = await UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(channel.Id, member.Id);
 
-            return DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate, channel);
+            var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate, channel);
+
+            if (channel.Type == ChannelType.Direct)
+            {
+                var channelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(channelId);
+
+                if (channelMembers.Any(x => x.MemberId != member.Id))
+                {
+                    var directMemberSummary = DomainModelsMapper.MapToMemberSummaryResponse(channelMembers.First(x => x.MemberId != member.Id).Member);
+                    directMemberSummary.Role = channelMembers.First(x => x.MemberId != member.Id).Role;
+
+                    channelSummaryResponse.Members.Add(directMemberSummary);
+                }
+            }
+
+            return channelSummaryResponse;
         }
 
         public async Task<ChannelResponse> GetChannelByIdAsync(Guid channelId)
@@ -318,6 +329,15 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 {
                     var channelMemberAggregate = UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(allowedChannel.Id, currentUser.Id);
                     var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate.Result, allowedChannel);
+
+                    if (channelSummaryResponse.Type == Chat.TransportModels.Enums.ChannelType.Direct)
+                    {
+                        var channelMembers = UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(allowedChannel.Id);
+                        var directMemberSummary = DomainModelsMapper.MapToMemberSummaryResponse(channelMembers.Result.First(x => x.MemberId != currentUser.Id).Member);
+
+                        channelSummaryResponse.Members.Add(directMemberSummary);
+                    }
+
                     channelSummaryResponses.Add(channelSummaryResponse);
                 });
 

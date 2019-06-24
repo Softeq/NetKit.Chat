@@ -79,7 +79,7 @@ You can find all NetKit.Chat WebSockets events in the [Wiki](https://github.com/
 
 To ensure transparency of interaction between NetKit.Chat and other clients like [XToolkit.Chat](https://github.com/Softeq/XToolkit.Chat) the common transport models was handed out into separate package named [NetKit.Chat.TransportModels](https://github.com/Softeq/NetKit.Chat.TransportModels). This package contains all transport models for both protocols WebSockets and HTTP. 
 
-In turn, the client which directly interacts with backend has been allocated in a separate package [NetKit.Chat.SignalRClient](https://github.com/Softeq/NetKit.Chat.SignalRClient). 
+In turn, the client which directly interacts with backend has been allocated in the separate package [NetKit.Chat.SignalRClient](https://github.com/Softeq/NetKit.Chat.SignalRClient). 
 
 The following table reflects how different activities supports by different protocols:
 
@@ -123,7 +123,7 @@ Product is fully covered of unit tests written with ```xUnit``` and ```FluentAss
 
 NetKit.Chat project uses Microsoft Azure Cloud hosting platform. 
 
-To ensure the full operation of the application, you must configure the following Microsoft Azure services and extract from there settings for the subsequent configuration of the application:
+To ensure the full operation of the application, you must configure the following Microsoft Azure services and extract settings from them for the further configuration of the application:
 
 - Azure SQL Database and SQL Server
 - Azure Blob Storage
@@ -186,7 +186,7 @@ The following code fragment contains NetKit.Chat ```appsettings.json``` template
 
 ## Comprehensive examples
 
-NetKit.Chat has a comprehensive [Console client](https://github.com/Softeq/NetKit.Chat.ConsoleClient) project which contains all WebSockets calls to Chat Backend.
+NetKit.Chat has a comprehensive [Console client](https://github.com/Softeq/NetKit.Chat.ConsoleClient) project which contains all WebSockets calls to Chat Backend using [NetKit.Chat.SignalRClient](https://github.com/Softeq/NetKit.Chat.SignalRClient) package.
 
 ## About
 

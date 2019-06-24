@@ -71,7 +71,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         me.{nameof(Member.IsActive)}
                     FROM 
                         Messages m
-                    INNER JOIN Members me 
+                    LEFT JOIN Members me 
                         ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
                     WHERE 
                         m.{nameof(Message.ChannelId)} = @{nameof(channelId)}
@@ -83,8 +83,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            message.OwnerId = member.Id;
-                            message.Owner = member;
+                            // if not system message
+                            if (member != null)
+                            {
+                                message.OwnerId = member.Id;
+                                message.Owner = member;
+                            }
+
                             message.AccessibilityStatus = AccessibilityStatus.Present;
                             return message;
                         },
@@ -145,7 +150,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.IsActive)}
                     FROM 
                         Messages ms
-                    INNER JOIN Members m 
+                    LEFT JOIN Members m 
                         ON ms.{nameof(Message.OwnerId)} = m.{nameof(Member.Id)}
                     WHERE 
                         {nameof(Message.ChannelId)} = @{nameof(channelId)} 
@@ -159,8 +164,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            message.OwnerId = member.Id;
-                            message.Owner = member;
+                            // if not system message
+                            if (member != null)
+                            {
+                                message.OwnerId = member.Id;
+                                message.Owner = member;
+                            }
+
                             message.AccessibilityStatus = AccessibilityStatus.Present;
                             return message;
                         },
@@ -201,7 +211,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Member.IsActive)}
                     FROM 
                         Messages ms
-                    INNER JOIN Members m 
+                    LEFT JOIN Members m 
                         ON ms.{nameof(Message.OwnerId)} = m.{nameof(Member.Id)}
                     WHERE
                         {nameof(Message.Created)} >= @{nameof(lastReadMessageCreated)}
@@ -214,8 +224,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            message.OwnerId = member.Id;
-                            message.Owner = member;
+                            // if not system message
+                            if (member != null)
+                            {
+                                message.OwnerId = member.Id;
+                                message.Owner = member;
+                            }
+
                             return message;
                         },
                         new { channelId, lastReadMessageCreated, pageSize, AccessibilityStatus = AccessibilityStatus.Present }))
@@ -270,7 +285,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             me.{nameof(Member.Status)}
                         FROM 
                             Messages m  
-                        INNER JOIN Members me 
+                        LEFT JOIN Members me 
                             ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
                         WHERE 
                             {nameof(Message.Created)} <= @{nameof(lastReadMessageCreated)}
@@ -320,7 +335,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                             me.{nameof(Member.SaasUserId)}, 
                             me.{nameof(Member.Status)}
                         FROM Messages m  
-                        INNER JOIN Members me 
+                        LEFT JOIN Members me 
                             ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
                         WHERE 
                             {nameof(Message.Created)} > @{nameof(lastReadMessageCreated)}
@@ -334,8 +349,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            message.OwnerId = member.Id;
-                            message.Owner = member;
+                            // if not system message
+                            if (member != null)
+                            {
+                                message.OwnerId = member.Id;
+                                message.Owner = member;
+                            }
+
                             return message;
                         },
                         new
@@ -384,7 +404,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         ForwardMessages.{nameof(ForwardMessage.OwnerId)}
                     FROM 
                         Messages 
-                    INNER JOIN Members 
+                    LEFT JOIN Members 
                         ON Messages.{nameof(Message.OwnerId)} = Members.{nameof(Member.Id)}
                     LEFT JOIN ForwardMessages 
                         ON Messages.{nameof(Message.ForwardMessageId)} = ForwardMessages.{nameof(ForwardMessage.Id)}
@@ -401,8 +421,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                 message.ForwardMessageId = forwardMessage.Id;
                                 message.ForwardedMessage = forwardMessage;
                             }
-                            message.Owner = member;
-                            message.OwnerId = member.Id;
+
+                            // if not system message
+                            if (member != null)
+                            {
+                                message.OwnerId = member.Id;
+                                message.Owner = member;
+                            }
                             return message;
                         },
                         new { messageId, AccessibilityStatus = AccessibilityStatus.Present }))
@@ -451,8 +476,13 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (msg, member) =>
                         {
-                            msg.Owner = member;
-                            msg.OwnerId = member.Id;
+                            // if not system message
+                            if (member != null)
+                            {
+                                msg.OwnerId = member.Id;
+                                msg.Owner = member;
+                            }
+
                             return msg;
                         },
                         new { channelId, created, AccessibilityStatus = AccessibilityStatus.Present }))
