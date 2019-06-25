@@ -131,7 +131,13 @@ To ensure the full operation of the application, you must configure the followin
 - Azure Application Insights
 - Azure Web App Service
 
+Azure services interaction scheme:
+
 ![Azure services architecture](img/azure.png)
+
+The following diagram demonstrates current solution architecture:
+
+![Solution architecture](img/architecture.png)
 
 The following code fragment contains NetKit.Chat ```appsettings.json``` template configuration file:
 
