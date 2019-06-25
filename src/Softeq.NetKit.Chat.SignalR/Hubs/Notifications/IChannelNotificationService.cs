@@ -10,6 +10,7 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
 {
     public interface IChannelNotificationService
     {
+        Task OnUpdateChannelPersonalized(ChannelSummaryResponse channel, Guid memberId, string currentConnectionId = "");
         Task OnJoinChannelPersonalized(ChannelSummaryResponse channel, Guid memberId, string currentConnectionId = "");
         Task OnJoinChannel(ChannelSummaryResponse channel, Guid memberId);
         Task OnLeaveChannel(MemberSummaryResponse member, Guid channelId);

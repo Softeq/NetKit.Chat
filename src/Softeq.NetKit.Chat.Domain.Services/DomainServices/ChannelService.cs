@@ -328,7 +328,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
                 var task = Task.Run(() =>
                 {
                     var channelMemberAggregate = UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(allowedChannel.Id, currentUser.Id);
+
                     var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate.Result, allowedChannel);
+
+                    if (allowedChannel.Messages.Any())
+                    {
+                        channelSummaryResponse.LastMessage = DomainModelsMapper.MapToMessageResponse(allowedChannel.Messages.First());
+                    }
 
                     if (channelSummaryResponse.Type == Chat.TransportModels.Enums.ChannelType.Direct)
                     {

@@ -28,6 +28,16 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
             await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelUpdated, channel);
         }
 
+        public async Task OnUpdateChannelPersonalized(ChannelSummaryResponse channel, Guid memberId, string currentConnectionId = "")
+        {
+            var clientIds = await GetChannelMemberClientConnectionIdsAsync(channel.Id, memberId);
+
+            clientIds = clientIds.Except(new List<string> { currentConnectionId }).ToList();
+
+            // Tell the people in this room that you've joined
+            await HubContext.Clients.Clients(clientIds).SendAsync(HubEvents.ChannelUpdated, channel);
+        }
+
         public async Task OnCloseChannel(Guid channelId)
         {
             var clientIds = await GetChannelClientConnectionIdsAsync(channelId);

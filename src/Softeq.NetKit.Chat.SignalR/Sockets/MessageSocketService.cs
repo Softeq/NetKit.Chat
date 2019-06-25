@@ -101,7 +101,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             {
                 // SignalR personalized notification
                 var channelSummary = await _channelService.GetChannelSummaryAsync(channelMember.SaasUserId, message.ChannelId);
-                await _channelNotificationService.OnUpdateChannel(channelSummary);
+                await _channelNotificationService.OnUpdateChannelPersonalized(channelSummary, channelMember.Id);
             }
         }
 
