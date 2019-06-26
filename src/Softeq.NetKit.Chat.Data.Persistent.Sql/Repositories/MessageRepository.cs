@@ -100,6 +100,63 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
             }
         }
 
+        public async Task<Message> GetChannelLastMessageWithOwnerAsync(Guid channelId)
+        {
+            using (var connection = _sqlConnectionFactory.CreateConnection())
+            {
+                var sqlQuery = $@"
+                    SELECT TOP(1)
+                        m.{nameof(Message.Id)},
+                        m.{nameof(Message.Body)},
+                        m.{nameof(Message.Created)},
+                        m.{nameof(Message.ImageUrl)},
+                        m.{nameof(Message.Type)},
+                        m.{nameof(Message.ChannelId)},
+                        m.{nameof(Message.OwnerId)},
+                        m.{nameof(Message.Updated)},
+                        m.{nameof(Message.ForwardMessageId)},
+                        m.{nameof(Message.AccessibilityStatus)},
+                        me.{nameof(Member.Id)},
+                        me.{nameof(Member.Email)}, 
+                        me.{nameof(Member.IsBanned)},
+                        me.{nameof(Member.LastActivity)},
+                        me.{nameof(Member.LastNudged)},
+                        me.{nameof(Member.Name)},
+                        me.{nameof(Member.PhotoName)},
+                        me.{nameof(Member.SaasUserId)},
+                        me.{nameof(Member.Status)},
+                        me.{nameof(Member.IsActive)}
+                    FROM 
+                        Messages m
+                    LEFT JOIN Members me 
+                        ON m.{nameof(Message.OwnerId)} = me.{nameof(Member.Id)}
+                    WHERE 
+                        m.{nameof(Message.ChannelId)} = @{nameof(channelId)}
+                        AND m.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)}
+                    ORDER BY 
+                        m.{nameof(Message.Created)} DESC";
+
+                return (await connection.QueryAsync<Message, Member, Message>(
+                        sqlQuery,
+                        (message, member) =>
+                        {
+                            // if not system message
+                            if (member != null)
+                            {
+                                message.OwnerId = member.Id;
+                                message.Owner = member;
+                            }
+
+                            message.AccessibilityStatus = AccessibilityStatus.Present;
+                            return message;
+                        },
+                        new { channelId, AccessibilityStatus = AccessibilityStatus.Present }))
+                    .Distinct()
+                    .ToList()
+                    .FirstOrDefault();
+            }
+        }
+
         public async Task<IReadOnlyList<Guid>> FindMessageIdsAsync(Guid channelId, string searchText)
         {
             using (var connection = _sqlConnectionFactory.CreateConnection())

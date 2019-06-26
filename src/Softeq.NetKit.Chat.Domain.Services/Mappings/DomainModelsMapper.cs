@@ -90,6 +90,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
                     if (channelMember != null)
                     {
+                        response = _mapper.Map(channelMember, response);
+
                         creator.Role = channelMember.Role;
                         response.Members.Add(creator);
                     }

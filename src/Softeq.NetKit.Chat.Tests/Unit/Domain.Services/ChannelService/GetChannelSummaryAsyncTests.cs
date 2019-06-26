@@ -82,6 +82,8 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                 .ReturnsAsync(member)
                 .Verifiable();
 
+            var lastMessage = new Message();
+
             var channelMemberAggregate = new ChannelMemberAggregate
             {
                 ChannelMember = new ChannelMember
@@ -93,6 +95,11 @@ namespace Softeq.NetKit.Chat.Tests.Unit.Domain.Services.ChannelService
                     It.Is<Guid>(channelId => channelId.Equals(allowedChannel.Id)),
                     It.Is<Guid>(memberId => memberId.Equals(member.Id))))
                 .ReturnsAsync(channelMemberAggregate)
+                .Verifiable();
+
+            _messageRepositoryMock.Setup(x => x.GetChannelLastMessageWithOwnerAsync(
+                    It.Is<Guid>(channelId => channelId.Equals(allowedChannel.Id))))
+                .ReturnsAsync(lastMessage)
                 .Verifiable();
 
             var channelSummaryResponse = new ChannelSummaryResponse();

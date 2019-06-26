@@ -251,6 +251,10 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
 
             var channelMemberAggregate = await UnitOfWork.ChannelMemberRepository.GetChannelMemberWithLastReadMessageAndCounterAsync(channel.Id, member.Id);
 
+            var message = await UnitOfWork.MessageRepository.GetChannelLastMessageWithOwnerAsync(channelId);
+
+            channelMemberAggregate.Message = message;
+
             var channelSummaryResponse = DomainModelsMapper.MapToChannelSummaryResponse(channelMemberAggregate, channel);
 
             if (channel.Type == ChannelType.Direct)

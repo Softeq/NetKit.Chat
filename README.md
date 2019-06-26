@@ -2,7 +2,7 @@
 
 # NetKit.Chat
 
-NetKit.Chat is open source product which used to communicate people in real time. Chat provide you ability to send group and direct messages including images, manage groups and receive push notifications.
+NetKit.Chat is open source product which used to add communication feature into your solution. Chat provides you ability to send group and direct messages including images, manage groups and receive push notifications.
 This project uses ASP.NET Core 2.2 version.
 
 ## Features
@@ -15,12 +15,11 @@ This project uses ASP.NET Core 2.2 version.
    - Leave channel
    - Pin/unpin channel in list
    - Mute/unmute channel
-   - Last read message
  - Messages
    - Add/Edit/Delete
    - Add message attachements
    - Search messages
-   - Paginate messages
+   - Get messages with pagination
  - Members
    - Activate user
    - Search members
@@ -77,9 +76,9 @@ In the following document you can find actual [WebSockets documentation](ChatHub
 
 You can find all NetKit.Chat WebSockets events in the [Wiki](https://github.com/Softeq/NetKit.Chat.SignalRClient/wiki/Chat-events) document.
 
-To ensure transparency of interaction between NetKit.Chat and other clients like [XToolkit.Chat](https://github.com/Softeq/XToolkit.Chat) the common transport models was handed out into separate package named [NetKit.Chat.TransportModels](https://github.com/Softeq/NetKit.Chat.TransportModels). This package contains all transport models for both protocols WebSockets and HTTP. 
+To ensure transparency of interaction between NetKit.Chat and other clients like [XToolkit.Chat](https://github.com/Softeq/XToolkit.Chat) the common transport models are placed into separate package named [NetKit.Chat.TransportModels](https://github.com/Softeq/NetKit.Chat.TransportModels). This package contains all transport models for both protocols WebSockets and HTTP. 
 
-In turn, the client which directly interacts with backend has been allocated in the separate package [NetKit.Chat.SignalRClient](https://github.com/Softeq/NetKit.Chat.SignalRClient). 
+In turn, the client which directly interacts with backend is placed in the separate package [NetKit.Chat.SignalRClient](https://github.com/Softeq/NetKit.Chat.SignalRClient). 
 
 The following table reflects how different activities supports by different protocols:
 
