@@ -834,11 +834,4 @@ NODATA
 ```json
 "RequestId": "string"
 ```
-
-## Access Token Expired (AccessTokenExpired)
-###### Response:
-
-```json
-"RequestId": "string"
-```
 	

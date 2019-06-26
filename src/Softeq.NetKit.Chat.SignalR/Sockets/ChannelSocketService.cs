@@ -162,7 +162,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             var personalizedChannelSummary = await _channelService.GetChannelSummaryAsync(invitedMember.SaasUserId, channel.Id);
             await _channelNotificationService.OnJoinChannelPersonalized(personalizedChannelSummary, invitedMember.Id);
 
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberJoinedLocalizationVisitor(invitedMember), RecipientType.AllExceptCallerConnectionId, _systemMessagesConfiguration.MemberJoined, invitedMember.UserName);
+            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberJoinedLocalizationVisitor(invitedMember), RecipientType.AllChannelConnections, _systemMessagesConfiguration.MemberJoined, invitedMember.UserName);
 
             return inviteMemberResponse;
         }
