@@ -115,7 +115,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
         public ChannelSummaryResponse MapToDirectChannelSummaryResponse(ChannelMemberAggregate channelMemberAggregate, Channel channel, Member directMember)
         {
             var response = new ChannelSummaryResponse();
-
             if (channel != null)
             {
                 response = _mapper.Map(channel, response);

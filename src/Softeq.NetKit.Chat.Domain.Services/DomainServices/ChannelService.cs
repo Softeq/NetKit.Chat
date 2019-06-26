@@ -258,7 +258,6 @@ namespace Softeq.NetKit.Chat.Domain.Services.DomainServices
             if (channel.Type == ChannelType.Direct)
             {
                 var channelMembers = await UnitOfWork.ChannelMemberRepository.GetChannelMembersWithMemberDetailsAsync(channelId);
-
                 if (channelMembers.Any(x => x.MemberId != member.Id))
                 {
                     var directMemberSummary = DomainModelsMapper.MapToMemberSummaryResponse(channelMembers.First(x => x.MemberId != member.Id).Member);
