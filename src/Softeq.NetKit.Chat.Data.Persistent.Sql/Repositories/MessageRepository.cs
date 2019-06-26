@@ -83,12 +83,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            // if not system message
-                            if (member != null)
-                            {
-                                message.OwnerId = member.Id;
-                                message.Owner = member;
-                            }
+                            message.OwnerId = member?.Id;
+                            message.Owner = member;
 
                             message.AccessibilityStatus = AccessibilityStatus.Present;
                             return message;
@@ -140,12 +136,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            // if not system message
-                            if (member != null)
-                            {
-                                message.OwnerId = member.Id;
-                                message.Owner = member;
-                            }
+                            message.OwnerId = member?.Id;
+                            message.Owner = member;
 
                             message.AccessibilityStatus = AccessibilityStatus.Present;
                             return message;
@@ -221,12 +213,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            // if not system message
-                            if (member != null)
-                            {
-                                message.OwnerId = member.Id;
-                                message.Owner = member;
-                            }
+                            message.OwnerId = member?.Id;
+                            message.Owner = member;
 
                             message.AccessibilityStatus = AccessibilityStatus.Present;
                             return message;
@@ -281,12 +269,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            // if not system message
-                            if (member != null)
-                            {
-                                message.OwnerId = member.Id;
-                                message.Owner = member;
-                            }
+                            message.OwnerId = member?.Id;
+                            message.Owner = member;
 
                             return message;
                         },
@@ -406,12 +390,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (message, member) =>
                         {
-                            // if not system message
-                            if (member != null)
-                            {
-                                message.OwnerId = member.Id;
-                                message.Owner = member;
-                            }
+                            message.OwnerId = member?.Id;
+                            message.Owner = member;
 
                             return message;
                         },
@@ -479,12 +459,9 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                                 message.ForwardedMessage = forwardMessage;
                             }
 
-                            // if not system message
-                            if (member != null)
-                            {
-                                message.OwnerId = member.Id;
-                                message.Owner = member;
-                            }
+                            message.OwnerId = member?.Id;
+                            message.Owner = member;
+
                             return message;
                         },
                         new { messageId, AccessibilityStatus = AccessibilityStatus.Present }))
@@ -533,12 +510,8 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         sqlQuery,
                         (msg, member) =>
                         {
-                            // if not system message
-                            if (member != null)
-                            {
-                                msg.OwnerId = member.Id;
-                                msg.Owner = member;
-                            }
+                            msg.OwnerId = member?.Id;
+                            msg.Owner = member;
 
                             return msg;
                         },
@@ -680,7 +653,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         {
                             message.ForwardedMessage = forwardedMessage;
                             message.Owner = member;
-                            message.OwnerId = member.Id;
+                            message.OwnerId = member?.Id;
                             return message;
                         },
                         new { memberId, channelId, AccessibilityStatus = AccessibilityStatus.Present },

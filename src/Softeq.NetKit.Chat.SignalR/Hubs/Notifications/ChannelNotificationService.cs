@@ -77,7 +77,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs.Notifications
         private async Task<IEnumerable<string>> GetExceptConnectionIdsListAsync(RecipientType recipientType, Guid channelId, Guid memberId, string callerConnectionId)
         {
             var exceptList = Enumerable.Empty<string>().ToList();
-
             if (recipientType == RecipientType.AllExceptMemberConnections)
             {
                 var memberClientIds = await GetChannelMemberClientConnectionIdsAsync(channelId, memberId);

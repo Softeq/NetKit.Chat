@@ -42,28 +42,28 @@ This project uses ASP.NET Core 2.2 version.
 
 The following list contains all external core dependencies of NetKit.Chat projects:
 
- - Microsoft.NETCore 2.0
- - Autofac 4.8.1
- - Autofac.Extensions.DependencyInjection 4.3.0
- - CorrelationId 2.1.0
- - Dapper 1.50.5
- - IdentityServer4.AccessTokenValidation 2.6.0
- - Microsoft.AspNetCore.App 2.1.4
- - Microsoft.AspNetCore.SignalR 1.0.3
- - Simple.Migrations 0.9.19
+ - Microsoft.NETCore
+ - Autofac
+ - Autofac.Extensions.DependencyInjection
+ - CorrelationId
+ - Dapper
+ - IdentityServer4.AccessTokenValidation
+ - Microsoft.AspNetCore.App
+ - Microsoft.AspNetCore.SignalR
+ - Simple.Migrations
 
 ## Softeq dependent packages
 
 Table of Softeq [nuget](https://www.nuget.org/profiles/Softeq) dependencies.
 
-| Package | Version | Downloads| NuGet |
-| ------------------- | ----------------- | ---------------- | ----------------- |
-| [Serilog.Extension](https://github.com/Softeq/serilog.extension) | 1.0.0 | ![Downloads](https://img.shields.io/nuget/dt/Softeq.Serilog.Extension.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.Serilog.Extension.svg)  |
-| [QueryUtils](https://github.com/Softeq/query-utils) | 1.0.2 | ![Downloads](https://img.shields.io/nuget/dt/Softeq.queryutils.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.queryutils.svg)  |
-| [CloudStorage.Extension](https://github.com/Softeq/CloudStorage.Extension) | 1.0.1 | ![Downloads](https://img.shields.io/nuget/dt/Softeq.CloudStorage.Extension.svg)  | ![NuGet](https://img.shields.io/nuget/v/Softeq.CloudStorage.Extension.svg)  |
-| [PushNotificationService](https://github.com/Softeq/PushNotificationService) | 1.0.3 | ![Downloads](https://img.shields.io/nuget/dt/Softeq.PushNotificationService.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.PushNotificationService.svg)  |
-| [NetKit.Chat.TransportModels](https://github.com/Softeq/NetKit.Chat.TransportModels) | 1.0.0-alpha3 | ![Downloads](https://img.shields.io/nuget/dt/Softeq.NetKit.Chat.TransportModels.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.NetKit.Chat.TransportModels.svg)  |
-| [NetKit.Chat.SignalRClient](https://github.com/Softeq/NetKit.Chat.SignalRClient) | 1.0.5-alpha3 | ![Downloads](https://img.shields.io/nuget/dt/Softeq.NetKit.Chat.SignalRClient.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.NetKit.Chat.SignalRClient.svg)  |
+| Package | Downloads| NuGet |
+| ------------------- | ---------------- | ----------------- |
+| [Serilog.Extension](https://github.com/Softeq/serilog.extension) | ![Downloads](https://img.shields.io/nuget/dt/Softeq.Serilog.Extension.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.Serilog.Extension.svg)  |
+| [QueryUtils](https://github.com/Softeq/query-utils) | ![Downloads](https://img.shields.io/nuget/dt/Softeq.queryutils.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.queryutils.svg)  |
+| [CloudStorage.Extension](https://github.com/Softeq/CloudStorage.Extension) | ![Downloads](https://img.shields.io/nuget/dt/Softeq.CloudStorage.Extension.svg)  | ![NuGet](https://img.shields.io/nuget/v/Softeq.CloudStorage.Extension.svg)  |
+| [PushNotificationService](https://github.com/Softeq/PushNotificationService) | ![Downloads](https://img.shields.io/nuget/dt/Softeq.PushNotificationService.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.PushNotificationService.svg)  |
+| [NetKit.Chat.TransportModels](https://github.com/Softeq/NetKit.Chat.TransportModels) | ![Downloads](https://img.shields.io/nuget/dt/Softeq.NetKit.Chat.TransportModels.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.NetKit.Chat.TransportModels.svg)  |
+| [NetKit.Chat.SignalRClient](https://github.com/Softeq/NetKit.Chat.SignalRClient) | ![Downloads](https://img.shields.io/nuget/dt/Softeq.NetKit.Chat.SignalRClient.svg)  | ![NuGet](https://img.shields.io/nuget/vpre/Softeq.NetKit.Chat.SignalRClient.svg)  |
 
 ## Dependent projects
 

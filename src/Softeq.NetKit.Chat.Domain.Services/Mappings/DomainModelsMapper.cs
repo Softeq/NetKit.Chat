@@ -84,17 +84,13 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             {
                 response = _mapper.Map(channel, response);
 
-                if (channel.Creator != null)
+                if (channel.Creator != null && channelMember != null)
                 {
+                    response = _mapper.Map(channelMember, response);
+
                     var creator = MapToMemberSummaryResponse(channel.Creator);
-
-                    if (channelMember != null)
-                    {
-                        response = _mapper.Map(channelMember, response);
-
-                        creator.Role = channelMember.Role;
-                        response.Members.Add(creator);
-                    }
+                    creator.Role = channelMember.Role;
+                    response.Members.Add(creator);
                 }
 
                 if (channel.Messages == null)
