@@ -201,7 +201,7 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             await _pushNotificationService.UnsubscribeUserFromTagAsync(memberToDelete.SaasUserId, PushNotificationsTagTemplates.GetChatChannelTag(request.ChannelId.ToString()));
             await _channelNotificationService.OnLeaveChannel(memberToDelete, request.ChannelId);
 
-            await SendSystemMessageAsync(request.SaasUserId, request.ChannelId, new MemberDeletedLocalizationVisitor(memberToDelete), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberDeleted, memberToDelete.UserName);
+            await SendSystemMessageAsync(memberToDelete.SaasUserId, request.ChannelId, new MemberDeletedLocalizationVisitor(memberToDelete), RecipientType.AllExceptMemberConnections, _systemMessagesConfiguration.MemberDeleted, memberToDelete.UserName);
         }
 
         public async Task MuteChannelAsync(MuteChannelRequest request)

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="Softeq.NetKit.Chat.SignalRClient" Version="1.0.5-alpha4" />
+    <PackageReference Include="Softeq.NetKit.Chat.SignalRClient" Version="1.0.5" />
     <PackageReference Include="Softeq.QueryUtils" Version="1.0.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
