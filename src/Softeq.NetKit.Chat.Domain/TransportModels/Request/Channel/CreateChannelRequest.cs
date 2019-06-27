@@ -27,5 +27,7 @@ namespace Softeq.NetKit.Chat.Domain.TransportModels.Request.Channel
         public List<string> AllowedMembers { get; set; }
 
         public string PhotoUrl { get; set; }
+
+        public string CurrentConnectionId { get; set; }
     }
 }

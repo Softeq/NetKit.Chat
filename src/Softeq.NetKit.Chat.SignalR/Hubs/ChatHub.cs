@@ -205,7 +205,8 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                     AllowedMembers = request.Request.AllowedMembers,
                     Description = request.Request.Description,
                     PhotoUrl = request.Request.PhotoUrl,
-                    WelcomeMessage = request.Request.WelcomeMessage
+                    WelcomeMessage = request.Request.WelcomeMessage,
+                    CurrentConnectionId = Context.ConnectionId
                 };
                 return await _channelSocketService.CreateChannelAsync(createChannelRequest);
             }),
@@ -320,10 +321,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                     await Clients.Caller.SendAsync(HubEvents.ExceptionOccurred, ex, requestId);
                 }
             }
-            else
-            {
-                await Clients.Caller.SendAsync(HubEvents.AccessTokenExpired, requestId);
-            }
         }
 
         private async Task<TResponse> ValidateAndExecuteAsync<TRequest, TResponse>(TRequest request, IValidator<TRequest> requestValidator, TaskReference<TResponse> funcRequest, string requestId = null)
@@ -370,7 +367,6 @@ namespace Softeq.NetKit.Chat.SignalR.Hubs
                 }
             }
 
-            await Clients.Caller.SendAsync(HubEvents.AccessTokenExpired, requestId);
             return default(TResponse);
         }
     }

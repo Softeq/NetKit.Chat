@@ -139,7 +139,7 @@ namespace Softeq.NetKit.Chat.Data.Persistent.Sql.Repositories
                         m.{nameof(Message.AccessibilityStatus)},
                         (SELECT COUNT(*)
                          FROM Messages m
-                         WHERE m.{nameof(Message.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)} AND m.{nameof(Message.Created)} < (
+                         WHERE m.{nameof(Message.ChannelId)} = @{nameof(channelId)} AND m.{nameof(Message.AccessibilityStatus)} = @{nameof(Message.AccessibilityStatus)} AND m.{nameof(Message.Created)} > (
                              SELECT m.{nameof(Message.Created)}
 	                         FROM ChannelMembers cm
 	                         LEFT JOIN Messages m

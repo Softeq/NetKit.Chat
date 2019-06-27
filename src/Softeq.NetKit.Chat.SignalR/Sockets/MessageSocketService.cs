@@ -93,10 +93,16 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
 
             await _messageService.ArchiveMessageAsync(request);
 
-            var channelSummary = await _channelService.GetChannelSummaryAsync(request.SaasUserId, message.ChannelId);
-
             await _messageNotificationService.OnDeleteMessage(message);
-            await _channelNotificationService.OnUpdateChannel(channelSummary);
+
+            var channelMembers = await _memberService.GetChannelMembersAsync(message.ChannelId);
+
+            foreach (var channelMember in channelMembers)
+            {
+                // SignalR personalized notification
+                var channelSummary = await _channelService.GetChannelSummaryAsync(channelMember.SaasUserId, message.ChannelId);
+                await _channelNotificationService.OnUpdateChannelPersonalized(channelSummary, channelMember.Id);
+            }
         }
 
         public async Task<MessageResponse> UpdateMessageAsync(UpdateMessageRequest request)
@@ -133,13 +139,16 @@ namespace Softeq.NetKit.Chat.SignalR.Sockets
             var member = await _memberService.GetMemberBySaasUserIdAsync(request.SaasUserId);
             var message = await _messageService.GetMessageByIdAsync(request.MessageId);
 
-            if (message.Sender.Id != member.Id)
-            {
-                await _messageService.SetLastReadMessageAsync(request);
+            await _messageService.SetLastReadMessageAsync(request);
 
-                var members = new List<Guid> { member.Id, message.Sender.Id };
-                await _messageNotificationService.OnChangeLastReadMessage(members, request.ChannelId);
+            var members = new List<Guid> { member.Id };
+
+            if (message.Sender != null && message.Sender?.Id != member.Id)
+            {
+                members.Add(message.Sender.Id);
             }
+
+            await _messageNotificationService.OnChangeLastReadMessage(members, request.ChannelId);
         }
     }
 }

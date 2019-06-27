@@ -32,7 +32,8 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             CreateMap<DomainModels.Member, MemberSummaryResponse>()
                 .ForMember(d => d.AvatarUrl, opt => opt.MapFrom(s => s.PhotoName))
-                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name));
+                .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name))
+                .ForMember(d => d.Role, opt => opt.MapFrom(s => s.Role));
 
             CreateMap<Channel, ChannelResponse>();
 
@@ -63,7 +64,7 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             CreateMap<ChannelMember, ChannelMemberResponse>();
 
-            CreateMap<DomainModels.Client, ClientResponse>()
+            CreateMap<Client, ClientResponse>()
                 .ForMember(d => d.MemberId, opt => opt.MapFrom(s => s.MemberId))
                 .ForMember(d => d.ConnectionClientId, opt => opt.MapFrom(s => s.ClientConnectionId))
                 .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.Name))

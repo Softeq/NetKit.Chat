@@ -7,6 +7,7 @@ using Softeq.NetKit.Chat.Domain.DomainModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Softeq.NetKit.Chat.TransportModels.Enums;
 using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Channel;
 using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.ChannelMember;
 using Softeq.NetKit.Chat.TransportModels.Models.CommonModels.Response.Member;
@@ -74,16 +75,23 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
         public ChannelSummaryResponse MapToChannelSummaryResponse(Channel channel, ChannelMember channelMember, Message lastReadMessage = null)
         {
-            var response = new ChannelSummaryResponse();
-
-            if (channelMember != null)
+            var response = new ChannelSummaryResponse
             {
-                response = _mapper.Map(channelMember, response);
-            }
-
+                Members = new List<MemberSummaryResponse>()
+            };
+            
             if (channel != null)
             {
                 response = _mapper.Map(channel, response);
+
+                if (channel.Creator != null && channelMember != null)
+                {
+                    response = _mapper.Map(channelMember, response);
+
+                    var creator = MapToMemberSummaryResponse(channel.Creator);
+                    creator.Role = channelMember.Role;
+                    response.Members.Add(creator);
+                }
 
                 if (channel.Messages == null)
                 {
@@ -104,7 +112,40 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return response;
         }
 
-        public ChannelSummaryResponse MapToDirectChannelSummaryResponse(Channel channel, DomainModels.Member currentUser, DomainModels.Member directMember, Message lastReadMessage = null)
+        public ChannelSummaryResponse MapToDirectChannelSummaryResponse(ChannelMemberAggregate channelMemberAggregate, Channel channel, Member directMember)
+        {
+            var response = new ChannelSummaryResponse();
+            if (channel != null)
+            {
+                response = _mapper.Map(channel, response);
+
+                var member = MapToMemberSummaryResponse(channelMemberAggregate.ChannelMember.Member);
+                member.Role = channelMemberAggregate.ChannelMember.Role;
+
+                response.Members = new List<MemberSummaryResponse>
+                {
+                    member
+                };
+
+                if (channelMemberAggregate.Message != null)
+                {
+                    response.LastMessage = MapToMessageResponse(channelMemberAggregate.Message);
+                }
+
+                response.UnreadMessagesCount = channelMemberAggregate.UnreadMessagesCount;
+            }
+
+            if (directMember != null)
+            {
+                var direct = MapToMemberSummaryResponse(directMember);
+                direct.Role = UserRole.Admin;
+                response.Members.Add(direct);
+            }
+
+            return response;
+        }
+
+        public ChannelSummaryResponse MapToDirectChannelSummaryResponse(Channel channel, Member currentUser, Member directMember, Message lastReadMessage = null)
         {
             var response = new ChannelSummaryResponse();
 
@@ -123,12 +164,16 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
 
             if (currentUser != null)
             {
-                response.Members.Add(MapToMemberSummaryResponse(currentUser));
+                var current = MapToMemberSummaryResponse(currentUser);
+                current.Role = UserRole.Admin;
+                response.Members.Add(current);
             }
 
             if (directMember != null)
             {
-                response.Members.Add(MapToMemberSummaryResponse(directMember));
+                var direct = MapToMemberSummaryResponse(directMember);
+                direct.Role = UserRole.Admin;
+                response.Members.Add(direct);
             }
 
             return response;
@@ -149,12 +194,12 @@ namespace Softeq.NetKit.Chat.Domain.Services.Mappings
             return channelMember != null ? _mapper.Map<ChannelMemberResponse>(channelMember) : new ChannelMemberResponse();
         }
 
-        public ClientResponse MapToClientResponse(DomainModels.Client client)
+        public ClientResponse MapToClientResponse(Client client)
         {
             return client != null ? _mapper.Map<ClientResponse>(client) : new ClientResponse();
         }
 
-        public MemberSummaryResponse MapToMemberSummaryResponse(DomainModels.Member member)
+        public MemberSummaryResponse MapToMemberSummaryResponse(Member member)
         {
             return member != null ? _mapper.Map<MemberSummaryResponse>(member) : new MemberSummaryResponse();
         }
